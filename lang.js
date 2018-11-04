@@ -16,3 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+var TheLanguage=(function(){
+    var exports={};
+
+    var symbol_t=0;
+
+    function new_symbol(x){/* String -> LangVal */
+	return [symbol_t,x];
+    }
+    exports.new_symbol=new_symbol;
+    
+    
+    return exports;
+})();
