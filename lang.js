@@ -62,6 +62,14 @@ var TheLanguage=(function(){
     }
     exports.null_v=null_v;
     exports.null_p=null_p;
+    function new_list(){
+	var ret=null_v;
+	for(var i=arguments.length-1;i>=0;i--){
+	    ret=new_cons(arguments[i], ret);
+	}
+	return ret;
+    }
+    exports.new_list=new_list;
 
     function new_data(name, list){/* LangVal, LangVal -> LangVal */
 	return [data_t, name, list];
@@ -174,7 +182,7 @@ var TheLanguage=(function(){
     var the_sym=new_symbol("特一定其");
     var a_sym=new_symbol("一");
     var is_sym=new_symbol("邪乎否与");
-    var builtin_equal_sym=new_data(WIP);
+    //var builtin_equal_sym=new_data(sys_sym, new_cons(name_sym, WIP));
 
     
     
