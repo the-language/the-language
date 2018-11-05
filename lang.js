@@ -199,7 +199,10 @@ var TheLanguage=(function(){
 	    return x;
 	}
     }
-    function real_eval(env, x){
+    exports.force=force_all;
+    
+    function real_eval(env, raw){
+	var x=force_all(raw);
 	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
