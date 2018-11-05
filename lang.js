@@ -173,6 +173,7 @@ var TheLanguage=(function(){
     var eval_sym=new_symbol("算释解计");
     var the_sym=new_symbol("特一定其");
     var a_sym=new_symbol("一");
+    var is_sym=new_symbol("邪乎否与");
     var builtin_equal_sym=new_data(WIP);
 
     
