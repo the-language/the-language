@@ -171,7 +171,7 @@ var TheLanguage=(function(){
 	WIP
     }
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
-	eval(WIP, WIP);
+	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, WIP, WIP));
     }
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名号标");
@@ -184,8 +184,10 @@ var TheLanguage=(function(){
     var a_sym=new_symbol("一");
     var is_sym=new_symbol("邪乎否与");
     var bool_sym=new_symbol("阴阳");
+    var quote_sym=new_symbol("引用");
     var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
-    
+    var builtin_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
+    var use_builtin_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, sys_sym)));
 
     
     
