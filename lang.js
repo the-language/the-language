@@ -24,6 +24,8 @@ var TheLanguage=(function(){
     var null_t=2;
     var data_t=3;
     var error_t=4;
+    var just_t=5;
+    var delay_eval_t=6;
 
     function new_symbol(x){/* String -> LangVal */
 	return [symbol_t,x];
@@ -94,6 +96,45 @@ var TheLanguage=(function(){
     exports.error_p=error_p;
     exports.error_name=error_name;
     exports.error_list=error_list;
+
+    function assert_equal(x, y){
+	//可以对delay优化?
+	if(x===y){
+	    return;
+	}
+	x[0]=just_t;
+	x[1]=y;
+	x[2]=null;
+    }
+    function just_p(x){
+	return x[0]===just_t;
+    }
+    function un_just(x){
+	return x[1];
+    }
+    function lang_eval(env, x){
+	return [delay_eval_t, env, x];
+    }
+    function delay_eval_p(x){
+	return x[0]===delay_eval_t;
+    }
+    function delay_eval_env(x){
+	return x[1];
+    }
+    function delay_eval_x(x){
+	return x[2];
+    }
+    exports.eval=lang_eval;
+    exports.delay_p=(function(x){
+	return just_p(x)||delay_eval_p(x);
+    });
+
+    function jsboolean_equal_p(x,y){/* LangVal, LangVal -> JSBoolean */
+	WIP
+    }
+    
+    
+
     
     
     return exports;
