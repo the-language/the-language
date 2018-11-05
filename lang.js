@@ -166,12 +166,15 @@ var TheLanguage=(function(){
 	}
 	return default_v;
     }
-    
-    function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
+
+    function force_all(x){/* LangVal -> LangVal */
 	WIP
     }
+    function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
+	return force_all(langbool_equal_p(x, y);
+    }
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
-	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, WIP, WIP));
+	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, new_list(use_builtin_sym, builtin_quote_sym, x), new_list(use_builtin_sym, builtin_quote_sym, y)));
     }
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名号标");
