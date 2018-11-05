@@ -19,6 +19,15 @@
 var TheLanguage=(function(){
     var exports={};
 
+    function ERROR(){
+	WIP();
+    }
+    function ASSERT(x){
+	if(x){
+	}else{
+	    ERROR()
+	}
+    }
     var symbol_t=0;
     var cons_t=1;
     var null_t=2;
@@ -171,14 +180,23 @@ var TheLanguage=(function(){
 	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
-	return force_all(langbool_equal_p(x, y);
+	var x=force_all(langbool_equal_p(x, y));
+	ASSERT(data_p(x));
+	var name=force_all(data_name(x));
+	ASSERT(symbol_p(name));
+	if(name==="陰"){
+	    return false;
+	}else if(name==="陽"){
+	    return true;
+	}
+	ERROR();
     }
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
 	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, new_list(use_builtin_sym, builtin_quote_sym, x), new_list(use_builtin_sym, builtin_quote_sym, y)));
     }
     var sys_sym=new_symbol("太始初核");
-    var name_sym=new_symbol("符名号标");
-    var func_sym=new_symbol("化变灭演");
+    var name_sym=new_symbol("符名號標");
+    var func_sym=new_symbol("化變滅演");//WIP
     var form_sym=new_symbol("式形法特");
     var equal_sym=new_symbol("等同皆一");
     var eval_sym=new_symbol("算释解计");
