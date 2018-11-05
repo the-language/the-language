@@ -166,6 +166,11 @@ var TheLanguage=(function(){
 	eval(WIP, WIP);
     }
     var sys_sym=new_symbol("太始初核");
+    var name_sym=new_symbol("符名号标");
+    var func_sym=new_symbol("化变灭演");
+    var form_sym=new_symbol("式形法特");
+    var equal_sym=new_symbol("等同皆一");
+    var eval_sym=new_symbol("算释解演");
     
 
     
