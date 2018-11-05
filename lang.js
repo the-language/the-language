@@ -130,6 +130,18 @@ var TheLanguage=(function(){
     function un_just(x){
 	return x[1];
     }
+    function un_just_all(raw){
+	var x=raw;
+	var xs=[];
+	while(just_p(x)){
+	    xs[xs.length]=x;
+	    x=un_just;
+	}
+	for(var i=0;i<xs.length;i++){
+	    lang_set_do(xs[i], x);
+	}
+	return x;
+    }
     function lang_eval(env, x){
 	return [delay_eval_t, env, x];
     }
@@ -190,9 +202,10 @@ var TheLanguage=(function(){
 	}
 	return x;
     }
-    function force1(x){/* LangVal -> LangVal */
+    function force1(raw){/* LangVal -> LangVal */
+	var x=un_just_all(raw);
 	if(just_p(x)){
-	    return un_just(x);
+	    ERROR();
 	}else if(delay_eval_p(x)){
 	    var ret=real_eval(delay_eval_env(x), delay_eval_x(x));
 	    lang_set_do(x, ret);
@@ -203,13 +216,38 @@ var TheLanguage=(function(){
     }
     exports.force=force_all;
     
+    var sys_sym=new_symbol("太始初核");
+    var name_sym=new_symbol("符名號標");
+    var func_sym=new_symbol("化變滅演");
+    var form_sym=new_symbol("式形法特");
+    var equal_sym=new_symbol("等同皆一");
+    var eval_sym=new_symbol("算釋解計");
+    var the_sym=new_symbol("特一定其");
+    var sth_sym=new_symbol("省略之其");
+    var a_sym=new_symbol("一");
+    var is_sym=new_symbol("邪乎否与");
+    var bool_sym=new_symbol("陰陽");
+    var quote_sym=new_symbol("引用");
+    var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
+    var builtin_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
+    var use_builtin_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, sys_sym)));
+    var use_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, form_sym)));
     function real_eval(env, raw){
-	var x=force_all(raw);
+	var x=force1(raw);
+	if(any_delay_just_p(x)){
+	    WIP
+	}
 	switch(x[0]){
 	case cons_t:
 	    var a=cons_car(x);
 	    var d=cons_cdr(x);
-	    WIP
+	    if(jsbool_equal_p(a, use_builtin_sym)){
+		WIP
+	    }else if(jsbool_equal_p(a, use_form_sym)){
+		WIP
+	    }else{
+		WIP
+	    }
 	    break;
 	case null_t:
 	    return x;
@@ -220,6 +258,9 @@ var TheLanguage=(function(){
 	default:
 	    ERROR();
 	}
+    }
+    function lang_apply(f, xs){/* LangVal , [LangVal] -> LangVal */
+	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
 	var x=force_all(langbool_equal_p(x, y));
@@ -236,22 +277,6 @@ var TheLanguage=(function(){
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
 	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, new_list(use_builtin_sym, builtin_quote_sym, x), new_list(use_builtin_sym, builtin_quote_sym, y)));
     }
-    var sys_sym=new_symbol("太始初核");
-    var name_sym=new_symbol("符名號標");
-    var func_sym=new_symbol("化變滅演");
-    var form_sym=new_symbol("式形法特");
-    var equal_sym=new_symbol("等同皆一");
-    var eval_sym=new_symbol("算釋解計");
-    var the_sym=new_symbol("特一定其");
-    var sth_sym=new_symbol("省略之其");
-    var a_sym=new_symbol("一");
-    var is_sym=new_symbol("邪乎否与");
-    var bool_sym=new_symbol("陰陽");
-    var quote_sym=new_symbol("引用");
-    var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
-    var builtin_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
-    var use_builtin_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, sys_sym)));
-
     
     
     return exports;
