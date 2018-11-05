@@ -65,12 +65,14 @@ var TheLanguage=(function(){
     exports.cons_p=cons_p;
     exports.cons_car=cons_car;
     exports.cons_cdr=cons_cdr;
+    
     var null_v=[null_t];
     function null_p(x){
 	return x[0]===null_t;
     }
     exports.null_v=null_v;
     exports.null_p=null_p;
+    
     function new_list(){
 	var ret=null_v;
 	for(var i=arguments.length-1;i>=0;i--){
@@ -203,7 +205,21 @@ var TheLanguage=(function(){
     
     function real_eval(env, raw){
 	var x=force_all(raw);
-	WIP
+	switch(x[0]){
+	case cons_t:
+	    var a=cons_car(x);
+	    var d=cons_cdr(x);
+	    WIP
+	    break;
+	case null_t:
+	    return x;
+	case symbol_t:case data_p:
+	    return env_get(env, x, WIP);
+	case error_t:
+	    return WIP;
+	default:
+	    ERROR();
+	}
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
 	var x=force_all(langbool_equal_p(x, y));
