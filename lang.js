@@ -81,6 +81,20 @@ var TheLanguage=(function(){
     function new_error(name, list){/* LangVal, LangVal -> LangVal */
 	return [error_t, name, list];
     }
+    function error_p(x){
+	return x[0]===error_t;
+    }
+    function error_name(x){
+	return x[1];
+    }
+    function error_list(x){
+	return x[2];
+    }
+    exports.new_error=new_error;
+    exports.error_p=error_p;
+    exports.error_name=error_name;
+    exports.error_list=error_list;
+    
     
     return exports;
 })();
