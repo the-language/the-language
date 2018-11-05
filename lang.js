@@ -170,7 +170,7 @@ var TheLanguage=(function(){
     var func_sym=new_symbol("化变灭演");
     var form_sym=new_symbol("式形法特");
     var equal_sym=new_symbol("等同皆一");
-    var eval_sym=new_symbol("算释解演");
+    var eval_sym=new_symbol("算释解计");
     
 
     
