@@ -129,8 +129,41 @@ var TheLanguage=(function(){
 	return just_p(x)||delay_eval_p(x);
     });
 
-    function jsboolean_equal_p(x,y){/* LangVal, LangVal -> JSBoolean */
+    var env_null_v=[];
+    function env_set(env, key, val){
+	var ret=[];
+	for(var i=0;i<env.length;i=i+2){
+	    if(jsbool_equal_p(env[i+0], key)){
+		ret[i+0]=key;
+		ret[i+1]=val;
+		for(i=i+2;i<env.length;i=i+2){
+		    ret[i+0]=env[i+0];
+		    ret[i+1]=env[i+1];
+		}
+		return ret;
+	    }else{
+		ret[i+0]=env[i+0];
+		ret[i+1]=env[i+1];
+	    }
+	}
+	ret[env.length+0]=key;
+	ret[env.length+1]=val;
+	return ret;
+    }
+    function env_get(env, key, default_v){
+	for(var i=0;i<env.length;i=i+2){
+	    if(jsbool_equal_p(env[i+0], key)){
+		return env[i+1];
+	    }
+	}
+	return default_v;
+    }
+    
+    function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
 	WIP
+    }
+    function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
+	eval(WIP, WIP);
     }
     
     
