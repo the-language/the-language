@@ -180,9 +180,12 @@ var TheLanguage=(function(){
     var equal_sym=new_symbol("等同皆一");
     var eval_sym=new_symbol("算释解计");
     var the_sym=new_symbol("特一定其");
+    var sth_sym=new_symbol("省略之其");
     var a_sym=new_symbol("一");
     var is_sym=new_symbol("邪乎否与");
-    //var builtin_equal_sym=new_data(sys_sym, new_cons(name_sym, WIP));
+    var bool_sym=new_symbol("阴阳");
+    var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
+    
 
     
     
