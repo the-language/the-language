@@ -140,10 +140,11 @@ var TheLanguage=(function(){
     function delay_eval_x(x){
 	return x[2];
     }
+    function any_delay_just_p(x){
+	return just_p(x) || delay_eval_p(x);
+    }
     exports.eval=lang_eval;
-    exports.delay_p=(function(x){
-	return just_p(x)||delay_eval_p(x);
-    });
+    exports.delay_p=any_delay_just_p;
 
     var env_null_v=[];
     function env_set(env, key, val){
@@ -175,8 +176,17 @@ var TheLanguage=(function(){
 	return default_v;
     }
 
-    function force_all(x){/* LangVal -> LangVal */
-	WIP
+    function force_all(raw){/* LangVal -> LangVal */
+	var x=raw;
+	var xs=[];
+	while(any_delay_just_p(x)){
+	    xs[xs.length]=x;
+	    x=force1(x);
+	}
+	for(var i=0;i<xs.length;i++){
+	    lang_set_do(xs[i], x);
+	}
+	return x;
     }
     function force1(x){/* LangVal -> LangVal */
 	if(just_p(x)){
