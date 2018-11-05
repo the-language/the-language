@@ -114,8 +114,7 @@ var TheLanguage=(function(){
     exports.error_name=error_name;
     exports.error_list=error_list;
 
-    function assert_equal(x, y){
-	//可以对delay优化?
+    function lang_set_do(x, y){
 	if(x===y){
 	    return;
 	}
@@ -177,6 +176,20 @@ var TheLanguage=(function(){
     }
 
     function force_all(x){/* LangVal -> LangVal */
+	WIP
+    }
+    function force1(x){/* LangVal -> LangVal */
+	if(just_p(x)){
+	    return un_just(x);
+	}else if(delay_eval_p(x)){
+	    var ret=real_eval(delay_eval_env(x), delay_eval_x(x));
+	    lang_set_do(x, ret);
+	    return ret;
+	}else{
+	    return x;
+	}
+    }
+    function real_eval(env, x){
 	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
