@@ -165,7 +165,7 @@ var TheLanguage=(function(){
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
 	eval(WIP, WIP);
     }
-    
+    var sys_sym=new_symbol("太始初核");
     
 
     
