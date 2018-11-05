@@ -171,7 +171,9 @@ var TheLanguage=(function(){
     var form_sym=new_symbol("式形法特");
     var equal_sym=new_symbol("等同皆一");
     var eval_sym=new_symbol("算释解计");
-    
+    var the_sym=new_symbol("特一定其");
+    var a_sym=new_symbol("一");
+    var builtin_equal_sym=new_data(WIP);
 
     
     
