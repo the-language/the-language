@@ -249,6 +249,8 @@ var TheLanguage=(function(){
     var builtin_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
     var use_builtin_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, sys_sym)));
     var use_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, form_sym)));
+    var false_v=new_data(new_symbol("陰"), new_list());
+    var true_v=new_data(new_symbol("陽"), new_list());
     function real_eval(env, raw){
 	var x=force1(raw);
 	if(any_delay_just_p(x)){
