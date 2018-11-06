@@ -322,12 +322,18 @@ var TheLanguage=(function(){
 	    var x=xs[0];
 	    var y=xs[1];
 	    if(x===y){
-		return WIP;
+		return true_v;
 	    }
 	    x=force1(x);
 	    y=force1(y);
 	    if(any_delay_just_p(x) || any_delay_just_p(y)){
-		return builtin_apply(f, [x, y]);
+		return builtin_apply(f, [x, y]); // not fully implemented
+	    }
+	    if(x===y){
+		return true_v;
+	    }
+	    if(x[0] !== y[0]){
+		return false_v;
 	    }
 	    WIP
 	}else if(WIP){
