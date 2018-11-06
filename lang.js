@@ -241,9 +241,9 @@ var TheLanguage=(function(){
 	case cons_t:
 	    var a=cons_car(x);
 	    var d=cons_cdr(x);
-	    if(jsbool_equal_p(a, use_builtin_sym)){
+	    if(jsbool_equal_p(a, use_builtin_sym)){// WARNING delay未正確處理(影響較小)
 		WIP
-	    }else if(jsbool_equal_p(a, use_form_sym)){
+	    }else if(jsbool_equal_p(a, use_form_sym)){// WARNING delay未正確處理(影響較小)
 		WIP
 	    }else{
 		WIP
