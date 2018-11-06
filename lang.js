@@ -161,6 +161,12 @@ var TheLanguage=(function(){
     function delay_builtin_p(x){
 	return x[0]===delay_builtin_t;
     }
+    function delay_builtin_f(x){
+	return x[1];
+    }
+    function delay_builtin_xs(x){
+	return x[2];
+    }
     function any_delay_just_p(x){
 	return just_p(x) || delay_eval_p(x) || delay_builtin_p(x);
     }
@@ -214,11 +220,13 @@ var TheLanguage=(function(){
 	if(just_p(x)){
 	    ERROR();
 	}else if(delay_eval_p(x)){
-	    var ret=real_eval(delay_eval_env(x), delay_eval_x(x));
+	    var ret=un_just_all(real_eval(delay_eval_env(x), delay_eval_x(x)));
 	    lang_set_do(x, ret);
 	    return ret;
 	}else if(delay_builtin_p(x)){
-	    WIP
+	    var ret=un_just_all(real_builtin_apply(delay_builtin_f(x), delay_builtin_xs(x)));
+	    lang_set_do(x, ret);
+	    return ret;
 	}else{
 	    return x;
 	}
