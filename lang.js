@@ -235,7 +235,7 @@ var TheLanguage=(function(){
     function real_eval(env, raw){
 	var x=force1(raw);
 	if(any_delay_just_p(x)){
-	    WIP
+	    return lang_eval(env, x);
 	}
 	switch(x[0]){
 	case cons_t:
