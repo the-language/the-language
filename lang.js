@@ -314,6 +314,9 @@ var TheLanguage=(function(){
     function real_builtin_apply(f, xs){/* Name, [LangVal] -> LangVal */
 	// WARNING delay未正確處理(影響較小)
 	if(jsbool_equal_p(f, builtin_equal_sym)){
+	    if(xs.length!==2){
+		WIP
+	    }
 	    WIP
 	}else if(WIP){
 	    WIP
