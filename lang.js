@@ -317,6 +317,16 @@ var TheLanguage=(function(){
 	    if(xs.length!==2){
 		WIP
 	    }
+	    var x=xs[0];
+	    var y=xs[1];
+	    if(x===y){
+		return WIP;
+	    }
+	    x=force1(x);
+	    y=force1(y);
+	    if(any_delay_just_p(x) || any_delay_just_p(y)){
+		return builtin_apply(f, [x, y]);
+	    }
 	    WIP
 	}else if(WIP){
 	    WIP
