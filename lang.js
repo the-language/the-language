@@ -246,7 +246,20 @@ var TheLanguage=(function(){
 	    }else if(jsbool_equal_p(a, use_form_sym)){// WARNING delay未正確處理(影響較小)
 		WIP
 	    }else{
-		WIP
+		var xs=[];
+		var rest=force1(d);
+		// WARNING delay未正確處理(影響較小)
+		while(!null_p(rest)){
+		    if(any_delay_just_p(rest)){
+			return lang_eval(env, x);
+		    }else if(cons_p(rest)){
+			xs[xs.length]=lang_eval(env, cons_car(rest));
+			rest=force1(cons_cdr(rest));
+		    }else{
+			WIP
+		    }
+		}
+		return lang_apply(lang_eval(env, a), xs);
 	    }
 	    break;
 	case null_t:
