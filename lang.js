@@ -239,27 +239,46 @@ var TheLanguage=(function(){
 	}
 	switch(x[0]){
 	case cons_t:
-	    var a=cons_car(x);
-	    var d=cons_cdr(x);
-	    if(jsbool_equal_p(a, use_builtin_sym)){// WARNING delay未正確處理(影響較小)
-		WIP
-	    }else if(jsbool_equal_p(a, use_form_sym)){// WARNING delay未正確處理(影響較小)
+	    var xs=[];
+	    var rest=x;
+	    // WARNING delay未正確處理(影響較小)
+	    while(!null_p(rest)){
+		if(any_delay_just_p(rest)){
+		    return lang_eval(env, x);
+		}else if(cons_p(rest)){
+		    xs[xs.length]=cons_car(rest);
+		    rest=force1(cons_cdr(rest));
+		}else{
+		    WIP
+		}
+	    }
+	    if(jsbool_equal_p(xs[0], use_builtin_sym)){// WARNING delay未正確處理(影響較小)
+		if(xs.length===1){
+		    WIP
+		}
+		var f=xs[1];
+		var args=[];
+		for(var i=2;i<xs.length;i++){
+		    args[i-2]=lang_eval(env, xs[i]);
+		}
+		return apply_builtin(f, args);
+	    }else if(jsbool_equal_p(xs[0], use_form_sym)){// WARNING delay未正確處理(影響較小)
+		if(xs.length===1){
+		    WIP
+		}
+		var f=lang_eval(env, xs[1]);
+		var args=[];
+		for(var i=2;i<xs.length;i++){
+		    args[i-2]=lang_eval(env, xs[i]);
+		}
 		WIP
 	    }else{
-		var xs=[];
-		var rest=force1(d);
-		// WARNING delay未正確處理(影響較小)
-		while(!null_p(rest)){
-		    if(any_delay_just_p(rest)){
-			return lang_eval(env, x);
-		    }else if(cons_p(rest)){
-			xs[xs.length]=lang_eval(env, cons_car(rest));
-			rest=force1(cons_cdr(rest));
-		    }else{
-			WIP
-		    }
+		var f=lang_eval(env, xs[0]);
+		var args=[];
+		for(var i=1;i<xs.length;i++){
+		    args[i-1]=lang_eval(env, xs[i]);
 		}
-		return lang_apply(lang_eval(env, a), xs);
+		return lang_apply(f, args);
 	    }
 	    break;
 	case null_t:
@@ -273,6 +292,9 @@ var TheLanguage=(function(){
 	}
     }
     function lang_apply(f, xs){/* LangVal , [LangVal] -> LangVal */
+	WIP
+    }
+    function builtin_apply(f, xs){
 	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
