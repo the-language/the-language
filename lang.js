@@ -35,6 +35,7 @@ var TheLanguage=(function(){
     var error_t=4;
     var just_t=5;
     var delay_eval_t=6;
+    var delay_builtin_t=7;
 
     function new_symbol(x){/* String -> LangVal */
 	return [symbol_t,x];
@@ -154,8 +155,14 @@ var TheLanguage=(function(){
     function delay_eval_x(x){
 	return x[2];
     }
+    function apply_builtin(f, xs){/* Name, [LangVal] -> LangVal */
+	return [delay_builtin_t, f, xs];
+    }
+    function delay_builtin_p(x){
+	return x[0]===delay_builtin_t;
+    }
     function any_delay_just_p(x){
-	return just_p(x) || delay_eval_p(x);
+	return just_p(x) || delay_eval_p(x) || delay_builtin_p(x);
     }
     exports.eval=lang_eval;
     exports.delay_p=any_delay_just_p;
@@ -210,6 +217,8 @@ var TheLanguage=(function(){
 	    var ret=real_eval(delay_eval_env(x), delay_eval_x(x));
 	    lang_set_do(x, ret);
 	    return ret;
+	}else if(delay_builtin_p(x)){
+	    WIP
 	}else{
 	    return x;
 	}
@@ -294,7 +303,7 @@ var TheLanguage=(function(){
     function lang_apply(f, xs){/* LangVal, [LangVal] -> LangVal */
 	WIP
     }
-    function builtin_apply(f, xs){/* Name, [LangVal] -> LangVal */
+    function real_builtin_apply(f, xs){/* Name, [LangVal] -> LangVal */
 	// WARNING delay未正確處理(影響較小)
 	if(jsbool_equal_p(f, builtin_equal_sym)){
 	    WIP
