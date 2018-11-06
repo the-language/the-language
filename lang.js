@@ -291,10 +291,16 @@ var TheLanguage=(function(){
 	    ERROR();
 	}
     }
-    function lang_apply(f, xs){/* LangVal , [LangVal] -> LangVal */
+    function lang_apply(f, xs){/* LangVal, [LangVal] -> LangVal */
 	WIP
     }
-    function builtin_apply(f, xs){
+    function builtin_apply(f, xs){/* Name, [LangVal] -> LangVal */
+	// WARNING delay未正確處理(影響較小)
+	if(jsbool_equal_p(f, builtin_equal_sym)){
+	    WIP
+	}else if(WIP){
+	    WIP
+	}
 	WIP
     }
     function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
