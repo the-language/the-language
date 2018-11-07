@@ -331,7 +331,7 @@ var TheLanguage=(function(){
 	    x=force1(x);
 	    y=force1(y);
 	    if(any_delay_just_p(x) || any_delay_just_p(y)){
-		return builtin_apply(f, [x, y]); // not fully implemented
+		return builtin_apply(f, [x, y]); /* not fully implemented -- Halting */
 	    }
 	    if(x===y){
 		return true_v;
@@ -341,7 +341,7 @@ var TheLanguage=(function(){
 	    }
 	    
 	    WIP
-	}else if(WIP){
+	}else if(jsbool_equal_p(f, builtin_quote_sym)){
 	    WIP
 	}
 	WIP
