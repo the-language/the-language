@@ -156,7 +156,7 @@ var TheLanguage=(function(){
     function delay_eval_x(x){
 	return x[2];
     }
-    function apply_builtin_form(env, f, xs){/* Env, Name, [NotEvaledLangVal] -> LangVal */
+    function builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaledLangVal] -> LangVal */
 	return [delay_builtin_form_t, [env, f], xs];
     }
     function delay_builtin_form_p(x){
@@ -171,7 +171,7 @@ var TheLanguage=(function(){
     function delay_builtin_form_xs(x){
 	return x[2];
     }
-    function apply_builtin_func(f, xs){/* Env, Name, [LangVal] -> LangVal */
+    function builtin_func_apply(f, xs){/* Env, Name, [LangVal] -> LangVal */
 	return [delay_builtin_func_t, f, xs];
     }
     function delay_builtin_func_p(x){
@@ -188,7 +188,6 @@ var TheLanguage=(function(){
     }
     exports.eval=lang_eval;
     exports.delay_p=any_delay_just_p;
-    //WIP Paused delay_builtin_*
 
     var env_null_v=[];
     function env_set(env, key, val){
@@ -234,19 +233,21 @@ var TheLanguage=(function(){
     }
     function force1(raw){/* LangVal -> LangVal */
 	var x=un_just_all(raw);
+	var ret=x;
 	if(just_p(x)){
 	    ERROR();
 	}else if(delay_eval_p(x)){
-	    var ret=un_just_all(real_eval(delay_eval_env(x), delay_eval_x(x)));
-	    lang_set_do(x, ret);
-	    return ret;
-	}else if(delay_builtin_p(x)){
-	    var ret=un_just_all(real_builtin_apply(delay_builtin_env(x), delay_builtin_f(x), delay_builtin_xs(x)));
-	    lang_set_do(x, ret);
-	    return ret;
+	    ret=real_eval(delay_eval_env(x), delay_eval_x(x));
+	}else if(delay_builtin_form_p(x)){
+	    ret=real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
+	}else if(delay_builtin_func_p(x)){
+	    ret=real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
 	}else{
-	    return x;
+	    ret=x;
 	}
+	ret=un_just_all(x);
+	lang_set_do(x, ret);
+	return ret;
     }
     exports.force=force_all;
     
@@ -291,7 +292,7 @@ var TheLanguage=(function(){
 		    WIP
 		}
 	    }
-	    if(jsbool_equal_p(xs[0], use_builtin_sym)){// WARNING delay未正確處理(影響較小)
+	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){// WARNING delay未正確處理(影響較小)
 		if(xs.length===1){
 		    WIP
 		}
@@ -300,7 +301,9 @@ var TheLanguage=(function(){
 		for(var i=2;i<xs.length;i++){
 		    args[i-2]=xs[i];
 		}
-		return apply_builtin(env, f, args);
+		return builtin_form_apply(env, f, args);
+	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){// WARNING delay未正確處理(影響較小)
+		WIP
 	    }else if(jsbool_equal_p(xs[0], use_form_sym)){// WARNING delay未正確處理(影響較小)
 		if(xs.length===1){
 		    WIP
@@ -334,10 +337,8 @@ var TheLanguage=(function(){
     function lang_apply(f, xs){/* LangVal, [LangVal] -> LangVal */
 	WIP
     }
-    function real_builtin_apply(env, f, xs){/* Env, Name, [NotEvaled LangVal] -> LangVal */
-	var error_v=WIP;
-	// WARNING delay未正確處理(影響較小)
-	if(jsbool_equal_p(f, builtin_equal_sym)){
+    function real_builtin_func_apply(f, xs){
+	/*if(jsbool_equal_p(f, builtin_equal_sym)){
 	    if(xs.length!==2){
 		return error_v;
 	    }
@@ -349,7 +350,7 @@ var TheLanguage=(function(){
 	    x=force1(x);
 	    y=force1(y);
 	    if(any_delay_just_p(x) || any_delay_just_p(y)){
-		return builtin_apply(f, [x, y]); /* not fully implemented -- Halting */
+		return builtin_apply(f, [x, y]); // not fully implemented -- Halting
 	    }
 	    if(x===y){
 		return true_v;
@@ -359,8 +360,14 @@ var TheLanguage=(function(){
 	    }
 	    
 	    WIP
-	}else if(jsbool_equal_p(f, builtin_quote_sym)){
-	    
+	    }*/
+	WIP
+    }
+    function real_builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaled LangVal] -> LangVal */
+	var error_v=WIP;
+	// WARNING delay未正確處理(影響較小)
+	if(jsbool_equal_p(f, builtin_quote_sym)){
+	    WIP
 	}
 	WIP
     }
@@ -377,7 +384,7 @@ var TheLanguage=(function(){
 	ERROR();
     }
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
-	return lang_eval(env_null_v, new_list(use_builtin_sym, builtin_equal_sym, new_list(use_builtin_sym, builtin_quote_sym, x), new_list(use_builtin_sym, builtin_quote_sym, y)));
+	return builtin_func_apply(builtin_equal_sym, [x, y]);
     }
     
     
