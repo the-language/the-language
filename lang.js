@@ -311,15 +311,17 @@ var TheLanguage=(function(){
 	default:
 	    ERROR();
 	}
+	ERROR();
     }
     function lang_apply(f, xs){/* LangVal, [LangVal] -> LangVal */
 	WIP
     }
     function real_builtin_apply(f, xs){/* Name, [LangVal] -> LangVal */
+	var error_v=WIP;
 	// WARNING delay未正確處理(影響較小)
 	if(jsbool_equal_p(f, builtin_equal_sym)){
 	    if(xs.length!==2){
-		WIP
+		return error_v;
 	    }
 	    var x=xs[0];
 	    var y=xs[1];
