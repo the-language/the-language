@@ -25,7 +25,7 @@ var TheLanguage=(function(){
     function ASSERT(x){
 	if(x){
 	}else{
-	    ERROR()
+	    ERROR();
 	}
     }
     var symbol_t=0;
