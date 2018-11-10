@@ -20,7 +20,7 @@ var TheLanguage=(function(){
     var exports={};
 
     function ERROR(){
-	WIP();
+	throw "TheLanguage ERROR!";
     }
     function ASSERT(x){
 	if(x){
