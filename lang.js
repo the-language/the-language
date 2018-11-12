@@ -23,8 +23,7 @@ var TheLanguage=(function(){
 	throw "TheLanguage ERROR!";
     }
     function ASSERT(x){
-	if(x){
-	}else{
+	if(!x){
 	    ERROR();
 	}
     }
