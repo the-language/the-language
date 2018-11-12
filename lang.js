@@ -281,7 +281,7 @@ var TheLanguage=(function(){
 	case cons_t:
 	    var xs=[];
 	    var rest=x;
-	    // WARNING delay未正確處理(影響較小)
+	    /* WARNING delay未正確處理(影響較小) */
 	    while(!null_p(rest)){
 		if(any_delay_just_p(rest)){
 		    return lang_eval(env, x);
@@ -292,7 +292,7 @@ var TheLanguage=(function(){
 		    WIP
 		}
 	    }
-	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){// WARNING delay未正確處理(影響較小)
+	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){/* WARNING delay未正確處理(影響較小) */
 		if(xs.length===1){
 		    WIP
 		}
@@ -302,9 +302,9 @@ var TheLanguage=(function(){
 		    args[i-2]=xs[i];
 		}
 		return builtin_form_apply(env, f, args);
-	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){// WARNING delay未正確處理(影響較小)
+	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){/* WARNING delay未正確處理(影響較小) */
 		WIP
-	    }else if(jsbool_equal_p(xs[0], use_form_sym)){// WARNING delay未正確處理(影響較小)
+	    }else if(jsbool_equal_p(xs[0], use_form_sym)){/* WARNING delay未正確處理(影響較小) */
 		if(xs.length===1){
 		    WIP
 		}
@@ -365,7 +365,7 @@ var TheLanguage=(function(){
     }
     function real_builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaled LangVal] -> LangVal */
 	var error_v=WIP;
-	// WARNING delay未正確處理(影響較小)
+	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_quote_sym)){
 	    WIP
 	}
