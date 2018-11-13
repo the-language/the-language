@@ -337,6 +337,7 @@ var TheLanguage=(function(){
 	WIP
     }
     function real_builtin_func_apply(f, xs){
+	/* Env, Name, [LangVal] -> LangVal */
 	/*if(jsbool_equal_p(f, builtin_equal_sym)){
 	    if(xs.length!==2){
 		return error_v;
