@@ -338,6 +338,11 @@ var TheLanguage=(function(){
     }
     function real_builtin_func_apply(f, xs){
 	/* Env, Name, [LangVal] -> LangVal */
+	/* WARNING delay未正確處理(影響較小) */
+	if(jsbool_equal_p(f, WIP)){
+	    WIP
+	}
+	WIP
 	/*if(jsbool_equal_p(f, builtin_equal_sym)){
 	    if(xs.length!==2){
 		return error_v;
