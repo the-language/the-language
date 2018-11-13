@@ -333,7 +333,16 @@ var TheLanguage=(function(){
 	}
 	ERROR();
     }
-    function lang_apply(f, xs){/* LangVal, [LangVal] -> LangVal */
+    function lang_apply(f, xs){
+	/* LangVal, [LangVal] -> LangVal */
+	var error_v=WIP;
+	var f=force1(f);
+	if(any_delay_just_p(f)){
+	    WIP;
+	}
+	if(f[0]!==WIP){
+	    return error_v;
+	}
 	WIP
     }
     function real_builtin_func_apply(f, xs){
@@ -365,7 +374,8 @@ var TheLanguage=(function(){
 	}
 	return error_p;
     }
-    function real_builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaled LangVal] -> LangVal */
+    function real_builtin_form_apply(env, f, xs){
+	/* Env, Name, [NotEvaled LangVal] -> LangVal */
 	var error_v=WIP;
 	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_quote_sym)){
@@ -376,7 +386,8 @@ var TheLanguage=(function(){
 	}
 	WIP
     }
-    function jsbool_equal_p(x, y){/* LangVal, LangVal -> JSBoolean */
+    function jsbool_equal_p(x, y){
+	/* LangVal, LangVal -> JSBoolean */
 	var x=force_all(langbool_equal_p(x, y));
 	ASSERT(data_p(x));
 	var name=force_all(data_name(x));
