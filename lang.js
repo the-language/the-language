@@ -338,7 +338,11 @@ var TheLanguage=(function(){
 	var error_v=WIP;
 	var f=force1(f);
 	if(any_delay_just_p(f)){
-	    WIP;
+	    var ys=[x];
+	    for(var i=0;i<xs.length;i++){
+		ys[i+1]=xs[i];
+	    }
+	    return builtin_func_apply(WIP, ys);
 	}
 	if(f[0]!==WIP){
 	    return error_v;
