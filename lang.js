@@ -344,7 +344,7 @@ var TheLanguage=(function(){
 	    }
 	    return builtin_func_apply(WIP, ys);
 	}
-	if(f[0]!==WIP){
+	if(f[0]!==data_t){
 	    return error_v;
 	}
 	WIP
