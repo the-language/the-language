@@ -344,13 +344,6 @@ var TheLanguage=(function(){
 	    if(xs.length!=2){
 		return error_v;
 	    }
-	    WIP
-	}
-	return error_p;
-	/*if(jsbool_equal_p(f, builtin_equal_sym)){
-	    if(xs.length!==2){
-		return error_v;
-	    }
 	    var x=xs[0];
 	    var y=xs[1];
 	    if(x===y){
@@ -359,7 +352,7 @@ var TheLanguage=(function(){
 	    x=force1(x);
 	    y=force1(y);
 	    if(any_delay_just_p(x) || any_delay_just_p(y)){
-		return builtin_apply(f, [x, y]); // not fully implemented -- Halting
+		return builtin_func_apply(f, [x, y]); /* not fully implemented -- Halting */
 	    }
 	    if(x===y){
 		return true_v;
@@ -369,8 +362,8 @@ var TheLanguage=(function(){
 	    }
 	    
 	    WIP
-	    }*/
-	WIP
+	}
+	return error_p;
     }
     function real_builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaled LangVal] -> LangVal */
 	var error_v=WIP;
