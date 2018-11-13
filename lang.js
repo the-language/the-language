@@ -369,7 +369,10 @@ var TheLanguage=(function(){
 	var error_v=WIP;
 	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_quote_sym)){
-	    WIP
+	    if(xs.length!==1){
+		return erroe_v;
+	    }
+	    return xs[0];
 	}
 	WIP
     }
