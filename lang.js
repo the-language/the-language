@@ -273,6 +273,7 @@ var TheLanguage=(function(){
     var true_v=new_data(new_symbol("陽"), new_list());
     function real_eval(env, raw){
 	var x=force1(raw);
+	var error_v=WIP;
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
 	}
@@ -293,7 +294,7 @@ var TheLanguage=(function(){
 	    }
 	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){/* WARNING delay未正確處理(影響較小) */
 		if(xs.length===1){
-		    WIP
+		    return error_v;
 		}
 		var f=xs[1];
 		var args=[];
@@ -305,7 +306,7 @@ var TheLanguage=(function(){
 		WIP
 	    }else if(jsbool_equal_p(xs[0], use_form_sym)){/* WARNING delay未正確處理(影響較小) */
 		if(xs.length===1){
-		    WIP
+		    return error_v;
 		}
 		var f=lang_eval(env, xs[1]);
 		var args=[];
