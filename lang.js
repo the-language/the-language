@@ -289,10 +289,11 @@ var TheLanguage=(function(){
 		    xs[xs.length]=cons_car(rest);
 		    rest=force1(cons_cdr(rest));
 		}else{
-		    WIP
+		    return error_t;
 		}
 	    }
-	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){/* WARNING delay未正確處理(影響較小) */
+	    /* WARNING delay未正確處理(影響較小) */
+	    if(jsbool_equal_p(xs[0], use_builtin_form_sym)){
 		if(xs.length===1){
 		    return error_v;
 		}
@@ -302,9 +303,9 @@ var TheLanguage=(function(){
 		    args[i-2]=xs[i];
 		}
 		return builtin_form_apply(env, f, args);
-	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){/* WARNING delay未正確處理(影響較小) */
+	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){
 		WIP
-	    }else if(jsbool_equal_p(xs[0], use_form_sym)){/* WARNING delay未正確處理(影響較小) */
+	    }else if(jsbool_equal_p(xs[0], use_form_sym)){
 		if(xs.length===1){
 		    return error_v;
 		}
@@ -328,7 +329,7 @@ var TheLanguage=(function(){
 	case symbol_t:case data_p:
 	    return env_get(env, x, WIP);
 	case error_t:
-	    return WIP;
+	    return error_v;
 	default:
 	    ERROR();
 	}
