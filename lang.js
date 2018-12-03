@@ -265,7 +265,7 @@ var TheLanguage=(function(){
     var apply_sym=new_symbol("用調應使");
     var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
     var builtin_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
-    var builtin_apply=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
+    var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
     var use_builtin_func_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, func_sym))));
     var use_builtin_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, form_sym))));
     var use_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, form_sym)));
@@ -337,6 +337,7 @@ var TheLanguage=(function(){
     }
     function lang_apply(f, xs){
 	/* LangVal, [LangVal] -> LangVal */
+	return builtin_func_apply(WIP, WIP);/*
 	var error_v=WIP;
 	var f=force1(f);
 	if(any_delay_just_p(f)){
@@ -349,10 +350,10 @@ var TheLanguage=(function(){
 	if(f[0]!==data_t){
 	    return error_v;
 	}
-	WIP
+	WIP*/
     }
     function real_builtin_func_apply(f, xs){
-	/* Env, Name, [LangVal] -> LangVal */
+	/* Name, [LangVal] -> LangVal */
 	var error_t=WIP;
 	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_equal_sym)){
