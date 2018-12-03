@@ -73,14 +73,18 @@ var TheLanguage=(function(){
     }
     exports.null_v=null_v;
     exports.null_p=null_p;
-    
-    function new_list(){
+
+    function jslist2list(xs){
 	var ret=null_v;
-	for(var i=arguments.length-1;i>=0;i--){
-	    ret=new_cons(arguments[i], ret);
+	for(var i=xs.length-1;i>=0;i--){
+	    ret=new_cons(xs[i], ret);
 	}
 	return ret;
     }
+    function new_list(){
+	return jslist2list(arguments);
+    }
+    exports.jslist2list=jslist2list;
     exports.new_list=new_list;
 
     function new_data(name, list){/* LangVal, LangVal -> LangVal */
