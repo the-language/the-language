@@ -341,20 +341,7 @@ var TheLanguage=(function(){
     }
     function lang_apply(f, xs){
 	/* LangVal, [LangVal] -> LangVal */
-	return builtin_func_apply(WIP, WIP);/*
-	var error_v=WIP;
-	var f=force1(f);
-	if(any_delay_just_p(f)){
-	    var ys=[x];
-	    for(var i=0;i<xs.length;i++){
-		ys[i+1]=xs[i];
-	    }
-	    return builtin_func_apply(WIP, ys);
-	}
-	if(f[0]!==data_t){
-	    return error_v;
-	}
-	WIP*/
+	return builtin_func_apply(builtin_func_apply_sym, new_list(f, jslist2list(xs)));
     }
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
