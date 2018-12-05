@@ -159,7 +159,8 @@ var TheLanguage=(function(){
     function delay_eval_x(x){
 	return x[2];
     }
-    function builtin_form_apply(env, f, xs){/* Env, Name, [NotEvaledLangVal] -> LangVal */
+    function builtin_form_apply(env, f, xs){
+	/* Env, Name, [NotEvaledLangVal] -> LangVal */
 	return [delay_builtin_form_t, [env, f], xs];
     }
     function delay_builtin_form_p(x){
