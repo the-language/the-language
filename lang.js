@@ -104,7 +104,8 @@ var TheLanguage=(function(){
     exports.data_name=data_name;
     exports.data_list=data_list;
 
-    function new_error(name, list){/* LangVal, LangVal -> LangVal */
+    function new_error(name, list){
+	/* LangVal, LangVal -> LangVal */
 	return [error_t, name, list];
     }
     function error_p(x){
