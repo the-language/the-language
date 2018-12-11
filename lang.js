@@ -269,7 +269,7 @@ var TheLanguage=(function(){
     var bool_sym=new_symbol("陰陽");
     var quote_sym=new_symbol("引用");
     var apply_sym=new_symbol("用調應使");
-    var builtin_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
+    var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
     var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
     var use_builtin_func_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, func_sym))));
@@ -349,7 +349,7 @@ var TheLanguage=(function(){
 	/* Name, [LangVal] -> LangVal */
 	var error_t=WIP;
 	/* WARNING delay未正確處理(影響較小) */
-	if(jsbool_equal_p(f, builtin_equal_sym)){
+	if(jsbool_equal_p(f, builtin_func_equal_sym)){
 	    if(xs.length!=2){
 		return error_v;
 	    }
@@ -400,7 +400,7 @@ var TheLanguage=(function(){
 	ERROR();
     }
     function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
-	return builtin_func_apply(builtin_equal_sym, [x, y]);
+	return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
     
     
