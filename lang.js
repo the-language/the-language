@@ -238,7 +238,7 @@ var TheLanguage=(function(){
     }
     function force1(raw){/* LangVal -> LangVal */
 	var x=un_just_all(raw);
-	var ret=x;
+	var ret;
 	if(just_p(x)){
 	    ERROR();
 	}else if(delay_eval_p(x)){
@@ -250,7 +250,7 @@ var TheLanguage=(function(){
 	}else{
 	    ret=x;
 	}
-	ret=un_just_all(x);
+	ret=un_just_all(ret);
 	lang_set_do(x, ret);
 	return ret;
     }
