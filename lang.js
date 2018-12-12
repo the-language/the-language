@@ -176,7 +176,8 @@ var TheLanguage=(function(){
     function delay_builtin_form_xs(x){
 	return x[2];
     }
-    function builtin_func_apply(f, xs){/* Env, Name, [LangVal] -> LangVal */
+    function builtin_func_apply(f, xs){
+	/* Env, Name, [LangVal] -> LangVal */
 	return [delay_builtin_func_t, f, xs];
     }
     function delay_builtin_func_p(x){
@@ -310,7 +311,15 @@ var TheLanguage=(function(){
 		}
 		return builtin_form_apply(env, f, args);
 	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){
-		WIP
+		if(xs.length===1){
+		    return error_v;
+		}
+		var f=xs[1];
+		var args=[];
+		for(var i=2;i<xs.length;i++){
+		    args[i-2]=lang_eval(xs[i]);
+		}
+		return builtin_func_apply(f, args);
 	    }else if(jsbool_equal_p(xs[0], use_form_sym)){
 		if(xs.length===1){
 		    return error_v;
