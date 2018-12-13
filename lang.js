@@ -240,9 +240,8 @@ var TheLanguage=(function(){
     function force1(raw){/* LangVal -> LangVal */
 	var x=un_just_all(raw);
 	var ret;
-	if(just_p(x)){
-	    ERROR();
-	}else if(delay_eval_p(x)){
+	ASSERT(!just_p(x));
+	if(delay_eval_p(x)){
 	    ret=real_eval(delay_eval_env(x), delay_eval_x(x));
 	}else if(delay_builtin_form_p(x)){
 	    ret=real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
