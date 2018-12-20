@@ -269,6 +269,10 @@ var TheLanguage=(function(){
     var bool_sym=new_symbol("陰陽");
     var quote_sym=new_symbol("引用");
     var apply_sym=new_symbol("用調應使");
+    var null_sym=new_symbol("空");
+    var cons_sym=new_symbol("连");
+    var sym_sym=new_symbol("符");
+    
     var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
     var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
