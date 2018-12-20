@@ -277,7 +277,8 @@ var TheLanguage=(function(){
     var error_sym=new_symbol("誤");
     var sym_sym=new_symbol("符");
 
-    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, WIP));
+    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
+    var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(WIP)));
     
     var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), new_list(pred_sym, equal_sym))));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
