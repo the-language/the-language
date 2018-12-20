@@ -280,8 +280,9 @@ var TheLanguage=(function(){
     var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
     var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(WIP)));
     
-    var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), new_list(pred_sym, equal_sym))));
+    var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(pred_sym, equal_sym))));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
+    
     var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
     var use_builtin_func_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, func_sym))));
     var use_builtin_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, form_sym))));
