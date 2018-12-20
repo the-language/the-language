@@ -266,21 +266,22 @@ var TheLanguage=(function(){
     var sth_sym=new_symbol("省略之其");
     var a_sym=new_symbol("一");
     var is_sym=new_symbol("邪乎否与");
+    var true_sym=new_symbol("陽");
+    var false_sym=new_symbol("陰");
     var bool_sym=new_symbol("陰陽");
     var quote_sym=new_symbol("引用");
     var apply_sym=new_symbol("用調應使");
     var null_sym=new_symbol("空");
-    var cons_sym=new_symbol("连");
-    var sym_sym=new_symbol("符");
-    
+    var cons_sym=new_symbol("連");
+    var data_sym=new_symbol("構");
     var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, bool_sym), equal_sym)));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
     var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
     var use_builtin_func_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, func_sym))));
     var use_builtin_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, form_sym))));
     var use_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, form_sym)));
-    var false_v=new_data(new_symbol("陰"), new_list());
-    var true_v=new_data(new_symbol("陽"), new_list());
+    var false_v=new_data(false_sym, new_list());
+    var true_v=new_data(true_sym, new_list());
     function real_eval(env, raw){
 	var x=force1(raw);
 	var error_v=WIP;
