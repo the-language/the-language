@@ -281,6 +281,8 @@ var TheLanguage=(function(){
     var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
     var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), new_symbol("首"))));
     var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), new_symbol("尾"))));
+
+    var builtin_func_sym_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, WIP, WIP)));
     
     var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym))));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
