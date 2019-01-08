@@ -432,3 +432,7 @@ var TheLanguage=(function(){
     
     return exports;
 })();
+/* NodeJS */
+if(module){
+    module.exports=TheLanguage;
+}
