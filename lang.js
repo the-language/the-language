@@ -277,6 +277,8 @@ v
     var error_sym=new_symbol("誤");
     var sym_sym=new_symbol("符");
     var list_sym=new_symbol("列");
+    var head_sym=new_symbol("首");
+    var tail_sym=new_symbol("尾");
     
     var builtin_func_new_data_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, data_sym), the_sym)));
     var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
@@ -284,8 +286,8 @@ v
     
     var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
     var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
-    var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), new_symbol("首"))));
-    var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), new_symbol("尾"))));
+    var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
+    var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), tail_sym)));
 
     var builtin_func_sym_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, sym_sym)))));
     
