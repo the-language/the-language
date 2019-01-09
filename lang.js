@@ -36,7 +36,7 @@ var TheLanguage=(function(){
     var delay_eval_t=6;
     var delay_builtin_func_t=7;
     var delay_builtin_form_t=8;
-
+v
     function new_symbol(x){/* String -> LangVal */
 	return [symbol_t,x];
     }
@@ -278,6 +278,8 @@ var TheLanguage=(function(){
     var sym_sym=new_symbol("符");
 
     var builtin_func_new_data_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, data_sym), the_sym)));
+    var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
+    var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), WIP)));
     
     var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
     var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
