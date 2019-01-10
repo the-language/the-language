@@ -285,6 +285,11 @@ v
     var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), list_sym)));
     var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
     
+    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
+    var builtin_func_error_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), name_sym)));
+    var builtin_func_error_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), list_sym)));
+    var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
+    
     var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
     var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
     var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
