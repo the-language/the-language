@@ -17,7 +17,10 @@
 
 */
 var TheLanguage=(function(){
+    var enable_nodejs=true;
+    var in_nodejs=module?true:false;/* fix me? */
     var exports={};
+    if(enable_nodejs&&in_nodejs){exports=module.exports;}/* fix me? */
 
     function ERROR(){
 	throw "TheLanguage ERROR!";
@@ -36,7 +39,7 @@ var TheLanguage=(function(){
     var delay_eval_t=6;
     var delay_builtin_func_t=7;
     var delay_builtin_form_t=8;
-v
+
     function new_symbol(x){/* String -> LangVal */
 	return [symbol_t,x];
     }
@@ -302,7 +305,7 @@ v
     var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym))));
     var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
     var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
-    var builtin_func_eval_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, eval_sym);
+    var builtin_func_eval_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, eval_sym)));
     
     var use_builtin_func_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, func_sym))));
     var use_builtin_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, new_list(sys_sym, form_sym))));
@@ -446,7 +449,3 @@ v
     
     return exports;
 })();
-/* NodeJS */
-if(module){
-    module.exports=TheLanguage;
-}
