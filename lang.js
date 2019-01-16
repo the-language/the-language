@@ -408,29 +408,18 @@ var TheLanguage=(function(){
     var builtin_func_sym_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, sym_sym)))));
 
     var builtin_func_null_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, null_sym)))));
-    
-    var builtin_func_equal_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym))));
-    var builtin_form_quote_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, form_sym, quote_sym)));
-    var builtin_func_apply_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym)));
+
     var builtin_func_eval_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, eval_sym)));
-*/
-    function real_builtin_func_apply(f, xs){
-	/* Name, [LangVal] -> LangVal */
-	var error_t=WIP;
-	/* WARNING delay未正確處理(影響較小) */
-	if(jsbool_equal_p(f, builtin_func_equal_sym)){
-	    if(xs.length!=2){
-		return error_v;
-	    }
-	    var x=xs[0];
-	    var y=xs[1];
+    */
+    var real_builtin_func_apply_s=[
+	[builtin_func_equal_sym, 2, function(x, y, error_v){
 	    if(x===y){
 		return true_v;
 	    }
 	    x=force1(x);
 	    y=force1(y);
 	    if(any_delay_just_p(x) || any_delay_just_p(y)){
-		return builtin_func_apply(f, [x, y]); /* not fully implemented -- Halting */
+		return builtin_func_apply(builtin_func_equal_sym, [x, y]); /* not fully implemented -- Halting */
 	    }
 	    if(x===y){
 		return true_v;
@@ -438,10 +427,26 @@ var TheLanguage=(function(){
 	    if(x[0] !== y[0]){
 		return false_v;
 	    }
-	    
 	    WIP
+	}],
+	[builtin_func_apply_sym, 2, function(f, xs, error_v){
+	    WIP
+	}],
+	];
+    function real_builtin_func_apply(f, xs){
+	/* Name, [LangVal] -> LangVal */
+	var error_v=WIP;
+	/* WARNING delay未正確處理(影響較小) */
+	for(var i=0;i<real_builtin_func_apply_s.length;i++){
+	    if(jsbool_equal_p(f, real_builtin_func_apply_s[i][0])){
+		if(xs.length!=real_builtin_func_apply_s[i][1]){
+		    return error_v;
+		}
+		xs[xs.length]=error_v;
+		return real_builtin_func_apply_s[i][2].apply(null, xs);
+	    }
 	}
-	return error_p;
+	return error_v;
     }
     function real_builtin_form_apply(env, f, xs){
 	/* Env, Name, [NotEvaled LangVal] -> LangVal */
@@ -449,7 +454,7 @@ var TheLanguage=(function(){
 	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_form_quote_sym)){
 	    if(xs.length!==1){
-		return erroe_v;
+		return error_v;
 	    }
 	    return xs[0];
 	}
