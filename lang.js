@@ -435,9 +435,9 @@ var TheLanguage=(function(){
 	ASSERT(data_p(x));
 	var name=force_all(data_name(x));
 	ASSERT(symbol_p(name));
-	if(name==="陰"){
+	if(name===false_sym){
 	    return false;
-	}else if(name==="陽"){
+	}else if(name===true_sym){
 	    return true;
 	}
 	ERROR();
