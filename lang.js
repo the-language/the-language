@@ -405,6 +405,22 @@ var TheLanguage=(function(){
     var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
     var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), tail_sym)));
     */
+    function make_builtin_p_func(p_sym, p_jsfunc){
+	return
+	[p_sym, 1, function(x, error_v){
+	    x=force1(x);
+	    if(any_delay_just_p(x)){
+		return builtin_func_apply(p_sym, [x]);
+	    }
+	    if(error_p(x)){
+		return error_v;
+	    }
+	    if(p_jsfunc(x)){
+		return true_v;
+	    }
+	    return false_v;
+	}];
+    }
     var real_builtin_func_apply_s=[
 	[builtin_func_equal_sym, 2, function(x, y, error_v){
 	    if(x===y){
@@ -429,20 +445,8 @@ var TheLanguage=(function(){
 	[builtin_func_eval_sym, 2, function(env, x, error_v){
 	    WIP
 	}],
-	
-	[builtin_func_null_p_sym, 1, function(x, error_v){
-	    x=force1(x);
-	    if(any_delay_just_p(x)){
-		return builtin_func_apply(builtin_func_null_p_sym, [x]);
-	    }
-	    if(error_p(x)){
-		return error_v;
-	    }
-	    if(null_p(x)){
-		return true_v;
-	    }
-	    return false_v;
-	}],
+
+	make_builtin_p_func(builtin_func_null_p_sym,null_p),
 	[builtin_func_sym_p_sym, 1, function(x, error_v){
 	    WIP
 	}],
