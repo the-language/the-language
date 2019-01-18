@@ -446,10 +446,8 @@ var TheLanguage=(function(){
 	    WIP
 	}],
 
-	make_builtin_p_func(builtin_func_null_p_sym,null_p),
-	[builtin_func_sym_p_sym, 1, function(x, error_v){
-	    WIP
-	}],
+	make_builtin_p_func(builtin_func_null_p_sym, null_p),
+	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
 	];
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
