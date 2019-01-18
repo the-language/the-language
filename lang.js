@@ -421,6 +421,22 @@ var TheLanguage=(function(){
 	    return false_v;
 	}];
     }
+    function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc){
+	return
+	[f_sym, 1, function(x, error_v){
+	    x=force1(x);
+	    if(any_delay_just_p(x)){
+		return builtin_func_apply(f_sym, [x]);
+	    }
+	    if(error_p(x)){
+		return error_v;
+	    }
+	    if(p_jsfunc(x)){
+		return f_jsfunc(x);
+	    }
+	    return error_v;
+	}];
+    }
     var real_builtin_func_apply_s=[
 	[builtin_func_equal_sym, 2, function(x, y, error_v){
 	    if(x===y){
