@@ -433,13 +433,14 @@ var TheLanguage=(function(){
     var builtin_func_error_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), name_sym)));
     var builtin_func_error_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), list_sym)));
     var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
-    
-    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
-    var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
-    var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
-    var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), tail_sym)));
     */
     var real_builtin_func_apply_s=[
+	make_builtin_p_func(builtin_func_null_p_sym, null_p),
+	[builtin_func_new_cons_sym, 2, new_cons],
+	make_builtin_p_func(builtin_func_cons_p_sym, cons_p),
+	make_builtin_get_func(builtin_func_cons_head_sym, cons_p, cons_car),
+	make_builtin_get_func(builtin_func_cons_tail_sym, cons_p, cons_cdr),
+	
 	[builtin_func_equal_sym, 2, function(x, y, error_v){
 	    if(x===y){
 		return true_v;
@@ -464,7 +465,6 @@ var TheLanguage=(function(){
 	    WIP
 	}],
 
-	make_builtin_p_func(builtin_func_null_p_sym, null_p),
 	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
 	];
     function real_builtin_func_apply(f, xs){
