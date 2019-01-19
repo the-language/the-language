@@ -397,11 +397,11 @@ var TheLanguage=(function(){
 	    if(any_delay_just_p(x)){
 		return builtin_func_apply(p_sym, [x]);
 	    }
-	    if(error_p(x)){
-		return error_v;
-	    }
 	    if(p_jsfunc(x)){
 		return true_v;
+	    }
+	    if(error_p(x)){
+		return error_v;
 	    }
 	    return false_v;
 	}];
@@ -413,11 +413,11 @@ var TheLanguage=(function(){
 	    if(any_delay_just_p(x)){
 		return builtin_func_apply(f_sym, [x]);
 	    }
-	    if(error_p(x)){
-		return error_v;
-	    }
 	    if(p_jsfunc(x)){
 		return f_jsfunc(x);
+	    }
+	    if(error_p(x)){
+		return error_v;
 	    }
 	    return error_v;
 	}];
@@ -428,13 +428,13 @@ var TheLanguage=(function(){
     var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
     var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), list_sym)));
     var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
-    
-    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
-    var builtin_func_error_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), name_sym)));
-    var builtin_func_error_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), list_sym)));
-    var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
     */
     var real_builtin_func_apply_s=[
+	make_builtin_p_func(builtin_func_error_p_sym, error_p),
+	[builtin_func_new_error_sym, 2, new_error],
+	make_builtin_get_func(builtin_func_error_name_sym, error_p, error_name),
+	make_builtin_get_func(builtin_func_error_list_sym, error_p, error_list),
+	
 	make_builtin_p_func(builtin_func_null_p_sym, null_p),
 	[builtin_func_new_cons_sym, 2, new_cons],
 	make_builtin_p_func(builtin_func_cons_p_sym, cons_p),
