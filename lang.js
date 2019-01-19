@@ -388,23 +388,8 @@ var TheLanguage=(function(){
 	/* LangVal, [LangVal] -> LangVal */
 	return builtin_func_apply(builtin_func_apply_sym, new_list(f, jslist2list(xs)));
     }
-    /* draft temp
+
     
-    var builtin_func_new_data_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, data_sym), the_sym)));
-    var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
-    var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), list_sym)));
-    var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
-    
-    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
-    var builtin_func_error_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), name_sym)));
-    var builtin_func_error_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), list_sym)));
-    var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
-    
-    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
-    var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
-    var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
-    var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), tail_sym)));
-    */
     function make_builtin_p_func(p_sym, p_jsfunc){
 	return
 	[p_sym, 1, function(x, error_v){
@@ -437,6 +422,23 @@ var TheLanguage=(function(){
 	    return error_v;
 	}];
     }
+    /* draft temp
+    
+    var builtin_func_new_data_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, data_sym), the_sym)));
+    var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
+    var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), list_sym)));
+    var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
+    
+    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
+    var builtin_func_error_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), name_sym)));
+    var builtin_func_error_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(error_sym), sth_sym), list_sym)));
+    var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
+    
+    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
+    var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
+    var builtin_func_cons_head_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), head_sym)));
+    var builtin_func_cons_tail_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(cons_sym), sth_sym), tail_sym)));
+    */
     var real_builtin_func_apply_s=[
 	[builtin_func_equal_sym, 2, function(x, y, error_v){
 	    if(x===y){
