@@ -422,14 +422,12 @@ var TheLanguage=(function(){
 	    return error_v;
 	}];
     }
-    /* draft temp
-    
-    var builtin_func_new_data_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, data_sym), the_sym)));
-    var builtin_func_data_name_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), name_sym)));
-    var builtin_func_data_list_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, new_list(data_sym), sth_sym), list_sym)));
-    var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
-    */
     var real_builtin_func_apply_s=[
+	make_builtin_p_func(builtin_func_data_p_sym, data_p),
+	[builtin_func_new_data_sym, 2, new_data],
+	make_builtin_get_func(builtin_func_data_name_sym, data_p, data_name),
+	make_builtin_get_func(builtin_func_data_list_sym, data_p, data_list),
+    
 	make_builtin_p_func(builtin_func_error_p_sym, error_p),
 	[builtin_func_new_error_sym, 2, new_error],
 	make_builtin_get_func(builtin_func_error_name_sym, error_p, error_name),
