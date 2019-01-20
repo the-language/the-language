@@ -23,7 +23,8 @@ var TheLanguage=(function(){
     if(enable_nodejs&&in_nodejs){exports=module.exports;}/* fix me? */
 
     function ERROR(){
-	errorerrorerror();
+	var PANIC=null;
+	PANIC();
     }
     function ASSERT(x){
 	if(!x){
