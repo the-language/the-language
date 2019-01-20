@@ -199,7 +199,7 @@ var TheLanguage=(function(){
     exports.delay_p=any_delay_just_p;
     
     var env_null_v=[];
-    function env_set(env, key, val){
+    function env_set(env, key, val){/* Env k v, k, v -> Env k v */
 	var ret=[];
 	for(var i=0;i<env.length;i=i+2){
 	    if(jsbool_equal_p(env[i+0], key)){
@@ -219,7 +219,7 @@ var TheLanguage=(function(){
 	ret[env.length+1]=val;
 	return ret;
     }
-    function env_get(env, key, default_v){
+    function env_get(env, key, default_v){/* Env k v, k, v -> v */
 	for(var i=0;i<env.length;i=i+2){
 	    if(jsbool_equal_p(env[i+0], key)){
 		return env[i+1];
@@ -262,7 +262,7 @@ var TheLanguage=(function(){
     }
     exports.force=force_all;
     
-    function print_force(x){
+    function print_force(x){/* LangVal -> JSString */
 	x=force_all(x);
 	var temp="";
 	var prefix="";
@@ -360,7 +360,7 @@ var TheLanguage=(function(){
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
     
-    function real_eval(env, raw){
+    function real_eval(env, raw){/* Env, LangVal -> LangVal */
 	var x=force1(raw);
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
@@ -556,7 +556,7 @@ var TheLanguage=(function(){
 	}
 	ERROR();
     }
-    function langbool_equal_p(x, y){/* LangVal, LangVal -> LangVal */
+    function langbool_equal_p(x, y){
 	return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
     
