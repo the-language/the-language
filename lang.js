@@ -365,7 +365,10 @@ var TheLanguage=(function(){
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
 	}
-	var error_v=new_error(sys_sym, new_list(eval_sym, env, x));
+	function WIP_env_to_val(){
+	    return "[FIXME!]";
+	}
+	var error_v=new_error(sys_sym, new_list(eval_sym, WIP_env_to_val(env), x));
 	switch(x[0]){
 	case cons_t:
 	    var xs=[];
@@ -515,7 +518,7 @@ var TheLanguage=(function(){
 	];
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
-	var error_v=WIP;
+	var error_v=new_error(sys_sym, new_list(apply_sym, f, xs));
 	/* WARNING delay未正確處理(影響較小) */
 	for(var i=0;i<real_builtin_func_apply_s.length;i++){
 	    if(jsbool_equal_p(f, real_builtin_func_apply_s[i][0])){
