@@ -23,7 +23,7 @@ var TheLanguage=(function(){
     if(enable_nodejs&&in_nodejs){exports=module.exports;}/* fix me? */
 
     function ERROR(){
-	throw "TheLanguage ERROR!";
+	errorerrorerror();
     }
     function ASSERT(x){
 	if(!x){
@@ -197,7 +197,7 @@ var TheLanguage=(function(){
     }
     exports.eval=lang_eval;
     exports.delay_p=any_delay_just_p;
-
+    
     var env_null_v=[];
     function env_set(env, key, val){
 	var ret=[];
@@ -261,6 +261,38 @@ var TheLanguage=(function(){
 	return ret;
     }
     exports.force=force_all;
+    
+    function print_force(x){
+	x=force_all(x);
+	var temp="";
+	var prefix="";
+	switch(x[0]){
+	case null_t:return "()";
+	case cons_t:
+	    temp="(";
+	    prefix="";
+	    while(cons_p(x)){
+		temp+=prefix+print_force(cons_car(x));
+		prefix=" ";
+		x=force_all(cons_cdr(x));
+	    }
+	    if(null_p(x)){
+		temp+=")";
+	    }else{
+		temp+=" . "+print_force(x)+")";
+	    }
+	    return temp;
+	case data_t:
+	    return "#"+print_force(new_cons(data_name(x), data_list(x)));
+	case error_t:
+	    return "!"+print_force(new_cons(error_name(x), error_list(x)));
+	case symbol_t:return un_symbol(x);
+	default:
+	    ERROR();
+	}
+	ERROR();
+    }
+    exports.print_force=print_force;
     
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
