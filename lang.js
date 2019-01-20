@@ -295,26 +295,27 @@ var TheLanguage=(function(){
     function make_builtin_f_get_sym_f(t_sym, x_sym){
 	return make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_list(t_sym), sth_sym), x_sym));
     }
-    function make_builtin_f_p_sym_f(){
+    function make_builtin_f_p_sym_f(t_sym){
+	return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym))));
     }
     var builtin_func_new_data_sym=make_builtin_f_new_sym_f(data_sym);
     var builtin_func_data_name_sym=make_builtin_f_get_sym_f(data_sym, name_sym);
     var builtin_func_data_list_sym=make_builtin_f_get_sym_f(data_sym, list_sym);
-    var builtin_func_data_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, data_sym)))));
+    var builtin_func_data_p_sym=make_builtin_f_p_sym_f(data_sym);
     
     var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
     var builtin_func_error_name_sym=make_builtin_f_get_sym_f(error_sym, name_sym);
     var builtin_func_error_list_sym=make_builtin_f_get_sym_f(error_sym, list_sym)
-    var builtin_func_error_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, error_sym)))));
+    var builtin_func_error_p_sym=make_builtin_f_p_sym_f(error_sym);
     
     var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
-    var builtin_func_cons_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, cons_sym)))));
+    var builtin_func_cons_p_sym=make_builtin_f_p_sym_f(cons_sym);
     var builtin_func_cons_head_sym=make_builtin_f_get_sym_f(cons_sym, head_sym);
     var builtin_func_cons_tail_sym=make_builtin_f_get_sym_f(cons_sym, tail_sym);
 
-    var builtin_func_sym_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, sym_sym)))));
+    var builtin_func_sym_p_sym=make_builtin_f_p_sym_f(sym_sym);
 
-    var builtin_func_null_p_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, null_sym)))));
+    var builtin_func_null_p_sym=make_builtin_f_p_sym_f(null_sym);
     
     var builtin_func_equal_sym=make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym)));
     var builtin_form_quote_sym=make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
