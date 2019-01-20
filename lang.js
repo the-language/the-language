@@ -424,7 +424,7 @@ var TheLanguage=(function(){
 	case null_t:
 	    return x;
 	case symbol_t:case data_p:
-	    return env_get(env, x, WIP);
+	    return env_get(env, x, error_v);
 	case error_t:
 	    return error_v;
 	default:
