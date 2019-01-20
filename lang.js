@@ -227,6 +227,9 @@ var TheLanguage=(function(){
 	}
 	return default_v;
     }
+    exports.env_null_v=env_null_v;
+    exports.env_set=env_set;
+    exports.env_get=env_get;
 
     function force_all(raw){/* LangVal -> LangVal */
 	var x=raw;
@@ -312,12 +315,13 @@ var TheLanguage=(function(){
     var use_form_sym=new_data(sys_sym, new_list(name_sym, new_list(form_sym, form_sym)));
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
+    
     function real_eval(env, raw){
 	var x=force1(raw);
-	var error_v=WIP;
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
 	}
+	var error_v=new_error(sys_sym, new_list(eval_sym, env, x));
 	switch(x[0]){
 	case cons_t:
 	    var xs=[];
