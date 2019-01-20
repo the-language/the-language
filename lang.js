@@ -293,6 +293,44 @@ var TheLanguage=(function(){
 	ERROR();
     }
     exports.print_force=print_force;
+
+    function print(x){/* LangVal -> JSString */
+	WIP
+    }
+    function read(x){/* JSString -> LangVal */
+	var state=x.split("");/* State : List Char */
+	function eof(){
+	    return state.length === 0;
+	}
+	function get(){
+	    return state.shift();
+	}
+	function put(x){
+	    state.unshift(x);
+	}
+	function space(){
+	    function p(x){
+		return x ===" " || x === "\n" || x === "\t" || x === "\r";
+	    }
+	    if(eof()){return false;}
+	    var x=get();
+	    if(p(x)){
+		while(p(x) && !eof()){
+		    x=get();
+		}
+		if(p(x)){
+		    return true;
+		}else{
+		    put(x);
+		    return true;
+		}
+	    }else{
+		put(x);
+		return false;
+	    }
+	}
+	WIP
+    }
     
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
