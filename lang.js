@@ -317,7 +317,7 @@ var TheLanguage=(function(){
 	    return x ===" " || x === "\n" || x === "\t" || x === "\r";
 	}
 	function a_symbol_p(x){
-	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || WIP );
+	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || x === "." || x === "#" );
 	}
 	function space(){
 	    var p=a_space_p;
@@ -393,12 +393,39 @@ var TheLanguage=(function(){
 		last_add(e);
 	    }
 	}
+	function data(){
+	    var x=get();
+	    if(x !== "#"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    return new_data(cons_car(xs), cons_cdr(xs));
+	}
+	function error(){
+	    var x=get();
+	    if(x !== "#"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    return new_data(cons_car(xs), cons_cdr(xs));
+	}
 	function val(){
 	    space();
-	    WIP
+	    var x=list();
+	    if(x !== false){return x;}
+	    x=symbol();
+	    if(x !== false){return x;}
+	    x=data();
+	    if(x !== false){return x;}
+	    x=error();
+	    if(x !== false){return x;}
+	    error();
+	    /* WIP: delay */
 	}
-	WIP
+	return val();
     }
+    exports.print=print;
+    exports.read=read;
     
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
