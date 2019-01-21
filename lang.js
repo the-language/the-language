@@ -309,26 +309,85 @@ var TheLanguage=(function(){
 	function put(x){
 	    state.unshift(x);
 	}
+	function error(){
+	    throw "TheLanguage parse ERROR!";
+	}
+	
+	function a_space_p(x){
+	    return x ===" " || x === "\n" || x === "\t" || x === "\r";
+	}
+	function a_symbol_p(x){
+	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || WIP );
+	}
 	function space(){
-	    function p(x){
-		return x ===" " || x === "\n" || x === "\t" || x === "\r";
-	    }
+	    var p=a_space_p;
 	    if(eof()){return false;}
 	    var x=get();
-	    if(p(x)){
-		while(p(x) && !eof()){
-		    x=get();
-		}
-		if(p(x)){
-		    return true;
-		}else{
-		    put(x);
-		    return true;
-		}
-	    }else{
+	    if(!p(x)){
 		put(x);
 		return false;
 	    }
+	    while(p(x) && !eof()){
+		x=get();
+	    }
+	    if(!p(x)){put(x);}
+	    return true;
+	}
+	function symbol(){
+	    var p=a_symbol_p;
+	    if(eof()){return false;}
+	    var x=get();
+	    var ret="";
+	    if(!p(x)){
+		put(x);
+		return false;
+	    }
+	    while(p(x) && !eof()){
+		ret+=x;
+		x=get();
+	    }
+	    if(p(x)){
+		ret+=x;
+	    }else{put(x);}
+	    return new_symbol(ret);
+	}
+	function list(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "("){put(x);return false;}
+	    var ret=null;
+	    function set_last(lst){
+		if(ret === null){ret=lst;}
+		var x=ret;
+		while(cons_p(cons_cdr(x))){
+		    x=cons_cdr(x);
+		}
+		if(x[2] !== null){ERROR();}
+		x[2]=lst;
+	    }
+	    function last_add(x){
+		set_last(new_cons(x, null));
+	    }
+	    space();	    
+	    while(true){
+		if(eof()){error();}
+		x=get();
+		if(x === ")"){
+		    WIP
+		}
+		if(x === "."){
+		    WIP
+		}
+		put(x);
+		var e=val();
+		if(e === false){error();}
+		WIP
+		space();
+	    }
+	}
+	function val(){
+	    space();
+	    WIP
 	}
 	WIP
     }
