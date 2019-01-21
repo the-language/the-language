@@ -368,21 +368,29 @@ var TheLanguage=(function(){
 	    function last_add(x){
 		set_last(new_cons(x, null));
 	    }
-	    space();	    
 	    while(true){
+		space();
 		if(eof()){error();}
 		x=get();
 		if(x === ")"){
-		    WIP
+		    set_last(null_v);
+		    return ret;
 		}
 		if(x === "."){
-		    WIP
+		    space();
+		    var e=val();
+		    if(e === false){error();}
+		    set_last(e);
+		    space();
+		    if(eof()){error();}
+		    x=get();
+		    if(x !== ")"){error();}
+		    return ret;
 		}
 		put(x);
 		var e=val();
 		if(e === false){error();}
-		WIP
-		space();
+		last_add(e);
 	    }
 	}
 	function val(){
