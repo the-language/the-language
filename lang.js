@@ -357,11 +357,15 @@ var TheLanguage=(function(){
 	    if(x !== "("){put(x);return false;}
 	    var ret=null;
 	    function set_last(lst){
-		if(ret === null){ret=lst;}
+		if(ret === null){ret=lst;return;}
 		var x=ret;
-		while(cons_p(cons_cdr(x))){
+		while(true){
+		    if(!cons_p(x)){ERROR();}
+		    var d=cons_cdr(x);
+		    if(d === null){break;}
 		    x=cons_cdr(x);
 		}
+		if(!cons_p(x)){ERROR();}
 		if(x[2] !== null){ERROR();}
 		x[2]=lst;
 	    }
@@ -401,13 +405,13 @@ var TheLanguage=(function(){
 	    if(!cons_p(xs)){error();}
 	    return new_data(cons_car(xs), cons_cdr(xs));
 	}
-	function error(){
+	function readerror(){
 	    var x=get();
-	    if(x !== "#"){put(x);return false;}
+	    if(x !== "!"){put(x);return false;}
 	    var xs=list();
 	    if(xs === false){error();}
 	    if(!cons_p(xs)){error();}
-	    return new_data(cons_car(xs), cons_cdr(xs));
+	    return new_error(cons_car(xs), cons_cdr(xs));
 	}
 	function val(){
 	    space();
@@ -417,7 +421,7 @@ var TheLanguage=(function(){
 	    if(x !== false){return x;}
 	    x=data();
 	    if(x !== false){return x;}
-	    x=error();
+	    x=readerror();
 	    if(x !== false){return x;}
 	    error();
 	    /* WIP: delay */
