@@ -496,6 +496,8 @@ var TheLanguage=(function(){
     var builtin_form_quote_sym=make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
     var builtin_func_apply_sym=make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
     var builtin_func_eval_sym=make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
+    var builtin_func_list_choose_sym="WIP";
+    var builtin_func_if_sym="WIP";
     
     var use_builtin_func_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, func_sym)));
     var use_builtin_form_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, form_sym)));
