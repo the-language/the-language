@@ -1,3 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 cd "$(dirname $0)"
-git add .;git diff --cached;./node.test.sh
+f=$(mktemp)
+./node.test.sh 2>&1 | cat > $f &
+git add .;git diff --cached
+wait
+cat $f
+rm $f
