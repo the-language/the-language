@@ -30,7 +30,10 @@ function ASSERT_WITH_EXP(text, x){
 {
     var xs=["(你好 世界！)",
 	    "!(#(a b) . c)",
-	    "((a) . #(bb cd54rf 66))"];
+	    "((a) . #(bb cd54rf 66))",
+	    "(k 0 9 8 . o)",
+	    "(() ((((())))) . *)",
+	   ];
     for(var i in xs){
 	var x=xs[i];
 	ASSERT_WITH_EXP("print_force(read(\""+x+"\")) === \""+x+"\"", TL.print_force(TL.read(x)) === x);
