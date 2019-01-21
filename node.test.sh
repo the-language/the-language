@@ -1,3 +1,3 @@
 #!/bin/sh
 cd "$(dirname $0)"
-node -e "$(cat lang.js)" -i
+node lang.node.test.js
