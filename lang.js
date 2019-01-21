@@ -262,8 +262,14 @@ var TheLanguage=(function(){
 	return ret;
     }
     exports.force=force_all;
+
+    function force_all_rec(x){
+	WIP
+    }
+    exports.force_rec=force_all_rec;
     
     function print_force(x){/* LangVal -> JSString */
+	/* WIP => PRINT(FORCE_REC(X)) */
 	x=force_all(x);
 	var temp="";
 	var prefix="";
