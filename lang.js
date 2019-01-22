@@ -284,6 +284,7 @@ var TheLanguage=(function(){
     var eval_sym=new_symbol("算釋解計");
     var the_sym=new_symbol("特一定其");
     var sth_sym=new_symbol("省略之其");
+    var map_sym=new_symbol("鍵表映界");
     var a_sym=new_symbol("一");
     var isornot_sym=new_symbol("邪乎否与");
     var true_sym=new_symbol("陽");
@@ -343,12 +344,44 @@ var TheLanguage=(function(){
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
 
-
-    function env2val(e){/* Env k v -> LangVal */
-	WIP
+    function env2val(env){/* Env k v -> LangVal */
+	var ret=null_v;
+	for(var i=0;i<env.length;i=i+2){
+	    ret=new_cons(new_list(env[i+0], env[i+1]), ret);
+	}
+	return new_data(map_sym, new_list(ret));
     }
-    function val2env(x){/* LangVal -> Env k v */
-	WIP
+    function val2env(x){/* LangVal -> Maybe (Env k v) */
+	x=force_all(x);
+	if(!data_p(x)){return false;}
+	var s=force_all(data_name(x));
+	if(!symbol_p(s)){return false;}
+	if(un_symbol(s) !== un_symbol(map_sym)){return false;}
+	s=force_all(data_list(x));
+	if(!cons_p(s)){return false;}
+	if(!null_p(force_all(cons_cdr(s)))){return false;}
+	var ret=[];
+	var xs=force_all(cons_car(s));
+	while(!null_p(xs)){
+	    if(!cons_p(xs)){return false;}
+	    var x=force_all(cons_car(xs));
+	    xs=force_all(cons_cdr(xs));
+	    if(!cons_p(x)){return false;}
+	    var k=cons_car(x);
+	    x=force_all(cons_cdr(x));
+	    if(!cons_p(x)){return false;}
+	    var v=cons_car(x);
+	    if(!null_p(force_all(cons_cdr(x)))){return false;}
+	    (function(){
+		for(var i=0;i<ret.length;i=i+2){
+		    if(jsbool_equal_p(ret[i+0], k))
+		    {ret[i+1]=v;return;}
+		}
+		ret[ret.length]=k;
+		ret[ret.length]=v;
+	    })();
+	}
+	return ret;
     }
     exports.env2val=env2val;
     exports.val2env=val2env;
