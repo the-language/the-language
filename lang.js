@@ -282,6 +282,73 @@ var TheLanguage=(function(){
     }
     exports.force_rec=force_all_rec;
     
+    var sys_sym=new_symbol("太始初核");
+    var name_sym=new_symbol("符名號標");
+    var func_sym=new_symbol("化變滅演");
+    var form_sym=new_symbol("式形法特");
+    var equal_sym=new_symbol("等同皆一");
+    var eval_sym=new_symbol("算釋解計");
+    var the_sym=new_symbol("特一定其");
+    var sth_sym=new_symbol("省略之其");
+    var a_sym=new_symbol("一");
+    var isornot_sym=new_symbol("邪乎否与");
+    var true_sym=new_symbol("陽");
+    var false_sym=new_symbol("陰");
+    var bool_sym=new_symbol("陰陽");
+    var quote_sym=new_symbol("引用");
+    var apply_sym=new_symbol("用調應使");
+    var null_sym=new_symbol("空");
+    var cons_sym=new_symbol("連");
+    var data_sym=new_symbol("構");
+    var error_sym=new_symbol("誤");
+    var sym_sym=new_symbol("符");
+    var list_sym=new_symbol("列");
+    var head_sym=new_symbol("首");
+    var tail_sym=new_symbol("尾");
+    function make_sys_sym_f(x){
+	return new_data(sys_sym, new_list(name_sym, x));
+    }
+    function make_builtin_f_new_sym_f(x_sym){
+	return make_sys_sym_f(new_list(a_sym, new_list(func_sym, sth_sym, x_sym), the_sym));
+    }
+    function make_builtin_f_get_sym_f(t_sym, x_sym){
+	return make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_list(t_sym), sth_sym), x_sym));
+    }
+    function make_builtin_f_p_sym_f(t_sym){
+	return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym))));
+    }
+    var builtin_func_new_data_sym=make_builtin_f_new_sym_f(data_sym);
+    var builtin_func_data_name_sym=make_builtin_f_get_sym_f(data_sym, name_sym);
+    var builtin_func_data_list_sym=make_builtin_f_get_sym_f(data_sym, list_sym);
+    var builtin_func_data_p_sym=make_builtin_f_p_sym_f(data_sym);
+    
+    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
+    var builtin_func_error_name_sym=make_builtin_f_get_sym_f(error_sym, name_sym);
+    var builtin_func_error_list_sym=make_builtin_f_get_sym_f(error_sym, list_sym)
+    var builtin_func_error_p_sym=make_builtin_f_p_sym_f(error_sym);
+    
+    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
+    var builtin_func_cons_p_sym=make_builtin_f_p_sym_f(cons_sym);
+    var builtin_func_cons_head_sym=make_builtin_f_get_sym_f(cons_sym, head_sym);
+    var builtin_func_cons_tail_sym=make_builtin_f_get_sym_f(cons_sym, tail_sym);
+
+    var builtin_func_sym_p_sym=make_builtin_f_p_sym_f(sym_sym);
+
+    var builtin_func_null_p_sym=make_builtin_f_p_sym_f(null_sym);
+    
+    var builtin_func_equal_sym=make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym)));
+    var builtin_form_quote_sym=make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
+    var builtin_func_apply_sym=make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
+    var builtin_func_eval_sym=make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
+    var builtin_func_list_choose_sym="WIP";
+    var builtin_func_if_sym="WIP";
+    
+    var use_builtin_func_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, func_sym)));
+    var use_builtin_form_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, form_sym)));
+    var use_form_sym=make_sys_sym_f(new_list(form_sym, form_sym));
+    var false_v=new_data(false_sym, new_list());
+    var true_v=new_data(true_sym, new_list());
+    
     function print_force(x){/* LangVal -> JSString */
 	return print(force_all_rec(x));
     }
@@ -454,74 +521,6 @@ var TheLanguage=(function(){
     }
     exports.print=print;
     exports.read=read;
-    
-    var sys_sym=new_symbol("太始初核");
-    var name_sym=new_symbol("符名號標");
-    var func_sym=new_symbol("化變滅演");
-    var form_sym=new_symbol("式形法特");
-    var equal_sym=new_symbol("等同皆一");
-    var eval_sym=new_symbol("算釋解計");
-    var the_sym=new_symbol("特一定其");
-    var sth_sym=new_symbol("省略之其");
-    var a_sym=new_symbol("一");
-    var isornot_sym=new_symbol("邪乎否与");
-    var true_sym=new_symbol("陽");
-    var false_sym=new_symbol("陰");
-    var bool_sym=new_symbol("陰陽");
-    var quote_sym=new_symbol("引用");
-    var apply_sym=new_symbol("用調應使");
-    var null_sym=new_symbol("空");
-    var cons_sym=new_symbol("連");
-    var data_sym=new_symbol("構");
-    var error_sym=new_symbol("誤");
-    var sym_sym=new_symbol("符");
-    var list_sym=new_symbol("列");
-    var head_sym=new_symbol("首");
-    var tail_sym=new_symbol("尾");
-
-    function make_sys_sym_f(x){
-	return new_data(sys_sym, new_list(name_sym, x));
-    }
-    function make_builtin_f_new_sym_f(x_sym){
-	return make_sys_sym_f(new_list(a_sym, new_list(func_sym, sth_sym, x_sym), the_sym));
-    }
-    function make_builtin_f_get_sym_f(t_sym, x_sym){
-	return make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_list(t_sym), sth_sym), x_sym));
-    }
-    function make_builtin_f_p_sym_f(t_sym){
-	return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym))));
-    }
-    var builtin_func_new_data_sym=make_builtin_f_new_sym_f(data_sym);
-    var builtin_func_data_name_sym=make_builtin_f_get_sym_f(data_sym, name_sym);
-    var builtin_func_data_list_sym=make_builtin_f_get_sym_f(data_sym, list_sym);
-    var builtin_func_data_p_sym=make_builtin_f_p_sym_f(data_sym);
-    
-    var builtin_func_new_error_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, error_sym), the_sym)));
-    var builtin_func_error_name_sym=make_builtin_f_get_sym_f(error_sym, name_sym);
-    var builtin_func_error_list_sym=make_builtin_f_get_sym_f(error_sym, list_sym)
-    var builtin_func_error_p_sym=make_builtin_f_p_sym_f(error_sym);
-    
-    var builtin_func_new_cons_sym=new_data(sys_sym, new_list(name_sym, new_list(a_sym, new_list(func_sym, sth_sym, cons_sym), the_sym)));
-    var builtin_func_cons_p_sym=make_builtin_f_p_sym_f(cons_sym);
-    var builtin_func_cons_head_sym=make_builtin_f_get_sym_f(cons_sym, head_sym);
-    var builtin_func_cons_tail_sym=make_builtin_f_get_sym_f(cons_sym, tail_sym);
-
-    var builtin_func_sym_p_sym=make_builtin_f_p_sym_f(sym_sym);
-
-    var builtin_func_null_p_sym=make_builtin_f_p_sym_f(null_sym);
-    
-    var builtin_func_equal_sym=make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym)));
-    var builtin_form_quote_sym=make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
-    var builtin_func_apply_sym=make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
-    var builtin_func_eval_sym=make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
-    var builtin_func_list_choose_sym="WIP";
-    var builtin_func_if_sym="WIP";
-    
-    var use_builtin_func_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, func_sym)));
-    var use_builtin_form_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, form_sym)));
-    var use_form_sym=make_sys_sym_f(new_list(form_sym, form_sym));
-    var false_v=new_data(false_sym, new_list());
-    var true_v=new_data(true_sym, new_list());
     
     function real_eval(env, raw){/* Env, LangVal -> LangVal */
 	var x=force1(raw);
