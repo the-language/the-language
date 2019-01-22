@@ -228,6 +228,12 @@ var TheLanguage=(function(){
 	}
 	return default_v;
     }
+    function env2val(e){/* Env k v -> LangVal */
+	WIP
+    }
+    function val2env(x){/* LangVal -> Env k v */
+	WIP
+    }
     exports.env_null_v=env_null_v;
     exports.env_set=env_set;
     exports.env_get=env_get;
@@ -264,13 +270,25 @@ var TheLanguage=(function(){
     exports.force=force_all;
 
     function force_all_rec(x){
-	WIP
+	x=force_all(x);
+	switch(x[0]){
+	case data_t:case error_t:case cons_t:
+	    x[1]=force_all_rec(x[1]);
+	    x[2]=force_all_rec(x[2]);
+	    return x;
+	default:
+	    return x;
+	}
     }
     exports.force_rec=force_all_rec;
     
     function print_force(x){/* LangVal -> JSString */
-	/* WIP => PRINT(FORCE_REC(X)) */
-	x=force_all(x);
+	return print(force_all_rec(x));
+    }
+    exports.print_force=print_force;
+
+    function print(x){/* LangVal -> JSString */
+	x=un_just_all(x);
 	var temp="";
 	var prefix="";
 	switch(x[0]){
@@ -279,30 +297,30 @@ var TheLanguage=(function(){
 	    temp="(";
 	    prefix="";
 	    while(cons_p(x)){
-		temp+=prefix+print_force(cons_car(x));
+		temp+=prefix+print(cons_car(x));
 		prefix=" ";
-		x=force_all(cons_cdr(x));
+		x=un_just_all(cons_cdr(x));
 	    }
 	    if(null_p(x)){
 		temp+=")";
 	    }else{
-		temp+=" . "+print_force(x)+")";
+		temp+=" . "+print(x)+")";
 	    }
 	    return temp;
 	case data_t:
-	    return "#"+print_force(new_cons(data_name(x), data_list(x)));
+	    return "#"+print(new_cons(data_name(x), data_list(x)));
 	case error_t:
-	    return "!"+print_force(new_cons(error_name(x), error_list(x)));
+	    return "!"+print(new_cons(error_name(x), error_list(x)));
 	case symbol_t:return un_symbol(x);
+	case delay_eval_t:
+	    return "$"+WIP;
+	case delay_builtin_func_t:
+	    return print(WIP);
+	case delay_builtin_form_t:
+	    return print(WIP);
 	default:
-	    ERROR();
 	}
 	ERROR();
-    }
-    exports.print_force=print_force;
-
-    function print(x){/* LangVal -> JSString */
-	WIP
     }
     function read(x){/* JSString -> LangVal */
 	var state=x.split("");/* State : List Char */
