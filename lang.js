@@ -417,11 +417,11 @@ var TheLanguage=(function(){
 	    return "!"+print(new_cons(error_name(x), error_list(x)));
 	case symbol_t:return un_symbol(x);
 	case delay_eval_t:
-	    return "$"+WIP;
+	    return "$("+print(env2val(delay_eval_env(x)))+" "+print(delay_eval_x(x))+")";
 	case delay_builtin_func_t:
-	    return print(WIP);
+	    return "%("+print(delay_builtin_func_f(x))+" "+print(jslist2list(delay_builtin_func_xs(x)))+")";
 	case delay_builtin_form_t:
-	    return print(WIP);
+	    return "@("+print(delay_builtin_form_f(x))+" "+print(env2val(delay_builtin_form_env(x)))+" "+print(jslist2list(delay_builtin_form_xs(x)))+")";
 	default:
 	}
 	ERROR();
