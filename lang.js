@@ -228,12 +228,6 @@ var TheLanguage=(function(){
 	}
 	return default_v;
     }
-    function env2val(e){/* Env k v -> LangVal */
-	WIP
-    }
-    function val2env(x){/* LangVal -> Env k v */
-	WIP
-    }
     exports.env_null_v=env_null_v;
     exports.env_set=env_set;
     exports.env_get=env_get;
@@ -348,6 +342,16 @@ var TheLanguage=(function(){
     var use_form_sym=make_sys_sym_f(new_list(form_sym, form_sym));
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
+
+
+    function env2val(e){/* Env k v -> LangVal */
+	WIP
+    }
+    function val2env(x){/* LangVal -> Env k v */
+	WIP
+    }
+    exports.env2val=env2val;
+    exports.val2env=val2env;
     
     function print_force(x){/* LangVal -> JSString */
 	return print(force_all_rec(x));
@@ -527,10 +531,7 @@ var TheLanguage=(function(){
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
 	}
-	function WIP_env_to_val(){
-	    return "[FIXME!]";
-	}
-	var error_v=new_error(sys_sym, new_list(eval_sym, WIP_env_to_val(env), x));
+	var error_v=new_error(sys_sym, new_list(eval_sym, env2val(env), x));
 	switch(x[0]){
 	case cons_t:
 	    var xs=[];
