@@ -543,14 +543,11 @@ var TheLanguage=(function(){
 	}
 	function val(){
 	    space();
-	    var x=list();
-	    if(x !== false){return x;}
-	    x=symbol();
-	    if(x !== false){return x;}
-	    x=data();
-	    if(x !== false){return x;}
-	    x=readerror();
-	    if(x !== false){return x;}
+	    var fs=[list, symbol, data, readerror];
+	    for(var i=0;i<fs.length;i++){
+		var x=fs[i]();
+		if(x !== false){return x;}
+	    }
 	    error();
 	    /* WIP: delay */
 	}
