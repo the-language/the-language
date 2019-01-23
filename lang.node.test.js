@@ -39,3 +39,7 @@ function ASSERT_WITH_EXP(text, x){
 	ASSERT_WITH_EXP("print_force(read(\""+x+"\")) === \""+x+"\"", TL.print_force(TL.read(x)) === x);
     }
 }
+{
+    var e=TL.env_set(TL.env_null_v, TL.new_list(TL.new_symbol("K")), TL.new_symbol("T"));
+    //[equal_p ; not implemented] ASSERT(TL.equal_p(TL.env_get(e, TL.new_list(TL.new_symbol("K")), "ERROR"), TL.new_symbol("T")));
+}

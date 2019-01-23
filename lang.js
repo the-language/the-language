@@ -752,6 +752,7 @@ var TheLanguage=(function(){
 	}
 	ERROR();
     }
+    exports.equal_p=jsbool_equal_p;
     function langbool_equal_p(x, y){
 	return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
