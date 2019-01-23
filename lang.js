@@ -526,6 +526,7 @@ var TheLanguage=(function(){
 	    }
 	}
 	function data(){
+	    if(eof()){return false;}
 	    var x=get();
 	    if(x !== "#"){put(x);return false;}
 	    var xs=list();
@@ -534,6 +535,7 @@ var TheLanguage=(function(){
 	    return new_data(cons_car(xs), cons_cdr(xs));
 	}
 	function readerror(){
+	    if(eof()){return false;}
 	    var x=get();
 	    if(x !== "!"){put(x);return false;}
 	    var xs=list();
@@ -541,9 +543,22 @@ var TheLanguage=(function(){
 	    if(!cons_p(xs)){error();}
 	    return new_error(cons_car(xs), cons_cdr(xs));
 	}
+	function readeval(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "$"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    x=cons_cdr(xs);
+	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+	    var env=val2env(cons_car(xs));
+	    if(env === false){error();}
+	    return lang_eval(env, cons_car(x));
+	}
 	function val(){
 	    space();
-	    var fs=[list, symbol, data, readerror];
+	    var fs=[list, symbol, data, readerror, readeval];
 	    for(var i=0;i<fs.length;i++){
 		var x=fs[i]();
 		if(x !== false){return x;}
