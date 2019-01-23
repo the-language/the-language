@@ -556,9 +556,24 @@ var TheLanguage=(function(){
 	    if(env === false){error();}
 	    return lang_eval(env, cons_car(x));
 	}
+	function readfuncapply(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "%"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    x=cons_cdr(xs);
+	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+	    error();/*WIP*/
+	    return builtin_func_apply(cons_car(xs), null(cons_car(x)));
+	}
+	function readformbuiltin(){
+	    return false;/*WIP*/
+	}
 	function val(){
 	    space();
-	    var fs=[list, symbol, data, readerror, readeval];
+	    var fs=[list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin];
 	    for(var i=0;i<fs.length;i++){
 		var x=fs[i]();
 		if(x !== false){return x;}
