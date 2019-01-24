@@ -285,6 +285,7 @@ var TheLanguage=(function(){
     var the_sym=new_symbol("特一定其");
     var sth_sym=new_symbol("省略之其");
     var map_sym=new_symbol("鍵表映界");
+    var if_sym=new_symbol("若");
     var a_sym=new_symbol("一");
     var isornot_sym=new_symbol("邪乎否与");
     var true_sym=new_symbol("陽");
@@ -336,7 +337,7 @@ var TheLanguage=(function(){
     var builtin_func_apply_sym=make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
     var builtin_func_eval_sym=make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
     var builtin_func_list_choose_sym="WIP";
-    var builtin_func_if_sym="WIP";
+    var builtin_func_if_sym=make_sys_sym_f(new_list(a_sym, func_sym, if_sym));
     
     var use_builtin_func_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, func_sym)));
     var use_builtin_form_sym=make_sys_sym_f(new_list(form_sym, new_list(sys_sym, form_sym)));
@@ -738,6 +739,9 @@ var TheLanguage=(function(){
 	}],
 
 	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
+
+	[builtin_func_list_choose_sym, 1, function(xs, error_v){WIP}],
+	[builtin_func_if_sym, 3, function(b, x, y, error_v){WIP}],
 	];
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
