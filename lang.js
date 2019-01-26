@@ -742,7 +742,24 @@ var TheLanguage=(function(){
 	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
 
 	[builtin_func_list_choose_sym, 1, function(xs, error_v){WIP}],
-	[builtin_func_if_sym, 3, function(b, x, y, error_v){WIP}],
+	[builtin_func_if_sym, 3, function(b, x, y, error_v){
+	    b=force1(b);
+	    if(any_delay_just_p(b)){
+		return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
+	    }
+	    if(!data_p(b)){return error_v;}
+	    /* WARNING delay未正確處理(影響較小) */
+	    var nam=force_all(data_name(b));
+	    if(!symbol_p(nam)){return error_v;}
+	    var tf=un_symbol(nam);
+	    if(un_symbol(tf)===un_symbol(true_sym)){
+		return x;
+	    }
+	    if(un_symbol(tf)===un_symbol(false_sym)){
+		return y;
+	    }
+	    return error_v;
+	}],
 	];
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
@@ -777,9 +794,9 @@ var TheLanguage=(function(){
 	ASSERT(data_p(x));
 	var name=force_all(data_name(x));
 	ASSERT(symbol_p(name));
-	if(name===false_sym){
+	if(un_symbol(name)===un_symbol(false_sym)){
 	    return false;
-	}else if(name===true_sym){
+	}else if(un_symbol(name)===un_symbol(true_sym)){
 	    return true;
 	}
 	ERROR();
