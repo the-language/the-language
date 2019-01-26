@@ -730,7 +730,34 @@ var TheLanguage=(function(){
 	    if(x[0] !== y[0]){
 		return false_v;
 	    }
-	    WIP
+	    function H_if(b,x,y){/* H = helper */
+		return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
+	    }
+	    function H_and(x,y){
+		return H_if(x,y,false_v);
+	    }
+	    if(symbol_p(x)){
+		ASSERT(symbol_p(y));
+		return un_symbol(x)===un_symbol(y);
+	    }else if(x[1]===null){
+		ASSERT(x[1]===null);
+		ASSERT(x[2]===null);
+		ASSERT(y[1]===null);
+		ASSERT(y[2]===null);
+		return true_v;
+	    }else if(x[2]===null){
+		ASSERT(x[1]!==null);
+		ASSERT(x[2]===null);
+		ASSERT(y[1]!==null);
+		ASSERT(y[2]===null);
+		return builtin_func_apply(builtin_func_equal_sym, [x[1], y[1]]);
+	    }else{
+		ASSERT(x[1]!==null);
+		ASSERT(x[2]!==null);
+		ASSERT(y[1]!==null);
+		ASSERT(y[2]!==null);
+		return H_and(builtin_func_apply(builtin_func_equal_sym, [x[1], y[1]]), builtin_func_apply(builtin_func_equal_sym, [x[2], y[2]]));
+	    }
 	}],
 	[builtin_func_apply_sym, 2, function(f, xs, error_v){
 	    WIP
