@@ -741,7 +741,15 @@ var TheLanguage=(function(){
 
 	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
 
-	[builtin_func_list_choose_sym, 1, function(xs, error_v){WIP}],
+	[builtin_func_list_choose_sym, 1, function(xs, error_v){
+	    /* xs可以無限長，不判斷是否真的是list */
+	    xs=force1(xs);
+	    if(any_delay_just_p(xs)){
+		return builtin_func_apply(builtin_func_list_choose_sym, [xs]);
+	    }
+	    if(!cons_p(xs)){return error_v;}
+	    return cons_car(xs);
+	}],
 	[builtin_func_if_sym, 3, function(b, x, y, error_v){
 	    b=force1(b);
 	    if(any_delay_just_p(b)){
