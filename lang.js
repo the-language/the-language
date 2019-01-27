@@ -388,206 +388,6 @@ var TheLanguage=(function(){
     exports.env2val=env2val;
     exports.val2env=val2env;
     
-    function print_force(x){/* LangVal -> JSString */
-	return print(force_all_rec(x));
-    }
-    exports.print_force=print_force;
-
-    function print(x){/* LangVal -> JSString */
-	x=un_just_all(x);
-	var temp="";
-	var prefix="";
-	switch(x[0]){
-	case null_t:return "()";
-	case cons_t:
-	    temp="(";
-	    prefix="";
-	    while(cons_p(x)){
-		temp+=prefix+print(cons_car(x));
-		prefix=" ";
-		x=un_just_all(cons_cdr(x));
-	    }
-	    if(null_p(x)){
-		temp+=")";
-	    }else{
-		temp+=" . "+print(x)+")";
-	    }
-	    return temp;
-	case data_t:
-	    return "#"+print(new_cons(data_name(x), data_list(x)));
-	case error_t:
-	    return "!"+print(new_cons(error_name(x), error_list(x)));
-	case symbol_t:return un_symbol(x);
-	case delay_eval_t:
-	    return "$("+print(env2val(delay_eval_env(x)))+" "+print(delay_eval_x(x))+")";
-	case delay_builtin_func_t:
-	    return "%("+print(delay_builtin_func_f(x))+" "+print(jslist2list(delay_builtin_func_xs(x)))+")";
-	case delay_builtin_form_t:
-	    return "@("+print(delay_builtin_form_f(x))+" "+print(env2val(delay_builtin_form_env(x)))+" "+print(jslist2list(delay_builtin_form_xs(x)))+")";
-	default:
-	}
-	ERROR();
-    }
-    function read(x){/* JSString -> LangVal */
-	var state=x.split("");/* State : List Char */
-	function eof(){
-	    return state.length === 0;
-	}
-	function get(){
-	    return state.shift();
-	}
-	function put(x){
-	    state.unshift(x);
-	}
-	function error(){
-	    throw "TheLanguage parse ERROR!";
-	}
-	
-	function a_space_p(x){
-	    return x ===" " || x === "\n" || x === "\t" || x === "\r";
-	}
-	function a_symbol_p(x){
-	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || x === "." || x === "#" );
-	}
-	function space(){
-	    var p=a_space_p;
-	    if(eof()){return false;}
-	    var x=get();
-	    if(!p(x)){
-		put(x);
-		return false;
-	    }
-	    while(p(x) && !eof()){
-		x=get();
-	    }
-	    if(!p(x)){put(x);}
-	    return true;
-	}
-	function symbol(){
-	    var p=a_symbol_p;
-	    if(eof()){return false;}
-	    var x=get();
-	    var ret="";
-	    if(!p(x)){
-		put(x);
-		return false;
-	    }
-	    while(p(x) && !eof()){
-		ret+=x;
-		x=get();
-	    }
-	    if(p(x)){
-		ret+=x;
-	    }else{put(x);}
-	    return new_symbol(ret);
-	}
-	function list(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "("){put(x);return false;}
-	    var ret=null;
-	    function set_last(lst){
-		if(ret === null){ret=lst;return;}
-		var x=ret;
-		while(true){
-		    if(!cons_p(x)){ERROR();}
-		    var d=cons_cdr(x);
-		    if(d === null){break;}
-		    x=cons_cdr(x);
-		}
-		if(!cons_p(x)){ERROR();}
-		if(x[2] !== null){ERROR();}
-		x[2]=lst;
-	    }
-	    function last_add(x){
-		set_last(new_cons(x, null));
-	    }
-	    while(true){
-		space();
-		if(eof()){error();}
-		x=get();
-		if(x === ")"){
-		    set_last(null_v);
-		    return ret;
-		}
-		if(x === "."){
-		    space();
-		    var e=val();
-		    if(e === false){error();}
-		    set_last(e);
-		    space();
-		    if(eof()){error();}
-		    x=get();
-		    if(x !== ")"){error();}
-		    return ret;
-		}
-		put(x);
-		var e=val();
-		if(e === false){error();}
-		last_add(e);
-	    }
-	}
-	function data(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "#"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    return new_data(cons_car(xs), cons_cdr(xs));
-	}
-	function readerror(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "!"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    return new_error(cons_car(xs), cons_cdr(xs));
-	}
-	function readeval(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "$"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    x=cons_cdr(xs);
-	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
-	    var env=val2env(cons_car(xs));
-	    if(env === false){error();}
-	    return lang_eval(env, cons_car(x));
-	}
-	function readfuncapply(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "%"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    x=cons_cdr(xs);
-	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
-	    error();/*WIP*/
-	    return builtin_func_apply(cons_car(xs), null(cons_car(x)));
-	}
-	function readformbuiltin(){
-	    return false;/*WIP*/
-	}
-	function val(){
-	    space();
-	    var fs=[list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin];
-	    for(var i=0;i<fs.length;i++){
-		var x=fs[i]();
-		if(x !== false){return x;}
-	    }
-	    error();
-	    /* WIP: delay */
-	}
-	return val();
-    }
-    exports.print=print;
-    exports.read=read;
-    
     function real_eval(env, raw){/* Env, LangVal -> LangVal */
 	var x=force1(raw);
 	if(any_delay_just_p(x)){
@@ -855,6 +655,209 @@ WIP
 	return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
     
+    /* -------------------- */
+    /* 較獨立部分。printer/paser */
+    
+    function print_force(x){/* LangVal -> JSString */
+	return print(force_all_rec(x));
+    }
+    exports.print_force=print_force;
+
+    function print(x){/* LangVal -> JSString */
+	x=un_just_all(x);
+	var temp="";
+	var prefix="";
+	switch(x[0]){
+	case null_t:return "()";
+	case cons_t:
+	    temp="(";
+	    prefix="";
+	    while(cons_p(x)){
+		temp+=prefix+print(cons_car(x));
+		prefix=" ";
+		x=un_just_all(cons_cdr(x));
+	    }
+	    if(null_p(x)){
+		temp+=")";
+	    }else{
+		temp+=" . "+print(x)+")";
+	    }
+	    return temp;
+	case data_t:
+	    return "#"+print(new_cons(data_name(x), data_list(x)));
+	case error_t:
+	    return "!"+print(new_cons(error_name(x), error_list(x)));
+	case symbol_t:return un_symbol(x);
+	case delay_eval_t:
+	    return "$("+print(env2val(delay_eval_env(x)))+" "+print(delay_eval_x(x))+")";
+	case delay_builtin_func_t:
+	    return "%("+print(delay_builtin_func_f(x))+" "+print(jslist2list(delay_builtin_func_xs(x)))+")";
+	case delay_builtin_form_t:
+	    return "@("+print(delay_builtin_form_f(x))+" "+print(env2val(delay_builtin_form_env(x)))+" "+print(jslist2list(delay_builtin_form_xs(x)))+")";
+	default:
+	}
+	ERROR();
+    }
+    function read(x){/* JSString -> LangVal */
+	var state=x.split("");/* State : List Char */
+	function eof(){
+	    return state.length === 0;
+	}
+	function get(){
+	    return state.shift();
+	}
+	function put(x){
+	    state.unshift(x);
+	}
+	function error(){
+	    throw "TheLanguage parse ERROR!";
+	}
+	
+	function a_space_p(x){
+	    return x ===" " || x === "\n" || x === "\t" || x === "\r";
+	}
+	function a_symbol_p(x){
+	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || x === "." || x === "#" );
+	}
+	function space(){
+	    var p=a_space_p;
+	    if(eof()){return false;}
+	    var x=get();
+	    if(!p(x)){
+		put(x);
+		return false;
+	    }
+	    while(p(x) && !eof()){
+		x=get();
+	    }
+	    if(!p(x)){put(x);}
+	    return true;
+	}
+	function symbol(){
+	    var p=a_symbol_p;
+	    if(eof()){return false;}
+	    var x=get();
+	    var ret="";
+	    if(!p(x)){
+		put(x);
+		return false;
+	    }
+	    while(p(x) && !eof()){
+		ret+=x;
+		x=get();
+	    }
+	    if(p(x)){
+		ret+=x;
+	    }else{put(x);}
+	    return new_symbol(ret);
+	}
+	function list(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "("){put(x);return false;}
+	    var ret=null;
+	    function set_last(lst){
+		if(ret === null){ret=lst;return;}
+		var x=ret;
+		while(true){
+		    if(!cons_p(x)){ERROR();}
+		    var d=cons_cdr(x);
+		    if(d === null){break;}
+		    x=cons_cdr(x);
+		}
+		if(!cons_p(x)){ERROR();}
+		if(x[2] !== null){ERROR();}
+		x[2]=lst;
+	    }
+	    function last_add(x){
+		set_last(new_cons(x, null));
+	    }
+	    while(true){
+		space();
+		if(eof()){error();}
+		x=get();
+		if(x === ")"){
+		    set_last(null_v);
+		    return ret;
+		}
+		if(x === "."){
+		    space();
+		    var e=val();
+		    if(e === false){error();}
+		    set_last(e);
+		    space();
+		    if(eof()){error();}
+		    x=get();
+		    if(x !== ")"){error();}
+		    return ret;
+		}
+		put(x);
+		var e=val();
+		if(e === false){error();}
+		last_add(e);
+	    }
+	}
+	function data(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "#"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    return new_data(cons_car(xs), cons_cdr(xs));
+	}
+	function readerror(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "!"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    return new_error(cons_car(xs), cons_cdr(xs));
+	}
+	function readeval(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "$"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    x=cons_cdr(xs);
+	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+	    var env=val2env(cons_car(xs));
+	    if(env === false){error();}
+	    return lang_eval(env, cons_car(x));
+	}
+	function readfuncapply(){
+	    if(eof()){return false;}
+	    var x=get();
+	    if(x !== "%"){put(x);return false;}
+	    var xs=list();
+	    if(xs === false){error();}
+	    if(!cons_p(xs)){error();}
+	    x=cons_cdr(xs);
+	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+	    error();/*WIP*/
+	    return builtin_func_apply(cons_car(xs), null(cons_car(x)));
+	}
+	function readformbuiltin(){
+	    return false;/*WIP*/
+	}
+	function val(){
+	    space();
+	    var fs=[list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin];
+	    for(var i=0;i<fs.length;i++){
+		var x=fs[i]();
+		if(x !== false){return x;}
+	    }
+	    error();
+	    /* WIP: delay */
+	}
+	return val();
+    }
+    exports.print=print;
+    exports.read=read;
+
     
     return exports;
 })();
