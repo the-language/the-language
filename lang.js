@@ -40,16 +40,27 @@ var TheLanguage=(function(){
     var delay_eval_t=6;
     var delay_builtin_func_t=7;
     var delay_builtin_form_t=8;
+    var delay_apply_t=9;/*WIP */
 
-    function new_symbol(x){/* String -> LangVal */
-	return [symbol_t,x];
+    function make_p(t){
+	return function(x){
+	    return x[0]===t;
+	};
     }
-    function symbol_p(x){
-	return x[0]===symbol_t;
+    function make_new_one(t){
+	return function(x){
+	    return [t, x];
+	};
     }
-    function un_symbol(x){
-	return x[1];
+    function make_get_a(t){
+	return function(x){
+	    ASSERT(x[0]===t);
+	    return x[1];
+	}
     }
+    var new_symbol=make_new_one(symbol_t);/* String -> LangVal */
+    var symbol_p=make_p(symbol_t);
+    var un_symbol=make_get_a(symbol_t);
     exports.new_symbol=new_symbol;
     exports.symbol_p=symbol_p;
     exports.un_symbol=un_symbol;
