@@ -93,19 +93,6 @@ var TheLanguage=(function(){
     exports.null_v=null_v;
     exports.null_p=null_p;
 
-    function jslist2list(xs){
-	var ret=null_v;
-	for(var i=xs.length-1;i>=0;i--){
-	    ret=new_cons(xs[i], ret);
-	}
-	return ret;
-    }
-    function new_list(){
-	return jslist2list(arguments);
-    }
-    exports.jslist2list=jslist2list;
-    exports.new_list=new_list;
-
     function new_data(name, list){/* LangVal, LangVal -> LangVal */
 	return [data_t, name, list];
     }
@@ -155,18 +142,6 @@ var TheLanguage=(function(){
     function un_just(x){
 	return x[1];
     }
-    function un_just_all(raw){
-	var x=raw;
-	var xs=[];
-	while(just_p(x)){
-	    xs[xs.length]=x;
-	    x=un_just;
-	}
-	for(var i=0;i<xs.length;i++){
-	    lang_set_do(xs[i], x);
-	}
-	return x;
-    }
     function lang_eval(env, x){
 	return [delay_eval_t, env, x];
     }
@@ -208,6 +183,33 @@ var TheLanguage=(function(){
     function delay_builtin_func_xs(x){
 	return x[2];
     }
+
+    function jslist2list(xs){
+	var ret=null_v;
+	for(var i=xs.length-1;i>=0;i--){
+	    ret=new_cons(xs[i], ret);
+	}
+	return ret;
+    }
+    function new_list(){
+	return jslist2list(arguments);
+    }
+    exports.jslist2list=jslist2list;
+    exports.new_list=new_list;
+    
+    function un_just_all(raw){
+	var x=raw;
+	var xs=[];
+	while(just_p(x)){
+	    xs[xs.length]=x;
+	    x=un_just;
+	}
+	for(var i=0;i<xs.length;i++){
+	    lang_set_do(xs[i], x);
+	}
+	return x;
+    }
+    
     function any_delay_just_p(x){
 	return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x);
     }
