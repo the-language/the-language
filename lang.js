@@ -593,7 +593,7 @@ var TheLanguage=(function(){
 	if(any_delay_just_p(x)){
 	    return lang_eval(env, x);
 	}
-	var error_v=new_error(sys_sym, new_list(eval_sym, env2val(env), x));
+	var error_v=new_error(sys_sym, new_list(builtin_func_eval_sym, new_list(env2val(env), x)));
 	switch(x[0]){
 	case cons_t:
 	    var xs=[];
@@ -627,19 +627,9 @@ var TheLanguage=(function(){
 		var f=xs[1];
 		var args=[];
 		for(var i=2;i<xs.length;i++){
-		    args[i-2]=lang_eval(xs[i]);
-		}
-		return builtin_func_apply(f, args);
-	    }else if(jsbool_equal_p(xs[0], use_form_sym)){
-		if(xs.length===1){
-		    return error_v;
-		}
-		var f=lang_eval(env, xs[1]);
-		var args=[];
-		for(var i=2;i<xs.length;i++){
 		    args[i-2]=lang_eval(env, xs[i]);
 		}
-		WIP
+		return builtin_func_apply(f, args);
 	    }else{
 		var f=lang_eval(env, xs[0]);
 		var args=[];
@@ -763,7 +753,10 @@ var TheLanguage=(function(){
 	    WIP
 	}],
 	[builtin_func_eval_sym, 2, function(env, x, error_v){
-	    WIP
+	    /* WARNING delay未正確處理(影響較小) */
+	    var maybeenv=val2env(env);
+	    if(maybeenv===false){return error_v;}
+	    return lang_eval(env, x);
 	}],
 
 	make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
@@ -798,7 +791,7 @@ var TheLanguage=(function(){
 	];
     function real_builtin_func_apply(f, xs){
 	/* Name, [LangVal] -> LangVal */
-	var error_v=new_error(sys_sym, new_list(apply_sym, f, xs));
+	var error_v=new_error(sys_sym, new_list(f, xs));
 	/* WARNING delay未正確處理(影響較小) */
 	for(var i=0;i<real_builtin_func_apply_s.length;i++){
 	    if(jsbool_equal_p(f, real_builtin_func_apply_s[i][0])){
