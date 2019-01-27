@@ -143,20 +143,11 @@ var TheLanguage=(function(){
     function delay_builtin_form_xs(x){
 	return x[2];
     }
-    function builtin_func_apply(f, xs){
-	/* Env, Name, [LangVal] -> LangVal */
-	return [delay_builtin_func_t, f, xs];
-    }
-    function delay_builtin_func_p(x){
-	return x[0]===delay_builtin_func_t;
-    }
-    function delay_builtin_func_f(x){
-	return x[1];
-    }
-    function delay_builtin_func_xs(x){
-	return x[2];
-    }
-
+    var builtin_func_apply=make_new_two(delay_builtin_func_t);
+    var delay_builtin_func_p=make_two_p(delay_builtin_func_t);
+    var delay_builtin_func_f=make_get_two_a(delay_builtin_func_t);/* LangVal/Name */
+    var delay_builtin_func_xs=make_get_two_b(delay_builtin_func_t);/* [LangVal] */
+    
     function jslist2list(xs){
 	var ret=null_v;
 	for(var i=xs.length-1;i>=0;i--){
