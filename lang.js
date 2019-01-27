@@ -620,6 +620,16 @@ var TheLanguage=(function(){
 		    args[i-2]=xs[i];
 		}
 		return builtin_form_apply(env, f, args);
+	    }else if(jsbool_equal_p(xs[0], use_form_sym)){
+		if(xs.length===1){
+		    return error_v;
+		}
+		var f=xs[1];
+		var args=[];
+		for(var i=2;i<xs.length;i++){
+		    args[i-2]=xs[i];
+		}
+		return WIP;
 	    }else if(jsbool_equal_p(xs[0], use_builtin_func_sym)){
 		if(xs.length===1){
 		    return error_v;
