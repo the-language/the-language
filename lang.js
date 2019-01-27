@@ -52,31 +52,35 @@ var TheLanguage=(function(){
 	    return [t, x];
 	};
     }
-    function make_get_a(t){
+    function make_new_two(t){
+	return function(x, y){
+	    return [t, x, y];
+	};
+    }
+    function make_get_one_a(t){
 	return function(x){
 	    ASSERT(x[0]===t);
 	    return x[1];
-	}
+	};
+    }
+    var make_get_two_a=make_get_one_a;
+    function make_get_two_b(t){
+	return function(x){
+	    ASSERT(x[0]===t);
+	    return x[2];
+	};
     }
     var new_symbol=make_new_one(symbol_t);/* String -> LangVal */
     var symbol_p=make_p(symbol_t);
-    var un_symbol=make_get_a(symbol_t);
+    var un_symbol=make_get_one_a(symbol_t);
     exports.new_symbol=new_symbol;
     exports.symbol_p=symbol_p;
     exports.un_symbol=un_symbol;
 
-    function new_cons(a,d){/* LangVal, LangVal -> LangVal */
-	return [cons_t, a, d];
-    }
-    function cons_p(x){
-	return x[0]===cons_t;
-    }
-    function cons_car(x){
-	return x[1];
-    }
-    function cons_cdr(x){
-	return x[2];
-    }
+    var new_cons=make_new_two(cons_t);
+    var cons_p=make_p(cons_t);
+    var cons_car=make_get_two_a(cons_t);
+    var cons_cdr=make_get_two_b(cons_t);
     exports.new_cons=new_cons;
     exports.cons_p=cons_p;
     exports.cons_car=cons_car;
