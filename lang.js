@@ -71,8 +71,8 @@ var TheLanguage=(function(){
 	    return x[2];
 	};
     }
-    var new_symbol=make_new_one(symbol_t);/* String -> LangVal */
-    var symbol_p=make_one_p(symbol_t);
+    var new_symbol=make_new_one(symbol_t);
+    var symbol_p=make_one_p(symbol_t);/* String */
     var un_symbol=make_get_one_a(symbol_t);
     exports.new_symbol=new_symbol;
     exports.symbol_p=symbol_p;
@@ -103,19 +103,10 @@ var TheLanguage=(function(){
     exports.data_name=data_name;
     exports.data_list=data_list;
 
-    function new_error(name, list){
-	/* LangVal, LangVal -> LangVal */
-	return [error_t, name, list];
-    }
-    function error_p(x){
-	return x[0]===error_t;
-    }
-    function error_name(x){
-	return x[1];
-    }
-    function error_list(x){
-	return x[2];
-    }
+    var new_error=make_new_two(error_t);
+    var error_p=make_two_p(error_t);
+    var error_name=make_get_two_a(error_t);
+    var error_list=make_get_two_b(error_t);
     exports.new_error=new_error;
     exports.error_p=error_p;
     exports.error_name=error_name;
@@ -128,25 +119,14 @@ var TheLanguage=(function(){
 	x[0]=just_t;
 	x[1]=y;
 	x[2]=null;
+	x[3]=null;
     }
-    function just_p(x){
-	return x[0]===just_t;
-    }
-    function un_just(x){
-	return x[1];
-    }
-    function lang_eval(env, x){
-	return [delay_eval_t, env, x];
-    }
-    function delay_eval_p(x){
-	return x[0]===delay_eval_t;
-    }
-    function delay_eval_env(x){
-	return x[1];
-    }
-    function delay_eval_x(x){
-	return x[2];
-    }
+    var just_p=make_one_p(just_t);
+    var un_just=make_get_one_a(just_t);
+    var lang_eval=make_new_two(delay_eval_t);
+    var delay_eval_p=make_two_p(delay_eval_t);
+    var delay_eval_env=make_get_two_a(delay_eval_t);/* Env */
+    var delay_eval_x=make_get_two_b(delay_eval_t);
     function builtin_form_apply(env, f, xs){
 	/* Env, Name, [NotEvaledLangVal] -> LangVal */
 	return [delay_builtin_form_t, [env, f], xs];
