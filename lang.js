@@ -42,11 +42,12 @@ var TheLanguage=(function(){
     var delay_builtin_form_t=8;
     var delay_apply_t=9;/*WIP */
 
-    function make_p(t){
+    function make_one_p(t){
 	return function(x){
 	    return x[0]===t;
 	};
     }
+    var make_two_p=make_one_p;
     function make_new_one(t){
 	return function(x){
 	    return [t, x];
@@ -71,14 +72,14 @@ var TheLanguage=(function(){
 	};
     }
     var new_symbol=make_new_one(symbol_t);/* String -> LangVal */
-    var symbol_p=make_p(symbol_t);
+    var symbol_p=make_one_p(symbol_t);
     var un_symbol=make_get_one_a(symbol_t);
     exports.new_symbol=new_symbol;
     exports.symbol_p=symbol_p;
     exports.un_symbol=un_symbol;
 
     var new_cons=make_new_two(cons_t);
-    var cons_p=make_p(cons_t);
+    var cons_p=make_two_p(cons_t);
     var cons_car=make_get_two_a(cons_t);
     var cons_cdr=make_get_two_b(cons_t);
     exports.new_cons=new_cons;
@@ -93,18 +94,10 @@ var TheLanguage=(function(){
     exports.null_v=null_v;
     exports.null_p=null_p;
 
-    function new_data(name, list){/* LangVal, LangVal -> LangVal */
-	return [data_t, name, list];
-    }
-    function data_p(x){
-	return x[0]===data_p;
-    }
-    function data_name(x){
-	return x[1];
-    }
-    function data_list(x){
-	return x[2];
-    }
+    var new_data=make_new_two(data_t);
+    var data_p=make_two_p(data_t);
+    var data_name=make_get_two_a(data_t);
+    var data_list=make_get_two_b(data_t);
     exports.new_data=new_data;
     exports.data_p=data_p;
     exports.data_name=data_name;
