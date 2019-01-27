@@ -146,7 +146,8 @@ var TheLanguage=(function(){
     var builtin_func_apply=make_new_two(delay_builtin_func_t);
     var delay_builtin_func_p=make_two_p(delay_builtin_func_t);
     var delay_builtin_func_f=make_get_two_a(delay_builtin_func_t);/* LangVal/Name */
-    var delay_builtin_func_xs=make_get_two_b(delay_builtin_func_t);/* [LangVal] */
+    var delay_builtin_func_xs=make_get_two_b(delay_builtin_func_t);/* JSList LangVal */
+/* TODO 數據結構部分解耦合。三元內建數據結構 */
     
     function jslist2list(xs){
 	var ret=null_v;
