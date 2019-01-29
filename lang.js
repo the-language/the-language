@@ -60,7 +60,7 @@ var TheLanguage=(function(){
     }
     function make_new_two(t){
 	return function(x, y){
-	    return [t, x, y];
+	    return [t, x, y];/* 實現底層依賴[編號 0] parser <-> 內建數據結構 */
 	};
     }
     function make_get_one_a(t){
@@ -133,7 +133,7 @@ var TheLanguage=(function(){
     var delay_eval_env=make_get_two_a(delay_eval_t);/* Env */
     var delay_eval_x=make_get_two_b(delay_eval_t);
     function builtin_form_apply(env, f, xs){
-	/* Env, Name, [NotEvaledLangVal] -> LangVal */
+	/* Env, Name, JSList NotEvaledLangVal -> LangVal */
 	return [delay_builtin_form_t, [env, f], xs];
     }
     function delay_builtin_form_p(x){
@@ -164,7 +164,6 @@ var TheLanguage=(function(){
 	}
     }
     exports.force_rec=force_all_rec;
-    /* TODO 數據結構部分解耦合。三元內建數據結構 */
     /* 相對獨立的部分。內建數據結構 }}} */
 
     /* {{{ 相對獨立的部分。對內建數據結構的簡單處理 */
@@ -458,7 +457,7 @@ var TheLanguage=(function(){
 	ERROR();
     }
     function lang_apply(f, xs){
-	/* LangVal, [LangVal] -> LangVal */
+	/* LangVal, JSList LangVal -> LangVal */
 	return builtin_func_apply(builtin_func_apply_sym, new_list(f, jslist2list(xs)));
     }
 
@@ -615,7 +614,7 @@ WIP
 	return error_v;
     }
     function real_builtin_form_apply(env, f, xs){
-	/* Env, Name, [NotEvaled LangVal] -> LangVal */
+	/* Env, Name, JSList NotEvaledLangVal -> LangVal */
 	var error_v=new_error(sys_sym, new_list(use_builtin_form_sym, new_list(f, xs)));
 	/* WARNING delay未正確處理(影響較小) */
 	if(jsbool_equal_p(f, builtin_form_quote_sym)){
@@ -754,7 +753,7 @@ WIP
 		}
 		if(!cons_p(x)){ERROR();}
 		if(x[2] !== null){ERROR();}
-		x[2]=lst;
+		x[2]=lst;/* 實現底層依賴[編號 0] parser <-> 內建數據結構 */
 	    }
 	    function last_add(x){
 		set_last(new_cons(x, null));
