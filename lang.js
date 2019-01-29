@@ -388,7 +388,7 @@ var TheLanguage=(function(){
 	    return lang_eval(env, x);
 	}
 	var error_v=new_error(sys_sym, new_list(use_builtin_func_sym, new_list(builtin_func_eval_sym, new_list(env2val(env), x))));
-	switch(x[0]){
+	switch(type_of(x)){
 	case cons_t:
 	    var xs=[];
 	    var rest=x;
@@ -521,7 +521,7 @@ var TheLanguage=(function(){
 	    if(x===y){
 		return true_v;
 	    }
-	    if(x[0] !== y[0]){
+	    if(type_of(x) !== type_of(y)){
 		return false_v;
 	    }
 	    function H_if(b,x,y){/* H = helper */
@@ -533,7 +533,7 @@ var TheLanguage=(function(){
 	    if(symbol_p(x)){
 		ASSERT(symbol_p(y));
 		return un_symbol(x)===un_symbol(y);
-	    }else if(x[1]===null){
+	    }else if(x[1]===null){/* 去依賴WIP */
 		ASSERT(x[1]===null);
 		ASSERT(x[2]===null);
 		ASSERT(y[1]===null);
@@ -659,7 +659,7 @@ WIP
 	x=un_just_all(x);
 	var temp="";
 	var prefix="";
-	switch(x[0]){
+	switch(type_of(x)){
 	case null_t:return "()";
 	case cons_t:
 	    temp="(";
