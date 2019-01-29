@@ -302,6 +302,9 @@ var TheLanguage=(function(){
     var use_form_sym=make_sys_sym_f(new_list(form_sym, form_sym));
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
+    function symbol_eq_p(x,y){
+	return un_symbol(x)===un_symbol(y);/* 其他語言暫未實現。 TODO */
+    }
     /* 相對獨立的部分。符號名稱 }}} */
     
     /* {{{ 相對獨立的部分。變量之環境 */
@@ -350,7 +353,7 @@ var TheLanguage=(function(){
 	if(!data_p(x)){return false;}
 	var s=force_all(data_name(x));
 	if(!symbol_p(s)){return false;}
-	if(un_symbol(s) !== un_symbol(map_sym)){return false;}
+	if(!symbol_eq_p(s,map_sym)){return false;}
 	s=force_all(data_list(x));
 	if(!cons_p(s)){return false;}
 	if(!null_p(force_all(cons_cdr(s)))){return false;}
@@ -537,7 +540,7 @@ var TheLanguage=(function(){
 	    case null_t:
 		return true_v;
 	    case symbol_t:
-		return un_symbol(x)===un_symbol(y);
+		return symbol_eq_p(x, y)?true_v:false_v;
 	    case data_t:f1=data_name;f2=data_list;
 	    case cons_t:f1=cons_car;f2=cons_cdr;
 	    case error_t:f1=error_name;f2=error_list;
@@ -584,11 +587,10 @@ var TheLanguage=(function(){
 	    /* WARNING delay未正確處理(影響較小) */
 	    var nam=force_all(data_name(b));
 	    if(!symbol_p(nam)){return error_v;}
-	    var tf=un_symbol(nam);
-	    if(un_symbol(tf)===un_symbol(true_sym)){
+	    if(symbol_eq_p(nam, true_sym)){
 		return x;
 	    }
-	    if(un_symbol(tf)===un_symbol(false_sym)){
+	    if(symbol_eq_p(nam, false_sym)){
 		return y;
 	    }
 	    return error_v;
@@ -630,9 +632,9 @@ WIP
 	ASSERT(data_p(x));
 	var name=force_all(data_name(x));
 	ASSERT(symbol_p(name));
-	if(un_symbol(name)===un_symbol(false_sym)){
+	if(symbol_eq_p(name,false_sym)){
 	    return false;
-	}else if(un_symbol(name)===un_symbol(true_sym)){
+	}else if(symbol_eq_p(name, true_sym)){
 	    return true;
 	}
 	ERROR();
