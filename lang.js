@@ -31,7 +31,8 @@ var TheLanguage=(function(){
 	    ERROR();
 	}
     }
-    
+
+    /* {{{ 相對獨立的部分。內建數據結構 */
     var symbol_t=0;
     var cons_t=1;
     var null_t=2;
@@ -42,6 +43,7 @@ var TheLanguage=(function(){
     var delay_builtin_func_t=7;
     var delay_builtin_form_t=8;
     var delay_apply_t=9;/*WIP */
+
     function type_of(x){
 	return x[0];
     }
@@ -163,6 +165,7 @@ var TheLanguage=(function(){
     }
     exports.force_rec=force_all_rec;
     /* TODO 數據結構部分解耦合。三元內建數據結構 */
+    /* 相對獨立的部分。內建數據結構 }}} */
     
     function jslist2list(xs){
 	var ret=null_v;
