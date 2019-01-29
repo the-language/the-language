@@ -649,9 +649,7 @@ WIP
 	return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
     
-    /* -------------------- */
-    /* 較獨立部分。printer/paser */
-    
+    /* {{{ 相對獨立的部分。parser/printer */
     function print_force(x){/* LangVal -> JSString */
 	return print(force_all_rec(x));
     }
@@ -851,7 +849,7 @@ WIP
     }
     exports.print=print;
     exports.read=read;
-
+    /* 相對獨立的部分。parser/printer }}} */
     
     return exports;
 })();
