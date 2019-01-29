@@ -198,39 +198,6 @@ var TheLanguage=(function(){
     }
     exports.eval=lang_eval;
     exports.delay_p=any_delay_just_p;
-    
-    var env_null_v=[];
-    function env_set(env, key, val){/* Env k v, k, v -> Env k v */
-	var ret=[];
-	for(var i=0;i<env.length;i=i+2){
-	    if(jsbool_equal_p(env[i+0], key)){
-		ret[i+0]=key;
-		ret[i+1]=val;
-		for(i=i+2;i<env.length;i=i+2){
-		    ret[i+0]=env[i+0];
-		    ret[i+1]=env[i+1];
-		}
-		return ret;
-	    }else{
-		ret[i+0]=env[i+0];
-		ret[i+1]=env[i+1];
-	    }
-	}
-	ret[env.length+0]=key;
-	ret[env.length+1]=val;
-	return ret;
-    }
-    function env_get(env, key, default_v){/* Env k v, k, v -> v */
-	for(var i=0;i<env.length;i=i+2){
-	    if(jsbool_equal_p(env[i+0], key)){
-		return env[i+1];
-	    }
-	}
-	return default_v;
-    }
-    exports.env_null_v=env_null_v;
-    exports.env_set=env_set;
-    exports.env_get=env_get;
 
     function force_all(raw){/* LangVal -> LangVal */
 	var x=raw;
@@ -262,6 +229,7 @@ var TheLanguage=(function(){
 	return ret;
     }
     exports.force=force_all;
+
     
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
@@ -333,6 +301,40 @@ var TheLanguage=(function(){
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
 
+    /* {{{ 相對獨立的部分。變量之環境 */
+    var env_null_v=[];
+    function env_set(env, key, val){/* Env k v, k, v -> Env k v */
+	var ret=[];
+	for(var i=0;i<env.length;i=i+2){
+	    if(jsbool_equal_p(env[i+0], key)){
+		ret[i+0]=key;
+		ret[i+1]=val;
+		for(i=i+2;i<env.length;i=i+2){
+		    ret[i+0]=env[i+0];
+		    ret[i+1]=env[i+1];
+		}
+		return ret;
+	    }else{
+		ret[i+0]=env[i+0];
+		ret[i+1]=env[i+1];
+	    }
+	}
+	ret[env.length+0]=key;
+	ret[env.length+1]=val;
+	return ret;
+    }
+    function env_get(env, key, default_v){/* Env k v, k, v -> v */
+	for(var i=0;i<env.length;i=i+2){
+	    if(jsbool_equal_p(env[i+0], key)){
+		return env[i+1];
+	    }
+	}
+	return default_v;
+    }
+    exports.env_null_v=env_null_v;
+    exports.env_set=env_set;
+    exports.env_get=env_get;
+
     function env2val(env){/* Env k v -> LangVal */
 	var ret=null_v;
 	for(var i=0;i<env.length;i=i+2){
@@ -375,6 +377,8 @@ var TheLanguage=(function(){
     exports.env2val=env2val;
     exports.val2env=val2env;
     
+    /* 相對獨立的部分。變量之環境 }}} */
+
     function real_eval(env, raw){/* Env, LangVal -> LangVal */
 	var x=force1(raw);
 	if(any_delay_just_p(x)){
