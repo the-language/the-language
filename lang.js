@@ -400,7 +400,7 @@ var TheLanguage=(function(){
 		    xs[xs.length]=cons_car(rest);
 		    rest=force1(cons_cdr(rest));
 		}else{
-		    return error_t;
+		    return error_v;
 		}
 	    }
 	    /* WARNING delay未正確處理(影響較小) */
@@ -530,28 +530,21 @@ var TheLanguage=(function(){
 	    function H_and(x,y){
 		return H_if(x,y,false_v);
 	    }
-	    if(symbol_p(x)){
-		ASSERT(symbol_p(y));
-		return un_symbol(x)===un_symbol(y);
-	    }else if(x[1]===null){/* 去依賴WIP */
-		ASSERT(x[1]===null);
-		ASSERT(x[2]===null);
-		ASSERT(y[1]===null);
-		ASSERT(y[2]===null);
+	    ASSERT(!any_delay_just_p(x));
+	    var f1=null;
+	    var f2=null;
+	    switch(type_of(x)){
+	    case null_t:
 		return true_v;
-	    }else if(x[2]===null){
-		ASSERT(x[1]!==null);
-		ASSERT(x[2]===null);
-		ASSERT(y[1]!==null);
-		ASSERT(y[2]===null);
-		return builtin_func_apply(builtin_func_equal_sym, [x[1], y[1]]);
-	    }else{
-		ASSERT(x[1]!==null);
-		ASSERT(x[2]!==null);
-		ASSERT(y[1]!==null);
-		ASSERT(y[2]!==null);
-		return H_and(builtin_func_apply(builtin_func_equal_sym, [x[1], y[1]]), builtin_func_apply(builtin_func_equal_sym, [x[2], y[2]]));
+	    case symbol_t:
+		return un_symbol(x)===un_symbol(y);
+	    case data_t:f1=data_name;f2=data_list;
+	    case cons_t:f1=cons_car;f2=cons_cdr;
+	    case error_t:f1=error_name;f2=error_list;
+	   	return H_and(builtin_func_apply(builtin_func_equal_sym, [f1(x), f1(y)]), builtin_func_apply(builtin_func_equal_sym, [f2(x), f2(y)]));
+	    default:
 	    }
+	    ERROR();
 	}],
 	[builtin_func_apply_sym, 2, function(f, xs, error_v){
 	    /* WARNING delay未正確處理(影響較小) */
