@@ -31,6 +31,7 @@ var TheLanguage=(function(){
 	    ERROR();
 	}
     }
+    
     var symbol_t=0;
     var cons_t=1;
     var null_t=2;
@@ -41,7 +42,9 @@ var TheLanguage=(function(){
     var delay_builtin_func_t=7;
     var delay_builtin_form_t=8;
     var delay_apply_t=9;/*WIP */
-
+    function type_of(x){
+	return x[0];
+    }
     function make_one_p(t){
 	return function(x){
 	    return x[0]===t;
@@ -147,7 +150,19 @@ var TheLanguage=(function(){
     var delay_builtin_func_p=make_two_p(delay_builtin_func_t);
     var delay_builtin_func_f=make_get_two_a(delay_builtin_func_t);/* LangVal/Name */
     var delay_builtin_func_xs=make_get_two_b(delay_builtin_func_t);/* JSList LangVal */
-/* TODO 數據結構部分解耦合。三元內建數據結構 */
+    function force_all_rec(x){
+	x=force_all(x);
+	switch(type_of(x)){
+	case data_t:case error_t:case cons_t:
+	    x[1]=force_all_rec(x[1]);
+	    x[2]=force_all_rec(x[2]);
+	    return x;
+	default:
+	    return x;
+	}
+    }
+    exports.force_rec=force_all_rec;
+    /* TODO 數據結構部分解耦合。三元內建數據結構 */
     
     function jslist2list(xs){
 	var ret=null_v;
@@ -244,19 +259,6 @@ var TheLanguage=(function(){
 	return ret;
     }
     exports.force=force_all;
-
-    function force_all_rec(x){
-	x=force_all(x);
-	switch(x[0]){
-	case data_t:case error_t:case cons_t:
-	    x[1]=force_all_rec(x[1]);
-	    x[2]=force_all_rec(x[2]);
-	    return x;
-	default:
-	    return x;
-	}
-    }
-    exports.force_rec=force_all_rec;
     
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
