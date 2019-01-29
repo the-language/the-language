@@ -166,7 +166,8 @@ var TheLanguage=(function(){
     exports.force_rec=force_all_rec;
     /* TODO 數據結構部分解耦合。三元內建數據結構 */
     /* 相對獨立的部分。內建數據結構 }}} */
-    
+
+    /* {{{ 相對獨立的部分。對內建數據結構的簡單處理 */
     function jslist2list(xs){
 	var ret=null_v;
 	for(var i=xs.length-1;i>=0;i--){
@@ -229,8 +230,9 @@ var TheLanguage=(function(){
 	return ret;
     }
     exports.force=force_all;
-
+    /* 相對獨立的部分。對內建數據結構的簡單處理 }}} */
     
+    /* {{{ 相對獨立的部分。符號名稱 */
     var sys_sym=new_symbol("太始初核");
     var name_sym=new_symbol("符名號標");
     var func_sym=new_symbol("化變滅演");
@@ -300,7 +302,8 @@ var TheLanguage=(function(){
     var use_form_sym=make_sys_sym_f(new_list(form_sym, form_sym));
     var false_v=new_data(false_sym, new_list());
     var true_v=new_data(true_sym, new_list());
-
+    /* 相對獨立的部分。符號名稱 }}} */
+    
     /* {{{ 相對獨立的部分。變量之環境 */
     var env_null_v=[];
     function env_set(env, key, val){/* Env k v, k, v -> Env k v */
