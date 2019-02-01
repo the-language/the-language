@@ -53,6 +53,7 @@ var TheLanguage=(function(){
 	};
     }
     var make_two_p=make_one_p;
+    var make_three_p=make_one_p;
     function make_new_one(t){
 	return function(x){
 	    return [t, x];
@@ -63,6 +64,11 @@ var TheLanguage=(function(){
 	    return [t, x, y];/* 實現底層依賴[編號 0] parser <-> 內建數據結構 */
 	};
     }
+    function make_new_three(t){
+	return function(x, y, z){
+	    return [t, x, y, z];
+	};
+    }
     function make_get_one_a(t){
 	return function(x){
 	    ASSERT(x[0]===t);
@@ -70,12 +76,21 @@ var TheLanguage=(function(){
 	};
     }
     var make_get_two_a=make_get_one_a;
+    var make_get_three_a=make_get_one_a;
     function make_get_two_b(t){
 	return function(x){
 	    ASSERT(x[0]===t);
 	    return x[2];
 	};
     }
+    var make_get_three_b=make_get_two_b;
+    function make_get_three_c(t){
+	return function(x){
+	    ASSERT(x[0]===t);
+	    return x[3];
+	};
+    }
+    
     var new_symbol=make_new_one(symbol_t);
     var symbol_p=make_one_p(symbol_t);/* String */
     var un_symbol=make_get_one_a(symbol_t);
@@ -132,22 +147,11 @@ var TheLanguage=(function(){
     var delay_eval_p=make_two_p(delay_eval_t);
     var delay_eval_env=make_get_two_a(delay_eval_t);/* Env */
     var delay_eval_x=make_get_two_b(delay_eval_t);
-    function builtin_form_apply(env, f, xs){
-	/* Env, Name, JSList NotEvaledLangVal -> LangVal */
-	return [delay_builtin_form_t, [env, f], xs];
-    }
-    function delay_builtin_form_p(x){
-	return x[0]===delay_builtin_form_t;
-    }
-    function delay_builtin_form_env(x){
-	return x[1][0];
-    }
-    function delay_builtin_form_f(x){
-	return x[1][1];
-    }
-    function delay_builtin_form_xs(x){
-	return x[2];
-    }
+    var builtin_form_apply=make_new_three(delay_builtin_form_t);
+    var delay_builtin_form_p=make_three_p(delay_builtin_form_t);
+    var delay_builtin_form_env=make_get_three_a(delay_builtin_form_t);
+    var delay_builtin_form_f=make_get_three_b(delay_builtin_form_t);
+    var delay_builtin_form_xs=make_get_three_c(delay_builtin_form_t);
     var builtin_func_apply=make_new_two(delay_builtin_func_t);
     var delay_builtin_func_p=make_two_p(delay_builtin_func_t);
     var delay_builtin_func_f=make_get_two_a(delay_builtin_func_t);/* LangVal/Name */
