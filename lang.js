@@ -435,7 +435,7 @@ var TheLanguage=(function(){
 		var f_type=force1(data_name(f));
 		if(any_delay_just_p(f_type)){return lang_eval(env, x);}
 		if(!symbol_p(f_type)){return error_v;}
-		if(!symbol_eq_p(f_type, WIP)){return error_v;}
+		if(!symbol_eq_p(f_type, form_sym)){return error_v;}
 		var f_list=force1(data_list(f));
 		if(any_delay_just_p(f_list)){return lang_eval(env, x);}
 		if(!cons_p(f_list)){return error_v;}
