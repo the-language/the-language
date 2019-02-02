@@ -753,9 +753,6 @@ var TheLanguage=(function(){
 	function a_space_p(x){
 	    return x ===" " || x === "\n" || x === "\t" || x === "\r";
 	}
-	function a_symbol_p(x){
-	    return !(a_space_p(x) || x === "(" || x === ")" || x === "!" || x === "." || x === "#" );
-	}
 	function space(){
 	    var p=a_space_p;
 	    if(eof()){return false;}
@@ -852,36 +849,42 @@ var TheLanguage=(function(){
 	    if(!cons_p(xs)){error();}
 	    return new_error(cons_car(xs), cons_cdr(xs));
 	}
-	function readeval(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "$"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    x=cons_cdr(xs);
-	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
-	    var env=val2env(cons_car(xs));
+	function make_read_two(prefix, k){
+	    return function (){
+		if(eof()){return false;}
+		var x=get();
+		if(x !== prefix){put(x);return false;}
+		var xs=list();
+		if(xs === false){error();}
+		if(!cons_p(xs)){error();}
+		x=cons_cdr(xs);
+		if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+		return k(cons_car(xs), cons_car(x));
+	    };
+	}
+	var readeval=make_read_two("$",function(e, x){
+	    var env=val2env(e);
 	    if(env === false){error();}
-	    return lang_eval(env, cons_car(x));
-	}
-	function readfuncapply(){
-	    if(eof()){return false;}
-	    var x=get();
-	    if(x !== "%"){put(x);return false;}
-	    var xs=list();
-	    if(xs === false){error();}
-	    if(!cons_p(xs)){error();}
-	    x=cons_cdr(xs);
-	    if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+	    return lang_eval(env, x);
+	});
+	var readfuncapply=make_read_two("%", function(){
 	    error();/*WIP*/
-	    return builtin_func_apply(cons_car(xs), null(cons_car(x)));
-	}
+	    return builtin_func_apply(null(cons_car(x)));
+	});
 	function readformbuiltin(){
 	    return false;/*WIP*/
 	}
 	function readapply(){
 	    return false;/*WIP*/
+	}
+	
+	function a_symbol_p(x){
+	    if(a_space_p(x)){return false;}
+	    var not_xs=["(",")","!","#",".","$","%"];
+	    for(var i=0;i<not_xs.length;i++){
+		if(x==not_xs[i]){return false;}
+	    }
+	    return true;
 	}
 	function val(){
 	    space();
