@@ -677,48 +677,51 @@ var TheLanguage=(function(){
     }
     
     /* {{{ 相對獨立的部分。parser/printer */
-    function print_force(x){/* LangVal -> JSString */
-	return print(force_all_rec(x));
-    }
-    exports.print_force=print_force;
-
-    function print(x){/* LangVal -> JSString */
-	x=un_just_all(x);
-	var temp="";
-	var prefix="";
-	switch(type_of(x)){
-	case null_t:return "()";
-	case cons_t:
-	    temp="(";
-	    prefix="";
-	    while(cons_p(x)){
-		temp+=prefix+print(cons_car(x));
-		prefix=" ";
-		x=un_just_all(cons_cdr(x));
+    function make_printer(forcer){
+	function print(x){/* LangVal -> JSString */
+	    x=forcer(x);
+	    var temp="";
+	    var prefix="";
+	    switch(type_of(x)){
+	    case null_t:return "()";
+	    case cons_t:
+		temp="(";
+		prefix="";
+		while(cons_p(x)){
+		    temp+=prefix+print(cons_car(x));
+		    prefix=" ";
+		    x=forcer(cons_cdr(x));
+		}
+		if(null_p(x)){
+		    temp+=")";
+		}else{
+		    temp+=" . "+print(x)+")";
+		}
+		return temp;
+	    case data_t:
+		return "#"+print(new_cons(data_name(x), data_list(x)));
+	    case error_t:
+		return "!"+print(new_cons(error_name(x), error_list(x)));
+	    case symbol_t:return un_symbol(x);
+	    case delay_eval_t:
+		return "$("+print(env2val(delay_eval_env(x)))+" "+print(delay_eval_x(x))+")";
+	    case delay_builtin_func_t:
+		return "%("+print(delay_builtin_func_f(x))+" "+print(jslist2list(delay_builtin_func_xs(x)))+")";
+	    case delay_builtin_form_t:
+		return "@("+print(delay_builtin_form_f(x))+" "+print(env2val(delay_builtin_form_env(x)))+" "+print(jslist2list(delay_builtin_form_xs(x)))+")";
+	    case delay_apply_t:
+		WIP();
+	    default:
 	    }
-	    if(null_p(x)){
-		temp+=")";
-	    }else{
-		temp+=" . "+print(x)+")";
-	    }
-	    return temp;
-	case data_t:
-	    return "#"+print(new_cons(data_name(x), data_list(x)));
-	case error_t:
-	    return "!"+print(new_cons(error_name(x), error_list(x)));
-	case symbol_t:return un_symbol(x);
-	case delay_eval_t:
-	    return "$("+print(env2val(delay_eval_env(x)))+" "+print(delay_eval_x(x))+")";
-	case delay_builtin_func_t:
-	    return "%("+print(delay_builtin_func_f(x))+" "+print(jslist2list(delay_builtin_func_xs(x)))+")";
-	case delay_builtin_form_t:
-	    return "@("+print(delay_builtin_form_f(x))+" "+print(env2val(delay_builtin_form_env(x)))+" "+print(jslist2list(delay_builtin_form_xs(x)))+")";
-	case delay_apply_t:
-	    WIP();
-	default:
+	    ERROR();
 	}
-	ERROR();
+	return print;
     }
+    var print=make_printer(un_just_all);
+    var print_force_rec=make_printer(force_all);
+    exports.print_force_rec=print_force_rec;
+    exports.print=print;
+    
     function read(x){/* JSString -> LangVal */
 	var state=x.split("");/* State : List Char */
 	function eof(){

@@ -36,7 +36,7 @@ function ASSERT_WITH_EXP(text, x){
 	   ];
     for(var i in xs){
 	var x=xs[i];
-	ASSERT_WITH_EXP("print_force(read(\""+x+"\")) === \""+x+"\"", TL.print_force(TL.read(x)) === x);
+	ASSERT_WITH_EXP("print(read(\""+x+"\")) === \""+x+"\"", TL.print(TL.read(x)) === x);
     }
 }
 {
