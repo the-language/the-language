@@ -32,6 +32,8 @@ var TheLanguage=(function(){
 	}
     }
 
+    function jsnull_p(x){return x==null;}/* undefined/null */
+
     /* {{{ 相對獨立的部分。內建數據結構 */
     var symbol_t=0;
     var cons_t=1;
@@ -175,12 +177,23 @@ var TheLanguage=(function(){
     /* 相對獨立的部分。內建數據結構 }}} */
 
     /* {{{ 相對獨立的部分。對內建數據結構的簡單處理 */
-    function jslist2list(xs){
+    function jslist2list(xs){/* JSList a -> LangVal */
 	var ret=null_v;
 	for(var i=xs.length-1;i>=0;i--){
 	    ret=new_cons(xs[i], ret);
 	}
 	return ret;
+    }
+    function list2jslist(xs, k_done, k_tail){
+	/* LangVal, (JSList a -> b), (JSList a, LangVal -> b) -> b */
+	if(jsnull_p(k_done)){k_done=function(x){return x;};}
+	var ret=[];
+	while(cons_p(xs)){
+	    ret[ret.length]=cons_car(xs);
+	    xs=cons_cdr(xs);
+	}
+	if(null_p(xs)){return k_done(ret);}
+	return k_tail(ret, xs);
     }
     function new_list(){
 	return jslist2list(arguments);
@@ -867,9 +880,9 @@ var TheLanguage=(function(){
 	    if(env === false){error();}
 	    return lang_eval(env, x);
 	});
-	var readfuncapply=make_read_two("%", function(){
-	    error();/*WIP*/
-	    return builtin_func_apply(null(cons_car(x)));
+	var readfuncapply=make_read_two("%", function(f, xs){
+	    var jsxs=list2jslist(xs, function(x){return x;}, function(x,y){error();});
+	    return builtin_func_apply(f, jsxs);
 	});
 	function readformbuiltin(){
 	    return false;/*WIP*/
