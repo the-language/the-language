@@ -656,7 +656,7 @@ var TheLanguage=(function(){
 	    }
 	    return xs[0];
 	}
-	WIP
+	return error_v;
     }
     function jsbool_equal_p(x, y){
 	/* LangVal, LangVal -> JSBoolean */
