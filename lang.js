@@ -616,7 +616,21 @@ var TheLanguage=(function(){
 	var f_list_cdr=force_all(cons_cdr(f_list));
 	if(!(cons_p(f_list_cdr)&&null_p(force_all(cons_cdr(f_list_cdr))))){return make_error_v();}
 	var f_code=cons_car(f_list_cdr);
-	WIP
+	var env=env_null_v;
+	while(!null_p(args_pat)){
+	    if(symbol_p(args_pat)){
+		env=env_set(env, args_pat, jslist2list(xs));
+		xs=[];
+		args_pat=null_v;
+	    }else if(cons_p(args_pat)){
+		if(xs.length===0){return make_error_v();}
+		env=env_set(env, cons_car(args_pat), xs.shift()/* 副作用! */);
+		args_pat=cons_cdr(args_pat);
+	    }
+	    return make_error_v();
+	}
+	if(xs.length!==0){return make_error_v();}
+	return lang_eval(env, f_code);
     }
     function real_builtin_func_apply(f, xs){/* Name, JSList LangVal -> LangVal */
 	var error_v=new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, xs)));
