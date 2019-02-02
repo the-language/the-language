@@ -887,13 +887,14 @@ var TheLanguage=(function(){
 	function readformbuiltin(){
 	    return false;/*WIP*/
 	}
-	function readapply(){
-	    return false;/*WIP*/
-	}
+	var readapply=make_read_two("^", function(f, xs){
+	    var jsxs=list2jslist(xs, function(x){return x;}, function(x,y){error();});
+	    return lang_apply(f, jsxs);
+	});
 	
 	function a_symbol_p(x){
 	    if(a_space_p(x)){return false;}
-	    var not_xs=["(",")","!","#",".","$","%"];
+	    var not_xs=["(",")","!","#",".","$","%","^"];
 	    for(var i=0;i<not_xs.length;i++){
 		if(x==not_xs[i]){return false;}
 	    }
@@ -907,7 +908,6 @@ var TheLanguage=(function(){
 		if(x !== false){return x;}
 	    }
 	    error();
-	    /* WIP: delay */
 	}
 	return val();
     }
