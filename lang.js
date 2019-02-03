@@ -338,7 +338,7 @@ var TheLanguage = (function() {
     exports.symbols.tail = tail_sym;
 
     function make_sys_sym_f(x) {
-        return new_data(sys_sym, new_list(name_sym, x));
+        return new_data(name_sym, new_list(sys_sym, x));
     }
 
     function make_builtin_f_new_sym_f(x_sym) {
