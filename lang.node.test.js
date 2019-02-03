@@ -40,7 +40,7 @@ function ASSERT_WITH_EXP(text, x) {
         "((a) . #(bb cd54rf 66))",
         "(k 0 9 8 . o)",
         "(() ((((())))) . *)",
-        "$(#(鍵表映界 ((ha ga))) ha)",
+        "$(#(映表 ((ha ga))) ha)",
     ];
     for (var i in xs) {
         var x = xs[i];
@@ -49,8 +49,8 @@ function ASSERT_WITH_EXP(text, x) {
 }
 print_do("------[TEST/eval]-------"); {
     var xs = [
-        ["$(#(鍵表映界 ((ha ga))) ha)", "ga"],
-        ["$(#(鍵表映界 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
+        ["$(#(映表 ((ha ga))) ha)", "ga"],
+        ["$(#(映表 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
     ]
     for (var i in xs) {
         var x = xs[i];
