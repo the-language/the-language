@@ -411,7 +411,17 @@ var TheLanguage = (function() {
     var true_v = new_data(true_sym, new_list());
 
     function symbol_eq_p(x, y) {
-        return un_symbol(x) === un_symbol(y); /* 其他語言暫未實現。 TODO */
+        ASSERT(symbol_p(x) && symbol_p(y));
+        if (x === y) {
+            return true;
+        }
+        /* 其他語言暫未實現。 TODO */
+        if (un_symbol(x) === un_symbol(y)) {
+            lang_set_do(x, y);
+            return true;
+        } else {
+            return false;
+        }
     }
     /* 相對獨立的部分。符號名稱 }}} */
 
@@ -869,10 +879,17 @@ var TheLanguage = (function() {
         }
 
         function end_2(f1, f2) {
-            return jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y));
+            if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
+                lang_set_do(x, y);
+                return true;
+            } else {
+                return false;
+            }
         }
         switch (x_type) {
             case null_t:
+                lang_set_do(x, null_v);
+                lang_set_do(y, null_v);
                 return true;
             case symbol_t:
                 return symbol_eq_p(x, y);
