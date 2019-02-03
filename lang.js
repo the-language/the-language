@@ -857,7 +857,7 @@ var TheLanguage = (function() {
                 case delay_builtin_form_t:
                     return "@(" + print(delay_builtin_form_f(x)) + " " + print(env2val(delay_builtin_form_env(x))) + " " + print(jslist2list(delay_builtin_form_xs(x))) + ")";
                 case delay_apply_t:
-                    WIP();
+                    return "^(" + print(delay_apply_f(x)) + " " + print(jslist2list(delay_apply_xs(x))) + ")";
                 default:
             }
             ERROR();
@@ -1115,7 +1115,7 @@ var TheLanguage = (function() {
             });
             return builtin_func_apply(f, jsxs);
         });
-        var readformbuiltin = make_read_three("&", function(e, f, xs) {
+        var readformbuiltin = make_read_three("@", function(e, f, xs) {
             var jsxs = list2jslist(xs, function(x) {
                 return x;
             }, function(x, y) {
@@ -1140,7 +1140,7 @@ var TheLanguage = (function() {
             if (a_space_p(x)) {
                 return false;
             }
-            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "&"];
+            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@"];
             for (var i = 0; i < not_xs.length; i++) {
                 if (x == not_xs[i]) {
                     return false;
