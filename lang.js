@@ -562,12 +562,11 @@ var TheLanguage = (function() {
             case null_t:
                 return x;
             case symbol_t:
-            case data_p:
+            case data_t:
                 return env_get(env, x, error_v);
             case error_t:
                 return error_v;
             default:
-                ERROR();
         }
         ERROR();
     }
@@ -645,23 +644,21 @@ var TheLanguage = (function() {
                 return H_if(x, y, false_v);
             }
             ASSERT(!any_delay_just_p(x));
-            var f1 = null;
-            var f2 = null;
+
+            function end_2(f1, f2) {
+                return H_and(builtin_func_apply(builtin_func_equal_sym, [f1(x), f1(y)]), builtin_func_apply(builtin_func_equal_sym, [f2(x), f2(y)]));
+            }
             switch (type_of(x)) {
                 case null_t:
                     return true_v;
                 case symbol_t:
                     return symbol_eq_p(x, y) ? true_v : false_v;
                 case data_t:
-                    f1 = data_name;
-                    f2 = data_list;
+                    return end_2(data_name, data_list);
                 case cons_t:
-                    f1 = cons_car;
-                    f2 = cons_cdr;
+                    return end_2(cons_car, cons_cdr);
                 case error_t:
-                    f1 = error_name;
-                    f2 = error_list;
-                    return H_and(builtin_func_apply(builtin_func_equal_sym, [f1(x), f1(y)]), builtin_func_apply(builtin_func_equal_sym, [f2(x), f2(y)]));
+                    return end_2(error_name, error_list);
                 default:
             }
             ERROR();
@@ -817,23 +814,21 @@ var TheLanguage = (function() {
         if (x_type !== y_type) {
             return false;
         }
-        var f1 = null;
-        var f2 = null;
+
+        function end_2(f1, f2) {
+            return jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y));
+        }
         switch (x_type) {
             case null_t:
                 return true;
             case symbol_t:
                 return symbol_eq_p(x, y);
             case cons_t:
-                f1 = cons_car;
-                f2 = cons_cdr;
+                return end_2(cons_car, cons_cdr);
             case error_t:
-                f1 = error_name;
-                f2 = error_list;
+                return end_2(error_name, error_list);
             case data_t:
-                f1 = data_name;
-                f2 = data_list;
-                return jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y));
+                return end_2(data_name, data_list);
             default:
         }
         ERROR();

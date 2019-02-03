@@ -18,6 +18,8 @@
 */
 var TL = require("./lang");
 
+var print_do = console.log
+
 function ERROR() {
     null();
 }
@@ -29,7 +31,7 @@ function ASSERT(x) {
 }
 
 function ASSERT_WITH_EXP(text, x) {
-    console.log("[TEST]" + text);
+    print_do("[TEST]" + text);
     ASSERT(x);
 } {
     var xs = [
@@ -42,14 +44,16 @@ function ASSERT_WITH_EXP(text, x) {
     ];
     for (var i in xs) {
         var x = xs[i];
-        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x);
+        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) == x);
     }
-} {
+}
+print_do("------[TEST/eval]-------"); {
     var xs = [
         ["$(#(鍵表映界 ((ha ga))) ha)", "ga"],
+        ["$(#(鍵表映界 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
     ]
     for (var i in xs) {
         var x = xs[i];
+        ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", TL.print_force_rec(TL.read(x[0])) === x[1]);
     }
-    ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", TL.print_force_rec(TL.read(x[0])) === x[1]);
 }
