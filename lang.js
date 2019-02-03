@@ -230,7 +230,7 @@ var TheLanguage = (function() {
         var xs = [];
         while (just_p(x)) {
             xs[xs.length] = x;
-            x = un_just;
+            x = un_just(x);
         }
         for (var i = 0; i < xs.length; i++) {
             lang_set_do(xs[i], x);

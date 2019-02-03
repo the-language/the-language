@@ -32,17 +32,24 @@ function ASSERT_WITH_EXP(text, x) {
     console.log("[TEST]" + text);
     ASSERT(x);
 } {
-    var xs = ["(你好 世界！)",
+    var xs = [
+        "(你好 世界！)",
         "!(#(a b) . c)",
         "((a) . #(bb cd54rf 66))",
         "(k 0 9 8 . o)",
         "(() ((((())))) . *)",
+        "$(#(鍵表映界 ((ha ga))) ha)",
     ];
     for (var i in xs) {
         var x = xs[i];
         ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x);
     }
 } {
-    var e = TL.env_set(TL.env_null_v, TL.new_list(TL.new_symbol("K")), TL.new_symbol("T"));
-    //[equal_p ; not implemented] ASSERT(TL.equal_p(TL.env_get(e, TL.new_list(TL.new_symbol("K")), "ERROR"), TL.new_symbol("T")));
+    var xs = [
+        ["$(#(鍵表映界 ((ha ga))) ha)", "ga"],
+    ]
+    for (var i in xs) {
+        var x = xs[i];
+    }
+    ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", TL.print_force_rec(TL.read(x[0])) === x[1]);
 }
