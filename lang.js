@@ -279,6 +279,7 @@ var TheLanguage = (function() {
         return ret;
     }
     exports.force = force_all;
+    exports.force1 = force1;
     /* 相對獨立的部分。對內建數據結構的簡單處理 }}} */
 
     /* {{{ 相對獨立的部分。符號名稱 */
@@ -803,14 +804,37 @@ var TheLanguage = (function() {
 
     function jsbool_equal_p(x, y) {
         /* LangVal, LangVal -> JSBoolean */
-        var x = force_all(langbool_equal_p(x, y));
-        ASSERT(data_p(x));
-        var name = force_all(data_name(x));
-        ASSERT(symbol_p(name));
-        if (symbol_eq_p(name, false_sym)) {
-            return false;
-        } else if (symbol_eq_p(name, true_sym)) {
+        if (x === y) {
             return true;
+        }
+        x = force_all(x);
+        y = force_all(y);
+        if (x === y) {
+            return true;
+        }
+        var x_type = type_of(x);
+        var y_type = type_of(y);
+        if (x_type !== y_type) {
+            return false;
+        }
+        var f1 = null;
+        var f2 = null;
+        switch (x_type) {
+            case null_t:
+                return true;
+            case symbol_t:
+                return symbol_eq_p(x, y);
+            case cons_t:
+                f1 = cons_car;
+                f2 = cons_cdr;
+            case error_t:
+                f1 = error_name;
+                f2 = error_list;
+            case data_t:
+                f1 = data_name;
+                f2 = data_list;
+                return jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y));
+            default:
         }
         ERROR();
     }
