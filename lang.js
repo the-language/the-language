@@ -151,9 +151,9 @@ var TheLanguage=(function(){
     var delay_eval_x=make_get_two_b(delay_eval_t);
     var builtin_form_apply=make_new_three(delay_builtin_form_t);
     var delay_builtin_form_p=make_three_p(delay_builtin_form_t);
-    var delay_builtin_form_env=make_get_three_a(delay_builtin_form_t);
+    var delay_builtin_form_env=make_get_three_a(delay_builtin_form_t);/* Env */
     var delay_builtin_form_f=make_get_three_b(delay_builtin_form_t);
-    var delay_builtin_form_xs=make_get_three_c(delay_builtin_form_t);
+    var delay_builtin_form_xs=make_get_three_c(delay_builtin_form_t);/* JSList LangVal */
     var builtin_func_apply=make_new_two(delay_builtin_func_t);
     var delay_builtin_func_p=make_two_p(delay_builtin_func_t);
     var delay_builtin_func_f=make_get_two_a(delay_builtin_func_t);/* LangVal/Name */
@@ -864,15 +864,30 @@ var TheLanguage=(function(){
 	}
 	function make_read_two(prefix, k){
 	    return function (){
-		if(eof()){return false;}
-		var x=get();
-		if(x !== prefix){put(x);return false;}
-		var xs=list();
-		if(xs === false){error();}
-		if(!cons_p(xs)){error();}
-		x=cons_cdr(xs);
-		if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
-		return k(cons_car(xs), cons_car(x));
+			if(eof()){return false;}
+			var x=get();
+			if(x !== prefix){put(x);return false;}
+			var xs=list();
+			if(xs === false){error();}
+			if(!cons_p(xs)){error();}
+			x=cons_cdr(xs);
+			if(!(cons_p(x) && null_p(cons_cdr(x)))){error();}
+			return k(cons_car(xs), cons_car(x));
+	    };
+	}
+	function make_read_three(prefix, k){
+	    return function (){
+			if(eof()){return false;}
+			var x=get();
+			if(x !== prefix){put(x);return false;}
+			var xs=list();
+			if(xs === false){error();}
+			if(!cons_p(xs)){error();}
+			x=cons_cdr(xs);
+			if(!cons_p(x)){error();}
+			x_d=cons_cdr(x);
+			if(!(cons_p(x_d)&&null_p(cons_cdr(x_d)))){error();}
+			return k(cons_car(xs), cons_car(x), cons_car(x_d));
 	    };
 	}
 	var readeval=make_read_two("$",function(e, x){
@@ -884,17 +899,20 @@ var TheLanguage=(function(){
 	    var jsxs=list2jslist(xs, function(x){return x;}, function(x,y){error();});
 	    return builtin_func_apply(f, jsxs);
 	});
-	function readformbuiltin(){
-	    return false;/*WIP*/
-	}
+	var readformbuiltin=make_read_three("&", function(e, f, xs){
+		var jsxs=list2jslist(xs, function(x){return x;}, function(x,y){error();});
+		var env=val2env(e);
+	    if(env === false){error();}
+		return builtin_form_apply(env, f, jsxs);
+	});
 	var readapply=make_read_two("^", function(f, xs){
 	    var jsxs=list2jslist(xs, function(x){return x;}, function(x,y){error();});
-	    return lang_apply(f, jsxs);
+		return lang_apply(f, jsxs);
 	});
 	
 	function a_symbol_p(x){
 	    if(a_space_p(x)){return false;}
-	    var not_xs=["(",")","!","#",".","$","%","^"];
+	    var not_xs=["(",")","!","#",".","$","%","^","&"];
 	    for(var i=0;i<not_xs.length;i++){
 		if(x==not_xs[i]){return false;}
 	    }
