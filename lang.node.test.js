@@ -44,13 +44,14 @@ function ASSERT_WITH_EXP(text, x) {
     ];
     for (var i in xs) {
         var x = xs[i];
-        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) == x);
+        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x);
     }
 }
 print_do("------[TEST/eval]-------"); {
     var xs = [
         ["$(#(映表 ((ha ga))) ha)", "ga"],
         ["$(#(映表 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
+        ["$(#(映表 ()) (#(太始初核 符名 (式形 (太始初核 式形))) #(太始初核 符名 (一類何物 式形 引用)) HA))", "HA"],
     ]
     for (var i in xs) {
         var x = xs[i];
