@@ -148,6 +148,7 @@ var TheLanguage = (function() {
     exports.error_list = error_list;
 
     function lang_set_do(x, y) {
+        /* 只用于x与y等价的情况 */
         if (x === y) {
             return;
         }
@@ -750,6 +751,7 @@ var TheLanguage = (function() {
         make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
 
         [builtin_func_list_choose_sym, 1, function(xs, error_v) {
+            /* 一般返回第一个，可以因为优化返回其他的任意一个 */
             /* xs可以無限長，不判斷是否真的是list */
             xs = force1(xs);
             if (any_delay_just_p(xs)) {
