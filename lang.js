@@ -577,7 +577,7 @@ var TheLanguage = (function() {
                         return error_v;
                     }
                     var f = force1(xs[1]);
-                    if (any_just_delay_p(f)) {
+                    if (any_delay_just_p(f)) {
                         return lang_eval(env, x);
                     }
                     if (!data_p(f)) {
@@ -608,9 +608,9 @@ var TheLanguage = (function() {
                     if (!null_p(f_list_cdr)) {
                         return error_v;
                     }
-                    var args = [];
+                    var args = [env2val(env)];
                     for (var i = 2; i < xs.length; i++) {
-                        args[i - 2] = xs[i];
+                        args[i - 1] = xs[i];
                     }
                     return lang_apply(f_x, args);
                 } else if (jsbool_equal_p(xs[0], use_builtin_func_sym)) {
