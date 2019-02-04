@@ -28,3 +28,16 @@ function cons(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
 }
 E.cons = cons
+let null = L.null_v
+E.null = null
+let S = L.new_symbol
+E.S = S
+
+function list(...xs) {
+    var r = L.null_v;
+    while (xs.length !== 0) {
+        r = cons(xs.pop(), r)
+    }
+    return r
+}
+E.list = list
