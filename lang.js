@@ -787,7 +787,6 @@ var TheLanguage = (function() {
     function real_lang_apply(f, xs) {
         /* LangVal, JSList LangVal -> LangVal */
         /* WARNING delay未正確處理(影響較小) */
-
         function make_error_v() {
             return new_error(sys_sym, new_list(use_builtin_func_sym, new_list(builtin_func_apply_sym, new_list(f, jslist2list(xs)))));
         }
@@ -824,8 +823,9 @@ var TheLanguage = (function() {
                 }
                 env = env_set(env, cons_car(args_pat), xs.shift() /* 副作用! */ );
                 args_pat = cons_cdr(args_pat);
+            } else {
+                return make_error_v();
             }
-            return make_error_v();
         }
         if (xs.length !== 0) {
             return make_error_v();
