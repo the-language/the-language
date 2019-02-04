@@ -21,8 +21,9 @@ var TheLanguage = (function() {
     var in_nodejs = module ? true : false; /* fix me? */
     var exports = {};
     if (enable_nodejs && in_nodejs) {
+        /* fix me? */
         exports = module.exports;
-    } /* fix me? */
+    }
 
     function ERROR() {
         var PANIC = null;
@@ -36,8 +37,9 @@ var TheLanguage = (function() {
     }
 
     function jsnull_p(x) {
+        /* undefined/null */
         return x == null;
-    } /* undefined/null */
+    }
 
     /* {{{ 相對獨立的部分。內建數據結構 */
     var symbol_t = 0;
@@ -248,9 +250,15 @@ var TheLanguage = (function() {
 
     function force_all(raw) {
         /* LangVal -> LangVal */
+        var history = {};
         var x = raw;
         var xs = [];
         while (any_delay_just_p(x)) {
+            var x_id = print(x);
+            if (history[x_id] === true) {
+                return new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
+            }
+            history[x_id] = true;
             xs[xs.length] = x;
             x = force1(x);
         }
@@ -336,6 +344,8 @@ var TheLanguage = (function() {
     exports.symbols.head = head_sym;
     var tail_sym = new_symbol("尾");
     exports.symbols.tail = tail_sym;
+    var the_world_stopped_sym = new_symbol("宇宙亡矣");
+    exports.symbols.the_world_stopped = the_world_stopped_sym;
 
     function make_sys_sym_f(x) {
         return new_data(name_sym, new_list(sys_sym, x));
