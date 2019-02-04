@@ -66,3 +66,13 @@ function calc(env, x) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.eval, env, x)
 }
 E.calc = calc
+
+function make_func(args, x) {
+    return data(L.symbols.function, list(args, x));
+}
+E.make_func = make_func
+
+function make_macro(args, x) {
+    return data(L.symbols.form, list(make_func(args, x)))
+}
+E.make_macro = make_macro
