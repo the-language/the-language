@@ -159,6 +159,7 @@ var TheLanguage = (function() {
     var just_p = make_one_p(just_t);
     var un_just = make_get_one_a(just_t);
     var lang_eval = make_new_two(delay_eval_t);
+    exports.eval = lang_eval;
     var delay_eval_p = make_two_p(delay_eval_t);
     var delay_eval_env = make_get_two_a(delay_eval_t); /* Env */
     var delay_eval_x = make_get_two_b(delay_eval_t);
@@ -172,6 +173,7 @@ var TheLanguage = (function() {
     var delay_builtin_func_f = make_get_two_a(delay_builtin_func_t); /* LangVal/Name */
     var delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t); /* JSList LangVal */
     var lang_apply = make_new_two(delay_apply_t);
+    exports.apply = lang_apply;
     var delay_apply_p = make_two_p(delay_apply_t);
     var delay_apply_f = make_get_two_a(delay_apply_t);
     var delay_apply_xs = make_get_two_b(delay_apply_t); /* JSList LangVal */
@@ -241,7 +243,6 @@ var TheLanguage = (function() {
     function any_delay_just_p(x) {
         return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x);
     }
-    exports.eval = lang_eval;
     exports.delay_p = any_delay_just_p;
 
     function force_all(raw) {

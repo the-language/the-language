@@ -41,6 +41,7 @@ function ASSERT_WITH_EXP(text, x) {
         "(k 0 9 8 . o)",
         "(() ((((())))) . *)",
         "$(#(映表 ((ha ga))) ha)",
+        '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
     ];
     for (var i in xs) {
         var x = xs[i];
