@@ -61,3 +61,8 @@ function error(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_error, x, y)
 }
 E.error = error
+
+function calc(env, x) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.eval, env, x)
+}
+E.calc = calc

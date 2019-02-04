@@ -1,3 +1,3 @@
 #!/bin/sh
 cd "$(dirname $0)"
-node -e "$(cat lang.js)$(cat makecode.js)" -i # --stack-size=999
+node -e "let TheLanguage=require('./lang.js');$(cat makecode.js)" -i 
