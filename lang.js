@@ -851,7 +851,7 @@ var TheLanguage = (function() {
 
     function real_builtin_form_apply(env, f, xs) {
         /* Env, Name, JSList NotEvaledLangVal -> LangVal */
-        var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(f, xs)));
+        var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(f, jslist2list(xs))));
         /* WARNING delay未正確處理(影響較小) */
         if (jsbool_equal_p(f, builtin_form_quote_sym)) {
             if (xs.length !== 1) {
@@ -944,7 +944,7 @@ var TheLanguage = (function() {
                 case delay_builtin_func_t:
                     return "%(" + print(delay_builtin_func_f(x)) + " " + print(jslist2list(delay_builtin_func_xs(x))) + ")";
                 case delay_builtin_form_t:
-                    return "@(" + print(delay_builtin_form_f(x)) + " " + print(env2val(delay_builtin_form_env(x))) + " " + print(jslist2list(delay_builtin_form_xs(x))) + ")";
+                    return "@(" + print(env2val(delay_builtin_form_env(x))) + " " + print(delay_builtin_form_f(x)) + " " + print(jslist2list(delay_builtin_form_xs(x))) + ")";
                 case delay_apply_t:
                     return "^(" + print(delay_apply_f(x)) + " " + print(jslist2list(delay_apply_xs(x))) + ")";
                 default:
