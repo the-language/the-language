@@ -851,7 +851,7 @@ var TheLanguage = (function() {
 
     function real_builtin_form_apply(env, f, xs) {
         /* Env, Name, JSList NotEvaledLangVal -> LangVal */
-        var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(f, jslist2list(xs))));
+        var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), f, jslist2list(xs))));
         /* WARNING delay未正確處理(影響較小) */
         if (jsbool_equal_p(f, builtin_form_quote_sym)) {
             if (xs.length !== 1) {
