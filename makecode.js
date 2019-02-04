@@ -40,12 +40,17 @@ function list(...xs) {
     }
     return r
 }
+E.list = list
 
 function car(p) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_car, x, y)
 }
+E.car = car
 
-E.list = list
+function cdr(p) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_cdr, x, y)
+}
+E.cdr = cdr
 
 function data(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
