@@ -16,25 +16,25 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-var TL = require("./lang");
+let TL = require("./lang")
 
-var print_do = console.log
+let print_do = console.log
 
 function ERROR() {
-    null();
+    null()
 }
 
 function ASSERT(x) {
     if (!x) {
-        ERROR();
+        ERROR()
     }
 }
 
 function ASSERT_WITH_EXP(text, x) {
-    print_do("[TEST]" + text);
+    print_do("[TEST]" + text)
     ASSERT(x);
 } {
-    var xs = [
+    let xs = [
         "(你好 世界！)",
         "!(#(a b) . c)",
         "((a) . #(bb cd54rf 66))",
@@ -42,14 +42,16 @@ function ASSERT_WITH_EXP(text, x) {
         "(() ((((())))) . *)",
         "$(#(映表 ((ha ga))) ha)",
         '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
-    ];
-    for (var i in xs) {
-        var x = xs[i];
-        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x);
+    ]
+    for (let i in xs) {
+        let x = xs[i]
+        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x)
     }
 }
-print_do("------[TEST/eval]-------"); {
-    var xs = [
+print_do("------[TEST/eval]-------")
+
+{
+    let xs = [
         ["$(#(映表 ((ha ga))) ha)", "ga"],
         ["$(#(映表 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
         ["$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) HA))", "HA"],
@@ -66,9 +68,9 @@ print_do("------[TEST/eval]-------"); {
         ['$(#(映表 ()) (#(符名 太始初核 (式形 式形)) #(式形 #(化滅 (E . Y) Y)) A B))', '(A B)'],
         ['$(#(映表 ()) (#(符名 太始初核 (式形 式形)) #(式形 #(化滅 (E) E))))', '#(映表 ())'],
     ]
-    for (var i in xs) {
-        var x = xs[i];
-        var r = TL.print_force_rec(TL.read(x[0]));
-        ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1]);
+    for (let i in xs) {
+        let x = xs[i]
+        let r = TL.print_force_rec(TL.read(x[0]))
+        ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1])
     }
 }
