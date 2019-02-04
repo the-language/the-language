@@ -28,8 +28,8 @@ function cons(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
 }
 E.cons = cons
-let null = L.null_v
-E.null = null
+let null_v = L.null_v
+E.null_v = null_v
 let S = L.new_symbol
 E.S = S
 
@@ -40,4 +40,19 @@ function list(...xs) {
     }
     return r
 }
+
+function car(p) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_car, x, y)
+}
+
 E.list = list
+
+function data(x, y) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
+}
+E.data = data
+
+function error(x, y) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_error, x, y)
+}
+E.error = error
