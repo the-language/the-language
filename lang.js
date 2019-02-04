@@ -835,7 +835,7 @@ var TheLanguage = (function() {
 
     function real_builtin_func_apply(f, xs) {
         /* Name, JSList LangVal -> LangVal */
-        var error_v = new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, xs)));
+        var error_v = new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, jslist2list(xs))));
         for (var i = 0; i < real_builtin_func_apply_s.length; i++) {
             /* WARNING delay未正確處理(影響較小) */
             if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
