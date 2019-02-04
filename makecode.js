@@ -76,3 +76,8 @@ function make_macro(args, x) {
     return data(L.symbols.form, list(make_func(args, x)))
 }
 E.make_macro = make_macro
+
+function if_then_else(b, x, y) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.if, b, x, y)
+}
+E.if_then_else = if_then_else
