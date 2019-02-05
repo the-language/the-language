@@ -28,6 +28,11 @@ function cons(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
 }
 E.cons = cons
+
+function data(x, y) {
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
+}
+E.data = data
 let null_v = L.null_v
 E.null_v = null_v
 let S = L.new_symbol
@@ -51,11 +56,6 @@ function cdr(p) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_cdr, x, y)
 }
 E.cdr = cdr
-
-function data(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
-}
-E.data = data
 
 function error(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_error, x, y)
