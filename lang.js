@@ -256,7 +256,11 @@ var TheLanguage = (function() {
         while (any_delay_just_p(x)) {
             var x_id = print(x);
             if (history[x_id] === true) {
-                return new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
+                lang_set_do(x, the_world_stopped_v);
+                for (var i = 0; i < xs.length; i++) {
+                    lang_set_do(xs[i], the_world_stopped_v);
+                }
+                return the_world_stopped_v;
             }
             history[x_id] = true;
             xs[xs.length] = x;
@@ -346,6 +350,7 @@ var TheLanguage = (function() {
     exports.symbols.tail = tail_sym;
     var the_world_stopped_sym = new_symbol("宇宙亡矣");
     exports.symbols.the_world_stopped = the_world_stopped_sym;
+    var the_world_stopped_v = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
 
     function make_sys_sym_f(x) {
         return new_data(name_sym, new_list(sys_sym, x));
