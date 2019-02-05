@@ -576,10 +576,11 @@ var TheLanguage = (function() {
                     if (xs.length === 1) {
                         return error_v;
                     }
-                    var f = force1(lang_eval(env, xs[1]));
-                    if (any_delay_just_p(f)) {
+                    /* WARNING delay未正確處理(影響較小) */
+                    var f = force_all(lang_eval(env, xs[1]));
+                    /*if (any_delay_just_p(f)) {
                         return lang_eval(env, x);
-                    }
+                    }*/
                     if (!data_p(f)) {
                         return error_v;
                     }
