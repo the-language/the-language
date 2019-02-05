@@ -19,6 +19,8 @@
 let L = require('./lang')
 let E = module.exports
 
+let A = L.new_list
+
 function quote(x) {
     return L.new_list(L.symbols.use_builtin_form, L.symbols.builtin.form.quote, x)
 }
