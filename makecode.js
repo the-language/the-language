@@ -23,6 +23,13 @@ function quote(x) {
     return L.new_list(L.symbols.use_builtin_form, L.symbols.builtin.form.quote, x)
 }
 E.quote = quote
+let S = L.new_symbol
+E.S = S
+
+function quoteS(x) {
+    return quote(S(x))
+}
+E.quoteS = quoteS
 
 function cons(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
@@ -35,8 +42,6 @@ function data(x, y) {
 E.data = data
 let null_v = L.null_v
 E.null_v = null_v
-let S = L.new_symbol
-E.S = S
 
 function list(...xs) {
     var r = L.null_v;
