@@ -19,7 +19,10 @@
 let L = require('./lang')
 let E = module.exports
 
-let A = L.new_list
+let A = L.new_list // apply
+function M(macro, ...args) { // apply macro
+    return L.new_list(L.symbols.use_form, macro, ...args)
+}
 
 function quote(x) {
     return L.new_list(L.symbols.use_builtin_form, L.symbols.builtin.form.quote, x)

@@ -576,7 +576,7 @@ var TheLanguage = (function() {
                     if (xs.length === 1) {
                         return error_v;
                     }
-                    var f = force1(xs[1]);
+                    var f = force1(lang_eval(env, xs[1]));
                     if (any_delay_just_p(f)) {
                         return lang_eval(env, x);
                     }
