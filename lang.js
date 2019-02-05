@@ -755,7 +755,7 @@ var TheLanguage = (function() {
             if (maybeenv === false) {
                 return error_v;
             }
-            return lang_eval(env, x);
+            return lang_eval(maybeenv, x);
         }],
 
         make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),

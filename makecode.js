@@ -68,12 +68,12 @@ function calc(env, x) {
 E.calc = calc
 
 function make_func(args, x) {
-    return data(L.symbols.function, list(args, x));
+    return data(quote(L.symbols.function), list(args, x));
 }
 E.make_func = make_func
 
 function make_macro(args, x) {
-    return data(L.symbols.form, list(make_func(args, x)))
+    return data(quote(L.symbols.form), list(make_func(args, x)))
 }
 E.make_macro = make_macro
 
@@ -81,3 +81,6 @@ function if_then_else(b, x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.if, b, x, y)
 }
 E.if_then_else = if_then_else
+
+let env_null_v = quote(L.env2val(L.env_null_v))
+E.env_null_v = env_null_v
