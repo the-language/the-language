@@ -1274,6 +1274,73 @@ var TheLanguage = (function() {
     /* {{{ 相對獨立的部分。complex parser/complex printer */
     function complex_parse(jsstr) {
         /* JSString -> LangVal */
+        var state_eof = [false];
+        var state = state_eof;
+
+        function state_push_char(chr) {
+            state = [true, chr, state];
+        }
+
+        function state_eof_p() {
+            return state[0] === false;
+        }
+
+        function state_not_eof_p() {
+            return state[0] === true;
+        }
+
+        function class_parse_fail() {}
+
+        function parse_fail() {
+            throw new class_parse_fail();
+        }
+
+        function parse_fail_p(e) {
+            return e instanceof class_parse_fail;
+        }
+
+        function parse_assert(b) {
+            if (!b) {
+                parse_fail();
+            }
+        }
+
+        function state_pop_char() {
+            parse_assert(state_not_eof_p());
+            var ret = state[1];
+            state = state[2];
+            return ret;
+        }
+
+        function assert_parse_fail(e) {
+            if (!parse_fail_p(e)) {
+                throw e;
+            }
+        }
+
+        function parse_symbol_a_char() {
+            /* Parser JSString/JSChar */
+            var chr = state_pop_char();
+            var not_s = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', ' ', '\n', '\t', '\r'];
+            for (var i = 0; i < not_s.length; i++) {
+                parse_assert(chr !== not_s[i]);
+            }
+            return chr;
+        }
+
+        function parse_symbol() {
+            /* Parser LangVal */
+            var str = parse_symbol_a_char();
+            while (true) {
+                try {
+                    var chr = parse_symbol_a_char();
+                    str += chr;
+                } catch (e) {
+                    assert_parse_fail(e);
+                    return new_symbol(str);
+                }
+            }
+        }
         WIP
     }
 
