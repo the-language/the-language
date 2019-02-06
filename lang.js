@@ -1268,9 +1268,22 @@ var TheLanguage = (function() {
         }
         return val();
     }
-    exports.print = print;
     exports.read = read;
     /* 相對獨立的部分。parser/printer }}} */
+
+    /* {{{ 相對獨立的部分。complex parser/complex printer */
+    function complex_parse(jsstr) {
+        /* JSString -> LangVal */
+        WIP
+    }
+
+    function complex_print(val) {
+        /* LangVal -> JSString */
+        WIP
+    }
+    exports.complex_parse = complex_parse;
+    exports.complex_print = complex_print;
+    /* 相對獨立的部分。complex parser/complex printer }}} */
 
     return exports;
 })();
