@@ -1322,7 +1322,7 @@ var TheLanguage = (function() {
             return function() {
                 var state_backup = state;
                 try {
-                    return f.apply(null, [].slice.call(arguments));
+                    return f.apply(null, []);
                 } catch (e) {
                     assert_parse_fail();
                     state = state_backup;
@@ -1341,7 +1341,6 @@ var TheLanguage = (function() {
             }
             return chr;
         });
-
         var p_symbol = make_parser(function() {
             /* Parser LangVal */
             var str = parse_symbol_a_char();
@@ -1366,6 +1365,20 @@ var TheLanguage = (function() {
             }
             parse_fail();
         });
+        var p_space = make_parser(function() {
+            /* Parser JSString */
+            var str = parse_space_a_char();
+            while (true) {
+                try {
+                    var chr = p_space_a_char();
+                    str += chr;
+                } catch (e) {
+                    assert_parse_fail(e);
+                    return str;
+                }
+            }
+        });
+
         WIP
     }
 
