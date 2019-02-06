@@ -1409,6 +1409,10 @@ var TheLanguage = (function() {
 
     function complex_print(val) {
         /* LangVal -> JSString */
+        function print_sys_name(x) {
+            /* 是 complex_print(make_sys_sym_f(x)) */
+            WIP
+        }
         WIP
     }
     exports.complex_parse = complex_parse;
