@@ -1318,29 +1318,54 @@ var TheLanguage = (function() {
             }
         }
 
-        function parse_symbol_a_char() {
-            /* Parser JSString/JSChar */
+        function make_parser(f) {
+            return function() {
+                var state_backup = state;
+                try {
+                    return f.apply(null, [].slice.call(arguments));
+                } catch (e) {
+                    assert_parse_fail();
+                    state = state_backup;
+                    parse_fail();
+                }
+            }
+        }
+
+        var p_symbol_a_char = make_parser(function() {
+            /* Parser JSChar */
+            /* p = parser */
             var chr = state_pop_char();
             var not_s = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', ' ', '\n', '\t', '\r'];
             for (var i = 0; i < not_s.length; i++) {
                 parse_assert(chr !== not_s[i]);
             }
             return chr;
-        }
+        });
 
-        function parse_symbol() {
+        var p_symbol = make_parser(function() {
             /* Parser LangVal */
             var str = parse_symbol_a_char();
             while (true) {
                 try {
-                    var chr = parse_symbol_a_char();
+                    var chr = p_symbol_a_char();
                     str += chr;
                 } catch (e) {
                     assert_parse_fail(e);
                     return new_symbol(str);
                 }
             }
-        }
+        });
+        var p_space_a_char = make_parser(function() {
+            /* Parser JSChar */
+            var chr = state_pop_char();
+            var xs = ['\n', '\r', '\t'];
+            for (var i = 0; i < xs.length; i++) {
+                if (xs[i] === chr) {
+                    return chr;
+                }
+            }
+            parse_fail();
+        });
         WIP
     }
 
