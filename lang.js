@@ -1390,13 +1390,18 @@ var TheLanguage = (function() {
             });
             var p_name_form = make_parser(function() {
                 parse_assert(state_pop_char() === '~');
-                parse_assert(state_pop_chaf() === ':');
+                parse_assert(state_pop_chaf() === ';');
                 var x = p_name();
                 return new_list(form_sym, x);
             });
-            var p_name_elim = WIP;
+            var p_name_get = make_parser(function() {
+                var t = p_name();
+                parse_assert(state_pop_char() === '.');
+                var x = p_name();
+                return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
+            });
             WIP
-            return make_sys_sym(p_name());
+            return make_sys_sym_f(p_name());
         });
 
         WIP
