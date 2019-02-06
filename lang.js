@@ -1379,6 +1379,26 @@ var TheLanguage = (function() {
             }
         });
 
+        var p_sys_name = make_parser(function() {
+            var p_name;
+            var p_name_symbol = p_symbol;
+            var p_name_bracket = make_parser(function() {
+                parse_assert(state_pop_char() === '[');
+                var ret = p_name();
+                parse_assert(state_pop_char() === ']');
+                return ret;
+            });
+            var p_name_form = make_parser(function() {
+                parse_assert(state_pop_char() === '~');
+                parse_assert(state_pop_chaf() === ':');
+                var x = p_name();
+                return new_list(form_sym, x);
+            });
+            var p_name_elim = WIP;
+            WIP
+            return make_sys_sym(p_name());
+        });
+
         WIP
     }
 
