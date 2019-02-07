@@ -16,10 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-let L = require('./lang')
-let E = module.exports
+const L = require('./lang')
+const _E = module.exports
 
-let A = L.new_list // apply
+const A = L.new_list // apply
 function M(macro, ...args) { // apply macro
     return L.new_list(L.symbols.use_form, macro, ...args)
 }
@@ -27,26 +27,26 @@ function M(macro, ...args) { // apply macro
 function quote(x) {
     return L.new_list(L.symbols.use_builtin_form, L.symbols.builtin.form.quote, x)
 }
-E.quote = quote
-let S = L.new_symbol
-E.S = S
+_E.quote = quote
+const S = L.new_symbol
+_E.S = S
 
 function quoteS(x) {
     return quote(S(x))
 }
-E.quoteS = quoteS
+_E.quoteS = quoteS
 
 function cons(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
 }
-E.cons = cons
+_E.cons = cons
 
 function data(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
 }
-E.data = data
-let null_v = L.null_v
-E.null_v = null_v
+_E.data = data
+const null_v = L.null_v
+_E.null_v = null_v
 
 function list(...xs) {
     var r = L.null_v;
@@ -55,42 +55,42 @@ function list(...xs) {
     }
     return r
 }
-E.list = list
+_E.list = list
 
 function car(p) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_car, x, y)
 }
-E.car = car
+_E.car = car
 
 function cdr(p) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_cdr, x, y)
 }
-E.cdr = cdr
+_E.cdr = cdr
 
 function error(x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_error, x, y)
 }
-E.error = error
+_E.error = error
 
 function calc(env, x) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.eval, env, x)
 }
-E.calc = calc
+_E.calc = calc
 
 function make_func(args, x) {
     return data(quote(L.symbols.function), list(args, x));
 }
-E.make_func = make_func
+_E.make_func = make_func
 
 function make_macro(args, x) {
     return data(quote(L.symbols.form), list(make_func(args, x)))
 }
-E.make_macro = make_macro
+_E.make_macro = make_macro
 
 function if_then_else(b, x, y) {
     return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.if, b, x, y)
 }
-E.if_then_else = if_then_else
+_E.if_then_else = if_then_else
 
-let env_null_v = quote(L.env2val(L.env_null_v))
-E.env_null_v = env_null_v
+const env_null_v = quote(L.env2val(L.env_null_v))
+_E.env_null_v = env_null_v
