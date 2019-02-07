@@ -421,7 +421,14 @@ var TheLanguage = (function() {
         }
 
         function make_history() {
-            return history.concat(parents_history);
+            var ret = {};
+            for (var x_id in history) {
+                ret[x_id] = true;
+            }
+            for (var x_id in parents_history) {
+                ret[x_id] = true;
+            }
+            return ret;
         }
         while (any_delay_just_p(x)) {
             var x_id = print(x);
@@ -447,7 +454,7 @@ var TheLanguage = (function() {
                             ASSERT(xs.length === 1);
                             var inner = force_all(xs[0], make_history());
                             if (jsbool_equal_p(inner, the_world_stopped_v)) {
-                                return builtin_func_apply(f, [the_world_stopped_v]);
+                                return force_all(builtin_func_apply(f, [the_world_stopped_v]));
                             } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
@@ -463,7 +470,7 @@ var TheLanguage = (function() {
                             ASSERT(xs.length === 3);
                             var tf = force_all(xs[0], make_history());
                             if (jsbool_equal_p(tf, the_world_stopped_v)) {
-                                return builtin_func_apply(builtin_func_if_sym, [the_world_stopped_v, xs[1], xs[2]]);
+                                return force_all(builtin_func_apply(builtin_func_if_sym, [the_world_stopped_v, xs[1], xs[2]]));
                             } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
