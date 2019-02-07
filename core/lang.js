@@ -197,139 +197,6 @@ var TheLanguage = (function() {
     exports.force_rec = force_all_rec;
     // 相對獨立的部分。內建數據結構 }}}
 
-    // {{{ 相對獨立的部分。對內建數據結構的簡單處理
-    function jslist2list(xs) {
-        // JSList a -> LangVal
-        var ret = null_v;
-        for (var i = xs.length - 1; i >= 0; i--) {
-            ret = new_cons(xs[i], ret);
-        }
-        return ret;
-    }
-
-    function list2jslist(xs, k_done, k_tail) {
-        // LangVal, (JSList a -> b), (JSList a, LangVal -> b) -> b
-        if (jsnull_p(k_done)) {
-            k_done = function(x) {
-                return x;
-            };
-        }
-        var ret = [];
-        while (cons_p(xs)) {
-            ret[ret.length] = cons_car(xs);
-            xs = cons_cdr(xs);
-        }
-        if (null_p(xs)) {
-            return k_done(ret);
-        }
-        return k_tail(ret, xs);
-    }
-
-    function maybe_list2js(xs) {
-        // LangVal -> Maybe (JSList LangVal)
-        return list2jslist(xs, function(xs) {
-            return xs;
-        }, function(xs, x) {
-            return false;
-        });
-    }
-
-    function new_list() {
-        return jslist2list(arguments);
-    }
-    exports.jslist2list = jslist2list;
-    exports.new_list = new_list;
-
-    function un_just_all(raw) {
-        var x = raw;
-        var xs = [];
-        while (just_p(x)) {
-            xs[xs.length] = x;
-            x = un_just(x);
-        }
-        for (var i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], x);
-        }
-        return x;
-    }
-
-    function any_delay_just_p(x) {
-        return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x);
-    }
-    exports.delay_p = any_delay_just_p;
-
-    function force_all(raw, parents_history) {
-        // LangVal -> LangVal
-        if (jsnull_p(parents_history)) {
-            parents_history = {};
-        }
-        var history = {};
-        var x = raw;
-        var xs = [];
-
-        function replace_this_with_stopped() {
-            // 語言標準允許替換沒有值的東西為那種錯誤。
-            lang_set_do(x, the_world_stopped_v);
-            for (var i = 0; i < xs.length; i++) {
-                lang_set_do(xs[i], the_world_stopped_v);
-            }
-            return the_world_stopped_v;
-        }
-        while (any_delay_just_p(x)) {
-            var x_id = print(x);
-            if (parents_history[x_id] === true) {
-                return replace_this_with_stopped();
-            }
-            if (history[x_id] === true) {
-                // 減少替換範圍：(f <沒有值>) 的(f _)
-                switch (type_of(x)) {
-                    case delay_eval_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
-                    case delay_builtin_func_t:
-                        return replace_this_with_stopped(); //WIP
-                        WIP
-                    case delay_builtin_form_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
-                    case delay_apply_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
-                    default:
-                }
-                ERROR();
-            }
-            history[x_id] = true;
-            xs[xs.length] = x;
-            x = force1(x);
-        }
-        for (var i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], x);
-        }
-        return x;
-    }
-
-    function force1(raw) {
-        // LangVal -> LangVal
-        var x = un_just_all(raw);
-        var ret;
-        ASSERT(!just_p(x));
-        if (delay_eval_p(x)) {
-            ret = real_eval(delay_eval_env(x), delay_eval_x(x));
-        } else if (delay_builtin_form_p(x)) {
-            ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
-        } else if (delay_builtin_func_p(x)) {
-            ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
-        } else if (delay_apply_p(x)) {
-            ret = real_lang_apply(delay_apply_f(x), delay_apply_xs(x));
-        } else {
-            ret = x;
-        }
-        ret = un_just_all(ret);
-        lang_set_do(x, ret);
-        return ret;
-    }
-    exports.force = force_all;
-    exports.force1 = force1;
-    // 相對獨立的部分。對內建數據結構的簡單處理 }}}
-
     // {{{ 相對獨立的部分。符號名稱
     exports.symbols = {};
     var sys_sym = new_symbol("太始初核");
@@ -473,6 +340,140 @@ var TheLanguage = (function() {
         }
     }
     // 相對獨立的部分。符號名稱 }}}
+
+    // {{{ 相對獨立的部分。對內建數據結構的簡單處理
+    function jslist2list(xs) {
+        // JSList a -> LangVal
+        var ret = null_v;
+        for (var i = xs.length - 1; i >= 0; i--) {
+            ret = new_cons(xs[i], ret);
+        }
+        return ret;
+    }
+
+    function list2jslist(xs, k_done, k_tail) {
+        // LangVal, (JSList a -> b), (JSList a, LangVal -> b) -> b
+        if (jsnull_p(k_done)) {
+            k_done = function(x) {
+                return x;
+            };
+        }
+        var ret = [];
+        while (cons_p(xs)) {
+            ret[ret.length] = cons_car(xs);
+            xs = cons_cdr(xs);
+        }
+        if (null_p(xs)) {
+            return k_done(ret);
+        }
+        return k_tail(ret, xs);
+    }
+
+    function maybe_list2js(xs) {
+        // LangVal -> Maybe (JSList LangVal)
+        return list2jslist(xs, function(xs) {
+            return xs;
+        }, function(xs, x) {
+            return false;
+        });
+    }
+
+    function new_list() {
+        return jslist2list(arguments);
+    }
+    exports.jslist2list = jslist2list;
+    exports.new_list = new_list;
+
+    function un_just_all(raw) {
+        var x = raw;
+        var xs = [];
+        while (just_p(x)) {
+            xs[xs.length] = x;
+            x = un_just(x);
+        }
+        for (var i = 0; i < xs.length; i++) {
+            lang_set_do(xs[i], x);
+        }
+        return x;
+    }
+
+    function any_delay_just_p(x) {
+        return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x);
+    }
+    exports.delay_p = any_delay_just_p;
+
+    function force_all(raw, parents_history) {
+        // LangVal -> LangVal
+        if (jsnull_p(parents_history)) {
+            parents_history = {};
+        }
+        var history = {};
+        var x = raw;
+        var xs = [];
+
+        function replace_this_with_stopped() {
+            // 語言標準允許替換沒有值的東西為那種錯誤。
+            lang_set_do(x, the_world_stopped_v);
+            for (var i = 0; i < xs.length; i++) {
+                lang_set_do(xs[i], the_world_stopped_v);
+            }
+            return the_world_stopped_v;
+        }
+        while (any_delay_just_p(x)) {
+            var x_id = print(x);
+            if (parents_history[x_id] === true) {
+                return replace_this_with_stopped();
+            }
+            if (history[x_id] === true) {
+                // 減少替換範圍：(f <沒有值>) 的(f _)
+                switch (type_of(x)) {
+                    case delay_eval_t:
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                    case delay_builtin_func_t:
+                        return replace_this_with_stopped(); //WIP
+                        var fs = [];
+                        WIP
+                    case delay_builtin_form_t:
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                    case delay_apply_t:
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                    default:
+                }
+                ERROR();
+            }
+            history[x_id] = true;
+            xs[xs.length] = x;
+            x = force1(x);
+        }
+        for (var i = 0; i < xs.length; i++) {
+            lang_set_do(xs[i], x);
+        }
+        return x;
+    }
+
+    function force1(raw) {
+        // LangVal -> LangVal
+        var x = un_just_all(raw);
+        var ret;
+        ASSERT(!just_p(x));
+        if (delay_eval_p(x)) {
+            ret = real_eval(delay_eval_env(x), delay_eval_x(x));
+        } else if (delay_builtin_form_p(x)) {
+            ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
+        } else if (delay_builtin_func_p(x)) {
+            ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
+        } else if (delay_apply_p(x)) {
+            ret = real_lang_apply(delay_apply_f(x), delay_apply_xs(x));
+        } else {
+            ret = x;
+        }
+        ret = un_just_all(ret);
+        lang_set_do(x, ret);
+        return ret;
+    }
+    exports.force = force_all;
+    exports.force1 = force1;
+    // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
     // {{{ 相對獨立的部分。變量之環境
     var env_null_v = [];
