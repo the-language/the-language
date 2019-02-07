@@ -669,9 +669,6 @@ var TheLanguage = (function() {
             if (p_jsfunc(x)) {
                 return true_v;
             }
-            if (error_p(x)) {
-                return error_v;
-            }
             return false_v;
         }];
     }
@@ -684,9 +681,6 @@ var TheLanguage = (function() {
             }
             if (p_jsfunc(x)) {
                 return f_jsfunc(x);
-            }
-            if (error_p(x)) {
-                return error_v;
             }
             return error_v;
         }];
