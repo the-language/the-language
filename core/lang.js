@@ -285,7 +285,7 @@ var TheLanguage = (function() {
                 // 減少替換範圍：(f <沒有值>) 的(f _)
                 switch (type_of(x)) {
                     case delay_eval_t:
-                        return replace_this_with_stopped(); // 可能未減少？
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
                     case delay_builtin_func_t:
                         WIP
                     case delay_builtin_form_t:
