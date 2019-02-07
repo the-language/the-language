@@ -331,7 +331,7 @@ var TheLanguage = (function() {
         if (x === y) {
             return true;
         }
-        // 其他語言暫未實現。 TODO
+        // 其他語言暫未實現。 WIP
         if (un_symbol(x) === un_symbol(y)) {
             lang_set_do(x, y);
             return true;
@@ -419,6 +419,10 @@ var TheLanguage = (function() {
             }
             return the_world_stopped_v;
         }
+
+        function make_history() {
+            return history.concat(parents_history);
+        }
         while (any_delay_just_p(x)) {
             var x_id = print(x);
             if (parents_history[x_id] === true) {
@@ -430,9 +434,43 @@ var TheLanguage = (function() {
                     case delay_eval_t:
                         return replace_this_with_stopped(); // 可能未減少應該減少的？
                     case delay_builtin_func_t:
-                        return replace_this_with_stopped(); //WIP
-                        var fs = [];
-                        WIP
+                        var f = delay_builtin_func_f(x); // LangVal/Name
+                        var xs = delay_builtin_func_xs(x); // JSList LangVal
+                        var elim_s = [builtin_func_data_name_sym, builtin_func_data_list_sym, builtin_func_data_p_sym, builtin_func_error_name_sym, builtin_func_error_list_sym, builtin_func_error_p_sym, builtin_func_cons_p_sym, builtin_func_cons_head_sym, builtin_func_cons_tail_sym, builtin_func_sym_p_sym, builtin_func_null_p_sym];
+                        var is_elim = false;
+                        for (var i = 0; i < elim_s.length; i++) {
+                            if (jsbool_equal_p(elim_s[i], f)) {
+                                is_elim = true;
+                            }
+                        }
+                        if (is_elim) {
+                            ASSERT(xs.length === 1);
+                            var inner = force_all(xs[0], make_history());
+                            if (jsbool_equal_p(inner, the_world_stopped_v)) {
+                                return builtin_func_apply(f, [the_world_stopped_v]);
+                            } else {
+                                ERROR(); //我覺得沒有這種情況
+                                return replace_this_with_stopped();
+                            }
+                        }
+                        if (jsbool_equal_p(f, builtin_func_equal_sym)) {
+                            return replace_this_with_stopped(); //WIP
+                        } else if (jsbool_equal_p(f, builtin_func_apply_sym)) {
+                            return replace_this_with_stopped(); //WIP
+                        } else if (jsbool_equal_p(f, builtin_func_eval_sym)) {
+                            return replace_this_with_stopped(); //WIP
+                        } else if (jsbool_equal_p(f, builtin_func_if_sym)) {
+                            ASSERT(xs.length === 3);
+                            var tf = force_all(xs[0], make_history());
+                            if (jsbool_equal_p(tf, the_world_stopped_v)) {
+                                return builtin_func_apply(builtin_func_if_sym, [the_world_stopped_v, xs[1], xs[2]]);
+                            } else {
+                                ERROR(); //我覺得沒有這種情況
+                                return replace_this_with_stopped();
+                            }
+                            return replace_this_with_stopped(); //WIP
+                        }
+                        ERROR(); //我覺得沒有這種情況
                     case delay_builtin_form_t:
                         return replace_this_with_stopped(); // 可能未減少應該減少的？
                     case delay_apply_t:
