@@ -226,7 +226,7 @@ var TheLanguage = (function() {
 
     function maybe_list2js(xs) {
         /* LangVal -> Maybe (JSList LangVal) */
-        return list2jslist(x, function(xs) {
+        return list2jslist(xs, function(xs) {
             return xs;
         }, function(xs, x) {
             return false;
@@ -1451,7 +1451,7 @@ var TheLanguage = (function() {
             }
             return print(make_sys_sym_f(x));
         }
-        x = read(print(val)); // 去除所有just
+        var x = read(print(val)); // 去除所有just
         var temp = "";
         var prefix = "";
         switch (type_of(x)) {
