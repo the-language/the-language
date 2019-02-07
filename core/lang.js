@@ -1471,16 +1471,14 @@ var TheLanguage = (function() {
                 }
                 return temp;
             case data_t:
-                {
-                    var name = data_name(x);
-                    var list = data_list(x);
-                    var maybe_xs = maybe_list2js(list);
-                    if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(name, name_sym) && jsbool_equal_p(maybe_xs[0], sys_sym)) {
-                        /* make_sys_sym_f(maybe_xs[1]) */
-                        return print_sys_name(maybe_xs[1], 'top');
-                    }
-                    return "#" + complex_print(new_cons(name, list));
+                var name = data_name(x);
+                var list = data_list(x);
+                var maybe_xs = maybe_list2js(list);
+                if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(name, name_sym) && jsbool_equal_p(maybe_xs[0], sys_sym)) {
+                    /* make_sys_sym_f(maybe_xs[1]) */
+                    return print_sys_name(maybe_xs[1], 'top');
                 }
+                return "#" + complex_print(new_cons(name, list));
             case error_t:
                 return "!" + complex_print(new_cons(error_name(x), error_list(x)));
             case symbol_t:

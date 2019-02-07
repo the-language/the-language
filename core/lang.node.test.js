@@ -16,9 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-let L = require("./lang")
+const L = require("./lang")
 
-let print_do = console.log
+const print_do = console.log
 
 function ERROR() {
     null()
@@ -33,8 +33,9 @@ function ASSERT(x) {
 function ASSERT_WITH_EXP(text, x) {
     print_do("[TEST]" + text)
     ASSERT(x);
-} {
-    let xs = [
+}
+print_do("------[TEST/read,print]-------"); {
+    const xs = [
         "(你好 世界！)",
         "!(#(a b) . c)",
         "((a) . #(bb cd54rf 66))",
@@ -43,15 +44,12 @@ function ASSERT_WITH_EXP(text, x) {
         "$(#(映表 ((ha ga))) ha)",
         '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
     ]
-    for (let i in xs) {
-        let x = xs[i]
+    for (const x of xs) {
         ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", L.print(L.read(x)) === x)
     }
 }
-print_do("------[TEST/eval]-------")
-
-{
-    let xs = [
+print_do("------[TEST/eval]-------"); {
+    const xs = [
         ["$(#(映表 ((ha ga))) ha)", "ga"],
         ["$(#(映表 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
         ["$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) HA))", "HA"],
@@ -70,9 +68,16 @@ print_do("------[TEST/eval]-------")
         ['$(#(映表 ()) (#(符名 太始初核 (式形 式形)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(式形 #(化滅 (E) E)))))', '#(映表 ())'],
         ['$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))', '()'],
     ]
-    for (let i in xs) {
-        let x = xs[i]
-        let r = L.print_force_rec(L.read(x[0]))
+    for (const x of xs) {
+        const r = L.print_force_rec(L.read(x[0]))
         ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1])
+    }
+}
+print_do("------[TEST/complex_print]-------"); {
+    let xs = [
+        [L.symbols.builtin.function.data_name, '構.符名']
+    ]
+    for (const x of xs) {
+        ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[0]) + "\")) === \"" + x[1] + "\"", L.complex_print(x[0]) === x[1])
     }
 }
