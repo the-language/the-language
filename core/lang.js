@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+'use strict';
 var TheLanguage = (function() {
     var enable_nodejs = true;
     var in_nodejs = module ? true : false; /* fix me? */
