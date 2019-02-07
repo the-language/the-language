@@ -1422,6 +1422,10 @@ var TheLanguage = (function() {
             /* 是 complex_print(make_sys_sym_f(x)) */
             /* x : LangVal */
             /* inner : JSBoolean */
+            if (symbol_p(x)) {
+                return un_symbol(x);
+            }
+
             function inner_bracket(x) {
                 if (where === 'inner') {
                     return '[' + x + ']';
@@ -1442,10 +1446,56 @@ var TheLanguage = (function() {
                         return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
                     }
                 }
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {}
-            WIP
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {
+                //WIP
+            }
+            return print(make_sys_sym_f(x));
         }
-        WIP
+        x = read(print(val)); // 去除所有just
+        var temp = "";
+        var prefix = "";
+        switch (type_of(x)) {
+            case null_t:
+                return "()";
+            case cons_t:
+                temp = "(";
+                prefix = "";
+                while (cons_p(x)) {
+                    temp += prefix + complex_print(cons_car(x));
+                    prefix = " ";
+                }
+                if (null_p(x)) {
+                    temp += ")";
+                } else {
+                    temp += " . " + complex_print(x) + ")";
+                }
+                return temp;
+            case data_t:
+                {
+                    var name = data_name(x);
+                    var list = data_list(x);
+                    var maybe_xs = maybe_list2js(list);
+                    if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(name, name_sym) && jsbool_equal_p(maybe_xs[0], sys_sym)) {
+                        /* make_sys_sym_f(maybe_xs[1]) */
+                        return print_sys_name(maybe_xs[1], 'top');
+                    }
+                    return "#" + complex_print(new_cons(name, list));
+                }
+            case error_t:
+                return "!" + complex_print(new_cons(error_name(x), error_list(x)));
+            case symbol_t:
+                return un_symbol(x);
+            case delay_eval_t:
+                return "$(" + complex_print(env2val(delay_eval_env(x))) + " " + complex_print(delay_eval_x(x)) + ")";
+            case delay_builtin_func_t:
+                return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jslist2list(delay_builtin_func_xs(x))) + ")";
+            case delay_builtin_form_t:
+                return "@(" + complex_print(env2val(delay_builtin_form_env(x))) + " " + complex_print(delay_builtin_form_f(x)) + " " + complex_print(jslist2list(delay_builtin_form_xs(x))) + ")";
+            case delay_apply_t:
+                return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jslist2list(delay_apply_xs(x))) + ")";
+            default:
+        }
+        ERROR();
     }
     exports.complex_parse = complex_parse;
     exports.complex_print = complex_print;
