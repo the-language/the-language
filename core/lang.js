@@ -281,17 +281,17 @@ var TheLanguage = (function() {
                 return replace_this_with_stopped();
             }
             if (history[x_id] === true) {
-                return replace_this_with_stopped(); //WIP
                 // 減少替換範圍：(f <沒有值>) 的(f _)
                 switch (type_of(x)) {
                     case delay_eval_t:
                         return replace_this_with_stopped(); // 可能未減少應該減少的？
                     case delay_builtin_func_t:
+                        return replace_this_with_stopped(); //WIP
                         WIP
                     case delay_builtin_form_t:
-                        WIP
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
                     case delay_apply_t:
-                        WIP
+                        return replace_this_with_stopped(); // 可能未減少應該減少的？
                     default:
                 }
                 ERROR();
