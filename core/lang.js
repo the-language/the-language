@@ -224,6 +224,15 @@ var TheLanguage = (function() {
         return k_tail(ret, xs);
     }
 
+    function maybe_list2js(xs) {
+        /* LangVal -> Maybe (JSList LangVal) */
+        return list2jslist(x, function(xs) {
+            return xs;
+        }, function(xs, x) {
+            return false;
+        });
+    }
+
     function new_list() {
         return jslist2list(arguments);
     }
@@ -1409,8 +1418,31 @@ var TheLanguage = (function() {
 
     function complex_print(val) {
         /* LangVal -> JSString */
-        function print_sys_name(x) {
+        function print_sys_name(x, where) {
             /* 是 complex_print(make_sys_sym_f(x)) */
+            /* x : LangVal */
+            /* inner : JSBoolean */
+            function inner_bracket(x) {
+                if (where === 'inner') {
+                    return '[' + x + ']';
+                } else if (where === 'top') {
+                    return x;
+                }
+                ERROR();
+            }
+            var maybe_xs = maybe_list2js(x);
+            if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_equal_p(maybe_xs[0], a_sym)) {
+                /* new_list(a_sym, maybe_xs[1], maybe_xs[2]) */
+                var maybe_lst_2 = maybe_list2js(maybe_xs[1]);
+                if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_equal_p(maybe_lst_2[0], func_sym)) {
+                    /* new_list(a_sym, new_list(func_sym, maybe_lst_2[1], maybe_lst_2[2]), maybe_xs[2]) */
+                    var maybe_lst_3 = maybe_list2js(maybe_lst_2[1]);
+                    if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_equal_p(maybe_lst_2[2], sth_sym)) {
+                        /* new_list(a_sym, new_list(func_sym, new_list(maybe_lst_3[0]), sth_sym), maybe_xs[2]) */
+                        return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
+                    }
+                }
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {}
             WIP
         }
         WIP
