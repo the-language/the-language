@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-let TL = require("./lang")
+let L = require("./lang")
 
 let print_do = console.log
 
@@ -45,7 +45,7 @@ function ASSERT_WITH_EXP(text, x) {
     ]
     for (let i in xs) {
         let x = xs[i]
-        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", TL.print(TL.read(x)) === x)
+        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", L.print(L.read(x)) === x)
     }
 }
 print_do("------[TEST/eval]-------")
@@ -72,7 +72,7 @@ print_do("------[TEST/eval]-------")
     ]
     for (let i in xs) {
         let x = xs[i]
-        let r = TL.print_force_rec(TL.read(x[0]))
+        let r = L.print_force_rec(L.read(x[0]))
         ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1])
     }
 }
