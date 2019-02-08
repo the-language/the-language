@@ -76,21 +76,14 @@ print_do("------[TEST/eval]-------"); {
         ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1])
     }
 }
-print_do("------[TEST/complex_print]-------"); {
-    const xs = [
-        [L.symbols.builtin.function.data_name, '構.符名'],
-        [L.symbols.use_form, '~;式形'],
-    ]
-    for (const x of xs) {
-        ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[0]) + "\")) === \"" + x[1] + "\"", L.complex_print(x[0]) === x[1])
-    }
-}
-print_do('------------------[TEST/complex_parse]-----------------'); {
+
+print_do('------------------[TEST/complex_parse,complex_print]-----------------'); {
     const xs = [
         ['構.符名', L.symbols.builtin.function.data_name],
         ['~;式形', L.symbols.use_form],
     ];
     for (const x of xs) {
         ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", L.print(L.complex_parse(x[0])) === L.print(x[1]))
+        ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[1]) + "\")) === \"" + x[0] + "\"", L.complex_print(x[1]) === x[0])
     }
 }
