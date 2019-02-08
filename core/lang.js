@@ -1489,13 +1489,13 @@ var TheLanguage = (function() {
                 return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
             });
             //WIP
-            var p_name = make_parser_or(p_name_symbol, p_name_bracket, p_name_form, p_name_get);
             var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get);
+            var p_name = make_parser_or(p_name_symbol, p_name_top);
             return make_sys_sym_f(p_name_top());
         });
 
         //WIP
-        var p_all = make_parser_or(p_symbol, p_sys_name);
+        var p_all = make_parser_or(p_sys_name, p_symbol);
         return p_all();
     }
 
