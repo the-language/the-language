@@ -78,7 +78,8 @@ print_do("------[TEST/eval]-------"); {
 }
 print_do("------[TEST/complex_print]-------"); {
     let xs = [
-        [L.symbols.builtin.function.data_name, '構.符名']
+        [L.symbols.builtin.function.data_name, '構.符名'],
+        [L.symbols.use_form, '~;式形'],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[0]) + "\")) === \"" + x[1] + "\"", L.complex_print(x[0]) === x[1])

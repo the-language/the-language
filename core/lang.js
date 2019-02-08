@@ -1395,11 +1395,25 @@ var TheLanguage = (function() {
                 try {
                     return f.apply(null, []);
                 } catch (e) {
-                    assert_parse_fail();
+                    assert_parse_fail(e);
                     state = state_backup;
                     parse_fail();
                 }
             }
+        }
+
+        function make_parser_or() {
+            var parsers = arguments;
+            return make_parser(function() {
+                for (var i = 0; i < parsers.length; i++) {
+                    try {
+                        return (parsers[i])();
+                    } catch (e) {
+                        assert_parse_fail(e);
+                    }
+                }
+                parse_fail();
+            });
         }
 
         var p_symbol_a_char = make_parser(function() {
@@ -1471,7 +1485,8 @@ var TheLanguage = (function() {
                 var x = p_name();
                 return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
             });
-            WIP
+            //WIP
+            var p_name = make_parser_or(p_name_symbol, p_name_bracket, p_name_form, p_name_get);
             return make_sys_sym_f(p_name());
         });
 
@@ -1510,6 +1525,9 @@ var TheLanguage = (function() {
                 }
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {
                 //WIP
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], form_sym)) {
+                // new_list(form_sym, maybe_xs[1])
+                return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
             }
             return print(make_sys_sym_f(x));
         }
