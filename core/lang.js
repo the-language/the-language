@@ -1488,8 +1488,14 @@ var TheLanguage = (function() {
                 var x = p_name();
                 return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
             });
+            var p_a = make_parser(function() {
+                var x = p_name();
+                parse_assert(state_pop_char() === ':');
+                var t = p_name();
+                return new_list(a_sym, t, x);
+            });
             //WIP
-            var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get);
+            var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get, p_a);
             var p_name = make_parser_or(p_name_symbol, p_name_top);
             return make_sys_sym_f(p_name_top());
         });
@@ -1529,6 +1535,7 @@ var TheLanguage = (function() {
                         return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
                     }
                 }
+                return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {
                 //WIP
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], form_sym)) {
