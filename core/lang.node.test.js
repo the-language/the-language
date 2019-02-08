@@ -87,11 +87,10 @@ print_do("------[TEST/complex_print]-------"); {
 }
 print_do('------------------[TEST/complex_parse]-----------------'); {
     const xs = [
-        ['a', 'a'],
-        ['你好', '你好'],
-        ['構.符名', L.print(L.symbols.builtin.function.data_name)],
+        ['構.符名', L.symbols.builtin.function.data_name],
+        ['~;式形', L.symbols.use_form],
     ];
     for (const x of xs) {
-        ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + x[1] + "\"", L.print(L.complex_parse(x[0])) === x[1])
+        ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", L.print(L.complex_parse(x[0])) === L.print(x[1]))
     }
 }

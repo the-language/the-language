@@ -1478,7 +1478,7 @@ var TheLanguage = (function() {
             });
             var p_name_form = make_parser(function() {
                 parse_assert(state_pop_char() === '~');
-                parse_assert(state_pop_chaf() === ';');
+                parse_assert(state_pop_char() === ';');
                 var x = p_name();
                 return new_list(form_sym, x);
             });
