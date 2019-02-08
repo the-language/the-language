@@ -35,7 +35,12 @@ function ASSERT_WITH_EXP(text, x) {
     print_do("[TEST]" + text)
     ASSERT(x);
 }
-print_do("------[TEST/read,print]-------"); {
+
+function test_block(name, f) {
+    print_do("----------[TEST/" + name + "]----------")
+    f()
+}
+test_block("read,print]", function() {
     const xs = [
         "(你好 世界！)",
         "!(#(a b) . c)",
@@ -48,8 +53,8 @@ print_do("------[TEST/read,print]-------"); {
     for (const x of xs) {
         ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", L.print(L.read(x)) === x)
     }
-}
-print_do("------[TEST/eval]-------"); {
+})
+test_block("eval", function() {
     const xs = [
         ["$(#(映表 ((ha ga))) ha)", "ga"],
         ["$(#(映表 ((#(#(a b) . c) ga))) #(#(a b) . c))", "ga"],
@@ -75,9 +80,9 @@ print_do("------[TEST/eval]-------"); {
         const r = L.print_force_rec(L.read(x[0]))
         ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", r === x[1])
     }
-}
+})
 
-print_do('------------------[TEST/complex_parse,complex_print]-----------------'); {
+test_block('complex_parse,complex_print', function() {
     const xs = [
         ['構.符名', L.symbols.builtin.function.data_name],
         ['~;式形', L.symbols.use_form],
@@ -87,4 +92,4 @@ print_do('------------------[TEST/complex_parse,complex_print]-----------------'
         ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", L.print(L.complex_parse(x[0])) === L.print(x[1]))
         ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[1]) + "\")) === \"" + x[0] + "\"", L.complex_print(x[1]) === x[0])
     }
-}
+})
