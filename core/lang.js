@@ -1351,6 +1351,9 @@ var TheLanguage = (function() {
         function state_push_char(chr) {
             state = [true, chr, state];
         }
+        for (var i = jsstr.length - 1; i !== -1; i--) {
+            state_push_char(jsstr[i]);
+        }
 
         function state_eof_p() {
             return state[0] === false;
@@ -1428,7 +1431,7 @@ var TheLanguage = (function() {
         });
         var p_symbol = make_parser(function() {
             // Parser LangVal
-            var str = parse_symbol_a_char();
+            var str = p_symbol_a_char();
             while (true) {
                 try {
                     var chr = p_symbol_a_char();
@@ -1487,10 +1490,13 @@ var TheLanguage = (function() {
             });
             //WIP
             var p_name = make_parser_or(p_name_symbol, p_name_bracket, p_name_form, p_name_get);
-            return make_sys_sym_f(p_name());
+            var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get);
+            return make_sys_sym_f(p_name_top());
         });
 
-        WIP
+        //WIP
+        var p_all = make_parser_or(p_symbol, p_sys_name);
+        return p_all();
     }
 
     function complex_print(val) {
