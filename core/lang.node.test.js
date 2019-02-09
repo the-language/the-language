@@ -31,14 +31,44 @@ function ASSERT(x) {
     }
 }
 
-function ASSERT_WITH_EXP(text, x) {
-    print_do("[TEST]" + text)
-    ASSERT(x);
-}
+const prelude = '\n' +
+    'const L = require("' + process.cwd() + '/lang")\n' +
+    'const print_do = console.log\n' +
+
+    'function ERROR() {\n' +
+    '    const ERR = undefined\n' +
+    '    ERR()\n' +
+    '}\n' +
+
+    'function ASSERT(x) {\n' +
+    '    if (!x) {\n' +
+    '        ERROR()\n' +
+    '    }\n' +
+    '}\n' +
+
+    'function ASSERT_WITH_EXP(text, x) {\n' +
+    '    print_do("[TEST]" + text)\n' +
+    '    ASSERT(x);\n' +
+    '}\n'
 
 function test_block(name, f) {
-    print_do("----------[TEST/" + name + "]----------")
-    f()
+    const script = prelude + '\n' +
+        //'print_do("----------[TEST/' + name + ']----------");\n'+
+        '{\n(' + f.toString() + ')();\n}\n'
+    const c_process = require('child_process')
+    const fs = require('fs')
+    c_process.exec('mktemp', function(error1, stdout, stderr) {
+        ASSERT(!error1)
+        const script_file = stdout.replace(/[\r\n]/g, "")
+        fs.writeFile(script_file, script, function(error2) {
+            ASSERT(!error2)
+            var child = c_process.fork(script_file)
+            //process.exec('node ' + script_file, function(error_node, stdout_node, stderr_node) {
+            // console.log(stdout_node)
+            //fs.unlink(script_file,function(){})
+            //})
+        })
+    })
 }
 test_block("read,print", function() {
     const xs = [
