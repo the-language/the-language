@@ -38,4 +38,4 @@ wait %1
 echo >> $f
 sleep 0.2s
 kill %2
-rm $f
+rm $f $printer

@@ -17,7 +17,6 @@
 
 */
 'use strict';
-const L = require("./lang")
 
 const print_do = console.log
 
@@ -63,6 +62,9 @@ function test_block(name, f) {
         fs.writeFile(script_file, script, function(error2) {
             ASSERT(!error2)
             var child = c_process.fork(script_file)
+            child.on('close', function(code) {
+                fs.unlink(script_file, function() {})
+            })
             //process.exec('node ' + script_file, function(error_node, stdout_node, stderr_node) {
             // console.log(stdout_node)
             //fs.unlink(script_file,function(){})
