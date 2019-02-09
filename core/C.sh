@@ -6,7 +6,36 @@ js-beautify -r *.js
 git add .;git diff --cached
 echo
 echo
+printer=$(mktemp)
+fstr="\"$f\""
+cat > $printer << EOF
+let fs=require('fs')
+let current=0
+let linecache=""
+function main(){
+    fs.readFile($fstr, 'utf8', function(err, data){
+        if(err){return main()}
+        const str = data.toString()
+        for(let i = current;i < str.length;i++){
+            const c = str[i]
+            if(c === '\n'){
+	        console.log(linecache)
+	        linecache = ''
+	    } else {
+	        linecache += c
+	    }
+        }
+        current = str.length
+        setTimeout(main, 10)
+    })
+}
+main()
+EOF
+node $printer&
 echo "---[TEST]---"
-wait
-cat $f
+sleep 1s
+wait %1
+echo >> $f
+sleep 0.2s
+kill %2
 rm $f
