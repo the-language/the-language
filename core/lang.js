@@ -1480,7 +1480,7 @@ var TheLanguage = (function() {
             var p_name_symbol = p_symbol;
             var p_name_bracket = make_parser(function() {
                 parse_assert(state_pop_char() === '[');
-                var ret = p_name_inner();
+                var ret = p_name_top();
                 parse_assert(state_pop_char() === ']');
                 return ret;
             });
@@ -1496,14 +1496,25 @@ var TheLanguage = (function() {
                 var x = p_name_inner();
                 return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
             });
-            var p_a = make_parser(function() {
+            var p_name_a2 = make_parser(function() {
+                parse_assert(state_pop_char() === '_');
+                parse_assert(state_pop_char() === ':');
+                var t = p_name_inner();
+                return new_list(a_sym, t);
+            });
+            var p_name_a = make_parser(function() {
                 var x = p_name_inner();
                 parse_assert(state_pop_char() === ':');
                 var t = p_name_inner();
                 return new_list(a_sym, t, x);
             });
+            var p_name_isornot = make_parser(function() {
+                var x = p_name_inner();
+                parse_assert(state_pop_char() === '?');
+                return new_list(isornot_sym, x);
+            });
             //WIP
-            var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get, p_a);
+            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_bracket);
             var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
@@ -1629,10 +1640,14 @@ var TheLanguage = (function() {
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {
-                //WIP
+                // new_list(a_sym, maybe_xs[1])
+                return inner_bracket('_:' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], form_sym)) {
                 // new_list(form_sym, maybe_xs[1])
                 return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], isornot_sym)) {
+                // new_list(isornot_sym, maybe_xs[1])
+                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '?');
             }
             if (where === 'inner') {
                 return print(x);
