@@ -1530,7 +1530,7 @@ var TheLanguage = (function() {
                 parse_assert(state_pop_char() === '?');
                 return new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, x)));
             });
-            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_bracket, p_name_for, p_name_pred, p_name_pred_type);
+            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_bracket);
             var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });

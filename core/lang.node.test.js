@@ -111,3 +111,14 @@ test_block('complex_parse,complex_print', function() {
         ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[1]) + "\")) === \"" + x[0] + "\"", L.complex_print(x[1]) === x[0])
     }
 })
+
+test_block('complex_parse,complex_print', function() {
+    const xs = [
+        '~;(太始初核 式形)',
+        '[:構?]?',
+        '[:[:構?]?]@hi',
+    ]
+    for (const x of xs) {
+        ASSERT_WITH_EXP('complex_print(complex_parse("' + x + '"))  === "' + x + '"', L.complex_print(L.complex_parse(x)) === x)
+    }
+})
