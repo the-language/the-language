@@ -1535,10 +1535,16 @@ var TheLanguage = (function() {
             parse_assert(cons_p(xs));
             return new_data(cons_car(xs), cons_cdr(xs));
         });
+        var p_error = make_parser(function() {
+            parse_assert(state_pop_char() === '!');
+            var xs = p_list();
+            parse_assert(cons_p(xs));
+            return new_error(cons_car(xs), cons_cdr(xs));
+        });
 
         //WIP
         p_maybe_space();
-        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data);
+        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data, p_error);
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return p_all();
     }

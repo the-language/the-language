@@ -83,12 +83,14 @@ test_block("eval", function() {
 })
 test_block('complex_parse', function() {
     const xs = [
-        ['()', '()'],
-        ['(() ())', '(() ())'],
-        ['(世界 你好)', '(世界 你好)'],
+        '()',
+        '(() ())',
+        '(世界 你好)',
+        '!(ha . aa)',
+        '#(ssdsds . #(asdsdwd . !(iwjxns)))',
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP('print(complex_parse("' + x[0] + '")) === "' + x[1] + '"', L.print(L.complex_parse(x[0])) === x[1])
+        ASSERT_WITH_EXP('print(complex_parse("' + x + '")) === "' + x + '"', L.print(L.complex_parse(x)) === x)
     }
 })
 test_block('complex_parse,complex_print', function() {
