@@ -1419,6 +1419,7 @@ var TheLanguage = (function() {
             });
         }
 
+        var p_all;
         var p_symbol_a_char = make_parser(function() {
             // Parser JSChar
             // p = parser
@@ -1445,7 +1446,7 @@ var TheLanguage = (function() {
         var p_space_a_char = make_parser(function() {
             // Parser JSChar
             var chr = state_pop_char();
-            var xs = ['\n', '\r', '\t'];
+            var xs = ['\n', '\r', '\t', ' '];
             for (var i = 0; i < xs.length; i++) {
                 if (xs[i] === chr) {
                     return chr;
@@ -1453,9 +1454,9 @@ var TheLanguage = (function() {
             }
             parse_fail();
         });
-        var p_space = make_parser(function() {
+        var p_maybe_space = make_parser(function() {
             // Parser JSString
-            var str = parse_space_a_char();
+            var str = "";
             while (true) {
                 try {
                     var chr = p_space_a_char();
@@ -1466,42 +1467,70 @@ var TheLanguage = (function() {
                 }
             }
         });
+        var p_space = make_parser(function() {
+            // Parser JSString
+            var str = parse_space_a_char();
+            var rest = p_maybe_space();
+            return str + rest;
+        });
 
         var p_sys_name = make_parser(function() {
-            var p_name;
+            var p_name_inner;
             var p_name_symbol = p_symbol;
             var p_name_bracket = make_parser(function() {
                 parse_assert(state_pop_char() === '[');
-                var ret = p_name();
+                var ret = p_name_inner();
                 parse_assert(state_pop_char() === ']');
                 return ret;
             });
             var p_name_form = make_parser(function() {
                 parse_assert(state_pop_char() === '~');
                 parse_assert(state_pop_char() === ';');
-                var x = p_name();
+                var x = p_name_inner();
                 return new_list(form_sym, x);
             });
             var p_name_get = make_parser(function() {
-                var t = p_name();
+                var t = p_name_inner();
                 parse_assert(state_pop_char() === '.');
-                var x = p_name();
+                var x = p_name_inner();
                 return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
             });
             var p_a = make_parser(function() {
-                var x = p_name();
+                var x = p_name_inner();
                 parse_assert(state_pop_char() === ':');
-                var t = p_name();
+                var t = p_name_inner();
                 return new_list(a_sym, t, x);
             });
             //WIP
             var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get, p_a);
-            var p_name = make_parser_or(p_name_symbol, p_name_top);
+            var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket);
             return make_sys_sym_f(p_name_top());
+        });
+        var p_list = make_parser(function() {
+            parse_assert(state_pop_char() === '(');
+            p_maybe_space();
+            var p_list_rest;
+            p_list_rest = make_parser_or(make_parser(function() {
+                parse_assert(state_pop_char() === ')');
+                return null_v;
+            }), make_parser(function() {
+                var x = p_all();
+                p_maybe_space();
+                var xs = p_list_rest();
+                return new_cons(x, xs);
+            }), make_parser(function() {
+                var x = p_all();
+                p_maybe_space();
+                parse_assert(state_pop_char() === '.');
+                p_maybe_space();
+                var y = p_all();
+                return new_cons(x, y);
+            }));
+            return p_list_rest();
         });
 
         //WIP
-        var p_all = make_parser_or(p_sys_name, p_symbol);
+        p_all = make_parser_or(p_sys_name, p_list, p_symbol);
         return p_all();
     }
 
@@ -1542,7 +1571,12 @@ var TheLanguage = (function() {
                 // new_list(form_sym, maybe_xs[1])
                 return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
             }
-            return print(make_sys_sym_f(x));
+            if (where === 'inner') {
+                return print(x);
+            } else if (where === 'top') {
+                return print(make_sys_sym_f(x));
+            }
+            ERROR();
         }
         var x = read(print(val)); // 去除所有just
         var temp = "";
