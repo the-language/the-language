@@ -1419,6 +1419,7 @@ var TheLanguage = (function() {
             });
         }
 
+        var p_all_no_sys_name;
         var p_all;
         var p_symbol_a_char = make_parser(function() {
             // Parser JSChar
@@ -1503,7 +1504,7 @@ var TheLanguage = (function() {
             });
             //WIP
             var p_name_top = make_parser_or(p_name_bracket, p_name_form, p_name_get, p_a);
-            var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket);
+            var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
         var p_list = make_parser(function() {
@@ -1528,9 +1529,17 @@ var TheLanguage = (function() {
             }));
             return p_list_rest();
         });
+        var p_data = make_parser(function() {
+            parse_assert(state_pop_char() === '#');
+            var xs = p_list();
+            parse_assert(cons_p(xs));
+            return new_data(cons_car(xs), cons_cdr(xs));
+        });
 
         //WIP
-        p_all = make_parser_or(p_sys_name, p_list, p_symbol);
+        p_maybe_space();
+        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data);
+        p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return p_all();
     }
 

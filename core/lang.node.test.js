@@ -96,6 +96,7 @@ test_block('complex_parse,complex_print', function() {
         ['構.符名', L.symbols.builtin.function.data_name],
         ['~;式形', L.symbols.use_form],
         ['解算:化滅', L.symbols.builtin.function.eval],
+        ['~;(太始初核 式形)', L.symbols.use_builtin_form],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", L.print(L.complex_parse(x[0])) === L.print(x[1]))
