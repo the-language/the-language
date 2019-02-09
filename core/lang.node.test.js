@@ -102,7 +102,7 @@ test_block('complex_parse,complex_print', function() {
         ['~;式形', L.symbols.use_form],
         ['解算:化滅', L.symbols.builtin.function.eval],
         ['~;(太始初核 式形)', L.symbols.use_builtin_form],
-        ['[[_:構]?]:化滅', L.symbols.builtin.function.data_p],
+        ['[[_:構]~]:化滅', L.symbols.builtin.function.data_p],
         ['化滅@應用', L.symbols.builtin.function.apply],
     ]
     for (const x of xs) {

@@ -1510,7 +1510,7 @@ var TheLanguage = (function() {
             });
             var p_name_isornot = make_parser(function() {
                 var x = p_name_inner();
-                parse_assert(state_pop_char() === '?');
+                parse_assert(state_pop_char() === '~');
                 return new_list(isornot_sym, x);
             });
             var p_name_for = make_parser(function() {
@@ -1655,7 +1655,7 @@ var TheLanguage = (function() {
                 return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], isornot_sym)) {
                 // new_list(isornot_sym, maybe_xs[1])
-                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '?');
+                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
             }
             if (where === 'inner') {
                 return print(x);
