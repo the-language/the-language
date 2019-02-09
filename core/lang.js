@@ -1541,10 +1541,58 @@ var TheLanguage = (function() {
             parse_assert(cons_p(xs));
             return new_error(cons_car(xs), cons_cdr(xs));
         });
-
-        //WIP
+        var p_eval = make_parser(function() {
+            parse_assert(state_pop_char() === '$');
+            parse_assert(state_pop_char() === '(');
+            p_maybe_space();
+            var env = val2env(p_all());
+            parse_assert(env !== false);
+            p_maybe_space();
+            var x = p_all();
+            p_maybe_space();
+            parse_assert(state_pop_char() === ')');
+            return lang_eval(env, x);
+        });
+        var p_builtin_func = make_parser(function() {
+            parse_assert(state_pop_char() === '%');
+            parse_assert(state_pop_char() === '(');
+            p_maybe_space();
+            var f = p_all();
+            p_maybe_space();
+            var xs = maybe_list2js(p_list());
+            parse_assert(xs !== false);
+            p_maybe_space();
+            parse_assert(state_pop_char() === ')');
+            return builtin_func_apply(f, xs);
+        });
+        var p_builtin_form = make_parser(function() {
+            parse_assert(state_pop_char() === '@');
+            parse_assert(state_pop_char() === '(');
+            p_maybe_space();
+            var env = val2env(p_all());
+            p_maybe_space();
+            var f = p_all();
+            p_maybe_space();
+            var xs = maybe_list2js(p_list());
+            parse_assert(xs !== false);
+            p_maybe_space();
+            parse_assert(state_pop_char() === ')');
+            return builtin_form_apply(env, f, xs);
+        });
+        var p_apply = make_parser(function() {
+            parse_assert(state_pop_char() === '^');
+            parse_assert(state_pop_char() === '(');
+            p_maybe_space();
+            var f = p_all();
+            p_maybe_space();
+            var xs = maybe_list2js(p_list());
+            parse_assert(xs !== false);
+            p_maybe_space();
+            parse_assert(state_pop_char() === ')');
+            return lang_apply(f, xs);
+        });
         p_maybe_space();
-        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data, p_error);
+        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply);
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return p_all();
     }

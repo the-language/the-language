@@ -40,7 +40,7 @@ function test_block(name, f) {
     print_do("----------[TEST/" + name + "]----------")
     f()
 }
-test_block("read,print]", function() {
+test_block("read,print", function() {
     const xs = [
         "(你好 世界！)",
         "!(#(a b) . c)",
@@ -88,6 +88,9 @@ test_block('complex_parse', function() {
         '(世界 你好)',
         '!(ha . aa)',
         '#(ssdsds . #(asdsdwd . !(iwjxns)))',
+        '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
+        '%(#(符名 太始初核 (一類何物 化滅 (是非 (一類何物 連)))) (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))))',
+        '$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))',
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('print(complex_parse("' + x + '")) === "' + x + '"', L.print(L.complex_parse(x)) === x)
