@@ -1513,8 +1513,13 @@ var TheLanguage = (function() {
                 parse_assert(state_pop_char() === '?');
                 return new_list(isornot_sym, x);
             });
-            //WIP
-            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_bracket);
+            var p_name_for = make_parser(function() {
+                var t = p_name_inner();
+                parse_assert(state_pop_char() === '@');
+                var verb = p_name_inner();
+                return new_list(a_sym, new_list(func_sym, new_cons(t, sth_sym), sth_sym), verb);
+            });
+            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_bracket, p_name_for);
             var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
@@ -1636,6 +1641,9 @@ var TheLanguage = (function() {
                     if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_equal_p(maybe_lst_2[2], sth_sym)) {
                         // new_list(a_sym, new_list(func_sym, new_list(maybe_lst_3[0]), sth_sym), maybe_xs[2])
                         return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
+                    } else if (cons_p(maybe_lst_2[1]) && jsbool_equal_p(cons_cdr(maybe_lst_2[1]), sth_sym) && jsbool_equal_p(maybe_lst_2[2], sth_sym)) {
+                        // new_list(a_sym, new_list(func_sym, new_cons(cons_car(maybe_lst_2[1]), sth_sym), sth_sym), maybe_xs[2]);
+                        return inner_bracket(print_sys_name(cons_car(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'));
                     }
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
