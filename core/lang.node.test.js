@@ -150,6 +150,8 @@ test_block('complex_parse,complex_print', function() {
         '[:構?]?',
         '[:[:構?]?]@hi',
         '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
+        '->構',
+
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('complex_print(complex_parse("' + x + '"))  === "' + x + '"', L.complex_print(L.complex_parse(x)) === x)
