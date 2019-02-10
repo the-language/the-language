@@ -1476,7 +1476,7 @@ var TheLanguage = (function() {
             for (var i = 0; i < parsers.length; i++) {
                 ASSERT(typeof parsers[i] === 'function');
             }
-            return make_parser(function() {
+            return make_parser_nop(function() {
                 for (var i = 0; i < parsers.length; i++) {
                     try {
                         return (parsers[i])();
@@ -1503,7 +1503,7 @@ var TheLanguage = (function() {
             }
             return chr;
         });
-        var p_symbol = make_parser(function() {
+        var p_symbol = make_parser_nop(function() {
             // Parser LangVal
             var str = p_symbol_a_char();
             while (true) {
@@ -1537,7 +1537,7 @@ var TheLanguage = (function() {
                 }
             }
         });
-        var p_space = make_parser(function() {
+        var p_space = make_parser_nop(function() {
             // Parser JSString
             var str = parse_space_a_char();
             var rest = p_maybe_space();
