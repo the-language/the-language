@@ -37,6 +37,10 @@ var TheLanguage = (function() {
         }
     }
 
+    function DEBUG(x) {
+        console.log(x);
+    }
+
     function jsnull_p(x) {
         // undefined/null
         return x == null;
@@ -643,12 +647,14 @@ var TheLanguage = (function() {
                         // WARNING delay未正確處理(影響較小)
                         rest = force1(cons_cdr(rest));
                     } else {
+                        DEBUG("[ERROR/eval] not list");
                         return error_v;
                     }
                 }
                 // WARNING delay未正確處理(影響較小)
                 if (jsbool_equal_p(xs[0], use_builtin_form_sym)) {
                     if (xs.length === 1) {
+                        DEBUG("[ERROR/eval] builtin_form/len=1");
                         return error_v;
                     }
                     var f = xs[1];
@@ -659,11 +665,13 @@ var TheLanguage = (function() {
                     return builtin_form_apply(env, f, args);
                 } else if (jsbool_equal_p(xs[0], use_form_sym)) {
                     if (xs.length === 1) {
+                        DEBUG("[ERROR/eval] form/len=1");
                         return error_v;
                     }
                     // WARNING delay未正確處理(影響較小)
                     var f = force_all(lang_eval(env, xs[1]));
                     if (!data_p(f)) {
+                        DEBUG("[ERROR/eval] form/not data{{{" + complex_print(f) + "}}}");
                         return error_v;
                     }
                     var f_type = force1(data_name(f));
@@ -671,9 +679,11 @@ var TheLanguage = (function() {
                         return lang_eval(env, x);
                     }
                     if (!symbol_p(f_type)) {
+                        DEBUG("[ERROR/eval] form/not form/not symbol");
                         return error_v;
                     }
                     if (!symbol_eq_p(f_type, form_sym)) {
+                        DEBUG("[ERROR/eval] form/not form");
                         return error_v;
                     }
                     var f_list = force1(data_list(f));
@@ -681,6 +691,7 @@ var TheLanguage = (function() {
                         return lang_eval(env, x);
                     }
                     if (!cons_p(f_list)) {
+                        DEBUG("[ERROR/eval] form/not form/0");
                         return error_v;
                     }
                     var f_x = cons_car(f_list);
@@ -689,6 +700,7 @@ var TheLanguage = (function() {
                         return lang_eval(env, x);
                     }
                     if (!null_p(f_list_cdr)) {
+                        DEBUG("[ERROR/eval] form/not form/multi args");
                         return error_v;
                     }
                     var args = [env2val(env)];
