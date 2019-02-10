@@ -1394,374 +1394,396 @@ var TheLanguage = (function() {
     // 相對獨立的部分。parser/printer }}}
 
     // {{{ 相對獨立的部分。complex parser/complex printer
-    var no_letrec_complex_parse;
-
     function complex_parse(x) {
         // JSString -> LangVal
-        return no_letrec_complex_parse(x); //作用域問題
-    }
-    no_letrec_complex_parse = (function() {
-        var jsstr; //優化,不得多線程
-        var state; //優化,不得多線程
-
-        function state_eof_p() {
-            return state === jsstr.length;
+        var state = x.split(""); // State : List Char
+        function eof() {
+            return state.length === 0;
         }
 
-        function state_not_eof_p() {
-            return state !== jsstr.length;
+        function get() {
+            return state.shift();
         }
 
-        function class_parse_fail() {}
-        var class_parse_fail_v = new class_parse_fail();
-
-        function class_parse_error() {}
-        var class_parse_error_v = new class_parse_error();
-
-        function parse_fail() {
-            throw class_parse_fail_v;
+        function put(x) {
+            state.unshift(x);
         }
 
-        function parse_error() {
-            throw class_parse_error_v;
+        function error() {
+            throw "TheLanguage parse ERROR!";
         }
 
-        function parse_fail_p(e) {
-            return e instanceof class_parse_fail;
+        function a_space_p(x) {
+            return x === " " || x === "\n" || x === "\t" || x === "\r";
         }
 
-        function parse_assert(b) {
-            if (!b) {
-                parse_fail();
+        function space() {
+            var p = a_space_p;
+            if (eof()) {
+                return false;
             }
-        }
-
-        function parse_assert_orerror(b) {
-            if (!b) {
-                parse_error();
+            var x = get();
+            if (!p(x)) {
+                put(x);
+                return false;
             }
-        }
-
-        function state_pop_char() {
-            parse_assert(state_not_eof_p());
-            var ret = jsstr[state];
-            state += 1;
-            return ret;
-        }
-
-        function state_lookup_char(i) {
-            if (jsnull_p(i)) {
-                i = 0;
+            while (p(x) && !eof()) {
+                x = get();
             }
-            var j = i + state;
-            if (j < jsstr.length) {
-                return jsstr[j];
+            if (!p(x)) {
+                put(x);
+            }
+            return true;
+        }
+
+        function symbol() {
+            var p = a_symbol_p;
+            if (eof()) {
+                return false;
+            }
+            var x = get();
+            var ret = "";
+            if (!p(x)) {
+                put(x);
+                return false;
+            }
+            while (p(x) && !eof()) {
+                ret += x;
+                x = get();
+            }
+            if (p(x)) {
+                ret += x;
             } else {
-                parse_fail();
+                put(x);
             }
+            return new_symbol(ret);
         }
 
-        function assert_parse_fail(e) {
-            if (!parse_fail_p(e)) {
-                throw e;
+        function list() {
+            if (eof()) {
+                return false;
             }
-        }
+            var x = get();
+            if (x !== "(") {
+                put(x);
+                return false;
+            }
+            var ret = null;
 
-        function make_parser(f) {
-            return function() {
-                var state_backup = state;
-                try {
-                    return f();
-                } catch (e) {
-                    assert_parse_fail(e);
-                    state = state_backup;
-                    parse_fail();
+            function set_last(lst) {
+                if (ret === null) {
+                    ret = lst;
+                    return;
                 }
+                var x = ret;
+                while (true) {
+                    if (!cons_p(x)) {
+                        ERROR();
+                    }
+                    var d = cons_cdr(x);
+                    if (d === null) {
+                        break;
+                    }
+                    x = cons_cdr(x);
+                }
+                if (!cons_p(x)) {
+                    ERROR();
+                }
+                if (x[2] !== null) {
+                    ERROR();
+                }
+                x[2] = lst; // 實現底層依賴[編號 0] parser <-> 內建數據結構
+            }
+
+            function last_add(x) {
+                set_last(new_cons(x, null));
+            }
+            while (true) {
+                space();
+                if (eof()) {
+                    error();
+                }
+                x = get();
+                if (x === ")") {
+                    set_last(null_v);
+                    return ret;
+                }
+                if (x === ".") {
+                    space();
+                    var e = val();
+                    if (e === false) {
+                        error();
+                    }
+                    set_last(e);
+                    space();
+                    if (eof()) {
+                        error();
+                    }
+                    x = get();
+                    if (x !== ")") {
+                        error();
+                    }
+                    return ret;
+                }
+                put(x);
+                var e = val();
+                if (e === false) {
+                    error();
+                }
+                last_add(e);
+            }
+        }
+
+        function data() {
+            if (eof()) {
+                return false;
+            }
+            var x = get();
+            if (x !== "#") {
+                put(x);
+                return false;
+            }
+            var xs = list();
+            if (xs === false) {
+                error();
+            }
+            if (!cons_p(xs)) {
+                error();
+            }
+            return new_data(cons_car(xs), cons_cdr(xs));
+        }
+
+        function readerror() {
+            if (eof()) {
+                return false;
+            }
+            var x = get();
+            if (x !== "!") {
+                put(x);
+                return false;
+            }
+            var xs = list();
+            if (xs === false) {
+                error();
+            }
+            if (!cons_p(xs)) {
+                error();
+            }
+            return new_error(cons_car(xs), cons_cdr(xs));
+        }
+
+        function make_read_two(prefix, k) {
+            return function() {
+                if (eof()) {
+                    return false;
+                }
+                var x = get();
+                if (x !== prefix) {
+                    put(x);
+                    return false;
+                }
+                var xs = list();
+                if (xs === false) {
+                    error();
+                }
+                if (!cons_p(xs)) {
+                    error();
+                }
+                x = cons_cdr(xs);
+                if (!(cons_p(x) && null_p(cons_cdr(x)))) {
+                    error();
+                }
+                return k(cons_car(xs), cons_car(x));
             };
         }
 
-        function make_parser_nop(f) { //優化
-            return f;
+        function make_read_three(prefix, k) {
+            return function() {
+                if (eof()) {
+                    return false;
+                }
+                var x = get();
+                if (x !== prefix) {
+                    put(x);
+                    return false;
+                }
+                var xs = list();
+                if (xs === false) {
+                    error();
+                }
+                if (!cons_p(xs)) {
+                    error();
+                }
+                x = cons_cdr(xs);
+                if (!cons_p(x)) {
+                    error();
+                }
+                x_d = cons_cdr(x);
+                if (!(cons_p(x_d) && null_p(cons_cdr(x_d)))) {
+                    error();
+                }
+                return k(cons_car(xs), cons_car(x), cons_car(x_d));
+            };
         }
-
-        function make_parser_or() {
-            var parsers = arguments;
-            for (var i = 0; i < parsers.length; i++) {
-                ASSERT(typeof parsers[i] === 'function');
+        var readeval = make_read_two("$", function(e, x) {
+            var env = val2env(e);
+            if (env === false) {
+                error();
             }
-            return make_parser_nop(function() {
-                for (var i = 0; i < parsers.length; i++) {
-                    try {
-                        return (parsers[i])();
-                    } catch (e) {
-                        assert_parse_fail(e);
-                    }
-                }
-                parse_fail();
-            });
-        }
-
-        var p_all_no_sys_name;
-        var p_all;
-        var p_symbol_a_char = make_parser(function() {
-            // Parser JSChar
-            // p = parser
-            var chr = state_pop_char();
-            //var not_s = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', ' ', '\n', '\t', '\r'];//非優化
-            //for (var i = 0; i < not_s.length; i++) {//非優化
-            //parse_assert(chr !== not_s[i]);//非優化
-            //}//非優化
-            if (chr === ' ' || chr === '\n' || chr === '\t' || chr === '\r' || chr === ')' || chr === ']' || chr === '.' || chr === ':' || chr === '~' || chr === '?' || chr === '@') { //優化/嚴重語法底層依賴[symbol]
-                parse_fail();
-            }
-            return chr;
-        });
-        var p_symbol = make_parser_nop(function() {
-            // Parser LangVal
-            var str = p_symbol_a_char();
-            while (true) {
-                try {
-                    var chr = p_symbol_a_char();
-                    str += chr;
-                } catch (e) {
-                    assert_parse_fail(e);
-                    return new_symbol(str);
-                }
-            }
-        });
-        var p_space_a_char = make_parser(function() {
-            // Parser JSChar
-            var chr = state_pop_char();
-            if (chr === '\n' || chr === '\r' || chr === '\t' || chr === ' ') {
-                return chr;
-            }
-            parse_fail();
-        });
-        var p_maybe_space = make_parser_nop(function() {
-            // Parser JSString
-            var str = "";
-            while (true) {
-                try {
-                    var chr = p_space_a_char();
-                    str += chr;
-                } catch (e) {
-                    assert_parse_fail(e);
-                    return str;
-                }
-            }
-        });
-        var p_space = make_parser_nop(function() {
-            // Parser JSString
-            var str = parse_space_a_char();
-            var rest = p_maybe_space();
-            return str + rest;
-        });
-
-        //優化/嚴重語法底層依賴[symbol]
-        //優化/嚴重語法底層依賴[p_all_no_sys_name]
-        var p_name_inner;
-        var p_name_symbol = p_symbol;
-        var p_name_bracket = make_parser(function() {
-            parse_assert(state_pop_char() === '[');
-            var ret = p_name_top();
-            parse_assert(state_pop_char() === ']');
-            return ret;
-        });
-        var p_name_form = make_parser(function() {
-            parse_assert(state_pop_char() === '~');
-            parse_assert(state_pop_char() === ';');
-            var x = p_name_inner();
-            return new_list(form_sym, x);
-        });
-        var p_name_get = make_parser(function() {
-            var t = p_name_inner();
-            parse_assert(state_pop_char() === '.');
-            var x = p_name_inner();
-            return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
-        });
-        var p_name_a2 = make_parser(function() {
-            parse_assert(state_pop_char() === '_');
-            parse_assert(state_pop_char() === ':');
-            var t = p_name_inner();
-            return new_list(a_sym, t);
-        });
-        var p_name_a = make_parser(function() {
-            var x = p_name_inner();
-            parse_assert(state_pop_char() === ':');
-            var t = p_name_inner();
-            return new_list(a_sym, t, x);
-        });
-        var p_name_isornot = make_parser(function() {
-            var x = p_name_inner();
-            parse_assert(state_pop_char() === '~');
-            return new_list(isornot_sym, x);
-        });
-        var p_name_for = make_parser(function() {
-            var t = p_name_inner();
-            parse_assert(state_pop_char() === '@');
-            var verb = p_name_inner();
-            return new_list(a_sym, new_list(func_sym, new_cons(t, sth_sym), sth_sym), verb);
-        });
-        var p_name_pred = make_parser(function() {
-            var x = p_name_inner();
-            parse_assert(state_pop_char() === '?');
-            return new_list(a_sym, func_sym, new_list(isornot_sym, x));
-        });
-        var p_name_pred_type = make_parser(function() {
-            parse_assert(state_pop_char() === ':');
-            var x = p_name_inner();
-            parse_assert(state_pop_char() === '?');
-            return new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, x)));
-        });
-        var p_name_new = make_parser(function() {
-            parse_assert(state_pop_char() === '-');
-            parse_assert(state_pop_char() === '>');
-            var x = p_name_inner();
-            return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
-        });
-        //var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);//非優化
-        var p_name_not_prefix = make_parser_or(p_name_get, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_bracket); //優化
-        var p_name_top = make_parser_nop(function() { //優化
-            var next = state_lookup_char();
-            switch (next) {
-                case '~':
-                    return p_name_form();
-                case '-':
-                    return p_name_new();
-                case ':':
-                    return p_name_pred_type();
-                case '_':
-                    return p_name_a2();
-                default:
-                    return p_name_not_prefix();
-            }
-        });
-        //優化/嚴重語法底層依賴[symbol] | p_name_inner順序
-        var p_name_inner = make_parser_or(p_name_bracket, function() {
-            return p_all_no_sys_name();
-        });
-        var p_sys_name = make_parser(function() {
-            return make_sys_sym_f(p_name_top());
-        });
-
-
-        var p_list = make_parser(function() {
-            parse_assert(state_pop_char() === '(');
-            p_maybe_space();
-            var p_list_rest;
-            p_list_rest = make_parser_or(make_parser(function() {
-                var x = p_all();
-                p_maybe_space();
-                parse_assert(state_pop_char() === '.');
-                p_maybe_space();
-                var y = p_all();
-                p_maybe_space();
-                parse_assert_orerror(state_pop_char() === ')');
-                return new_cons(x, y);
-            }), make_parser(function() {
-                var x = p_all();
-                p_maybe_space();
-                var xs = p_list_rest();
-                return new_cons(x, xs);
-            }), make_parser_nop(function() {
-                parse_assert_orerror(state_pop_char() === ')');
-                return null_v;
-            }));
-            return p_list_rest();
-        });
-        var p_data = make_parser(function() {
-            parse_assert(state_pop_char() === '#');
-            var xs = p_list();
-            parse_assert(cons_p(xs));
-            return new_data(cons_car(xs), cons_cdr(xs));
-        });
-        var p_error = make_parser(function() {
-            parse_assert(state_pop_char() === '!');
-            var xs = p_list();
-            parse_assert(cons_p(xs));
-            return new_error(cons_car(xs), cons_cdr(xs));
-        });
-        var p_eval = make_parser(function() {
-            parse_assert(state_pop_char() === '$');
-            parse_assert(state_pop_char() === '(');
-            p_maybe_space();
-            var env = val2env(p_all());
-            parse_assert(env !== false);
-            p_maybe_space();
-            var x = p_all();
-            p_maybe_space();
-            parse_assert(state_pop_char() === ')');
             return lang_eval(env, x);
         });
-        var p_builtin_func = make_parser(function() {
-            parse_assert(state_pop_char() === '%');
-            parse_assert(state_pop_char() === '(');
-            p_maybe_space();
-            var f = p_all();
-            p_maybe_space();
-            var xs = maybe_list2js(p_list());
-            parse_assert(xs !== false);
-            p_maybe_space();
-            parse_assert(state_pop_char() === ')');
-            return builtin_func_apply(f, xs);
+        var readfuncapply = make_read_two("%", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
+                return x;
+            }, function(x, y) {
+                error();
+            });
+            return builtin_func_apply(f, jsxs);
         });
-        var p_builtin_form = make_parser(function() {
-            parse_assert(state_pop_char() === '@');
-            parse_assert(state_pop_char() === '(');
-            p_maybe_space();
-            var env = val2env(p_all());
-            p_maybe_space();
-            var f = p_all();
-            p_maybe_space();
-            var xs = maybe_list2js(p_list());
-            parse_assert(xs !== false);
-            p_maybe_space();
-            parse_assert(state_pop_char() === ')');
-            return builtin_form_apply(env, f, xs);
-        });
-        var p_apply = make_parser(function() {
-            parse_assert(state_pop_char() === '^');
-            parse_assert(state_pop_char() === '(');
-            p_maybe_space();
-            var f = p_all();
-            p_maybe_space();
-            var xs = maybe_list2js(p_list());
-            parse_assert(xs !== false);
-            p_maybe_space();
-            parse_assert(state_pop_char() === ')');
-            return lang_apply(f, xs);
-        });
-        //優化/嚴重語法底層依賴[symbol] | p_all_no_sys_name順序
-        //p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol); //非優化
-        p_all_no_sys_name = make_parser(function() { //優化/嚴重語法底層依賴[p_all_no_sys_name]
-            var next = state_lookup_char();
-            switch (next) {
-                case '(':
-                    return p_list();
-                case '#':
-                    return p_data();
-                case '!':
-                    return p_error();
-                case '$':
-                    return p_eval();
-                case '%':
-                    return p_builtin_func();
-                case '@':
-                    return p_builtin_form();
-                case '^':
-                    return p_apply();
-                default:
-                    return p_symbol();
+        var readformbuiltin = make_read_three("@", function(e, f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
+                return x;
+            }, function(x, y) {
+                error();
+            });
+            var env = val2env(e);
+            if (env === false) {
+                error();
             }
+            return builtin_form_apply(env, f, jsxs);
         });
-        p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
-        return function(x) { //優化
-            jsstr = x;
-            state = 0;
-            p_maybe_space();
-            return p_all();
-        };
-    })();
+        var readapply = make_read_two("^", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
+                return x;
+            }, function(x, y) {
+                error();
+            });
+            return lang_apply(f, jsxs);
+        });
+
+        function a_symbol_p(x) {
+            if (a_space_p(x)) {
+                return false;
+            }
+            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', ';', '-', '>', '_', ':', '?', '[', ']'];
+            for (var i = 0; i < not_xs.length; i++) {
+                if (x == not_xs[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function un_maybe(x) {
+            if (x === false) {
+                error();
+            }
+            return x;
+        }
+
+        function not_eof() {
+            return !eof();
+        }
+
+        function assert_get(c) {
+            un_maybe(not_eof());
+            un_maybe(get() === c);
+        }
+
+        function readsysname_no_pack() {
+            if (eof()) {
+                return false;
+            }
+            var head = get();
+            switch (head) {
+                case '~':
+                    assert_get(';');
+                    var x = readsysname_no_pack_inner_must();
+                    return new_list(form_sym, x);
+                case '-':
+                    assert_get('>');
+                    var x = readsysname_no_pack_inner_must();
+                    return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
+                case ':':
+                    var x = readsysname_no_pack_inner_must();
+                    return new_list(a_sym, x);
+                case '[':
+                    var x = readsysname_no_pack_inner_must();
+                    assert_get(']');
+                    return may_xfx_xf(x);
+                default:
+                    put(head);
+                    var x = symbol();
+                    if (x === false) {
+                        return false;
+                    }
+                    return may_xfx_xf(x);
+            }
+            ERROR();
+
+            function readsysname_no_pack_inner_must() {
+                var fs = [list, readsysname_no_pack, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+                for (var i = 0; i < fs.length; i++) {
+                    var x = fs[i]();
+                    if (x !== false) {
+                        return x;
+                    }
+                }
+                error();
+            }
+
+            function may_xfx_xf(x) {
+                if (eof()) {
+                    return x;
+                }
+                var head = get();
+                switch (head) {
+                    case '.':
+                        var y = readsysname_no_pack_inner_must();
+                        return new_list(a_sym, new_list(func_sym, new_list(x), sth_sym), y);
+                    case ':':
+                        var y = readsysname_no_pack_inner_must();
+                        return new_list(a_sym, y, x);
+                    case '~':
+                        return new_list(isornot_sym, x);
+                    case '@':
+                        var y = readsysname_no_pack_inner_must();
+                        return new_list(a_sym, new_list(func_sym, new_cons(x, sth_sym), sth_sym), y);
+                    case '?':
+                        return new_list(a_sym, func_sym, new_list(isornot_sym, x));
+                    default:
+                        put(head);
+                        return x;
+                }
+                ERROR();
+            }
+            ERROR();
+        }
+
+        function readsysname() {
+            var x = readsysname_no_pack();
+            if (x === false) {
+                return false;
+            }
+            if (symbol_p(x)) {
+                return x;
+            }
+            return make_sys_sym_f(x);
+        }
+
+        function val() {
+            space();
+            var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+            for (var i = 0; i < fs.length; i++) {
+                var x = fs[i]();
+                if (x !== false) {
+                    return x;
+                }
+            }
+            error();
+        }
+        return val();
+    }
 
     function complex_print(val) {
         // LangVal -> JSString
@@ -1803,16 +1825,12 @@ var TheLanguage = (function() {
                 if (jsbool_no_force_equal_p(maybe_xs[1], func_sym) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isornot_sym)) {
                     // new_list(a_sym, func_sym, new_list(isornot_sym, maybe_lst_44[1]))
                     var maybe_lst_45 = maybe_list2js(maybe_lst_44[1]);
-                    if (maybe_lst_45 !== false && maybe_lst_45.length === 2 && jsbool_no_force_equal_p(maybe_lst_45[0], a_sym)) {
-                        // new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, maybe_lst_45[1])))
-                        return inner_bracket(':' + print_sys_name(maybe_lst_45[1], 'inner') + '?');
-                    }
                     return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?');
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
                 // new_list(a_sym, maybe_xs[1])
-                return inner_bracket('_:' + print_sys_name(maybe_xs[1], 'inner'));
+                return inner_bracket(':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
                 // new_list(form_sym, maybe_xs[1])
                 return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
