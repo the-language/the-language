@@ -1748,6 +1748,7 @@ var TheLanguage = (function() {
                 while (cons_p(x)) {
                     temp += prefix + complex_print(cons_car(x));
                     prefix = " ";
+                    x = cons_cdr(x);
                 }
                 if (null_p(x)) {
                     temp += ")";

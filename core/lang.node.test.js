@@ -149,7 +149,7 @@ test_block('complex_parse,complex_print', function() {
         '~;(太始初核 式形)',
         '[:構?]?',
         '[:[:構?]?]@hi',
-        //bug '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
+        '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('complex_print(complex_parse("' + x + '"))  === "' + x + '"', L.complex_print(L.complex_parse(x)) === x)
