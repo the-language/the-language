@@ -1613,7 +1613,7 @@ var TheLanguage = (function() {
                         return p_name_not_prefix();
                 }
             });
-            var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
+            var p_name_inner = make_parser_or(p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
         var p_list = make_parser(function() {
