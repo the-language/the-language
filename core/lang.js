@@ -1613,6 +1613,7 @@ var TheLanguage = (function() {
                         return p_name_not_prefix();
                 }
             });
+            //優化/嚴重語法底層依賴[symbol] | p_name_inner順序
             var p_name_inner = make_parser_or(p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
