@@ -1481,9 +1481,12 @@ var TheLanguage = (function() {
             // Parser JSChar
             // p = parser
             var chr = state_pop_char();
-            var not_s = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', ' ', '\n', '\t', '\r'];
-            for (var i = 0; i < not_s.length; i++) {
-                parse_assert(chr !== not_s[i]);
+            //var not_s = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '\\', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', ' ', '\n', '\t', '\r'];//非優化
+            //for (var i = 0; i < not_s.length; i++) {//非優化
+            //parse_assert(chr !== not_s[i]);//非優化
+            //}//非優化
+            if (chr === ' ' || chr === '\n' || chr === '\t' || chr === '\r' || chr === ')' || chr === ']' || chr === '.' || chr === ':' || chr === '~' || chr === '?' || chr === '@') { //優化/嚴重語法底層依賴[symbol]
+                parse_fail();
             }
             return chr;
         });
@@ -1532,6 +1535,7 @@ var TheLanguage = (function() {
         });
 
         var p_sys_name = make_parser(function() {
+            //優化/嚴重語法底層依賴[symbol]
             var p_name_inner;
             var p_name_symbol = p_symbol;
             var p_name_bracket = make_parser(function() {
@@ -1697,7 +1701,8 @@ var TheLanguage = (function() {
             return lang_apply(f, xs);
         });
         p_maybe_space();
-        p_all_no_sys_name = make_parser_or(p_list, p_symbol, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply);
+        //優化/嚴重語法底層依賴[symbol] | p_all_no_sys_name順序
+        p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol);
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return p_all();
     }
