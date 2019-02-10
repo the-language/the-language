@@ -997,6 +997,10 @@ var TheLanguage = (function() {
         return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
 
+    function langbool_no_force_equal_p(x, y) {
+        return print(x) === print(y);
+    }
+
     // {{{ 相對獨立的部分。parser/printer
     function make_printer(forcer) {
         function print(x) {
@@ -1643,38 +1647,38 @@ var TheLanguage = (function() {
                 ERROR();
             }
             var maybe_xs = maybe_list2js(x);
-            if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_equal_p(maybe_xs[0], a_sym)) {
+            if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
                 // new_list(a_sym, maybe_xs[1], maybe_xs[2])
                 var maybe_lst_2 = maybe_list2js(maybe_xs[1]);
-                if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_equal_p(maybe_lst_2[0], func_sym)) {
+                if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], func_sym)) {
                     // new_list(a_sym, new_list(func_sym, maybe_lst_2[1], maybe_lst_2[2]), maybe_xs[2])
                     var maybe_lst_3 = maybe_list2js(maybe_lst_2[1]);
-                    if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_equal_p(maybe_lst_2[2], sth_sym)) {
+                    if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], sth_sym)) {
                         // new_list(a_sym, new_list(func_sym, new_list(maybe_lst_3[0]), sth_sym), maybe_xs[2])
                         return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
-                    } else if (cons_p(maybe_lst_2[1]) && jsbool_equal_p(cons_cdr(maybe_lst_2[1]), sth_sym) && jsbool_equal_p(maybe_lst_2[2], sth_sym)) {
+                    } else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(cons_cdr(maybe_lst_2[1]), sth_sym) && jsbool_no_force_equal_p(maybe_lst_2[2], sth_sym)) {
                         // new_list(a_sym, new_list(func_sym, new_cons(cons_car(maybe_lst_2[1]), sth_sym), sth_sym), maybe_xs[2]);
                         return inner_bracket(print_sys_name(cons_car(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'));
                     }
                 }
                 var maybe_lst_44 = maybe_list2js(maybe_xs[2]);
-                if (jsbool_equal_p(maybe_xs[1], func_sym) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_equal_p(maybe_lst_44[0], isornot_sym)) {
+                if (jsbool_no_force_equal_p(maybe_xs[1], func_sym) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isornot_sym)) {
                     // new_list(a_sym, func_sym, new_list(isornot_sym, maybe_lst_44[1]))
                     var maybe_lst_45 = maybe_list2js(maybe_lst_44[1]);
-                    if (maybe_lst_45 !== false && maybe_lst_45.length === 2 && jsbool_equal_p(maybe_lst_45[0], a_sym)) {
+                    if (maybe_lst_45 !== false && maybe_lst_45.length === 2 && jsbool_no_force_equal_p(maybe_lst_45[0], a_sym)) {
                         // new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, maybe_lst_45[1])))
                         return inner_bracket(':' + print_sys_name(maybe_lst_45[1], 'inner') + '?');
                     }
                     return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?');
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], a_sym)) {
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
                 // new_list(a_sym, maybe_xs[1])
                 return inner_bracket('_:' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], form_sym)) {
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
                 // new_list(form_sym, maybe_xs[1])
                 return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(maybe_xs[0], isornot_sym)) {
+            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
                 // new_list(isornot_sym, maybe_xs[1])
                 return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
             }
@@ -1708,7 +1712,7 @@ var TheLanguage = (function() {
                 var name = data_name(x);
                 var list = data_list(x);
                 var maybe_xs = maybe_list2js(list);
-                if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_equal_p(name, name_sym) && jsbool_equal_p(maybe_xs[0], sys_sym)) {
+                if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_sym) && jsbool_no_force_equal_p(maybe_xs[0], sys_sym)) {
                     // make_sys_sym_f(maybe_xs[1])
                     return print_sys_name(maybe_xs[1], 'top');
                 }
