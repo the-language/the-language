@@ -1469,6 +1469,9 @@ var TheLanguage = (function() {
 
         function make_parser_or() {
             var parsers = arguments;
+            for (var i = 0; i < parsers.length; i++) {
+                ASSERT(typeof parsers[i] === 'function');
+            }
             return make_parser(function() {
                 for (var i = 0; i < parsers.length; i++) {
                     try {
@@ -1540,89 +1543,94 @@ var TheLanguage = (function() {
             return str + rest;
         });
 
+        //優化/嚴重語法底層依賴[symbol]
+        //優化/嚴重語法底層依賴[p_all_no_sys_name]
+        var p_name_inner;
+        var p_name_symbol = p_symbol;
+        var p_name_bracket = make_parser(function() {
+            parse_assert(state_pop_char() === '[');
+            var ret = p_name_top();
+            parse_assert(state_pop_char() === ']');
+            return ret;
+        });
+        var p_name_form = make_parser(function() {
+            parse_assert(state_pop_char() === '~');
+            parse_assert(state_pop_char() === ';');
+            var x = p_name_inner();
+            return new_list(form_sym, x);
+        });
+        var p_name_get = make_parser(function() {
+            var t = p_name_inner();
+            parse_assert(state_pop_char() === '.');
+            var x = p_name_inner();
+            return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
+        });
+        var p_name_a2 = make_parser(function() {
+            parse_assert(state_pop_char() === '_');
+            parse_assert(state_pop_char() === ':');
+            var t = p_name_inner();
+            return new_list(a_sym, t);
+        });
+        var p_name_a = make_parser(function() {
+            var x = p_name_inner();
+            parse_assert(state_pop_char() === ':');
+            var t = p_name_inner();
+            return new_list(a_sym, t, x);
+        });
+        var p_name_isornot = make_parser(function() {
+            var x = p_name_inner();
+            parse_assert(state_pop_char() === '~');
+            return new_list(isornot_sym, x);
+        });
+        var p_name_for = make_parser(function() {
+            var t = p_name_inner();
+            parse_assert(state_pop_char() === '@');
+            var verb = p_name_inner();
+            return new_list(a_sym, new_list(func_sym, new_cons(t, sth_sym), sth_sym), verb);
+        });
+        var p_name_pred = make_parser(function() {
+            var x = p_name_inner();
+            parse_assert(state_pop_char() === '?');
+            return new_list(a_sym, func_sym, new_list(isornot_sym, x));
+        });
+        var p_name_pred_type = make_parser(function() {
+            parse_assert(state_pop_char() === ':');
+            var x = p_name_inner();
+            parse_assert(state_pop_char() === '?');
+            return new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, x)));
+        });
+        var p_name_new = make_parser(function() {
+            parse_assert(state_pop_char() === '-');
+            parse_assert(state_pop_char() === '>');
+            var x = p_name_inner();
+            return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
+        });
+        //var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);//非優化
+        var p_name_not_prefix = make_parser_or(p_name_get, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_bracket); //優化
+        var p_name_top = make_parser(function() { //優化
+            var next = state_lookup_char();
+            switch (next) {
+                case '~':
+                    return p_name_form();
+                case '-':
+                    return p_name_new();
+                case ':':
+                    return p_name_pred_type();
+                case '_':
+                    return p_name_a2();
+                default:
+                    return p_name_not_prefix();
+            }
+        });
+        //優化/嚴重語法底層依賴[symbol] | p_name_inner順序
+        var p_name_inner = make_parser_or(p_name_bracket, function() {
+            return p_all_no_sys_name();
+        });
         var p_sys_name = make_parser(function() {
-            //優化/嚴重語法底層依賴[symbol]
-            var p_name_inner;
-            var p_name_symbol = p_symbol;
-            var p_name_bracket = make_parser(function() {
-                parse_assert(state_pop_char() === '[');
-                var ret = p_name_top();
-                parse_assert(state_pop_char() === ']');
-                return ret;
-            });
-            var p_name_form = make_parser(function() {
-                parse_assert(state_pop_char() === '~');
-                parse_assert(state_pop_char() === ';');
-                var x = p_name_inner();
-                return new_list(form_sym, x);
-            });
-            var p_name_get = make_parser(function() {
-                var t = p_name_inner();
-                parse_assert(state_pop_char() === '.');
-                var x = p_name_inner();
-                return new_list(a_sym, new_list(func_sym, new_list(t), sth_sym), x);
-            });
-            var p_name_a2 = make_parser(function() {
-                parse_assert(state_pop_char() === '_');
-                parse_assert(state_pop_char() === ':');
-                var t = p_name_inner();
-                return new_list(a_sym, t);
-            });
-            var p_name_a = make_parser(function() {
-                var x = p_name_inner();
-                parse_assert(state_pop_char() === ':');
-                var t = p_name_inner();
-                return new_list(a_sym, t, x);
-            });
-            var p_name_isornot = make_parser(function() {
-                var x = p_name_inner();
-                parse_assert(state_pop_char() === '~');
-                return new_list(isornot_sym, x);
-            });
-            var p_name_for = make_parser(function() {
-                var t = p_name_inner();
-                parse_assert(state_pop_char() === '@');
-                var verb = p_name_inner();
-                return new_list(a_sym, new_list(func_sym, new_cons(t, sth_sym), sth_sym), verb);
-            });
-            var p_name_pred = make_parser(function() {
-                var x = p_name_inner();
-                parse_assert(state_pop_char() === '?');
-                return new_list(a_sym, func_sym, new_list(isornot_sym, x));
-            });
-            var p_name_pred_type = make_parser(function() {
-                parse_assert(state_pop_char() === ':');
-                var x = p_name_inner();
-                parse_assert(state_pop_char() === '?');
-                return new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, x)));
-            });
-            var p_name_new = make_parser(function() {
-                parse_assert(state_pop_char() === '-');
-                parse_assert(state_pop_char() === '>');
-                var x = p_name_inner();
-                return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
-            });
-            //var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);//非優化
-            var p_name_not_prefix = make_parser_or(p_name_get, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_bracket); //優化
-            var p_name_top = make_parser(function() { //優化
-                var next = state_lookup_char();
-                switch (next) {
-                    case '~':
-                        return p_name_form();
-                    case '-':
-                        return p_name_new();
-                    case ':':
-                        return p_name_pred_type();
-                    case '_':
-                        return p_name_a2();
-                    default:
-                        return p_name_not_prefix();
-                }
-            });
-            //優化/嚴重語法底層依賴[symbol] | p_name_inner順序
-            var p_name_inner = make_parser_or(p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
+
+
         var p_list = make_parser(function() {
             parse_assert(state_pop_char() === '(');
             p_maybe_space();
@@ -1708,7 +1716,13 @@ var TheLanguage = (function() {
             return lang_apply(f, xs);
         });
         //優化/嚴重語法底層依賴[symbol] | p_all_no_sys_name順序
-        p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol);
+        p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol); //非優化
+        /*p_all_no_sys_name=make_parser(function(){ //優化/嚴重語法底層依賴[p_all_no_sys_name]
+            var next = state_lookup_char();
+	    switch(next){
+	    case '[':
+	    }
+	});*/
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return function(x) { //優化
             jsstr = x;
