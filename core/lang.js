@@ -1464,7 +1464,7 @@ var TheLanguage = (function() {
                     state = state_backup;
                     parse_fail();
                 }
-            }
+            };
         }
 
         function make_parser_nop(f) { //優化
@@ -1519,15 +1519,12 @@ var TheLanguage = (function() {
         var p_space_a_char = make_parser(function() {
             // Parser JSChar
             var chr = state_pop_char();
-            var xs = ['\n', '\r', '\t', ' '];
-            for (var i = 0; i < xs.length; i++) {
-                if (xs[i] === chr) {
-                    return chr;
-                }
+            if (chr === '\n' || chr === '\r' || chr === '\t' || chr === ' ') {
+                return chr;
             }
             parse_fail();
         });
-        var p_maybe_space = make_parser(function() {
+        var p_maybe_space = make_parser_nop(function() {
             // Parser JSString
             var str = "";
             while (true) {
