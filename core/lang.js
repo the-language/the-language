@@ -1407,9 +1407,10 @@ var TheLanguage = (function() {
         }
 
         function class_parse_fail() {}
+        var class_parse_fail_v = new class_parse_fail();
 
         function parse_fail() {
-            throw new class_parse_fail();
+            throw class_parse_fail_v;
         }
 
         function parse_fail_p(e) {
@@ -1427,6 +1428,18 @@ var TheLanguage = (function() {
             var ret = jsstr[state];
             state += 1;
             return ret;
+        }
+
+        function state_lookup_char(i) {
+            if (jsnull_p(i)) {
+                i = 0;
+            }
+            var j = i + state;
+            if (j < jsstr.length) {
+                return jsstr[j];
+            } else {
+                parse_fail();
+            }
         }
 
         function assert_parse_fail(e) {
@@ -1579,7 +1592,23 @@ var TheLanguage = (function() {
                 var x = p_name_inner();
                 return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
             });
-            var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);
+            //var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);//非優化
+            var p_name_not_prefix = make_parser_or(p_name_get, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_bracket); //優化
+            var p_name_top = make_parser(function() { //優化
+                var next = state_lookup_char();
+                switch (next) {
+                    case '~':
+                        return p_name_form();
+                    case '-':
+                        return p_name_new();
+                    case ':':
+                        return p_name_pred_type();
+                    case '_':
+                        return p_name_a2();
+                    default:
+                        return p_name_not_prefix();
+                }
+            });
             var p_name_inner = make_parser_or(p_name_symbol, p_name_bracket, p_all_no_sys_name);
             return make_sys_sym_f(p_name_top());
         });
