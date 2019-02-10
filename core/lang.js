@@ -1396,22 +1396,14 @@ var TheLanguage = (function() {
     // {{{ 相對獨立的部分。complex parser/complex printer
     function complex_parse(jsstr) {
         // JSString -> LangVal
-        var state_eof = [false];
-        var state = state_eof;
-
-        function state_push_char(chr) {
-            state = [true, chr, state];
-        }
-        for (var i = jsstr.length - 1; i !== -1; i--) {
-            state_push_char(jsstr[i]);
-        }
+        var state = 0;
 
         function state_eof_p() {
-            return state[0] === false;
+            return state === jsstr.length;
         }
 
         function state_not_eof_p() {
-            return state[0] === true;
+            return state !== jsstr.length;
         }
 
         function class_parse_fail() {}
@@ -1432,8 +1424,8 @@ var TheLanguage = (function() {
 
         function state_pop_char() {
             parse_assert(state_not_eof_p());
-            var ret = state[1];
-            state = state[2];
+            var ret = jsstr[state];
+            state += 1;
             return ret;
         }
 
