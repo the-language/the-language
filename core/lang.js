@@ -1394,9 +1394,15 @@ var TheLanguage = (function() {
     // 相對獨立的部分。parser/printer }}}
 
     // {{{ 相對獨立的部分。complex parser/complex printer
-    function complex_parse(jsstr) {
+    var no_letrec_complex_parse;
+
+    function complex_parse(x) {
         // JSString -> LangVal
-        var state = 0;
+        return no_letrec_complex_parse(x); //作用域問題
+    }
+    no_letrec_complex_parse = (function() {
+        var jsstr; //優化,不得多線程
+        var state; //優化,不得多線程
 
         function state_eof_p() {
             return state === jsstr.length;
@@ -1701,12 +1707,16 @@ var TheLanguage = (function() {
             parse_assert(state_pop_char() === ')');
             return lang_apply(f, xs);
         });
-        p_maybe_space();
         //優化/嚴重語法底層依賴[symbol] | p_all_no_sys_name順序
         p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol);
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
-        return p_all();
-    }
+        return function(x) { //優化
+            jsstr = x;
+            state = 0;
+            p_maybe_space();
+            return p_all();
+        };
+    })();
 
     function complex_print(val) {
         // LangVal -> JSString
