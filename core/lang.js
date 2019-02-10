@@ -1458,13 +1458,17 @@ var TheLanguage = (function() {
             return function() {
                 var state_backup = state;
                 try {
-                    return f.apply(null, []);
+                    return f();
                 } catch (e) {
                     assert_parse_fail(e);
                     state = state_backup;
                     parse_fail();
                 }
             }
+        }
+
+        function make_parser_nop(f) { //優化
+            return f;
         }
 
         function make_parser_or() {
@@ -1607,7 +1611,7 @@ var TheLanguage = (function() {
         });
         //var p_name_top = make_parser_or(p_name_form, p_name_get, p_name_a2, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_pred_type, p_name_new, p_name_bracket);//非優化
         var p_name_not_prefix = make_parser_or(p_name_get, p_name_a, p_name_isornot, p_name_for, p_name_pred, p_name_bracket); //優化
-        var p_name_top = make_parser(function() { //優化
+        var p_name_top = make_parser_nop(function() { //優化
             var next = state_lookup_char();
             switch (next) {
                 case '~':

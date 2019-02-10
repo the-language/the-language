@@ -26,7 +26,7 @@ function main(){
 	    }
         }
         current = str.length
-        setTimeout(main, 10)
+        setTimeout(main, 100)
     })
 }
 main()
