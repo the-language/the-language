@@ -997,8 +997,55 @@ var TheLanguage = (function() {
         return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
 
-    function langbool_no_force_equal_p(x, y) {
-        return print(x) === print(y);
+    function jsbool_no_force_equal_p(x, y) {
+        // LangVal, LangVal -> JSBoolean
+        if (x === y) {
+            return true;
+        }
+        x = un_just_all(x);
+        y = un_just_all(y);
+        if (x === y) {
+            return true;
+        }
+        var x_type = type_of(x);
+        var y_type = type_of(y);
+        if (x_type !== y_type) {
+            return false;
+        }
+
+        function end_2(f1, f2) {
+            if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
+                lang_set_do(x, y);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        switch (x_type) {
+            case null_t:
+                lang_set_do(x, null_v);
+                lang_set_do(y, null_v);
+                return true;
+            case symbol_t:
+                return symbol_eq_p(x, y);
+            case cons_t:
+                return end_2(cons_car, cons_cdr);
+            case error_t:
+                return end_2(error_name, error_list);
+            case data_t:
+                return end_2(data_name, data_list);
+
+            case delay_eval_t:
+                return false; //WIP
+            case delay_builtin_func_t:
+                return false; //WIP
+            case delay_builtin_form_t:
+                return false; //WIP
+            case delay_apply_t:
+                return false; //WIP
+            default:
+        }
+        ERROR();
     }
 
     // {{{ 相對獨立的部分。parser/printer
