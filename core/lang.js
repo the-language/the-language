@@ -1716,13 +1716,28 @@ var TheLanguage = (function() {
             return lang_apply(f, xs);
         });
         //優化/嚴重語法底層依賴[symbol] | p_all_no_sys_name順序
-        p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol); //非優化
-        /*p_all_no_sys_name=make_parser(function(){ //優化/嚴重語法底層依賴[p_all_no_sys_name]
+        //p_all_no_sys_name = make_parser_or(p_list, p_data, p_error, p_eval, p_builtin_func, p_builtin_form, p_apply, p_symbol); //非優化
+        p_all_no_sys_name = make_parser(function() { //優化/嚴重語法底層依賴[p_all_no_sys_name]
             var next = state_lookup_char();
-	    switch(next){
-	    case '[':
-	    }
-	});*/
+            switch (next) {
+                case '(':
+                    return p_list();
+                case '#':
+                    return p_data();
+                case '!':
+                    return p_error();
+                case '$':
+                    return p_eval();
+                case '%':
+                    return p_builtin_func();
+                case '@':
+                    return p_builtin_form();
+                case '^':
+                    return p_apply();
+                default:
+                    return p_symbol();
+            }
+        });
         p_all = make_parser_or(p_sys_name, p_all_no_sys_name);
         return function(x) { //優化
             jsstr = x;
