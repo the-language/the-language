@@ -1415,8 +1415,15 @@ var TheLanguage = (function() {
         function class_parse_fail() {}
         var class_parse_fail_v = new class_parse_fail();
 
+        function class_parse_error() {}
+        var class_parse_error_v = new class_parse_error();
+
         function parse_fail() {
             throw class_parse_fail_v;
+        }
+
+        function parse_error() {
+            throw class_parse_error_v;
         }
 
         function parse_fail_p(e) {
@@ -1426,6 +1433,12 @@ var TheLanguage = (function() {
         function parse_assert(b) {
             if (!b) {
                 parse_fail();
+            }
+        }
+
+        function parse_assert_orerror(b) {
+            if (!b) {
+                parse_error();
             }
         }
 
@@ -1637,20 +1650,22 @@ var TheLanguage = (function() {
             p_maybe_space();
             var p_list_rest;
             p_list_rest = make_parser_or(make_parser(function() {
-                parse_assert(state_pop_char() === ')');
-                return null_v;
-            }), make_parser(function() {
-                var x = p_all();
-                p_maybe_space();
-                var xs = p_list_rest();
-                return new_cons(x, xs);
-            }), make_parser(function() {
                 var x = p_all();
                 p_maybe_space();
                 parse_assert(state_pop_char() === '.');
                 p_maybe_space();
                 var y = p_all();
+                p_maybe_space();
+                parse_assert_orerror(state_pop_char() === ')');
                 return new_cons(x, y);
+            }), make_parser(function() {
+                var x = p_all();
+                p_maybe_space();
+                var xs = p_list_rest();
+                return new_cons(x, xs);
+            }), make_parser_nop(function() {
+                parse_assert_orerror(state_pop_char() === ')');
+                return null_v;
             }));
             return p_list_rest();
         });
