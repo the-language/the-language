@@ -38,7 +38,7 @@ var TheLanguage = (function() {
     }
 
     function DEBUG(x) {
-        console.log(x);
+        //禁用 console.log(x);
     }
 
     function jsnull_p(x) {
@@ -309,9 +309,6 @@ var TheLanguage = (function() {
 
     var builtin_func_equal_sym = make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym)));
     exports.symbols.builtin.function.equal_p = builtin_func_equal_sym;
-    var builtin_form_quote_sym = make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
-    exports.symbols.builtin.form = {};
-    exports.symbols.builtin.form.quote = builtin_form_quote_sym;
     var builtin_func_apply_sym = make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
     exports.symbols.builtin.function.apply = builtin_func_apply_sym;
     var builtin_func_eval_sym = make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
@@ -320,6 +317,12 @@ var TheLanguage = (function() {
     exports.symbols.builtin.function.list_choose_one = builtin_func_list_choose_sym;
     var builtin_func_if_sym = make_sys_sym_f(new_list(a_sym, func_sym, if_sym));
     exports.symbols.builtin.function.if = builtin_func_if_sym;
+
+    exports.symbols.builtin.form = {};
+    var builtin_form_quote_sym = make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));
+    exports.symbols.builtin.form.quote = builtin_form_quote_sym;
+    var builtin_form_lambda_sym = make_sys_sym_f(new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, func_sym)), the_sym));
+    exports.symbols.builtin.form.lambda = builtin_form_lambda_sym;
 
     var use_builtin_func_sym = make_sys_sym_f(new_list(form_sym, new_list(sys_sym, func_sym)));
     exports.symbols.use_builtin_function = use_builtin_func_sym;
@@ -729,14 +732,19 @@ var TheLanguage = (function() {
                 break;
             case null_t:
                 return x;
-            case symbol_t:
-            case data_t:
+            case symbol_t: //name_p
+            case data_t: //name_p
                 return env_get(env, x, error_v);
             case error_t:
                 return error_v;
             default:
         }
         ERROR();
+    }
+
+    function name_p(x) {
+        var t = type_of(x);
+        return t === symbol_t || t === data_t;
     }
 
     function make_builtin_p_func(p_sym, p_jsfunc) {
@@ -913,7 +921,7 @@ var TheLanguage = (function() {
         var f_code = cons_car(f_list_cdr);
         var env = env_null_v;
         while (!null_p(args_pat)) {
-            if (symbol_p(args_pat)) {
+            if (name_p(args_pat)) {
                 env = env_set(env, args_pat, jslist2list(xs));
                 xs = [];
                 args_pat = null_v;
@@ -921,7 +929,7 @@ var TheLanguage = (function() {
                 if (xs.length === 0) {
                     return make_error_v();
                 }
-                env = env_set(env, cons_car(args_pat), xs.shift()); // 副作用!
+                env = env_set(env, cons_car(args_pat), xs.shift()); // xs.shift() 表達式副作用!
                 args_pat = cons_cdr(args_pat);
             } else {
                 return make_error_v();
@@ -958,8 +966,35 @@ var TheLanguage = (function() {
                 return error_v;
             }
             return xs[0];
+        } else if (jsbool_equal_p(f, builtin_form_lambda_sym)) {
+            if (xs.length !== 2) {
+                return error_v;
+            }
+            return new_lambda(env, xs[0], xs[1]);
         }
         return error_v;
+    }
+
+    function new_lambda(env, args_pat, body) {
+        // WARNING delay未正確處理(影響較小)
+        WIP
+        /*args=force_all_rec(args_pat);
+        var args_pat_vars
+        while (!null_p(args_pat)) {
+            if (symbol_p(args_pat)) {
+                env = env_set(env, args_pat, jslist2list(xs));
+                xs = [];
+                args_pat = null_v;
+            } else if (cons_p(args_pat)) {
+                if (xs.length === 0) {
+                    return make_error_v();
+                }
+                env = env_set(env, cons_car(args_pat), xs.shift()); // xs.shift() 表達式副作用!
+                args_pat = cons_cdr(args_pat);
+            } else {
+                return make_error_v();
+            }
+        }*/
     }
 
     function jsbool_equal_p(x, y) {
