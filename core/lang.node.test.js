@@ -157,3 +157,14 @@ test_block('complex_parse,complex_print', function() {
         ASSERT_WITH_EXP('complex_print(complex_parse("' + x + '"))  === "' + x + '"', () => L.complex_print(L.complex_parse(x)) === x)
     }
 })
+test_block('eval,complex_print,complex_parse', function() {
+    const xs = [
+        ["$(#(映表 ((ha ga))) ha)", "ga"],
+        ['%([:連]? (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))))', '#(陰)'],
+        ['%(若:化滅 (#(陰) A B))', 'B'],
+        ['%(若:化滅 (%([:連]? (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲)))))) A B))', 'B'],
+    ]
+    for (const x of xs) {
+        ASSERT_WITH_EXP('complex_print(force_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_rec(L.complex_parse(x[0]))) === x[1])
+    }
+})
