@@ -367,7 +367,7 @@ var TheLanguage = (function() {
         }
         var ret = [];
         while (cons_p(xs)) {
-            ret[ret.length] = cons_car(xs);
+            ret.push(cons_car(xs));
             xs = cons_cdr(xs);
         }
         if (null_p(xs)) {
@@ -395,7 +395,7 @@ var TheLanguage = (function() {
         var x = raw;
         var xs = [];
         while (just_p(x)) {
-            xs[xs.length] = x;
+            xs.push(x);
             x = un_just(x);
         }
         for (var i = 0; i < xs.length; i++) {
@@ -503,7 +503,7 @@ var TheLanguage = (function() {
                 ERROR();
             }
             history[x_id] = true;
-            xs[xs.length] = x;
+            xs.push(x);
             x = force1(x);
         }
         for (var i = 0; i < xs.length; i++) {
@@ -543,6 +543,7 @@ var TheLanguage = (function() {
         // Env k v, k, v -> Env k v
         var ret = [];
         for (var i = 0; i < env.length; i = i + 2) {
+            // WARNING delay未正確處理(影響較小)
             if (jsbool_equal_p(env[i + 0], key)) {
                 ret[i + 0] = key;
                 ret[i + 1] = val;
@@ -570,6 +571,16 @@ var TheLanguage = (function() {
         }
         return default_v;
     }
+
+    function must_env_get(env, key) {
+        // Env k v, k, v -> v
+        for (var i = 0; i < env.length; i = i + 2) {
+            if (jsbool_equal_p(env[i + 0], key)) {
+                return env[i + 1];
+            }
+        }
+        ERROR();
+    }
     exports.env_null_v = env_null_v;
     exports.env_set = env_set;
     exports.env_get = env_get;
@@ -581,6 +592,14 @@ var TheLanguage = (function() {
             ret = new_cons(new_list(env[i + 0], env[i + 1]), ret);
         }
         return new_data(map_sym, new_list(ret));
+    }
+
+    function env_foreach(env, f) {
+        // env : Env k v
+        // f : k, v -> _
+        for (var i = 0; i < env.length; i = i + 2) {
+            f(env[i + 0], env[i + 1]);
+        }
     }
 
     function val2env(x) {
@@ -630,8 +649,8 @@ var TheLanguage = (function() {
                         return;
                     }
                 }
-                ret[ret.length] = k;
-                ret[ret.length] = v;
+                ret.push(k);
+                ret.push(v);
             })();
         }
         return ret;
@@ -655,7 +674,7 @@ var TheLanguage = (function() {
                     if (any_delay_just_p(rest)) {
                         return lang_eval(env, x);
                     } else if (cons_p(rest)) {
-                        xs[xs.length] = cons_car(rest);
+                        xs.push(cons_car(rest));
                         // WARNING delay未正確處理(影響較小)
                         rest = force1(cons_cdr(rest));
                     } else {
@@ -798,7 +817,7 @@ var TheLanguage = (function() {
         make_builtin_get_func(builtin_func_cons_head_sym, cons_p, cons_car),
         make_builtin_get_func(builtin_func_cons_tail_sym, cons_p, cons_cdr),
 
-        [builtin_func_equal_sym, 2, function(x, y, error_v) {
+        [builtin_func_equal_sym, 2, function(x, y, error_v) { // WIP 未測試
             if (x === y) {
                 return true_v;
             }
@@ -847,7 +866,7 @@ var TheLanguage = (function() {
             var jslist = [];
             var iter = force_all(xs);
             while (cons_p(iter)) {
-                jslist[jslist.length] = cons_car(iter);
+                jslist.push(cons_car(iter));
                 iter = force_all(cons_cdr(iter));
             }
             if (!null_p(iter)) {
@@ -959,7 +978,7 @@ var TheLanguage = (function() {
                 if (xs.length != real_builtin_func_apply_s[i][1]) {
                     return error_v;
                 }
-                xs[xs.length] = error_v;
+                xs.push(error_v);
                 return real_builtin_func_apply_s[i][2].apply(null, xs);
             }
         }
@@ -979,31 +998,73 @@ var TheLanguage = (function() {
             if (xs.length !== 2) {
                 return error_v;
             }
-            return new_lambda(env, xs[0], xs[1]);
+            return new_lambda(env, xs[0], xs[1], error_v);
         }
         return error_v;
     }
 
-    function new_lambda(env, args_pat, body) {
-        // WARNING delay未正確處理(影響較小)
-        WIP
-        /*args=force_all_rec(args_pat);
-        var args_pat_vars
-        while (!null_p(args_pat)) {
-            if (symbol_p(args_pat)) {
-                env = env_set(env, args_pat, jslist2list(xs));
-                xs = [];
-                args_pat = null_v;
-            } else if (cons_p(args_pat)) {
-                if (xs.length === 0) {
-                    return make_error_v();
-                }
-                env = env_set(env, cons_car(args_pat), xs.shift()); // xs.shift() 表達式副作用!
-                args_pat = cons_cdr(args_pat);
+    function new_lambda(env, args_pat, body, error_v) {
+        // WIP 未測試
+        function make_error_v() {
+            if (jsnull_p(error_v)) {
+                return new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), builtin_form_lambda_sym, jslist2list([args_pat, body]))));
+            } else {
+                return error_v;
+            }
+        }
+
+        function make_quote(x) {
+            return new_list(use_builtin_form_sym, builtin_form_quote_sym, x);
+        }
+
+        args_pat = force_all_rec(args_pat); // WARNING delay未正確處理(影響較小)
+
+        var args_pat_vars = []; // : JSList LangVal/Name 順序有要求
+        var args_pat_is_dot = false; // : Bool
+        var args_pat_iter = args_pat;
+        while (!null_p(args_pat_iter)) {
+            if (name_p(args_pat_iter)) {
+                args_pat_vars.push(args_pat_iter);
+                args_pat_is_dot = true;
+                args_pat_iter = null_v;
+            } else if (cons_p(args_pat_iter)) {
+                args_pat_vars.push(cons_car(args_pat_iter));
+                args_pat_iter = cons_cdr(args_pat_iter);
             } else {
                 return make_error_v();
             }
-        }*/
+        }
+
+        var env_vars = []; // : JSList LangVal/Name
+        env_foreach(env, function(k, v) {
+            for (var i = 0; i < args_pat_vars; i++) {
+                if (jsbool_equal_p(args_pat_vars[i], k)) { // WARNING delay未正確處理(影響較小)
+                    exist = true;
+                    return;
+                }
+            }
+            env_vars.push(k);
+        });
+
+        var new_args_pat = args_pat; // : LangVal
+        for (var i = env_vars.length - 1; i >= 0; i--) {
+            new_args_pat = new_cons(env_vars[i], new_args_pat);
+        }
+
+        var new_args; // : LangVal
+        if (args_pat_is_dot) {
+            new_args = args_pat_vars[args_pat_vars.length - 1];
+        } else {
+            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, args_pat_vars[args_pat_vars.length - 1], null_v);
+        }
+        for (var i = args_pat_vars.length - 2; i >= 0; i--) {
+            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, args_pat_vars[i], new_args);
+        }
+        for (var i = env_vars.length - 1; i >= 0; i--) {
+            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, make_quote(must_env_get(env, env_vars[i])), new_args);
+        }
+
+        return new_data(func_sym, args_pat, new_cons(make_quote(new_data(func_sym, new_args, body)), new_args));
     }
 
     function jsbool_equal_p(x, y) {
