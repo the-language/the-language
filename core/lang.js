@@ -409,10 +409,15 @@ var TheLanguage = (function() {
     }
     exports.delay_p = any_delay_just_p;
 
-    function force_all(raw, parents_history) {
+    function force_all(raw, parents_history, ref_novalue_replace) {
         // LangVal -> LangVal
+        // *history : Map String True
+        // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
         if (jsnull_p(parents_history)) {
             parents_history = {};
+        }
+        if (jsnull_p(ref_novalue_replace)) {
+            ref_novalue_replace = [false, false];
         }
         var history = {};
         var x = raw;
@@ -420,6 +425,7 @@ var TheLanguage = (function() {
 
         function replace_this_with_stopped() {
             // 語言標準允許替換沒有值的東西為那種錯誤。
+            ref_novalue_replace[1] = true;
             lang_set_do(x, the_world_stopped_v);
             for (var i = 0; i < xs.length; i++) {
                 lang_set_do(xs[i], the_world_stopped_v);
@@ -443,6 +449,7 @@ var TheLanguage = (function() {
                 return replace_this_with_stopped();
             }
             if (history[x_id] === true) {
+                ref_novalue_replace[0] = true;
                 // 減少替換範圍：(f <沒有值>) 的(f _)
                 switch (type_of(x)) {
                     case delay_eval_t:
@@ -459,9 +466,10 @@ var TheLanguage = (function() {
                         }
                         if (is_elim) {
                             ASSERT(xs.length === 1);
-                            var inner = force_all(xs[0], make_history());
-                            if (jsbool_equal_p(inner, the_world_stopped_v)) {
-                                return force_all(builtin_func_apply(f, [the_world_stopped_v]));
+                            ASSERT(ref_novalue_replace[1] === false);
+                            var inner = force_all(xs[0], make_history(), ref_novalue_replace);
+                            if (ref_novalue_replace[1]) {
+                                return force_all(builtin_func_apply(f, [inner]));
                             } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
@@ -475,9 +483,10 @@ var TheLanguage = (function() {
                             return replace_this_with_stopped(); //WIP
                         } else if (jsbool_equal_p(f, builtin_func_if_sym)) {
                             ASSERT(xs.length === 3);
-                            var tf = force_all(xs[0], make_history());
-                            if (jsbool_equal_p(tf, the_world_stopped_v)) {
-                                return force_all(builtin_func_apply(builtin_func_if_sym, [the_world_stopped_v, xs[1], xs[2]]));
+                            ASSERT(ref_novalue_replace[1] === false);
+                            var tf = force_all(xs[0], make_history(), ref_novalue_replace);
+                            if (ref_novalue_replace[1]) {
+                                return force_all(builtin_func_apply(builtin_func_if_sym, [tf, xs[1], xs[2]]));
                             } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
