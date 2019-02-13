@@ -173,6 +173,7 @@ test_block('eval,complex_print,complex_parse', function() {
         ['$(#(映表 ()) ((~;(太始初核 式形) ~;->化滅 (X) X) ()))', '()'],
         ['$(#(映表 ()) ((~;(太始初核 式形) ~;->化滅 (X) X) (~;(太始初核 式形) 引用:式形 Ha)))', 'Ha'],
         ['$(#(映表 ((X Ga))) ((~;(太始初核 式形) ~;->化滅 () X)))', 'Ga'],
+        ['$(#(映表 ((X Ga))) ((~;(太始初核 式形) ~;->化滅 (A) (~;(太始初核 化滅) ->連 A X)) (~;(太始初核 式形) 引用:式形 Ja)))', '(Ja . Ga)'],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('complex_print(force_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_rec(L.complex_parse(x[0]))) === x[1])

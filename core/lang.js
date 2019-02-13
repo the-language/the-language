@@ -1033,6 +1033,10 @@ var TheLanguage = (function() {
                 return make_error_v();
             }
         }
+        var args_pat_vars_val = args_pat; // 是 jslist2list(args_pat_vars) : LangVal
+        if (args_pat_is_dot) {
+            args_pat_vars_val = jslist2list(args_pat_vars);
+        }
 
         var env_vars = []; // : JSList LangVal/Name
         env_foreach(env, function(k, v) {
@@ -1045,15 +1049,12 @@ var TheLanguage = (function() {
             env_vars.push(k);
         });
 
-        var new_args_pat = jslist2list(args_pat_vars); // : LangVal
+        var new_args_pat = args_pat_vars_val; // : LangVal
         for (var i = env_vars.length - 1; i >= 0; i--) {
             new_args_pat = new_cons(env_vars[i], new_args_pat);
         }
 
-        var new_args = null_v; // : LangVal
-        for (var i = args_pat_vars.length - 1; i >= 0; i--) {
-            new_args = new_cons(args_pat_vars[i], new_args);
-        }
+        var new_args = args_pat_vars_val; // : LangVal
         for (var i = env_vars.length - 1; i >= 0; i--) {
             new_args = new_cons(make_quote(must_env_get(env, env_vars[i])), new_args);
         }
