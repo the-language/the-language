@@ -1052,7 +1052,9 @@ var TheLanguage = (function() {
         }
 
         var new_args; // : LangVal
-        if (args_pat_is_dot) {
+        if (args_pat_vars.length === 0) {
+            new_args = null_v;
+        } else if (args_pat_is_dot) {
             new_args = args_pat_vars[args_pat_vars.length - 1];
         } else {
             new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, args_pat_vars[args_pat_vars.length - 1], null_v);
@@ -1064,7 +1066,7 @@ var TheLanguage = (function() {
             new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, make_quote(must_env_get(env, env_vars[i])), new_args);
         }
 
-        return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_args, body)), new_args)));
+        return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_list(new_args, body))), new_args)));
     }
 
     function jsbool_equal_p(x, y) {
