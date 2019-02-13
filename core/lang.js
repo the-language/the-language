@@ -1004,7 +1004,6 @@ var TheLanguage = (function() {
     }
 
     function new_lambda(env, args_pat, body, error_v) {
-        // WIP 未測試
         function make_error_v() {
             if (jsnull_p(error_v)) {
                 return new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), builtin_form_lambda_sym, jslist2list([args_pat, body]))));
@@ -1046,27 +1045,20 @@ var TheLanguage = (function() {
             env_vars.push(k);
         });
 
-        var new_args_pat = args_pat; // : LangVal
+        var new_args_pat = jslist2list(args_pat_vars); // : LangVal
         for (var i = env_vars.length - 1; i >= 0; i--) {
             new_args_pat = new_cons(env_vars[i], new_args_pat);
         }
 
-        var new_args; // : LangVal
-        if (args_pat_vars.length === 0) {
-            new_args = null_v;
-        } else if (args_pat_is_dot) {
-            new_args = args_pat_vars[args_pat_vars.length - 1];
-        } else {
-            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, args_pat_vars[args_pat_vars.length - 1], null_v);
-        }
-        for (var i = args_pat_vars.length - 2; i >= 0; i--) {
-            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, args_pat_vars[i], new_args);
+        var new_args = null_v; // : LangVal
+        for (var i = args_pat_vars.length - 1; i >= 0; i--) {
+            new_args = new_cons(args_pat_vars[i], new_args);
         }
         for (var i = env_vars.length - 1; i >= 0; i--) {
-            new_args = new_list(use_builtin_func_sym, builtin_func_new_cons_sym, make_quote(must_env_get(env, env_vars[i])), new_args);
+            new_args = new_cons(make_quote(must_env_get(env, env_vars[i])), new_args);
         }
 
-        return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_list(new_args, body))), new_args)));
+        return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_list(new_args_pat, body))), new_args)));
     }
 
     function jsbool_equal_p(x, y) {
