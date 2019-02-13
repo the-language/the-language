@@ -162,6 +162,7 @@ test_block('eval,complex_print,complex_parse', function() {
         ['%(若:化滅 (#(陽) A B))', 'A'],
         ['%(若:化滅 (%([:連]? (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲)))))) A B))', 'B'],
         ['^($(#(映表 ()) (~;(太始初核 式形) ~;->化滅 () ())) ())', '()'],
+        ['$(#(映表 ()) ((~;(太始初核 式形) ~;->化滅 (X) X) ()))', '()'],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('complex_print(force_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_rec(L.complex_parse(x[0]))) === x[1])
