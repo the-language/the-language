@@ -50,7 +50,7 @@ const prelude = '\n' +
     '    ASSERT(x());\n' +
     '}\n'
 
-function test_block(name, f) {
+function par_test_block(name, f) {
     const script = prelude + '\n' +
         //'print_do("----------[TEST/' + name + ']----------");\n'+
         '{\n(' + f.toString() + ')();\n}\n'
@@ -68,6 +68,14 @@ function test_block(name, f) {
         })
     })
 }
+
+function seq_test_block(name, f) {
+    const script = prelude + '\n' +
+        'print_do("----------[TEST/' + name + ']----------");\n' +
+        '{\n(' + f.toString() + ')();\n}\n'
+    eval(script)
+}
+const test_block = seq_test_block
 test_block("read,print", function() {
     const xs = [
         "(你好 世界！)",
@@ -163,6 +171,7 @@ test_block('eval,complex_print,complex_parse', function() {
         ['%(若:化滅 (%([:連]? (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲)))))) A B))', 'B'],
         ['^($(#(映表 ()) (~;(太始初核 式形) ~;->化滅 () ())) ())', '()'],
         ['$(#(映表 ()) ((~;(太始初核 式形) ~;->化滅 (X) X) ()))', '()'],
+        ['$(#(映表 ()) ((~;(太始初核 式形) ~;->化滅 (X) X) (~;(太始初核 式形) 引用:式形 Ha)))', 'Ha'],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP('complex_print(force_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_rec(L.complex_parse(x[0]))) === x[1])
