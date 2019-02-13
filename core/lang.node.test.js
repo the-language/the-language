@@ -132,6 +132,7 @@ test_block('complex_parse,complex_print', function() {
         ['[:構]?', L.symbols.builtin.function.data_p],
         ['等同?', L.symbols.builtin.function.equal_p],
         ['化滅@應用', L.symbols.builtin.function.apply],
+        ['~;->化滅', L.symbols.builtin.form.lambda],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", () => L.print(L.complex_parse(x[0])) === L.print(x[1]))

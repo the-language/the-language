@@ -1815,6 +1815,15 @@ var TheLanguage = (function() {
             switch (head) {
                 case '~':
                     assert_get(';');
+                    un_maybe(not_eof());
+                    var c0 = get();
+                    if (c0 === '-') {
+                        assert_get('>');
+                        var x = readsysname_no_pack_inner_must();
+                        return new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, x)), the_sym);
+                    } else {
+                        put(c0);
+                    }
                     var x = readsysname_no_pack_inner_must();
                     return new_list(form_sym, x);
                 case '-':
@@ -1943,6 +1952,14 @@ var TheLanguage = (function() {
                     // new_list(a_sym, func_sym, new_list(isornot_sym, maybe_lst_44[1]))
                     var maybe_lst_45 = maybe_list2js(maybe_lst_44[1]);
                     return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?');
+                }
+                if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], the_sym) && jsbool_no_force_equal_p(maybe_lst_2[0], form_sym)) {
+                    // new_list(a_sym, new_list(form_sym, maybe_lst_2[1]), the_sym)
+                    var maybe_lst_88 = maybe_list2js(maybe_lst_2[1]);
+                    if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], func_sym) && jsbool_no_force_equal_p(maybe_lst_88[1], sth_sym)) {
+                        // new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, maybe_lst_88[2])), the_sym)
+                        return inner_bracket('~;->' + print_sys_name(maybe_lst_88[2], 'inner'));
+                    }
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
