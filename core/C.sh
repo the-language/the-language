@@ -31,7 +31,7 @@ function main(){
 }
 main()
 EOF
-node $printer&
+./node $printer&
 echo "---[TEST]---"
 sleep 1s
 wait %1

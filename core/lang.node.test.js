@@ -65,10 +65,6 @@ function test_block(name, f) {
             child.on('close', function(code) {
                 fs.unlink(script_file, function() {})
             })
-            //process.exec('node ' + script_file, function(error_node, stdout_node, stderr_node) {
-            // console.log(stdout_node)
-            //fs.unlink(script_file,function(){})
-            //})
         })
     })
 }
