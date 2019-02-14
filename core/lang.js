@@ -1211,6 +1211,7 @@ var TheLanguage = (function() {
 
     function read(x) {
         // JSString -> LangVal
+        // [[[ 大量重複代碼 read <-> complex_parse
         var state = x.split(""); // State : List Char
         function eof() {
             return state.length === 0;
@@ -1501,6 +1502,7 @@ var TheLanguage = (function() {
             error();
         }
         return val();
+        // 大量重複代碼 read <-> complex_parse ]]]
     }
     exports.read = read;
     // 相對獨立的部分。parser/printer }}}
@@ -1508,6 +1510,7 @@ var TheLanguage = (function() {
     // {{{ 相對獨立的部分。complex parser/complex printer
     function complex_parse(x) {
         // JSString -> LangVal
+        // [[[ 大量重複代碼 read <-> complex_parse
         var state = x.split(""); // State : List Char
         function eof() {
             return state.length === 0;
@@ -1802,6 +1805,21 @@ var TheLanguage = (function() {
             un_maybe(get() === c);
         }
 
+        function val() {
+            space();
+            var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+            for (var i = 0; i < fs.length; i++) {
+                var x = fs[i]();
+                if (x !== false) {
+                    return x;
+                }
+            }
+            error();
+        }
+        return val();
+
+        // 大量重複代碼 read <-> complex_parse ]]]
+
         function readsysname_no_pack() {
             if (eof()) {
                 return false;
@@ -1891,19 +1909,6 @@ var TheLanguage = (function() {
             }
             return make_sys_sym_f(x);
         }
-
-        function val() {
-            space();
-            var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
-            for (var i = 0; i < fs.length; i++) {
-                var x = fs[i]();
-                if (x !== false) {
-                    return x;
-                }
-            }
-            error();
-        }
-        return val();
     }
 
     function complex_print(val) {
