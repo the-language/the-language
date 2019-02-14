@@ -78,7 +78,7 @@ var TheLanguage = (function() {
 
     function make_new_two(t) {
         return function(x, y) {
-            return [t, x, y]; // 實現底層依賴[編號 0] parser <-> 內建數據結構
+            return [t, x, y]; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         };
     }
 
@@ -1307,7 +1307,7 @@ var TheLanguage = (function() {
                 if (x[2] !== null) {
                     ERROR();
                 }
-                x[2] = lst; // 實現底層依賴[編號 0] parser <-> 內建數據結構
+                x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
 
             function last_add(x) {
@@ -1604,7 +1604,7 @@ var TheLanguage = (function() {
                 if (x[2] !== null) {
                     ERROR();
                 }
-                x[2] = lst; // 實現底層依賴[編號 0] parser <-> 內建數據結構
+                x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
 
             function last_add(x) {
