@@ -491,7 +491,6 @@ var TheLanguage = (function() {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
                             }
-                            return replace_this_with_stopped(); //WIP
                         }
                         ERROR(); //我覺得沒有這種情況
                     case delay_builtin_form_t:
