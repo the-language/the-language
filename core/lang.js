@@ -1164,6 +1164,7 @@ var TheLanguage = (function() {
     function make_printer(forcer) {
         function print(x) {
             // LangVal -> JSString
+            // [[[ 大量重複代碼 print <-> complex_print
             x = forcer(x);
             var temp = "";
             var prefix = "";
@@ -1201,6 +1202,7 @@ var TheLanguage = (function() {
                 default:
             }
             ERROR();
+            // 大量重複代碼 print <-> complex_print ]]]
         }
         return print;
     }
@@ -1985,6 +1987,7 @@ var TheLanguage = (function() {
             }
             ERROR();
         }
+        // [[[ 大量重複代碼 print <-> complex_print
         var x = read(print(val)); // 去除所有just
         var temp = "";
         var prefix = "";
@@ -2029,6 +2032,7 @@ var TheLanguage = (function() {
             default:
         }
         ERROR();
+        // 大量重複代碼 print <-> complex_print ]]]
     }
     exports.complex_parse = complex_parse;
     exports.complex_print = complex_print;
