@@ -542,7 +542,7 @@ var TheLanguage = (function() {
         // Env k v, k, v -> Env k v
         var ret = [];
         for (var i = 0; i < env.length; i = i + 2) {
-            // WARNING delay未正確處理(影響較小)
+            // WIP delay未正確處理(影響較小)
             if (jsbool_equal_p(env[i + 0], key)) {
                 ret[i + 0] = key;
                 ret[i + 1] = val;
@@ -674,14 +674,14 @@ var TheLanguage = (function() {
                         return lang_eval(env, x);
                     } else if (cons_p(rest)) {
                         xs.push(cons_car(rest));
-                        // WARNING delay未正確處理(影響較小)
+                        // WIP delay未正確處理(影響較小)
                         rest = force1(cons_cdr(rest));
                     } else {
                         DEBUG("[ERROR/eval] not list");
                         return error_v;
                     }
                 }
-                // WARNING delay未正確處理(影響較小)
+                // WIP delay未正確處理(影響較小)
                 if (jsbool_equal_p(xs[0], use_builtin_form_sym)) {
                     if (xs.length === 1) {
                         DEBUG("[ERROR/eval] builtin_form/len=1");
@@ -698,7 +698,7 @@ var TheLanguage = (function() {
                         DEBUG("[ERROR/eval] form/len=1");
                         return error_v;
                     }
-                    // WARNING delay未正確處理(影響較小)
+                    // WIP delay未正確處理(影響較小)
                     var f = force_all(lang_eval(env, xs[1]));
                     if (!data_p(f)) {
                         DEBUG("[ERROR/eval] form/not data{{{" + complex_print(f) + "}}}");
@@ -861,7 +861,7 @@ var TheLanguage = (function() {
             ERROR();
         }],
         [builtin_func_apply_sym, 2, function(f, xs, error_v) {
-            // WARNING delay未正確處理(影響較小)
+            // WIP delay未正確處理(影響較小)
             var jslist = [];
             var iter = force_all(xs);
             while (cons_p(iter)) {
@@ -874,7 +874,7 @@ var TheLanguage = (function() {
             return lang_apply(f, jslist);
         }],
         [builtin_func_eval_sym, 2, function(env, x, error_v) {
-            // WARNING delay未正確處理(影響較小)
+            // WIP delay未正確處理(影響較小)
             var maybeenv = val2env(env);
             if (maybeenv === false) {
                 return error_v;
@@ -904,7 +904,7 @@ var TheLanguage = (function() {
             if (!data_p(b)) {
                 return error_v;
             }
-            // WARNING delay未正確處理(影響較小)
+            // WIP delay未正確處理(影響較小)
             var nam = force_all(data_name(b));
             if (!symbol_p(nam)) {
                 return error_v;
@@ -921,7 +921,7 @@ var TheLanguage = (function() {
 
     function real_lang_apply(f, xs) {
         // LangVal, JSList LangVal -> LangVal
-        // WARNING delay未正確處理(影響較小)
+        // WIP delay未正確處理(影響較小)
         function make_error_v() {
             return new_error(sys_sym, new_list(use_builtin_func_sym, new_list(builtin_func_apply_sym, new_list(f, jslist2list(xs)))));
         }
@@ -972,7 +972,7 @@ var TheLanguage = (function() {
         // Name, JSList LangVal -> LangVal
         var error_v = new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, jslist2list(xs))));
         for (var i = 0; i < real_builtin_func_apply_s.length; i++) {
-            // WARNING delay未正確處理(影響較小)
+            // WIP delay未正確處理(影響較小)
             if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
                 if (xs.length != real_builtin_func_apply_s[i][1]) {
                     return error_v;
@@ -987,7 +987,7 @@ var TheLanguage = (function() {
     function real_builtin_form_apply(env, f, xs) {
         // Env, Name, JSList NotEvaledLangVal -> LangVal
         var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), f, jslist2list(xs))));
-        // WARNING delay未正確處理(影響較小)
+        // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, builtin_form_quote_sym)) {
             if (xs.length !== 1) {
                 return error_v;
@@ -1003,6 +1003,7 @@ var TheLanguage = (function() {
     }
 
     function new_lambda(env, args_pat, body, error_v) {
+        // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
         function make_error_v() {
             if (jsnull_p(error_v)) {
                 return new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), builtin_form_lambda_sym, jslist2list([args_pat, body]))));
@@ -1015,7 +1016,7 @@ var TheLanguage = (function() {
             return new_list(use_builtin_form_sym, builtin_form_quote_sym, x);
         }
 
-        args_pat = force_all_rec(args_pat); // WARNING delay未正確處理(影響較小)
+        args_pat = force_all_rec(args_pat); // WIP delay未正確處理(影響較小)
 
         var args_pat_vars = []; // : JSList LangVal/Name 順序有要求
         var args_pat_is_dot = false; // : Bool
@@ -1040,7 +1041,7 @@ var TheLanguage = (function() {
         var env_vars = []; // : JSList LangVal/Name
         env_foreach(env, function(k, v) {
             for (var i = 0; i < args_pat_vars; i++) {
-                if (jsbool_equal_p(args_pat_vars[i], k)) { // WARNING delay未正確處理(影響較小)
+                if (jsbool_equal_p(args_pat_vars[i], k)) { // WIP delay未正確處理(影響較小)
                     exist = true;
                     return;
                 }
