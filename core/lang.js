@@ -816,7 +816,7 @@ var TheLanguage = (function() {
         make_builtin_get_func(builtin_func_cons_head_sym, cons_p, cons_car),
         make_builtin_get_func(builtin_func_cons_tail_sym, cons_p, cons_cdr),
 
-        [builtin_func_equal_sym, 2, function(x, y, error_v) { // WIP 未測試
+        [builtin_func_equal_sym, 2, function(x, y, error_v) {
             if (x === y) {
                 return true_v;
             }
