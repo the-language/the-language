@@ -1835,6 +1835,9 @@ var TheLanguage = (function() {
                         assert_get('>');
                         var x = readsysname_no_pack_inner_must();
                         return new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, x)), the_sym);
+                    } else if (c0 === '+') {
+                        var x = readsysname_no_pack_inner_must();
+                        return new_list(form_sym, new_list(sys_sym, x));
                     } else {
                         put(c0);
                     }
@@ -1851,6 +1854,9 @@ var TheLanguage = (function() {
                     }
                     var x = readsysname_no_pack_inner_must();
                     return new_list(a_sym, x);
+                case '+':
+                    var x = readsysname_no_pack_inner_must();
+                    return new_list(sys_sym, x);
                 case '[':
                     var x = readsysname_no_pack_inner_must();
                     assert_get(']');
@@ -1967,15 +1973,25 @@ var TheLanguage = (function() {
                     }
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
-                // new_list(a_sym, maybe_xs[1])
-                return inner_bracket(':' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
-                // new_list(form_sym, maybe_xs[1])
-                return inner_bracket('&' + print_sys_name(maybe_xs[1], 'inner'));
-            } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
-                // new_list(isornot_sym, maybe_xs[1])
-                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
+            } else if (maybe_xs !== false && maybe_xs.length === 2) {
+                if (jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
+                    // new_list(a_sym, maybe_xs[1])
+                    return inner_bracket(':' + print_sys_name(maybe_xs[1], 'inner'));
+                } else if (jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
+                    // new_list(form_sym, maybe_xs[1])
+                    var maybe_lst_288 = maybe_list2js(maybe_xs[1]);
+                    if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], sys_sym)) {
+                        // new_list(form_sym, new_list(sys_sym, maybe_lst_288[1]))
+                        return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], 'inner'));
+                    }
+                    return inner_bracket('&' + print_sys_name(maybe_xs[1], 'inner'));
+                } else if (jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
+                    // new_list(isornot_sym, maybe_xs[1])
+                    return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
+                } else if (jsbool_no_force_equal_p(maybe_xs[0], sys_sym)) {
+                    // new_list(sys_sym, maybe_xs[1])
+                    return inner_bracket('+' + print_sys_name(maybe_xs[1], 'inner'));
+                }
             }
             if (where === 'inner') {
                 return print(x);
