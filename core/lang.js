@@ -1782,7 +1782,7 @@ var TheLanguage = (function() {
             if (a_space_p(x)) {
                 return false;
             }
-            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', ';', '-', '>', '_', ':', '?', '[', ']'];
+            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', ';', '-', '>', '_', ':', '?', '[', ']', '&'];
             for (var i = 0; i < not_xs.length; i++) {
                 if (x == not_xs[i]) {
                     return false;
@@ -1828,8 +1828,7 @@ var TheLanguage = (function() {
             }
             var head = get();
             switch (head) {
-                case '~':
-                    assert_get(';');
+                case '&':
                     un_maybe(not_eof());
                     var c0 = get();
                     if (c0 === ':') {
@@ -1966,7 +1965,7 @@ var TheLanguage = (function() {
                     var maybe_lst_88 = maybe_list2js(maybe_lst_2[1]);
                     if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], func_sym) && jsbool_no_force_equal_p(maybe_lst_88[1], sth_sym)) {
                         // new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, maybe_lst_88[2])), the_sym)
-                        return inner_bracket('~;:->' + print_sys_name(maybe_lst_88[2], 'inner'));
+                        return inner_bracket('&:->' + print_sys_name(maybe_lst_88[2], 'inner'));
                     }
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
@@ -1975,7 +1974,7 @@ var TheLanguage = (function() {
                 return inner_bracket(':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
                 // new_list(form_sym, maybe_xs[1])
-                return inner_bracket('~;' + print_sys_name(maybe_xs[1], 'inner'));
+                return inner_bracket('&' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
                 // new_list(isornot_sym, maybe_xs[1])
                 return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
