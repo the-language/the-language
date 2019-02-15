@@ -1832,7 +1832,6 @@ var TheLanguage = (function() {
                     un_maybe(not_eof());
                     var c0 = get();
                     if (c0 === ':') {
-                        assert_get('-');
                         assert_get('>');
                         var x = readsysname_no_pack_inner_must();
                         return new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, x)), the_sym);
@@ -1844,8 +1843,7 @@ var TheLanguage = (function() {
                 case ':':
                     un_maybe(not_eof());
                     var c0 = get();
-                    if (c0 === '-') {
-                        assert_get('>');
+                    if (c0 === '>') {
                         var x = readsysname_no_pack_inner_must();
                         return new_list(a_sym, new_list(func_sym, sth_sym, x), the_sym);
                     } else {
@@ -1951,7 +1949,7 @@ var TheLanguage = (function() {
                         return inner_bracket(print_sys_name(cons_car(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'));
                     } else if (jsbool_no_force_equal_p(maybe_lst_2[1], sth_sym) && jsbool_no_force_equal_p(maybe_xs[2], the_sym)) {
                         // new_list(a_sym, new_list(func_sym, sth_sym, maybe_lst_2[2]), the_sym)
-                        return inner_bracket(':->' + print_sys_name(maybe_lst_2[2], 'inner'));
+                        return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], 'inner'));
                     }
                 }
                 var maybe_lst_44 = maybe_list2js(maybe_xs[2]);
@@ -1965,7 +1963,7 @@ var TheLanguage = (function() {
                     var maybe_lst_88 = maybe_list2js(maybe_lst_2[1]);
                     if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], func_sym) && jsbool_no_force_equal_p(maybe_lst_88[1], sth_sym)) {
                         // new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, maybe_lst_88[2])), the_sym)
-                        return inner_bracket('&:->' + print_sys_name(maybe_lst_88[2], 'inner'));
+                        return inner_bracket('&:>' + print_sys_name(maybe_lst_88[2], 'inner'));
                     }
                 }
                 return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
