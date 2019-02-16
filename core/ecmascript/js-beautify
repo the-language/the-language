@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ -f ~/.yarn/bin/js-beautify ]
+then
+exec ~/.yarn/bin/js-beautify "$@"
+else
+exec js-beautify "$@"
+fi
