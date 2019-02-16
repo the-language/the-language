@@ -225,10 +225,10 @@ var TheLanguage = (function() {
     exports.symbols.if = if_sym;
     var a_sym = new_symbol("一類何物");
     exports.symbols.type_annotation = a_sym;
-    var one_sym = new_symbol("一");
-    exports.symbols.one = one_sym;
     var isornot_sym = new_symbol("是非");
     exports.symbols.is_or_not = isornot_sym;
+    var sub_sym = new_symbol("其子");
+    exports.symbols.sub_sym = sub_sym;
     var true_sym = new_symbol("陽");
     exports.symbols.true = true_sym;
     var false_sym = new_symbol("陰");
@@ -253,6 +253,8 @@ var TheLanguage = (function() {
     exports.symbols.head = head_sym;
     var tail_sym = new_symbol("尾");
     exports.symbols.tail = tail_sym;
+    var thing_sym = new_symbol("物");
+    exports.symbols.thing = thing_sym;
     var the_world_stopped_sym = new_symbol("宇宙亡矣");
     exports.symbols.the_world_stopped = the_world_stopped_sym;
     var the_world_stopped_v = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
@@ -313,7 +315,7 @@ var TheLanguage = (function() {
     exports.symbols.builtin.func.apply = builtin_func_apply_sym;
     var builtin_func_eval_sym = make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
     exports.symbols.builtin.func.eval = builtin_func_eval_sym;
-    var builtin_func_list_choose_sym = make_builtin_f_get_sym_f(list_sym, one_sym);
+    var builtin_func_list_choose_sym = make_builtin_f_get_sym_f(list_sym, new_list(a_sym, thing_sym));
     exports.symbols.builtin.func.list_choose_one = builtin_func_list_choose_sym;
     var builtin_func_if_sym = make_sys_sym_f(new_list(a_sym, func_sym, if_sym));
     exports.symbols.builtin.func.if = builtin_func_if_sym;
@@ -1782,7 +1784,7 @@ var TheLanguage = (function() {
             if (a_space_p(x)) {
                 return false;
             }
-            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', ';', '-', '>', '_', ':', '?', '[', ']', '&'];
+            var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'];
             for (var i = 0; i < not_xs.length; i++) {
                 if (x == not_xs[i]) {
                     return false;
@@ -1871,8 +1873,19 @@ var TheLanguage = (function() {
             }
             ERROR();
 
-            function readsysname_no_pack_inner_must() {
-                var fs = [list, readsysname_no_pack, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+            function readsysname_no_pack_inner_must(strict) {
+                function readsysname_no_pack_bracket() {
+                    assert_get('[');
+                    var x = readsysname_no_pack_inner_must();
+                    assert_get(']');
+                    return x;
+                }
+                var fs;
+                if (strict) {
+                    fs = [list, symbol, readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+                } else {
+                    fs = [list, readsysname_no_pack, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+                }
                 for (var i = 0; i < fs.length; i++) {
                     var x = fs[i]();
                     if (x !== false) {
@@ -1901,6 +1914,21 @@ var TheLanguage = (function() {
                         return new_list(a_sym, new_list(func_sym, new_cons(x, sth_sym), sth_sym), y);
                     case '?':
                         return new_list(a_sym, func_sym, new_list(isornot_sym, x));
+                    case '/':
+                        var ys = [];
+                        while (true) {
+                            var y = readsysname_no_pack_inner_must(true);
+                            ys.push(y);
+                            if (eof()) {
+                                break;
+                            }
+                            var c0 = get();
+                            if (c0 !== '/') {
+                                put(x0);
+                                break;
+                            }
+                        }
+                        return new_list(sub_sym, x, jslist2list(ys));
                     default:
                         put(head);
                         return x;
@@ -1992,6 +2020,16 @@ var TheLanguage = (function() {
                     // new_list(sys_sym, maybe_xs[1])
                     return inner_bracket('+' + print_sys_name(maybe_xs[1], 'inner'));
                 }
+            } else if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], sub_sym)) {
+                // new_list(sub_sym, maybe_xs[1], maybe_xs[2])
+                var maybe_lst_8934 = maybe_list2js(maybe_xs[2]);
+                if (maybe_lst_8934 !== false && maybe_lst_8934.length !== 0) {
+                    var tmp = "";
+                    for (var i = 0; i < maybe_lst_8934.length; i++) {
+                        tmp += '/' + print_sys_name(maybe_lst_8934[i], 'inner');
+                    }
+                    return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + tmp);
+                }
             }
             if (where === 'inner') {
                 return print(x);
@@ -2051,6 +2089,17 @@ var TheLanguage = (function() {
     exports.complex_print = complex_print;
 
     // 相對獨立的部分。complex parser/complex printer }}}
+
+    // {{{ 相對獨立的部分。IO
+
+    exports.symbols.io = {}
+    var io_return_sym = complex_parse('效應/[:物]');
+    exports.symbols.io.return = io_return_sym;
+    var io_bind_sym = complex_parse('效應/連');
+    exports.symbols.io.bind = io_bind_sym;
+    //WIP
+
+    // 相對獨立的部分。IO }}}
 
     return exports;
 })();
