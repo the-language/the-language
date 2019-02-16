@@ -38,12 +38,12 @@ function quoteS(x) {
 _E.quoteS = quoteS
 
 function cons(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_cons, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_cons, x, y)
 }
 _E.cons = cons
 
 function data(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_data, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_data, x, y)
 }
 _E.data = data
 const null_v = L.null_v
@@ -59,27 +59,27 @@ function list(...xs) {
 _E.list = list
 
 function car(p) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_car, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.cons_car, x, y)
 }
 _E.car = car
 
 function cdr(p) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.cons_cdr, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.cons_cdr, x, y)
 }
 _E.cdr = cdr
 
 function error(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.new_error, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_error, x, y)
 }
 _E.error = error
 
 function calc(env, x) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.eval, env, x)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.eval, env, x)
 }
 _E.calc = calc
 
 function make_func(args, x) {
-    return data(quote(L.symbols.function), list(args, x));
+    return data(quote(L.symbols.func), list(args, x));
 }
 _E.make_func = make_func
 
@@ -89,7 +89,7 @@ function make_macro(args, x) {
 _E.make_macro = make_macro
 
 function if_then_else(b, x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.function.if, b, x, y)
+    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.if, b, x, y)
 }
 _E.if_then_else = if_then_else
 

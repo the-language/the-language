@@ -208,7 +208,7 @@ var TheLanguage = (function() {
     var name_sym = new_symbol("符名");
     exports.symbols.name = name_sym;
     var func_sym = new_symbol("化滅");
-    exports.symbols.function = func_sym;
+    exports.symbols.func = func_sym;
     var form_sym = new_symbol("式形");
     exports.symbols.form = form_sym;
     var equal_sym = new_symbol("等同");
@@ -273,50 +273,50 @@ var TheLanguage = (function() {
         return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym))));
     }
     exports.symbols.builtin = {};
-    exports.symbols.builtin.function = {};
+    exports.symbols.builtin.func = {};
     var builtin_func_new_data_sym = make_builtin_f_new_sym_f(data_sym);
-    exports.symbols.builtin.function.new_data = builtin_func_new_data_sym;
+    exports.symbols.builtin.func.new_data = builtin_func_new_data_sym;
     var builtin_func_data_name_sym = make_builtin_f_get_sym_f(data_sym, name_sym);
-    exports.symbols.builtin.function.data_name = builtin_func_data_name_sym;
+    exports.symbols.builtin.func.data_name = builtin_func_data_name_sym;
     var builtin_func_data_list_sym = make_builtin_f_get_sym_f(data_sym, list_sym);
-    exports.symbols.builtin.function.data_list = builtin_func_data_list_sym;
+    exports.symbols.builtin.func.data_list = builtin_func_data_list_sym;
     var builtin_func_data_p_sym = make_builtin_f_p_sym_f(data_sym);
-    exports.symbols.builtin.function.data_p = builtin_func_data_p_sym;
+    exports.symbols.builtin.func.data_p = builtin_func_data_p_sym;
 
     var builtin_func_new_error_sym = make_builtin_f_new_sym_f(error_sym);
-    exports.symbols.builtin.function.new_error = builtin_func_new_error_sym;
+    exports.symbols.builtin.func.new_error = builtin_func_new_error_sym;
     var builtin_func_error_name_sym = make_builtin_f_get_sym_f(error_sym, name_sym);
-    exports.symbols.builtin.function.error_name = builtin_func_error_name_sym;
+    exports.symbols.builtin.func.error_name = builtin_func_error_name_sym;
     var builtin_func_error_list_sym = make_builtin_f_get_sym_f(error_sym, list_sym);
-    exports.symbols.builtin.function.error_list = builtin_func_error_list_sym;
+    exports.symbols.builtin.func.error_list = builtin_func_error_list_sym;
     var builtin_func_error_p_sym = make_builtin_f_p_sym_f(error_sym);
-    exports.symbols.builtin.function.error_p = builtin_func_error_p_sym;
+    exports.symbols.builtin.func.error_p = builtin_func_error_p_sym;
 
     var builtin_func_new_cons_sym = make_builtin_f_new_sym_f(cons_sym);
-    exports.symbols.builtin.function.new_cons = builtin_func_new_cons_sym;
+    exports.symbols.builtin.func.new_cons = builtin_func_new_cons_sym;
     var builtin_func_cons_p_sym = make_builtin_f_p_sym_f(cons_sym);
-    exports.symbols.builtin.function.cons_p = builtin_func_cons_p_sym;
+    exports.symbols.builtin.func.cons_p = builtin_func_cons_p_sym;
     var builtin_func_cons_head_sym = make_builtin_f_get_sym_f(cons_sym, head_sym);
-    exports.symbols.builtin.function.cons_head = builtin_func_cons_head_sym;
+    exports.symbols.builtin.func.cons_head = builtin_func_cons_head_sym;
     var builtin_func_cons_tail_sym = make_builtin_f_get_sym_f(cons_sym, tail_sym);
-    exports.symbols.builtin.function.cons_tail = builtin_func_cons_tail_sym;
+    exports.symbols.builtin.func.cons_tail = builtin_func_cons_tail_sym;
 
     var builtin_func_sym_p_sym = make_builtin_f_p_sym_f(sym_sym);
-    exports.symbols.builtin.function.symbol_p = builtin_func_sym_p_sym;
+    exports.symbols.builtin.func.symbol_p = builtin_func_sym_p_sym;
 
     var builtin_func_null_p_sym = make_builtin_f_p_sym_f(null_sym);
-    exports.symbols.builtin.function.null_p = builtin_func_null_p_sym;
+    exports.symbols.builtin.func.null_p = builtin_func_null_p_sym;
 
     var builtin_func_equal_sym = make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, equal_sym)));
-    exports.symbols.builtin.function.equal_p = builtin_func_equal_sym;
+    exports.symbols.builtin.func.equal_p = builtin_func_equal_sym;
     var builtin_func_apply_sym = make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_cons(func_sym, sth_sym), sth_sym), apply_sym));
-    exports.symbols.builtin.function.apply = builtin_func_apply_sym;
+    exports.symbols.builtin.func.apply = builtin_func_apply_sym;
     var builtin_func_eval_sym = make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
-    exports.symbols.builtin.function.eval = builtin_func_eval_sym;
+    exports.symbols.builtin.func.eval = builtin_func_eval_sym;
     var builtin_func_list_choose_sym = make_builtin_f_get_sym_f(list_sym, one_sym);
-    exports.symbols.builtin.function.list_choose_one = builtin_func_list_choose_sym;
+    exports.symbols.builtin.func.list_choose_one = builtin_func_list_choose_sym;
     var builtin_func_if_sym = make_sys_sym_f(new_list(a_sym, func_sym, if_sym));
-    exports.symbols.builtin.function.if = builtin_func_if_sym;
+    exports.symbols.builtin.func.if = builtin_func_if_sym;
 
     exports.symbols.builtin.form = {};
     var builtin_form_quote_sym = make_sys_sym_f(new_list(a_sym, form_sym, quote_sym));

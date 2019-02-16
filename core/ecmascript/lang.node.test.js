@@ -133,13 +133,13 @@ test_block('complex_parse', function() {
 })
 test_block('complex_parse,complex_print', function() {
     const xs = [
-        ['構.符名', L.symbols.builtin.function.data_name],
+        ['構.符名', L.symbols.builtin.func.data_name],
         ['&式形', L.symbols.use_form],
-        ['解算:化滅', L.symbols.builtin.function.eval],
+        ['解算:化滅', L.symbols.builtin.func.eval],
         ['&+式形', L.symbols.use_builtin_form],
-        ['[:構]?', L.symbols.builtin.function.data_p],
-        ['等同?', L.symbols.builtin.function.equal_p],
-        ['化滅@應用', L.symbols.builtin.function.apply],
+        ['[:構]?', L.symbols.builtin.func.data_p],
+        ['等同?', L.symbols.builtin.func.equal_p],
+        ['化滅@應用', L.symbols.builtin.func.apply],
         ['&:>化滅', L.symbols.builtin.form.lambda],
     ]
     for (const x of xs) {
