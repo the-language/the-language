@@ -272,7 +272,7 @@ var TheLanguage = (function() {
     }
 
     function make_builtin_f_p_sym_f(t_sym) {
-        return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym))));
+        return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym, sth_sym))));
     }
     exports.symbols.builtin = {};
     exports.symbols.builtin.func = {};
@@ -315,7 +315,7 @@ var TheLanguage = (function() {
     exports.symbols.builtin.func.apply = builtin_func_apply_sym;
     var builtin_func_eval_sym = make_sys_sym_f(new_list(a_sym, func_sym, eval_sym));
     exports.symbols.builtin.func.eval = builtin_func_eval_sym;
-    var builtin_func_list_choose_sym = make_builtin_f_get_sym_f(list_sym, new_list(a_sym, thing_sym));
+    var builtin_func_list_choose_sym = make_builtin_f_get_sym_f(list_sym, new_list(a_sym, thing_sym, sth_sym));
     exports.symbols.builtin.func.list_choose_one = builtin_func_list_choose_sym;
     var builtin_func_if_sym = make_sys_sym_f(new_list(a_sym, func_sym, if_sym));
     exports.symbols.builtin.func.if = builtin_func_if_sym;
@@ -1855,7 +1855,7 @@ var TheLanguage = (function() {
                         put(c0);
                     }
                     var x = readsysname_no_pack_inner_must();
-                    return new_list(a_sym, x);
+                    return new_list(a_sym, x, sth_sym);
                 case '+':
                     var x = readsysname_no_pack_inner_must();
                     return new_list(sys_sym, x);
@@ -2000,12 +2000,9 @@ var TheLanguage = (function() {
                         return inner_bracket('&:>' + print_sys_name(maybe_lst_88[2], 'inner'));
                     }
                 }
-                return inner_bracket(print_sys_name(maybe_xs[2], 'inner') + ':' + print_sys_name(maybe_xs[1], 'inner'));
+                return inner_bracket((jsbool_no_force_equal_p(maybe_xs[2], sth_sym) ? '' : print_sys_name(maybe_xs[2], 'inner')) + ':' + print_sys_name(maybe_xs[1], 'inner'));
             } else if (maybe_xs !== false && maybe_xs.length === 2) {
-                if (jsbool_no_force_equal_p(maybe_xs[0], a_sym)) {
-                    // new_list(a_sym, maybe_xs[1])
-                    return inner_bracket(':' + print_sys_name(maybe_xs[1], 'inner'));
-                } else if (jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
+                if (jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
                     // new_list(form_sym, maybe_xs[1])
                     var maybe_lst_288 = maybe_list2js(maybe_xs[1]);
                     if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], sys_sym)) {
