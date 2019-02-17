@@ -800,7 +800,7 @@ const TheLanguage: any = {};
         return t === symbol_t || t === data_t
     }
 
-    function make_builtin_p_func(p_sym, p_jsfunc) {
+    function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc): [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
         return [p_sym, 1, function(x, error_v) {
             x = force1(x)
             if (any_delay_just_p(x)) {
@@ -813,7 +813,7 @@ const TheLanguage: any = {};
         }]
     }
 
-    function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc) {
+    function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc, f_jsfunc): [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
         return [f_sym, 1, function(x, error_v) {
             x = force1(x)
             if (any_delay_just_p(x)) {
@@ -825,7 +825,8 @@ const TheLanguage: any = {};
             return error_v
         }]
     }
-    const real_builtin_func_apply_s = [
+    type real_builtin_func_apply_T = [LangValSysName, 1, (x: LangVal) => LangVal] | [LangValSysName, 2, (x: LangVal, y: LangVal) => LangVal] | [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal) => LangVal] | [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] | [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => LangVal] | [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal]
+    const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
         make_builtin_p_func(builtin_func_data_p_sym, data_p),
         [builtin_func_new_data_sym, 2, new_data],
         make_builtin_get_func(builtin_func_data_name_sym, data_p, data_name),
