@@ -1185,9 +1185,8 @@ const TheLanguage: any = {};
     }
 
     // {{{ 相對獨立的部分。parser/printer
-    function make_printer(forcer) {
-        function print(x) {
-            // LangVal -> JSString
+    function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
+        function print(x: LangVal): string {
             // [[[ 大量重複代碼 print <-> complex_print
             x = forcer(x)
             let temp = ""
