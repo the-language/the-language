@@ -99,7 +99,7 @@ const TheLanguage: any = {};
     const make_two_p = make_one_p;
     const make_three_p = make_one_p;
 
-    function make_new_one(t) {
+    function make_new_one < T, A > (t: T): (x: A) => [T, A] {
         return function(x) {
             return [t, x];
         };
@@ -141,8 +141,9 @@ const TheLanguage: any = {};
         };
     }
 
-    const new_symbol = make_new_one(symbol_t);
-    const symbol_p = make_one_p(symbol_t); // String
+    const new_symbol: (x: string) => LangValSymbol = make_new_one < LangValType.symbol_t,
+        string > (symbol_t);
+    const symbol_p = make_one_p(symbol_t);
     const un_symbol = make_get_one_a(symbol_t);
     exports.new_symbol = new_symbol;
     exports.symbol_p = symbol_p;
