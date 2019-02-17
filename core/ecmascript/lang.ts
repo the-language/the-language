@@ -408,13 +408,13 @@ const TheLanguage: any = {};
         return list2jslist < false | Array < LangVal >> (xs, (xs) => xs, (xs, x) => false)
     }
 
-    function new_list(...xs) {
+    function new_list(...xs: Array < LangVal > ): LangVal {
         return jslist2list(xs)
     }
     exports.jslist2list = jslist2list
     exports.new_list = new_list
 
-    function un_just_all(raw) {
+    function un_just_all(raw: LangVal): LangVal {
         let x = raw
         let xs = []
         while (just_p(x)) {
@@ -427,7 +427,7 @@ const TheLanguage: any = {};
         return x
     }
 
-    function any_delay_just_p(x) {
+    function any_delay_just_p(x: LangVal): boolean {
         return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x)
     }
     exports.delay_p = any_delay_just_p
