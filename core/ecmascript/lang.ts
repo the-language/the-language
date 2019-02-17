@@ -1009,8 +1009,8 @@ const TheLanguage: any = {};
         return error_v
     }
 
-    function real_builtin_form_apply(env, f, xs) {
-        // Env, Name, JSList NotEvaledLangVal -> LangVal
+    function real_builtin_form_apply(env, f: LangVal, xs: Array < LangVal > ): LangVal {
+        // Env, LangVal, JSList NotEvaledLangVal -> LangVal
         const error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), f, jslist2list(xs))))
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, builtin_form_quote_sym)) {
