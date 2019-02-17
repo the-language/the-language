@@ -213,20 +213,20 @@ const TheLanguage: any = {};
     const builtin_form_apply: (x: any, y: LangValSysNameJustDelay, z: Array < LangValRec > ) => LangValDelayBuiltinForm = make_new_three < LangValType.delay_builtin_form_t,
         any, LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_form_t) // type WIP
     const delay_builtin_form_p = make_three_p(delay_builtin_form_t)
-    const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t); // Env
+    const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t) // Env
     const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
-    const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t); // JSList LangVal
+    const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t) // JSList LangVal
     const builtin_func_apply: (x: LangValSysNameJustDelay, y: Array < LangValRec > ) => LangValDelayBuiltinFunc = make_new_two < LangValType.delay_builtin_func_t,
         LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_func_t)
     const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
-    const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t); // LangVal/Name
-    const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t); // JSList LangVal
+    const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
+    const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
     const lang_apply: (f: LangValFunctionJustDelay, xs: Array < LangValRec > ) => LangValDelayApply = make_new_two < LangValType.delay_apply_t,
         LangValFunctionJustDelay, Array < LangValRec >> (delay_apply_t)
     exports.apply = lang_apply
     const delay_apply_p = make_two_p(delay_apply_t)
     const delay_apply_f = make_get_two_a(delay_apply_t)
-    const delay_apply_xs = make_get_two_b(delay_apply_t); // JSList LangVal
+    const delay_apply_xs = make_get_two_b(delay_apply_t) // JSList LangVal
     function force_all_rec(x: LangVal): LangVal {
         x = force_all(x)
         switch (type_of(x)) {
@@ -478,10 +478,10 @@ const TheLanguage: any = {};
                 // 減少替換範圍：(f <沒有值>) 的(f _)
                 switch (type_of(x)) {
                     case delay_eval_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                        return replace_this_with_stopped() // 可能未減少應該減少的？
                     case delay_builtin_func_t:
-                        const f = delay_builtin_func_f(x); // LangVal/Name
-                        const xs = delay_builtin_func_xs(x); // JSList LangVal
+                        const f = delay_builtin_func_f(x) // LangVal/Name
+                        const xs = delay_builtin_func_xs(x) // JSList LangVal
                         const elim_s = [builtin_func_data_name_sym, builtin_func_data_list_sym, builtin_func_data_p_sym, builtin_func_error_name_sym, builtin_func_error_list_sym, builtin_func_error_p_sym, builtin_func_cons_p_sym, builtin_func_cons_head_sym, builtin_func_cons_tail_sym, builtin_func_sym_p_sym, builtin_func_null_p_sym]
                         let is_elim = false
                         for (let i = 0; i < elim_s.length; i++) {
@@ -496,16 +496,16 @@ const TheLanguage: any = {};
                             if (ref_novalue_replace[1]) {
                                 return force_all(builtin_func_apply(f, [inner]))
                             } else {
-                                ERROR(); //我覺得沒有這種情況
+                                ERROR() //我覺得沒有這種情況
                                 return replace_this_with_stopped()
                             }
                         }
                         if (jsbool_equal_p(f, builtin_func_equal_sym)) {
-                            return replace_this_with_stopped(); //WIP
+                            return replace_this_with_stopped() //WIP
                         } else if (jsbool_equal_p(f, builtin_func_apply_sym)) {
-                            return replace_this_with_stopped(); //WIP
+                            return replace_this_with_stopped() //WIP
                         } else if (jsbool_equal_p(f, builtin_func_eval_sym)) {
-                            return replace_this_with_stopped(); //WIP
+                            return replace_this_with_stopped() //WIP
                         } else if (jsbool_equal_p(f, builtin_func_if_sym)) {
                             ASSERT(xs.length === 3)
                             ASSERT(ref_novalue_replace[1] === false)
@@ -513,15 +513,15 @@ const TheLanguage: any = {};
                             if (ref_novalue_replace[1]) {
                                 return force_all(builtin_func_apply(builtin_func_if_sym, [tf, xs[1], xs[2]]))
                             } else {
-                                ERROR(); //我覺得沒有這種情況
+                                ERROR() //我覺得沒有這種情況
                                 return replace_this_with_stopped()
                             }
                         }
-                        ERROR(); //我覺得沒有這種情況
+                        ERROR() //我覺得沒有這種情況
                     case delay_builtin_form_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                        return replace_this_with_stopped() // 可能未減少應該減少的？
                     case delay_apply_t:
-                        return replace_this_with_stopped(); // 可能未減少應該減少的？
+                        return replace_this_with_stopped() // 可能未減少應該減少的？
                     default:
                 }
                 ERROR()
@@ -847,7 +847,7 @@ const TheLanguage: any = {};
             x = force1(x)
             y = force1(y)
             if (any_delay_just_p(x) || any_delay_just_p(y)) {
-                return builtin_func_apply(builtin_func_equal_sym, [x, y]); // not fully implemented -- Halting
+                return builtin_func_apply(builtin_func_equal_sym, [x, y]) // not fully implemented -- Halting
             }
             if (x === y) {
                 return true_v
@@ -980,7 +980,7 @@ const TheLanguage: any = {};
                 if (xs.length === 0) {
                     return make_error_v()
                 }
-                env = env_set(env, cons_car(args_pat), xs.shift()); // xs.shift() 表達式副作用!
+                env = env_set(env, cons_car(args_pat), xs.shift()) // xs.shift() 表達式副作用!
                 args_pat = cons_cdr(args_pat)
             } else {
                 return make_error_v()
@@ -1040,10 +1040,10 @@ const TheLanguage: any = {};
             return new_list(use_builtin_form_sym, builtin_form_quote_sym, x)
         }
 
-        args_pat = force_all_rec(args_pat); // WIP delay未正確處理(影響較小)
+        args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
 
-        let args_pat_vars = []; // : JSList LangVal/Name 順序有要求
-        let args_pat_is_dot = false; // : Bool
+        let args_pat_vars = [] // : JSList LangVal/Name 順序有要求
+        let args_pat_is_dot = false // : Bool
         let args_pat_iter = args_pat
         while (!null_p(args_pat_iter)) {
             if (name_p(args_pat_iter)) {
@@ -1057,12 +1057,12 @@ const TheLanguage: any = {};
                 return make_error_v()
             }
         }
-        let args_pat_vars_val = args_pat; // 是 jslist2list(args_pat_vars) : LangVal
+        let args_pat_vars_val = args_pat // 是 jslist2list(args_pat_vars) : LangVal
         if (args_pat_is_dot) {
             args_pat_vars_val = jslist2list(args_pat_vars)
         }
 
-        let env_vars = []; // : JSList LangVal/Name
+        let env_vars = [] // : JSList LangVal/Name
         env_foreach(env, function(k, v) {
             for (let i = 0; i < args_pat_vars.length; i++) {
                 if (jsbool_equal_p(args_pat_vars[i], k)) { // WIP delay未正確處理(影響較小)
@@ -1072,12 +1072,12 @@ const TheLanguage: any = {};
             env_vars.push(k)
         })
 
-        let new_args_pat = args_pat_vars_val; // : LangVal
+        let new_args_pat = args_pat_vars_val // : LangVal
         for (let i = env_vars.length - 1; i >= 0; i--) {
             new_args_pat = new_cons(env_vars[i], new_args_pat)
         }
 
-        let new_args = args_pat_vars_val; // : LangVal
+        let new_args = args_pat_vars_val // : LangVal
         for (let i = env_vars.length - 1; i >= 0; i--) {
             new_args = new_cons(make_quote(must_env_get(env, env_vars[i])), new_args)
         }
@@ -1171,13 +1171,13 @@ const TheLanguage: any = {};
                 return end_2(data_name, data_list)
 
             case delay_eval_t:
-                return false; //WIP
+                return false //WIP
             case delay_builtin_func_t:
-                return false; //WIP
+                return false //WIP
             case delay_builtin_form_t:
-                return false; //WIP
+                return false //WIP
             case delay_apply_t:
-                return false; //WIP
+                return false //WIP
             default:
         }
         ERROR()
@@ -1237,7 +1237,7 @@ const TheLanguage: any = {};
     function read(x) {
         // JSString -> LangVal
         // [[[ 大量重複代碼 read <-> complex_parse
-        let state = x.split(""); // State : List Char
+        let state = x.split("") // State : List Char
         function eof() {
             return state.length === 0
         }
@@ -1333,7 +1333,7 @@ const TheLanguage: any = {};
                 if (x[2] !== null) {
                     ERROR()
                 }
-                x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
+                x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
 
             function last_add(x) {
@@ -1524,7 +1524,7 @@ const TheLanguage: any = {};
     function complex_parse(x) {
         // JSString -> LangVal
         // [[[ 大量重複代碼 read <-> complex_parse
-        let state = x.split(""); // State : List Char
+        let state = x.split("") // State : List Char
         function eof() {
             return state.length === 0
         }
@@ -1620,7 +1620,7 @@ const TheLanguage: any = {};
                 if (x[2] !== null) {
                     ERROR()
                 }
-                x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
+                x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
 
             function last_add(x) {
@@ -2053,7 +2053,7 @@ const TheLanguage: any = {};
             ERROR()
         }
         // [[[ 大量重複代碼 print <-> complex_print
-        let x = read(print(val)); // 去除所有just
+        let x = read(print(val)) // 去除所有just
         let temp = ""
         let prefix = ""
         switch (type_of(x)) {
