@@ -167,7 +167,8 @@ const TheLanguage: any = {};
     exports.null_v = null_v;
     exports.null_p = null_p;
 
-    const new_data = make_new_two(data_t);
+    const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two < LangValType.data_t,
+        LangVal, LangVal > (data_t);
     const data_p = make_two_p(data_t);
     const data_name = make_get_two_a(data_t);
     const data_list = make_get_two_b(data_t);
