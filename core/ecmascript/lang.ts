@@ -16,15 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-'use strict';
-const TheLanguage = (function() {
-    const enable_nodejs = true;
-    const in_nodejs = module ? true : false; // fix me?
-    let exports: any = {};
-    if (enable_nodejs && in_nodejs) {
-        // fix me?
-        exports = module.exports;
-    }
+const TheLanguage: any = {};
+(() => {
+    const exports = TheLanguage;
 
     function ERROR() {
         const PANIC = null;
@@ -2113,3 +2107,8 @@ const TheLanguage = (function() {
 
     return exports;
 })();
+if (exports) {
+    for (const key in TheLanguage) {
+        exports[key] = TheLanguage[key]
+    }
+}

@@ -16,15 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-'use strict';
-var TheLanguage = (function() {
-    var enable_nodejs = true;
-    var in_nodejs = module ? true : false; // fix me?
-    var exports = {};
-    if (enable_nodejs && in_nodejs) {
-        // fix me?
-        exports = module.exports;
-    }
+var TheLanguage = {};
+(function() {
+    var exports = TheLanguage;
 
     function ERROR() {
         var PANIC = null;
@@ -2101,3 +2095,8 @@ var TheLanguage = (function() {
     // 相對獨立的部分。IO }}}
     return exports;
 })();
+if (exports) {
+    for (var key in TheLanguage) {
+        exports[key] = TheLanguage[key];
+    }
+}
