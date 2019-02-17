@@ -1,7 +1,9 @@
 #!/bin/bash
 cd "$(dirname $0)"
+. init-path.sh
 f=$(mktemp)
-./js-beautify -r *.js
+js-beautify -r *.js *.ts
+tsc --allowJs --outFile lang.js lang.ts
 ./node.test.sh 2>&1 | cat > $f &
 git add .;git diff --cached
 echo
@@ -31,7 +33,7 @@ function main(){
 }
 main()
 EOF
-./node $printer&
+node $printer&
 echo "---[TEST]---"
 sleep 1s
 wait %1

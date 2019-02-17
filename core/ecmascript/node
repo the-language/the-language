@@ -1,7 +1,0 @@
-#!/bin/sh
-if node -v 2>/dev/null >/dev/null
-then
-exec node "$@"
-else
-exec nodejs "$@"
-fi

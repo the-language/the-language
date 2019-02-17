@@ -1,3 +1,4 @@
 #!/bin/sh
 cd "$(dirname $0)"
-./node lang.node.test.js
+. init-path.sh
+node lang.node.test.js
