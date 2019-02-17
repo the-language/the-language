@@ -74,8 +74,8 @@ const TheLanguage: any = {};
     type LangValError = [LangValType.error_t, LangValRec, LangValRec]
     type LangValJust = [LangValType.just_t, LangValRec, null, null]
     type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
-    type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValSysNameJustDelay, Array < LangValRec > ]
-    type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValSysNameJustDelay, Array < LangValRec > ] // WIP
+    type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array < LangValRec > ]
+    type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array < LangValRec > ] // WIP
     type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
     type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
     type LangValJustDelay = LangValJust | LangValDelay
@@ -212,14 +212,14 @@ const TheLanguage: any = {};
     const delay_eval_p = make_two_p(delay_eval_t)
     const delay_eval_env = make_get_two_a(delay_eval_t) // Env
     const delay_eval_x = make_get_two_b(delay_eval_t)
-    const builtin_form_apply: (x: any, y: LangValSysNameJustDelay, z: Array < LangValRec > ) => LangValDelayBuiltinForm = make_new_three < LangValType.delay_builtin_form_t,
-        any, LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_form_t) // type WIP
+    const builtin_form_apply: (x: any, y: LangVal, z: Array < LangValRec > ) => LangValDelayBuiltinForm = make_new_three < LangValType.delay_builtin_form_t,
+        any, LangVal, Array < LangValRec >> (delay_builtin_form_t) // type WIP
     const delay_builtin_form_p = make_three_p(delay_builtin_form_t)
     const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t) // Env
     const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
     const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t) // JSList LangVal
-    const builtin_func_apply: (x: LangValSysNameJustDelay, y: Array < LangValRec > ) => LangValDelayBuiltinFunc = make_new_two < LangValType.delay_builtin_func_t,
-        LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_func_t)
+    const builtin_func_apply: (x: LangVal, y: Array < LangValRec > ) => LangValDelayBuiltinFunc = make_new_two < LangValType.delay_builtin_func_t,
+        LangVal, Array < LangValRec >> (delay_builtin_func_t)
     const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
     const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
     const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
