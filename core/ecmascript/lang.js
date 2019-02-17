@@ -32,7 +32,7 @@ var TheLanguage = {};
     }
 
     function DEBUG(x) {
-        //禁用 console.log(x);
+        //[禁用] console.log(x);
     }
 
     function jsnull_p(x) {

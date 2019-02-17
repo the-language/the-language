@@ -31,11 +31,11 @@ const TheLanguage: any = {};
         }
     }
 
-    function DEBUG(x) {
-        //禁用 console.log(x);
+    function DEBUG(x: string): void {
+        //[禁用] console.log(x);
     }
 
-    function jsnull_p(x) {
+    function jsnull_p(x: any): boolean {
         // undefined/null
         return x == null;
     }
