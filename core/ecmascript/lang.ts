@@ -71,6 +71,7 @@ const TheLanguage: any = {};
     type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
     type LangValNull = [LangValType.null_t]
     type LangValData = [LangValType.data_t, LangValRec, LangValRec]
+    type LangValError = [LangValType.error_t, LangValRec, LangValRec]
     type LangValJust = [LangValType.just_t, LangValRec, null, null]
     type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
     type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValSysNameJustDelay, Array < LangValRec > ]
@@ -80,7 +81,7 @@ const TheLanguage: any = {};
     type LangValName = LangValData | LangValSymbol
     type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
     type LangValFunctionJustDelay = LangValRec // WIP
-    type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+    type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
     type LangValRec = any // WIP
 
     /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
@@ -144,7 +145,10 @@ const TheLanguage: any = {};
 
     const new_symbol: (x: string) => LangValSymbol = make_new_one < LangValType.symbol_t,
         string > (symbol_t)
-    const symbol_p = make_one_p(symbol_t)
+
+    function symbol_p(x: LangVal): x is LangValSymbol {
+        return type_of(x) === LangValType.symbol_t
+    }
     const un_symbol = make_get_one_a(symbol_t)
     exports.new_symbol = new_symbol
     exports.symbol_p = symbol_p
@@ -178,7 +182,8 @@ const TheLanguage: any = {};
     exports.data_name = data_name
     exports.data_list = data_list
 
-    const new_error = make_new_two(error_t)
+    const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two < LangValType.error_t,
+        LangVal, LangVal > (error_t)
     const error_p = make_two_p(error_t)
     const error_name = make_get_two_a(error_t)
     const error_list = make_get_two_b(error_t)
@@ -199,7 +204,8 @@ const TheLanguage: any = {};
     }
     const just_p = make_one_p(just_t)
     const un_just = make_get_one_a(just_t)
-    const lang_eval = make_new_two(delay_eval_t)
+    const lang_eval: (x: any, y: LangVal) => LangValDelayEval = make_new_two < LangValType.delay_eval_t,
+        any, LangVal > (delay_eval_t) // type WIP
     exports.eval = lang_eval
     const delay_eval_p = make_two_p(delay_eval_t)
     const delay_eval_env = make_get_two_a(delay_eval_t); // Env
@@ -209,7 +215,8 @@ const TheLanguage: any = {};
     const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t); // Env
     const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
     const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t); // JSList LangVal
-    const builtin_func_apply = make_new_two(delay_builtin_func_t)
+    const builtin_func_apply: (x: LangValSysNameJustDelay, y: Array < LangValRec > ) => LangValDelayBuiltinFunc = make_new_two < LangValType.delay_builtin_func_t,
+        LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_func_t)
     const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
     const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t); // LangVal/Name
     const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t); // JSList LangVal
@@ -290,7 +297,7 @@ const TheLanguage: any = {};
     exports.symbols.thing = thing_sym
     const the_world_stopped_sym = new_symbol("宇宙亡矣")
     exports.symbols.the_world_stopped = the_world_stopped_sym
-    const the_world_stopped_v = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym))
+    const the_world_stopped_v: LangVal = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym))
 
     function make_sys_sym_f(x: LangVal): LangValSysName {
         return new_data(name_sym, new_list(sys_sym, x))
@@ -365,8 +372,8 @@ const TheLanguage: any = {};
     exports.symbols.use_builtin_form = use_builtin_form_sym
     const use_form_sym = make_sys_sym_f(new_list(form_sym, form_sym))
     exports.symbols.use_form = use_form_sym
-    const false_v = new_data(false_sym, new_list())
-    const true_v = new_data(true_sym, new_list())
+    const false_v: LangVal = new_data(false_sym, new_list())
+    const true_v: LangVal = new_data(true_sym, new_list())
 
     function symbol_eq_p(x: LangValSymbol, y: LangValSymbol): boolean {
         if (x === y) {
@@ -432,7 +439,7 @@ const TheLanguage: any = {};
     }
     exports.delay_p = any_delay_just_p
 
-    function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false]) {
+    function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace = [false, false]): LangVal {
         // LangVal -> LangVal
         // *history : Map String True
         // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
