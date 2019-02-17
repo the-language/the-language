@@ -946,8 +946,7 @@ const TheLanguage: any = {};
         }],
     ]
 
-    function real_lang_apply(f, xs) {
-        // LangVal, JSList LangVal -> LangVal
+    function real_lang_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
         // WIP delay未正確處理(影響較小)
         function make_error_v() {
             return new_error(sys_sym, new_list(use_builtin_func_sym, new_list(builtin_func_apply_sym, new_list(f, jslist2list(xs)))))
