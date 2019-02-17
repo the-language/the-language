@@ -1803,9 +1803,9 @@ const TheLanguage: any = {};
 
         // 大量重複代碼 read <-> complex_parse ]]]
 
-        function un_maybe(x) {
+        function un_maybe < T > (x: false | T): T {
             if (x === false) {
-                error()
+                return error()
             }
             return x
         }
