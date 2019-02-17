@@ -82,7 +82,7 @@ const TheLanguage: any = {};
     type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
     type LangValRec = any // WIP
 
-    /* A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
+    /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
         type trec < T > = [null, t, t] | null
         interface t extends trec < null > {}
         */
