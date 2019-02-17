@@ -20,9 +20,8 @@ const TheLanguage: any = {};
 (() => {
     const exports = TheLanguage;
 
-    function ERROR() {
-        const PANIC = null;
-        PANIC();
+    function ERROR(): never {
+        throw "TheLanguage PANIC";
     }
 
     function ASSERT(x: boolean): void {
