@@ -2,7 +2,7 @@
 cd "$(dirname $0)"
 . init-path.sh
 f=$(mktemp)
-./compile.sh
+./compile.sh || exit
 js-beautify -r *.js *.ts *.json
 ./node.test.sh 2>&1 | cat > $f &
 echo press enter to continue

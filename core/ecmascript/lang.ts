@@ -105,7 +105,7 @@ const TheLanguage: any = {};
         };
     }
 
-    function make_new_two(t) {
+    function make_new_two < T, A, B > (t: T): (x: A, y: B) => [T, A, B] {
         return function(x, y) {
             return [t, x, y]; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         };
@@ -149,7 +149,8 @@ const TheLanguage: any = {};
     exports.symbol_p = symbol_p;
     exports.un_symbol = un_symbol;
 
-    const new_cons = make_new_two(cons_t);
+    const new_cons: (x: LangVal, y: LangVal) => LangValCons = make_new_two < LangValType.cons_t,
+        LangVal, LangVal > (cons_t);
     const cons_p = make_two_p(cons_t);
     const cons_car = make_get_two_a(cons_t);
     const cons_cdr = make_get_two_b(cons_t);
@@ -158,7 +159,7 @@ const TheLanguage: any = {};
     exports.cons_head = cons_car;
     exports.cons_tail = cons_cdr;
 
-    const null_v = [null_t];
+    const null_v: LangValNull = [null_t];
 
     function null_p(x) {
         return x[0] === null_t;
@@ -383,7 +384,7 @@ const TheLanguage: any = {};
     // {{{ 相對獨立的部分。對內建數據結構的簡單處理
     function jslist2list(xs) {
         // JSList a -> LangVal
-        let ret = null_v;
+        let ret: LangVal = null_v;
         for (let i = xs.length - 1; i >= 0; i--) {
             ret = new_cons(xs[i], ret);
         }
@@ -612,7 +613,7 @@ const TheLanguage: any = {};
 
     function env2val(env) {
         // Env k v -> LangVal
-        let ret = null_v;
+        let ret: LangVal = null_v;
         for (let i = 0; i < env.length; i = i + 2) {
             ret = new_cons(new_list(env[i + 0], env[i + 1]), ret);
         }
