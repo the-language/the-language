@@ -2,9 +2,11 @@
 cd "$(dirname $0)"
 . init-path.sh
 f=$(mktemp)
-js-beautify -r *.js *.ts
-tsc --allowJs --outFile lang.js lang.ts
 ./node.test.sh 2>&1 | cat > $f &
+./compile.sh
+js-beautify -r *.js *.ts
+echo press enter to continue
+read
 git add .;git diff --cached
 echo
 echo

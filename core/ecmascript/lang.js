@@ -17,7 +17,7 @@
 
 */
 'use strict';
-var TheLanguage = (function () {
+var TheLanguage = (function() {
     var enable_nodejs = true;
     var in_nodejs = module ? true : false; // fix me?
     var exports = {};
@@ -25,18 +25,22 @@ var TheLanguage = (function () {
         // fix me?
         exports = module.exports;
     }
+
     function ERROR() {
         var PANIC = null;
         PANIC();
     }
+
     function ASSERT(x) {
         if (!x) {
             ERROR();
         }
     }
+
     function DEBUG(x) {
         //禁用 console.log(x);
     }
+
     function jsnull_p(x) {
         // undefined/null
         return x == null;
@@ -52,48 +56,56 @@ var TheLanguage = (function () {
     var delay_builtin_func_t = 7;
     var delay_builtin_form_t = 8;
     var delay_apply_t = 9;
+
     function type_of(x) {
         return x[0];
     }
+
     function make_one_p(t) {
-        return function (x) {
+        return function(x) {
             return x[0] === t;
         };
     }
     var make_two_p = make_one_p;
     var make_three_p = make_one_p;
+
     function make_new_one(t) {
-        return function (x) {
+        return function(x) {
             return [t, x];
         };
     }
+
     function make_new_two(t) {
-        return function (x, y) {
+        return function(x, y) {
             return [t, x, y]; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         };
     }
+
     function make_new_three(t) {
-        return function (x, y, z) {
+        return function(x, y, z) {
             return [t, x, y, z];
         };
     }
+
     function make_get_one_a(t) {
-        return function (x) {
+        return function(x) {
             ASSERT(x[0] === t);
             return x[1];
         };
     }
     var make_get_two_a = make_get_one_a;
     var make_get_three_a = make_get_one_a;
+
     function make_get_two_b(t) {
-        return function (x) {
+        return function(x) {
             ASSERT(x[0] === t);
             return x[2];
         };
     }
     var make_get_three_b = make_get_two_b;
+
     function make_get_three_c(t) {
-        return function (x) {
+        return function(x) {
             ASSERT(x[0] === t);
             return x[3];
         };
@@ -113,6 +125,7 @@ var TheLanguage = (function () {
     exports.cons_head = cons_car;
     exports.cons_tail = cons_cdr;
     var null_v = [null_t];
+
     function null_p(x) {
         return x[0] === null_t;
     }
@@ -134,6 +147,7 @@ var TheLanguage = (function () {
     exports.error_p = error_p;
     exports.error_name = error_name;
     exports.error_list = error_list;
+
     function lang_set_do(x, y) {
         // 只用于x与y等价的情况
         if (x === y) {
@@ -237,15 +251,19 @@ var TheLanguage = (function () {
     var the_world_stopped_sym = new_symbol("宇宙亡矣");
     exports.symbols.the_world_stopped = the_world_stopped_sym;
     var the_world_stopped_v = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
+
     function make_sys_sym_f(x) {
         return new_data(name_sym, new_list(sys_sym, x));
     }
+
     function make_builtin_f_new_sym_f(x_sym) {
         return make_sys_sym_f(new_list(a_sym, new_list(func_sym, sth_sym, x_sym), the_sym));
     }
+
     function make_builtin_f_get_sym_f(t_sym, x_sym) {
         return make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_list(t_sym), sth_sym), x_sym));
     }
+
     function make_builtin_f_p_sym_f(t_sym) {
         return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym, sth_sym))));
     }
@@ -302,6 +320,7 @@ var TheLanguage = (function () {
     exports.symbols.use_form = use_form_sym;
     var false_v = new_data(false_sym, new_list());
     var true_v = new_data(true_sym, new_list());
+
     function symbol_eq_p(x, y) {
         ASSERT(symbol_p(x) && symbol_p(y));
         if (x === y) {
@@ -311,8 +330,7 @@ var TheLanguage = (function () {
         if (un_symbol(x) === un_symbol(y)) {
             lang_set_do(x, y);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -326,10 +344,11 @@ var TheLanguage = (function () {
         }
         return ret;
     }
+
     function list2jslist(xs, k_done, k_tail) {
         // LangVal, (JSList a -> b), (JSList a, LangVal -> b) -> b
         if (jsnull_p(k_done)) {
-            k_done = function (x) {
+            k_done = function(x) {
                 return x;
             };
         }
@@ -343,14 +362,16 @@ var TheLanguage = (function () {
         }
         return k_tail(ret, xs);
     }
+
     function maybe_list2js(xs) {
         // LangVal -> Maybe (JSList LangVal)
-        return list2jslist(xs, function (xs) {
+        return list2jslist(xs, function(xs) {
             return xs;
-        }, function (xs, x) {
+        }, function(xs, x) {
             return false;
         });
     }
+
     function new_list() {
         var xs = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -360,6 +381,7 @@ var TheLanguage = (function () {
     }
     exports.jslist2list = jslist2list;
     exports.new_list = new_list;
+
     function un_just_all(raw) {
         var x = raw;
         var xs = [];
@@ -372,19 +394,26 @@ var TheLanguage = (function () {
         }
         return x;
     }
+
     function any_delay_just_p(x) {
         return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x);
     }
     exports.delay_p = any_delay_just_p;
+
     function force_all(raw, parents_history, ref_novalue_replace) {
-        if (parents_history === void 0) { parents_history = {}; }
-        if (ref_novalue_replace === void 0) { ref_novalue_replace = [false, false]; }
+        if (parents_history === void 0) {
+            parents_history = {};
+        }
+        if (ref_novalue_replace === void 0) {
+            ref_novalue_replace = [false, false];
+        }
         // LangVal -> LangVal
         // *history : Map String True
         // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
         var history = {};
         var x = raw;
         var xs = [];
+
         function replace_this_with_stopped() {
             // 語言標準允許替換沒有值的東西為那種錯誤。
             ref_novalue_replace[1] = true;
@@ -394,6 +423,7 @@ var TheLanguage = (function () {
             }
             return the_world_stopped_v;
         }
+
         function make_history() {
             var ret = {};
             for (var x_id in history) {
@@ -431,29 +461,24 @@ var TheLanguage = (function () {
                             var inner = force_all(xs_1[0], make_history(), ref_novalue_replace);
                             if (ref_novalue_replace[1]) {
                                 return force_all(builtin_func_apply(f, [inner]));
-                            }
-                            else {
+                            } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
                             }
                         }
                         if (jsbool_equal_p(f, builtin_func_equal_sym)) {
                             return replace_this_with_stopped(); //WIP
-                        }
-                        else if (jsbool_equal_p(f, builtin_func_apply_sym)) {
+                        } else if (jsbool_equal_p(f, builtin_func_apply_sym)) {
                             return replace_this_with_stopped(); //WIP
-                        }
-                        else if (jsbool_equal_p(f, builtin_func_eval_sym)) {
+                        } else if (jsbool_equal_p(f, builtin_func_eval_sym)) {
                             return replace_this_with_stopped(); //WIP
-                        }
-                        else if (jsbool_equal_p(f, builtin_func_if_sym)) {
+                        } else if (jsbool_equal_p(f, builtin_func_if_sym)) {
                             ASSERT(xs_1.length === 3);
                             ASSERT(ref_novalue_replace[1] === false);
                             var tf = force_all(xs_1[0], make_history(), ref_novalue_replace);
                             if (ref_novalue_replace[1]) {
                                 return force_all(builtin_func_apply(builtin_func_if_sym, [tf, xs_1[1], xs_1[2]]));
-                            }
-                            else {
+                            } else {
                                 ERROR(); //我覺得沒有這種情況
                                 return replace_this_with_stopped();
                             }
@@ -476,6 +501,7 @@ var TheLanguage = (function () {
         }
         return x;
     }
+
     function force1(raw) {
         // LangVal -> LangVal
         var x = un_just_all(raw);
@@ -483,17 +509,13 @@ var TheLanguage = (function () {
         ASSERT(!just_p(x));
         if (delay_eval_p(x)) {
             ret = real_eval(delay_eval_env(x), delay_eval_x(x));
-        }
-        else if (delay_builtin_form_p(x)) {
+        } else if (delay_builtin_form_p(x)) {
             ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
-        }
-        else if (delay_builtin_func_p(x)) {
+        } else if (delay_builtin_func_p(x)) {
             ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
-        }
-        else if (delay_apply_p(x)) {
+        } else if (delay_apply_p(x)) {
             ret = real_lang_apply(delay_apply_f(x), delay_apply_xs(x));
-        }
-        else {
+        } else {
             ret = x;
         }
         ret = un_just_all(ret);
@@ -505,6 +527,7 @@ var TheLanguage = (function () {
     // 相對獨立的部分。對內建數據結構的簡單處理 }}}
     // {{{ 相對獨立的部分。變量之環境
     var env_null_v = [];
+
     function env_set(env, key, val) {
         // Env k v, k, v -> Env k v
         var ret = [];
@@ -518,8 +541,7 @@ var TheLanguage = (function () {
                     ret[i + 1] = env[i + 1];
                 }
                 return ret;
-            }
-            else {
+            } else {
                 ret[i + 0] = env[i + 0];
                 ret[i + 1] = env[i + 1];
             }
@@ -528,6 +550,7 @@ var TheLanguage = (function () {
         ret[env.length + 1] = val;
         return ret;
     }
+
     function env_get(env, key, default_v) {
         // Env k v, k, v -> v
         for (var i = 0; i < env.length; i = i + 2) {
@@ -537,6 +560,7 @@ var TheLanguage = (function () {
         }
         return default_v;
     }
+
     function must_env_get(env, key) {
         // Env k v, k, v -> v
         for (var i = 0; i < env.length; i = i + 2) {
@@ -549,6 +573,7 @@ var TheLanguage = (function () {
     exports.env_null_v = env_null_v;
     exports.env_set = env_set;
     exports.env_get = env_get;
+
     function env2val(env) {
         // Env k v -> LangVal
         var ret = null_v;
@@ -557,6 +582,7 @@ var TheLanguage = (function () {
         }
         return new_data(map_sym, new_list(ret));
     }
+
     function env_foreach(env, f) {
         // env : Env k v
         // f : k, v -> _
@@ -564,6 +590,7 @@ var TheLanguage = (function () {
             f(env[i + 0], env[i + 1]);
         }
     }
+
     function val2env(x) {
         // LangVal -> Maybe (Env k v)
         x = force_all(x);
@@ -586,25 +613,33 @@ var TheLanguage = (function () {
         }
         var ret = [];
         var xs = force_all(cons_car(s));
-        var _loop_1 = function () {
+        var _loop_1 = function() {
             if (!cons_p(xs)) {
-                return { value: false };
+                return {
+                    value: false
+                };
             }
             var x_1 = force_all(cons_car(xs));
             xs = force_all(cons_cdr(xs));
             if (!cons_p(x_1)) {
-                return { value: false };
+                return {
+                    value: false
+                };
             }
             var k = cons_car(x_1);
             x_1 = force_all(cons_cdr(x_1));
             if (!cons_p(x_1)) {
-                return { value: false };
+                return {
+                    value: false
+                };
             }
             var v = cons_car(x_1);
             if (!null_p(force_all(cons_cdr(x_1)))) {
-                return { value: false };
+                return {
+                    value: false
+                };
             }
-            (function () {
+            (function() {
                 for (var i = 0; i < ret.length; i = i + 2) {
                     if (jsbool_equal_p(ret[i + 0], k)) {
                         ret[i + 1] = v;
@@ -639,13 +674,11 @@ var TheLanguage = (function () {
                 while (!null_p(rest)) {
                     if (any_delay_just_p(rest)) {
                         return lang_eval(env, x);
-                    }
-                    else if (cons_p(rest)) {
+                    } else if (cons_p(rest)) {
                         xs.push(cons_car(rest));
                         // WIP delay未正確處理(影響較小)
                         rest = force1(cons_cdr(rest));
-                    }
-                    else {
+                    } else {
                         DEBUG("[ERROR/eval] not list");
                         return error_v;
                     }
@@ -662,8 +695,7 @@ var TheLanguage = (function () {
                         args[i - 2] = xs[i];
                     }
                     return builtin_form_apply(env, f, args);
-                }
-                else if (jsbool_equal_p(xs[0], use_form_sym)) {
+                } else if (jsbool_equal_p(xs[0], use_form_sym)) {
                     if (xs.length === 1) {
                         DEBUG("[ERROR/eval] form/len=1");
                         return error_v;
@@ -708,8 +740,7 @@ var TheLanguage = (function () {
                         args[i - 1] = xs[i];
                     }
                     return lang_apply(f_x, args);
-                }
-                else if (jsbool_equal_p(xs[0], use_builtin_func_sym)) {
+                } else if (jsbool_equal_p(xs[0], use_builtin_func_sym)) {
                     if (xs.length === 1) {
                         return error_v;
                     }
@@ -719,8 +750,7 @@ var TheLanguage = (function () {
                         args[i - 2] = lang_eval(env, xs[i]);
                     }
                     return builtin_func_apply(f, args);
-                }
-                else {
+                } else {
                     var f = lang_eval(env, xs[0]);
                     var args = [];
                     for (var i = 1; i < xs.length; i++) {
@@ -740,33 +770,36 @@ var TheLanguage = (function () {
         }
         ERROR();
     }
+
     function name_p(x) {
         var t = type_of(x);
         return t === symbol_t || t === data_t;
     }
+
     function make_builtin_p_func(p_sym, p_jsfunc) {
-        return [p_sym, 1, function (x, error_v) {
-                x = force1(x);
-                if (any_delay_just_p(x)) {
-                    return builtin_func_apply(p_sym, [x]);
-                }
-                if (p_jsfunc(x)) {
-                    return true_v;
-                }
-                return false_v;
-            }];
+        return [p_sym, 1, function(x, error_v) {
+            x = force1(x);
+            if (any_delay_just_p(x)) {
+                return builtin_func_apply(p_sym, [x]);
+            }
+            if (p_jsfunc(x)) {
+                return true_v;
+            }
+            return false_v;
+        }];
     }
+
     function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc) {
-        return [f_sym, 1, function (x, error_v) {
-                x = force1(x);
-                if (any_delay_just_p(x)) {
-                    return builtin_func_apply(f_sym, [x]);
-                }
-                if (p_jsfunc(x)) {
-                    return f_jsfunc(x);
-                }
-                return error_v;
-            }];
+        return [f_sym, 1, function(x, error_v) {
+            x = force1(x);
+            if (any_delay_just_p(x)) {
+                return builtin_func_apply(f_sym, [x]);
+            }
+            if (p_jsfunc(x)) {
+                return f_jsfunc(x);
+            }
+            return error_v;
+        }];
     }
     var real_builtin_func_apply_s = [
         make_builtin_p_func(builtin_func_data_p_sym, data_p),
@@ -782,103 +815,107 @@ var TheLanguage = (function () {
         make_builtin_p_func(builtin_func_cons_p_sym, cons_p),
         make_builtin_get_func(builtin_func_cons_head_sym, cons_p, cons_car),
         make_builtin_get_func(builtin_func_cons_tail_sym, cons_p, cons_cdr),
-        [builtin_func_equal_sym, 2, function (x, y, error_v) {
-                if (x === y) {
+        [builtin_func_equal_sym, 2, function(x, y, error_v) {
+            if (x === y) {
+                return true_v;
+            }
+            x = force1(x);
+            y = force1(y);
+            if (any_delay_just_p(x) || any_delay_just_p(y)) {
+                return builtin_func_apply(builtin_func_equal_sym, [x, y]); // not fully implemented -- Halting
+            }
+            if (x === y) {
+                return true_v;
+            }
+            if (type_of(x) !== type_of(y)) {
+                return false_v;
+            }
+
+            function H_if(b, x, y) {
+                // H = helper
+                return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
+            }
+
+            function H_and(x, y) {
+                return H_if(x, y, false_v);
+            }
+            ASSERT(!any_delay_just_p(x));
+
+            function end_2(f1, f2) {
+                return H_and(builtin_func_apply(builtin_func_equal_sym, [f1(x), f1(y)]), builtin_func_apply(builtin_func_equal_sym, [f2(x), f2(y)]));
+            }
+            switch (type_of(x)) {
+                case null_t:
                     return true_v;
-                }
-                x = force1(x);
-                y = force1(y);
-                if (any_delay_just_p(x) || any_delay_just_p(y)) {
-                    return builtin_func_apply(builtin_func_equal_sym, [x, y]); // not fully implemented -- Halting
-                }
-                if (x === y) {
-                    return true_v;
-                }
-                if (type_of(x) !== type_of(y)) {
-                    return false_v;
-                }
-                function H_if(b, x, y) {
-                    // H = helper
-                    return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
-                }
-                function H_and(x, y) {
-                    return H_if(x, y, false_v);
-                }
-                ASSERT(!any_delay_just_p(x));
-                function end_2(f1, f2) {
-                    return H_and(builtin_func_apply(builtin_func_equal_sym, [f1(x), f1(y)]), builtin_func_apply(builtin_func_equal_sym, [f2(x), f2(y)]));
-                }
-                switch (type_of(x)) {
-                    case null_t:
-                        return true_v;
-                    case symbol_t:
-                        return symbol_eq_p(x, y) ? true_v : false_v;
-                    case data_t:
-                        return end_2(data_name, data_list);
-                    case cons_t:
-                        return end_2(cons_car, cons_cdr);
-                    case error_t:
-                        return end_2(error_name, error_list);
-                    default:
-                }
-                ERROR();
-            }],
-        [builtin_func_apply_sym, 2, function (f, xs, error_v) {
-                // WIP delay未正確處理(影響較小)
-                var jslist = [];
-                var iter = force_all(xs);
-                while (cons_p(iter)) {
-                    jslist.push(cons_car(iter));
-                    iter = force_all(cons_cdr(iter));
-                }
-                if (!null_p(iter)) {
-                    return error_v;
-                }
-                return lang_apply(f, jslist);
-            }],
-        [builtin_func_eval_sym, 2, function (env, x, error_v) {
-                // WIP delay未正確處理(影響較小)
-                var maybeenv = val2env(env);
-                if (maybeenv === false) {
-                    return error_v;
-                }
-                return lang_eval(maybeenv, x);
-            }],
-        make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
-        [builtin_func_list_choose_sym, 1, function (xs, error_v) {
-                // 一般返回第一个，可以因为优化返回其他的任意一个
-                // xs可以無限長，不判斷是否真的是list
-                xs = force1(xs);
-                if (any_delay_just_p(xs)) {
-                    return builtin_func_apply(builtin_func_list_choose_sym, [xs]);
-                }
-                if (!cons_p(xs)) {
-                    return error_v;
-                }
-                return cons_car(xs);
-            }],
-        [builtin_func_if_sym, 3, function (b, x, y, error_v) {
-                b = force1(b);
-                if (any_delay_just_p(b)) {
-                    return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
-                }
-                if (!data_p(b)) {
-                    return error_v;
-                }
-                // WIP delay未正確處理(影響較小)
-                var nam = force_all(data_name(b));
-                if (!symbol_p(nam)) {
-                    return error_v;
-                }
-                if (symbol_eq_p(nam, true_sym)) {
-                    return x;
-                }
-                if (symbol_eq_p(nam, false_sym)) {
-                    return y;
-                }
+                case symbol_t:
+                    return symbol_eq_p(x, y) ? true_v : false_v;
+                case data_t:
+                    return end_2(data_name, data_list);
+                case cons_t:
+                    return end_2(cons_car, cons_cdr);
+                case error_t:
+                    return end_2(error_name, error_list);
+                default:
+            }
+            ERROR();
+        }],
+        [builtin_func_apply_sym, 2, function(f, xs, error_v) {
+            // WIP delay未正確處理(影響較小)
+            var jslist = [];
+            var iter = force_all(xs);
+            while (cons_p(iter)) {
+                jslist.push(cons_car(iter));
+                iter = force_all(cons_cdr(iter));
+            }
+            if (!null_p(iter)) {
                 return error_v;
-            }],
+            }
+            return lang_apply(f, jslist);
+        }],
+        [builtin_func_eval_sym, 2, function(env, x, error_v) {
+            // WIP delay未正確處理(影響較小)
+            var maybeenv = val2env(env);
+            if (maybeenv === false) {
+                return error_v;
+            }
+            return lang_eval(maybeenv, x);
+        }],
+        make_builtin_p_func(builtin_func_sym_p_sym, symbol_p),
+        [builtin_func_list_choose_sym, 1, function(xs, error_v) {
+            // 一般返回第一个，可以因为优化返回其他的任意一个
+            // xs可以無限長，不判斷是否真的是list
+            xs = force1(xs);
+            if (any_delay_just_p(xs)) {
+                return builtin_func_apply(builtin_func_list_choose_sym, [xs]);
+            }
+            if (!cons_p(xs)) {
+                return error_v;
+            }
+            return cons_car(xs);
+        }],
+        [builtin_func_if_sym, 3, function(b, x, y, error_v) {
+            b = force1(b);
+            if (any_delay_just_p(b)) {
+                return builtin_func_apply(builtin_func_if_sym, [b, x, y]);
+            }
+            if (!data_p(b)) {
+                return error_v;
+            }
+            // WIP delay未正確處理(影響較小)
+            var nam = force_all(data_name(b));
+            if (!symbol_p(nam)) {
+                return error_v;
+            }
+            if (symbol_eq_p(nam, true_sym)) {
+                return x;
+            }
+            if (symbol_eq_p(nam, false_sym)) {
+                return y;
+            }
+            return error_v;
+        }],
     ];
+
     function real_lang_apply(f, xs) {
         // LangVal, JSList LangVal -> LangVal
         // WIP delay未正確處理(影響較小)
@@ -912,15 +949,13 @@ var TheLanguage = (function () {
                 env = env_set(env, args_pat, jslist2list(xs));
                 xs = [];
                 args_pat = null_v;
-            }
-            else if (cons_p(args_pat)) {
+            } else if (cons_p(args_pat)) {
                 if (xs.length === 0) {
                     return make_error_v();
                 }
                 env = env_set(env, cons_car(args_pat), xs.shift()); // xs.shift() 表達式副作用!
                 args_pat = cons_cdr(args_pat);
-            }
-            else {
+            } else {
                 return make_error_v();
             }
         }
@@ -929,6 +964,7 @@ var TheLanguage = (function () {
         }
         return lang_eval(env, f_code);
     }
+
     function real_builtin_func_apply(f, xs) {
         // Name, JSList LangVal -> LangVal
         var error_v = new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, jslist2list(xs))));
@@ -944,6 +980,7 @@ var TheLanguage = (function () {
         }
         return error_v;
     }
+
     function real_builtin_form_apply(env, f, xs) {
         // Env, Name, JSList NotEvaledLangVal -> LangVal
         var error_v = new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), f, jslist2list(xs))));
@@ -953,8 +990,7 @@ var TheLanguage = (function () {
                 return error_v;
             }
             return xs[0];
-        }
-        else if (jsbool_equal_p(f, builtin_form_lambda_sym)) {
+        } else if (jsbool_equal_p(f, builtin_form_lambda_sym)) {
             if (xs.length !== 2) {
                 return error_v;
             }
@@ -962,16 +998,17 @@ var TheLanguage = (function () {
         }
         return error_v;
     }
+
     function new_lambda(env, args_pat, body, error_v) {
         // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
         function make_error_v() {
             if (jsnull_p(error_v)) {
                 return new_error(sys_sym, new_list(use_builtin_form_sym, new_list(env2val(env), builtin_form_lambda_sym, jslist2list([args_pat, body]))));
-            }
-            else {
+            } else {
                 return error_v;
             }
         }
+
         function make_quote(x) {
             return new_list(use_builtin_form_sym, builtin_form_quote_sym, x);
         }
@@ -984,12 +1021,10 @@ var TheLanguage = (function () {
                 args_pat_vars.push(args_pat_iter);
                 args_pat_is_dot = true;
                 args_pat_iter = null_v;
-            }
-            else if (cons_p(args_pat_iter)) {
+            } else if (cons_p(args_pat_iter)) {
                 args_pat_vars.push(cons_car(args_pat_iter));
                 args_pat_iter = cons_cdr(args_pat_iter);
-            }
-            else {
+            } else {
                 return make_error_v();
             }
         }
@@ -998,7 +1033,7 @@ var TheLanguage = (function () {
             args_pat_vars_val = jslist2list(args_pat_vars);
         }
         var env_vars = []; // : JSList LangVal/Name
-        env_foreach(env, function (k, v) {
+        env_foreach(env, function(k, v) {
             for (var i = 0; i < args_pat_vars.length; i++) {
                 if (jsbool_equal_p(args_pat_vars[i], k)) { // WIP delay未正確處理(影響較小)
                     return;
@@ -1016,6 +1051,7 @@ var TheLanguage = (function () {
         }
         return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_list(new_args_pat, body))), new_args)));
     }
+
     function jsbool_equal_p(x, y) {
         // LangVal, LangVal -> JSBoolean
         if (x === y) {
@@ -1031,12 +1067,12 @@ var TheLanguage = (function () {
         if (x_type !== y_type) {
             return false;
         }
+
         function end_2(f1, f2) {
             if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
                 lang_set_do(x, y);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -1058,9 +1094,11 @@ var TheLanguage = (function () {
         ERROR();
     }
     exports.equal_p = jsbool_equal_p;
+
     function langbool_equal_p(x, y) {
         return builtin_func_apply(builtin_func_equal_sym, [x, y]);
     }
+
     function jsbool_no_force_equal_p(x, y) {
         // LangVal, LangVal -> JSBoolean
         if (x === y) {
@@ -1076,12 +1114,12 @@ var TheLanguage = (function () {
         if (x_type !== y_type) {
             return false;
         }
+
         function end_2(f1, f2) {
             if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
                 lang_set_do(x, y);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -1131,8 +1169,7 @@ var TheLanguage = (function () {
                     }
                     if (null_p(x)) {
                         temp += ")";
-                    }
-                    else {
+                    } else {
                         temp += " . " + print(x) + ")";
                     }
                     return temp;
@@ -1161,6 +1198,7 @@ var TheLanguage = (function () {
     var print_force_rec = make_printer(force_all);
     exports.print_force_rec = print_force_rec;
     exports.print = print;
+
     function read(x) {
         // JSString -> LangVal
         // [[[ 大量重複代碼 read <-> complex_parse
@@ -1168,18 +1206,23 @@ var TheLanguage = (function () {
         function eof() {
             return state.length === 0;
         }
+
         function get() {
             return state.shift();
         }
+
         function put(x) {
             state.unshift(x);
         }
+
         function error() {
             throw "TheLanguage parse ERROR!";
         }
+
         function a_space_p(x) {
             return x === " " || x === "\n" || x === "\t" || x === "\r";
         }
+
         function space() {
             var p = a_space_p;
             if (eof()) {
@@ -1198,6 +1241,7 @@ var TheLanguage = (function () {
             }
             return true;
         }
+
         function symbol() {
             var p = a_symbol_p;
             if (eof()) {
@@ -1215,12 +1259,12 @@ var TheLanguage = (function () {
             }
             if (p(x)) {
                 ret += x;
-            }
-            else {
+            } else {
                 put(x);
             }
             return new_symbol(ret);
         }
+
         function list() {
             if (eof()) {
                 return false;
@@ -1231,6 +1275,7 @@ var TheLanguage = (function () {
                 return false;
             }
             var ret = null;
+
             function set_last(lst) {
                 if (ret === null) {
                     ret = lst;
@@ -1255,6 +1300,7 @@ var TheLanguage = (function () {
                 }
                 x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
+
             function last_add(x) {
                 set_last(new_cons(x, null));
             }
@@ -1293,6 +1339,7 @@ var TheLanguage = (function () {
                 last_add(e);
             }
         }
+
         function data() {
             if (eof()) {
                 return false;
@@ -1311,6 +1358,7 @@ var TheLanguage = (function () {
             }
             return new_data(cons_car(xs), cons_cdr(xs));
         }
+
         function readerror() {
             if (eof()) {
                 return false;
@@ -1329,8 +1377,9 @@ var TheLanguage = (function () {
             }
             return new_error(cons_car(xs), cons_cdr(xs));
         }
+
         function make_read_two(prefix, k) {
-            return function () {
+            return function() {
                 if (eof()) {
                     return false;
                 }
@@ -1353,8 +1402,9 @@ var TheLanguage = (function () {
                 return k(cons_car(xs), cons_car(x));
             };
         }
+
         function make_read_three(prefix, k) {
-            return function () {
+            return function() {
                 if (eof()) {
                     return false;
                 }
@@ -1381,25 +1431,25 @@ var TheLanguage = (function () {
                 return k(cons_car(xs), cons_car(x), cons_car(x_d));
             };
         }
-        var readeval = make_read_two("$", function (e, x) {
+        var readeval = make_read_two("$", function(e, x) {
             var env = val2env(e);
             if (env === false) {
                 error();
             }
             return lang_eval(env, x);
         });
-        var readfuncapply = make_read_two("%", function (f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readfuncapply = make_read_two("%", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             return builtin_func_apply(f, jsxs);
         });
-        var readformbuiltin = make_read_three("@", function (e, f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readformbuiltin = make_read_three("@", function(e, f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             var env = val2env(e);
@@ -1408,14 +1458,15 @@ var TheLanguage = (function () {
             }
             return builtin_form_apply(env, f, jsxs);
         });
-        var readapply = make_read_two("^", function (f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readapply = make_read_two("^", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             return lang_apply(f, jsxs);
         });
+
         function a_symbol_p(x) {
             if (a_space_p(x)) {
                 return false;
@@ -1428,6 +1479,7 @@ var TheLanguage = (function () {
             }
             return true;
         }
+
         function val() {
             space();
             var fs = [list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
@@ -1452,18 +1504,23 @@ var TheLanguage = (function () {
         function eof() {
             return state.length === 0;
         }
+
         function get() {
             return state.shift();
         }
+
         function put(x) {
             state.unshift(x);
         }
+
         function error() {
             throw "TheLanguage parse ERROR!";
         }
+
         function a_space_p(x) {
             return x === " " || x === "\n" || x === "\t" || x === "\r";
         }
+
         function space() {
             var p = a_space_p;
             if (eof()) {
@@ -1482,6 +1539,7 @@ var TheLanguage = (function () {
             }
             return true;
         }
+
         function symbol() {
             var p = a_symbol_p;
             if (eof()) {
@@ -1499,12 +1557,12 @@ var TheLanguage = (function () {
             }
             if (p(x)) {
                 ret += x;
-            }
-            else {
+            } else {
                 put(x);
             }
             return new_symbol(ret);
         }
+
         function list() {
             if (eof()) {
                 return false;
@@ -1515,6 +1573,7 @@ var TheLanguage = (function () {
                 return false;
             }
             var ret = null;
+
             function set_last(lst) {
                 if (ret === null) {
                     ret = lst;
@@ -1539,6 +1598,7 @@ var TheLanguage = (function () {
                 }
                 x[2] = lst; // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
             }
+
             function last_add(x) {
                 set_last(new_cons(x, null));
             }
@@ -1577,6 +1637,7 @@ var TheLanguage = (function () {
                 last_add(e);
             }
         }
+
         function data() {
             if (eof()) {
                 return false;
@@ -1595,6 +1656,7 @@ var TheLanguage = (function () {
             }
             return new_data(cons_car(xs), cons_cdr(xs));
         }
+
         function readerror() {
             if (eof()) {
                 return false;
@@ -1613,8 +1675,9 @@ var TheLanguage = (function () {
             }
             return new_error(cons_car(xs), cons_cdr(xs));
         }
+
         function make_read_two(prefix, k) {
-            return function () {
+            return function() {
                 if (eof()) {
                     return false;
                 }
@@ -1637,8 +1700,9 @@ var TheLanguage = (function () {
                 return k(cons_car(xs), cons_car(x));
             };
         }
+
         function make_read_three(prefix, k) {
-            return function () {
+            return function() {
                 if (eof()) {
                     return false;
                 }
@@ -1665,25 +1729,25 @@ var TheLanguage = (function () {
                 return k(cons_car(xs), cons_car(x), cons_car(x_d));
             };
         }
-        var readeval = make_read_two("$", function (e, x) {
+        var readeval = make_read_two("$", function(e, x) {
             var env = val2env(e);
             if (env === false) {
                 error();
             }
             return lang_eval(env, x);
         });
-        var readfuncapply = make_read_two("%", function (f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readfuncapply = make_read_two("%", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             return builtin_func_apply(f, jsxs);
         });
-        var readformbuiltin = make_read_three("@", function (e, f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readformbuiltin = make_read_three("@", function(e, f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             var env = val2env(e);
@@ -1692,14 +1756,15 @@ var TheLanguage = (function () {
             }
             return builtin_form_apply(env, f, jsxs);
         });
-        var readapply = make_read_two("^", function (f, xs) {
-            var jsxs = list2jslist(xs, function (x) {
+        var readapply = make_read_two("^", function(f, xs) {
+            var jsxs = list2jslist(xs, function(x) {
                 return x;
-            }, function (x, y) {
+            }, function(x, y) {
                 error();
             });
             return lang_apply(f, jsxs);
         });
+
         function a_symbol_p(x) {
             if (a_space_p(x)) {
                 return false;
@@ -1712,6 +1777,7 @@ var TheLanguage = (function () {
             }
             return true;
         }
+
         function val() {
             space();
             var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
@@ -1731,13 +1797,16 @@ var TheLanguage = (function () {
             }
             return x;
         }
+
         function not_eof() {
             return !eof();
         }
+
         function assert_get(c) {
             un_maybe(not_eof());
             un_maybe(get() === c);
         }
+
         function readsysname_no_pack() {
             if (eof()) {
                 return false;
@@ -1752,12 +1821,10 @@ var TheLanguage = (function () {
                             assert_get('>');
                             var x_4 = readsysname_no_pack_inner_must();
                             return new_list(a_sym, new_list(form_sym, new_list(func_sym, sth_sym, x_4)), the_sym);
-                        }
-                        else if (c0 === '+') {
+                        } else if (c0 === '+') {
                             var x_5 = readsysname_no_pack_inner_must();
                             return new_list(form_sym, new_list(sys_sym, x_5));
-                        }
-                        else {
+                        } else {
                             put(c0);
                         }
                         var x_6 = readsysname_no_pack_inner_must();
@@ -1770,8 +1837,7 @@ var TheLanguage = (function () {
                         if (c0 === '>') {
                             var x_7 = readsysname_no_pack_inner_must();
                             return new_list(a_sym, new_list(func_sym, sth_sym, x_7), the_sym);
-                        }
-                        else {
+                        } else {
                             put(c0);
                         }
                         var x_8 = readsysname_no_pack_inner_must();
@@ -1799,8 +1865,12 @@ var TheLanguage = (function () {
                     }
             }
             ERROR();
+
             function readsysname_no_pack_inner_must(strict) {
-                if (strict === void 0) { strict = false; }
+                if (strict === void 0) {
+                    strict = false;
+                }
+
                 function readsysname_no_pack_bracket() {
                     assert_get('[');
                     var x = readsysname_no_pack_inner_must();
@@ -1816,6 +1886,7 @@ var TheLanguage = (function () {
                 }
                 error();
             }
+
             function may_xfx_xf(x) {
                 if (eof()) {
                     return x;
@@ -1872,6 +1943,7 @@ var TheLanguage = (function () {
             }
             ERROR();
         }
+
         function readsysname() {
             var x = readsysname_no_pack();
             if (x === false) {
@@ -1883,6 +1955,7 @@ var TheLanguage = (function () {
             return make_sys_sym_f(x);
         }
     }
+
     function complex_print(val) {
         // LangVal -> JSString
         function print_sys_name(x, where) {
@@ -1892,11 +1965,11 @@ var TheLanguage = (function () {
             if (symbol_p(x)) {
                 return un_symbol(x);
             }
+
             function inner_bracket(x) {
                 if (where === 'inner') {
                     return '[' + x + ']';
-                }
-                else if (where === 'top') {
+                } else if (where === 'top') {
                     return x;
                 }
                 ERROR();
@@ -1911,12 +1984,10 @@ var TheLanguage = (function () {
                     if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], sth_sym)) {
                         // new_list(a_sym, new_list(func_sym, new_list(maybe_lst_3[0]), sth_sym), maybe_xs[2])
                         return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
-                    }
-                    else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(cons_cdr(maybe_lst_2[1]), sth_sym) && jsbool_no_force_equal_p(maybe_lst_2[2], sth_sym)) {
+                    } else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(cons_cdr(maybe_lst_2[1]), sth_sym) && jsbool_no_force_equal_p(maybe_lst_2[2], sth_sym)) {
                         // new_list(a_sym, new_list(func_sym, new_cons(cons_car(maybe_lst_2[1]), sth_sym), sth_sym), maybe_xs[2]);
                         return inner_bracket(print_sys_name(cons_car(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'));
-                    }
-                    else if (jsbool_no_force_equal_p(maybe_lst_2[1], sth_sym) && jsbool_no_force_equal_p(maybe_xs[2], the_sym)) {
+                    } else if (jsbool_no_force_equal_p(maybe_lst_2[1], sth_sym) && jsbool_no_force_equal_p(maybe_xs[2], the_sym)) {
                         // new_list(a_sym, new_list(func_sym, sth_sym, maybe_lst_2[2]), the_sym)
                         return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], 'inner'));
                     }
@@ -1936,8 +2007,7 @@ var TheLanguage = (function () {
                     }
                 }
                 return inner_bracket((jsbool_no_force_equal_p(maybe_xs[2], sth_sym) ? '' : print_sys_name(maybe_xs[2], 'inner')) + ':' + print_sys_name(maybe_xs[1], 'inner'));
-            }
-            else if (maybe_xs !== false && maybe_xs.length === 2) {
+            } else if (maybe_xs !== false && maybe_xs.length === 2) {
                 if (jsbool_no_force_equal_p(maybe_xs[0], form_sym)) {
                     // new_list(form_sym, maybe_xs[1])
                     var maybe_lst_288 = maybe_list2js(maybe_xs[1]);
@@ -1946,17 +2016,14 @@ var TheLanguage = (function () {
                         return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], 'inner'));
                     }
                     return inner_bracket('&' + print_sys_name(maybe_xs[1], 'inner'));
-                }
-                else if (jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
+                } else if (jsbool_no_force_equal_p(maybe_xs[0], isornot_sym)) {
                     // new_list(isornot_sym, maybe_xs[1])
                     return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
-                }
-                else if (jsbool_no_force_equal_p(maybe_xs[0], sys_sym)) {
+                } else if (jsbool_no_force_equal_p(maybe_xs[0], sys_sym)) {
                     // new_list(sys_sym, maybe_xs[1])
                     return inner_bracket('+' + print_sys_name(maybe_xs[1], 'inner'));
                 }
-            }
-            else if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], sub_sym)) {
+            } else if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], sub_sym)) {
                 // new_list(sub_sym, maybe_xs[1], maybe_xs[2])
                 var maybe_lst_8934 = maybe_list2js(maybe_xs[2]);
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length !== 0) {
@@ -1969,8 +2036,7 @@ var TheLanguage = (function () {
             }
             if (where === 'inner') {
                 return print(x);
-            }
-            else if (where === 'top') {
+            } else if (where === 'top') {
                 return print(make_sys_sym_f(x));
             }
             ERROR();
@@ -1992,8 +2058,7 @@ var TheLanguage = (function () {
                 }
                 if (null_p(x)) {
                     temp += ")";
-                }
-                else {
+                } else {
                     temp += " . " + complex_print(x) + ")";
                 }
                 return temp;
