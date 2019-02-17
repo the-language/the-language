@@ -1086,8 +1086,7 @@ const TheLanguage: any = {};
         return new_data(func_sym, new_list(args_pat, new_cons(make_quote(new_data(func_sym, new_list(new_args_pat, body))), new_args)))
     }
 
-    function jsbool_equal_p(x, y) {
-        // LangVal, LangVal -> JSBoolean
+    function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
         if (x === y) {
             return true
         }
@@ -1116,7 +1115,7 @@ const TheLanguage: any = {};
                 lang_set_do(y, null_v)
                 return true
             case symbol_t:
-                return symbol_eq_p(x, y)
+                return symbol_eq_p(x as LangValSymbol, y as LangValSymbol) // type WIP
             case cons_t:
                 return end_2(cons_car, cons_cdr)
             case error_t:
