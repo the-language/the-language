@@ -994,8 +994,7 @@ const TheLanguage: any = {};
         return lang_eval(env, f_code)
     }
 
-    function real_builtin_func_apply(f, xs) {
-        // Name, JSList LangVal -> LangVal
+    function real_builtin_func_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
         const error_v = new_error(sys_sym, new_list(use_builtin_func_sym, new_list(f, jslist2list(xs))))
         for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
             // WIP delay未正確處理(影響較小)
