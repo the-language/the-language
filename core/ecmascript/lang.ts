@@ -1235,8 +1235,7 @@ const TheLanguage: any = {};
     exports.print_force_rec = print_force_rec
     exports.print = print
 
-    function read(x) {
-        // JSString -> LangVal
+    function read(x: string): LangVal {
         // [[[ 大量重複代碼 read <-> complex_parse
         let state = x.split("") // State : List Char
         function eof() {
@@ -1522,8 +1521,7 @@ const TheLanguage: any = {};
     // 相對獨立的部分。parser/printer }}}
 
     // {{{ 相對獨立的部分。complex parser/complex printer
-    function complex_parse(x) {
-        // JSString -> LangVal
+    function complex_parse(x: string): LangVal {
         // [[[ 大量重複代碼 read <-> complex_parse
         let state = x.split("") // State : List Char
         function eof() {
