@@ -1965,8 +1965,7 @@ const TheLanguage: any = {};
         }
     }
 
-    function complex_print(val) {
-        // LangVal -> JSString
+    function complex_print(val: LangVal): string {
         function print_sys_name(x, where) {
             // 是 complex_print(make_sys_sym_f(x))
             // x : LangVal
