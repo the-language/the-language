@@ -77,6 +77,8 @@ const TheLanguage: any = {};
     type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValSysNameJustDelay, Array < LangValRec > ]
     type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValSysNameJustDelay, Array < LangValRec > ] // WIP
     type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
+    type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+    type LangValJustDelay = LangValJust | LangValDelay
     type LangValSysName = LangValData // WIP
     type LangValName = LangValData | LangValSymbol
     type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
@@ -436,7 +438,7 @@ const TheLanguage: any = {};
         return x
     }
 
-    function any_delay_just_p(x: LangVal): boolean {
+    function any_delay_just_p(x: LangVal): x is LangValJustDelay {
         return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x)
     }
     exports.delay_p = any_delay_just_p
@@ -692,7 +694,7 @@ const TheLanguage: any = {};
         switch (type_of(x)) {
             case cons_t:
                 let xs = []
-                let rest = x
+                let rest: LangVal = x
                 while (!null_p(rest)) {
                     if (any_delay_just_p(rest)) {
                         return lang_eval(env, x)
