@@ -793,7 +793,7 @@ const TheLanguage: any = {};
         ERROR()
     }
 
-    function name_p(x) {
+    function name_p(x: LangVal): x is LangValName {
         const t = type_of(x)
         return t === symbol_t || t === data_t
     }
