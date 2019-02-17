@@ -385,7 +385,6 @@ const TheLanguage: any = {};
 
     // {{{ 相對獨立的部分。對內建數據結構的簡單處理
     function jslist2list(xs: Array < LangVal > ): LangVal {
-        // JSList a -> LangVal
         let ret: LangVal = null_v;
         for (let i = xs.length - 1; i >= 0; i--) {
             ret = new_cons(xs[i], ret);
@@ -393,13 +392,7 @@ const TheLanguage: any = {};
         return ret;
     }
 
-    function list2jslist(xs, k_done, k_tail) {
-        // LangVal, (JSList a -> b), (JSList a, LangVal -> b) -> b
-        if (jsnull_p(k_done)) {
-            k_done = function(x) {
-                return x;
-            };
-        }
+    function list2jslist < T > (xs: LangVal, k_done: (p0: Array < LangVal > ) => T, k_tail: (p0: Array < LangVal > , p1: LangVal) => T): T {
         let ret = [];
         while (cons_p(xs)) {
             ret.push(cons_car(xs));
@@ -411,13 +404,9 @@ const TheLanguage: any = {};
         return k_tail(ret, xs);
     }
 
-    function maybe_list2js(xs) {
+    function maybe_list2js(xs: LangVal): false | Array < LangVal > {
         // LangVal -> Maybe (JSList LangVal)
-        return list2jslist(xs, function(xs) {
-            return xs;
-        }, function(xs, x) {
-            return false;
-        });
+        return list2jslist < false | Array < LangVal >> (xs, (xs) => xs, (xs, x) => false);
     }
 
     function new_list(...xs) {
@@ -1255,7 +1244,7 @@ const TheLanguage: any = {};
             state.unshift(x);
         }
 
-        function error() {
+        function error(): never {
             throw "TheLanguage parse ERROR!";
         }
 
@@ -1479,19 +1468,11 @@ const TheLanguage: any = {};
             return lang_eval(env, x);
         });
         const readfuncapply = make_read_two("%", function(f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             return builtin_func_apply(f, jsxs);
         });
         const readformbuiltin = make_read_three("@", function(e, f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             const env = val2env(e);
             if (env === false) {
                 error();
@@ -1499,11 +1480,7 @@ const TheLanguage: any = {};
             return builtin_form_apply(env, f, jsxs);
         });
         const readapply = make_read_two("^", function(f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             return lang_apply(f, jsxs);
         });
 
@@ -1554,7 +1531,7 @@ const TheLanguage: any = {};
             state.unshift(x);
         }
 
-        function error() {
+        function error(): never {
             throw "TheLanguage parse ERROR!";
         }
 
@@ -1778,19 +1755,11 @@ const TheLanguage: any = {};
             return lang_eval(env, x);
         });
         const readfuncapply = make_read_two("%", function(f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             return builtin_func_apply(f, jsxs);
         });
         const readformbuiltin = make_read_three("@", function(e, f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             const env = val2env(e);
             if (env === false) {
                 error();
@@ -1798,11 +1767,7 @@ const TheLanguage: any = {};
             return builtin_form_apply(env, f, jsxs);
         });
         const readapply = make_read_two("^", function(f, xs) {
-            const jsxs = list2jslist(xs, function(x) {
-                return x;
-            }, function(x, y) {
-                error();
-            });
+            const jsxs = list2jslist(xs, (xs) => xs, (xs, y) => error());
             return lang_apply(f, jsxs);
         });
 
