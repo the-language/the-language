@@ -440,7 +440,6 @@ const TheLanguage: any = {};
     exports.delay_p = any_delay_just_p
 
     function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace = [false, false]): LangVal {
-        // LangVal -> LangVal
         // *history : Map String True
         // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
         let history = {}
@@ -535,8 +534,7 @@ const TheLanguage: any = {};
         return x
     }
 
-    function force1(raw) {
-        // LangVal -> LangVal
+    function force1(raw: LangVal): LangVal {
         const x = un_just_all(raw)
         let ret
         ASSERT(!just_p(x))
