@@ -64,7 +64,30 @@ const TheLanguage: any = {};
     const delay_builtin_form_t = LangValType.delay_builtin_form_t
     const delay_apply_t = LangValType.delay_apply_t
 
-    function type_of(x) {
+    type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
+    type LangValJustDelayType = LangValType.just_t | LangValDelayType
+
+
+    type LangValSymbol = [LangValType.symbol_t, string]
+    type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
+    type LangValNull = [LangValType.null_t]
+    type LangValData = [LangValType.data_t, LangValRec, LangValRec]
+    type LangValJust = [LangValType.just_t, LangValRec, null, null]
+    type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
+    type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValSysNameJustDelay, Array < LangValRec > ]
+    type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValSysNameJustDelay, Array < LangValRec > ] // WIP
+    type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
+    type LangValSysNameJustDelay = LangValData | LangValJustDelayType // WIP
+    type LangValFunctionJustDelay = LangValRec // WIP
+    type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+    type LangValRec = any // WIP
+
+    /* A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
+        type trec < T > = [null, t, t] | null
+        interface t extends trec < null > {}
+        */
+
+    function type_of(x: LangVal): LangValType {
         return x[0];
     }
 

@@ -63,7 +63,10 @@ var TheLanguage = {};
     var delay_builtin_func_t = LangValType.delay_builtin_func_t;
     var delay_builtin_form_t = LangValType.delay_builtin_form_t;
     var delay_apply_t = LangValType.delay_apply_t;
-
+    /* A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
+        type trec < T > = [null, t, t] | null
+        interface t extends trec < null > {}
+        */
     function type_of(x) {
         return x[0];
     }
