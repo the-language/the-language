@@ -113,7 +113,7 @@ const TheLanguage: any = {};
         }
     }
 
-    function make_new_three(t) {
+    function make_new_three < T, A, B, C > (t: T): (x: A, y: B, z: C) => [T, A, B, C] {
         return function(x, y, z) {
             return [t, x, y, z]
         }
@@ -208,9 +208,10 @@ const TheLanguage: any = {};
         any, LangVal > (delay_eval_t) // type WIP
     exports.eval = lang_eval
     const delay_eval_p = make_two_p(delay_eval_t)
-    const delay_eval_env = make_get_two_a(delay_eval_t); // Env
+    const delay_eval_env = make_get_two_a(delay_eval_t) // Env
     const delay_eval_x = make_get_two_b(delay_eval_t)
-    const builtin_form_apply = make_new_three(delay_builtin_form_t)
+    const builtin_form_apply: (x: any, y: LangValSysNameJustDelay, z: Array < LangValRec > ) => LangValDelayBuiltinForm = make_new_three < LangValType.delay_builtin_form_t,
+        any, LangValSysNameJustDelay, Array < LangValRec >> (delay_builtin_form_t) // type WIP
     const delay_builtin_form_p = make_three_p(delay_builtin_form_t)
     const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t); // Env
     const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
@@ -220,7 +221,8 @@ const TheLanguage: any = {};
     const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
     const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t); // LangVal/Name
     const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t); // JSList LangVal
-    const lang_apply = make_new_two(delay_apply_t)
+    const lang_apply: (f: LangValFunctionJustDelay, xs: Array < LangValRec > ) => LangValDelayApply = make_new_two < LangValType.delay_apply_t,
+        LangValFunctionJustDelay, Array < LangValRec >> (delay_apply_t)
     exports.apply = lang_apply
     const delay_apply_p = make_two_p(delay_apply_t)
     const delay_apply_f = make_get_two_a(delay_apply_t)
@@ -623,7 +625,7 @@ const TheLanguage: any = {};
         }
     }
 
-    function val2env(x) {
+    function val2env(x: LangVal) {
         // LangVal -> Maybe (Env k v)
         x = force_all(x)
         if (!data_p(x)) {
@@ -680,7 +682,7 @@ const TheLanguage: any = {};
     exports.val2env = val2env
     // 相對獨立的部分。變量之環境 }}}
 
-    function real_eval(env, raw) {
+    function real_eval(env, raw: LangVal): LangVal {
         // Env, LangVal -> LangVal
         const x = force1(raw)
         if (any_delay_just_p(x)) {
