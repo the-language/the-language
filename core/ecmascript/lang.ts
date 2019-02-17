@@ -1128,12 +1128,7 @@ const TheLanguage: any = {};
     }
     exports.equal_p = jsbool_equal_p
 
-    function langbool_equal_p(x, y) {
-        return builtin_func_apply(builtin_func_equal_sym, [x, y])
-    }
-
-    function jsbool_no_force_equal_p(x, y) {
-        // LangVal, LangVal -> JSBoolean
+    function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
         if (x === y) {
             return true
         }
@@ -1162,7 +1157,7 @@ const TheLanguage: any = {};
                 lang_set_do(y, null_v)
                 return true
             case symbol_t:
-                return symbol_eq_p(x, y)
+                return symbol_eq_p(x as LangValSymbol, y as LangValSymbol) // type WIP
             case cons_t:
                 return end_2(cons_car, cons_cdr)
             case error_t:
