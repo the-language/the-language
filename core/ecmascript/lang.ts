@@ -25,7 +25,7 @@ const TheLanguage: any = {};
         PANIC();
     }
 
-    function ASSERT(x) {
+    function ASSERT(x: boolean): void {
         if (!x) {
             ERROR();
         }
