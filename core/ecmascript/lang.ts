@@ -161,7 +161,7 @@ const TheLanguage: any = {};
 
     const null_v: LangValNull = [null_t];
 
-    function null_p(x) {
+    function null_p(x: LangVal): x is LangValNull {
         return x[0] === null_t;
     }
     exports.null_v = null_v;
