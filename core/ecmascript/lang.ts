@@ -77,7 +77,9 @@ const TheLanguage: any = {};
     type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValSysNameJustDelay, Array < LangValRec > ]
     type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValSysNameJustDelay, Array < LangValRec > ] // WIP
     type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
-    type LangValSysNameJustDelay = LangValData | LangValJustDelayType // WIP
+    type LangValSysName = LangValData // WIP
+    type LangValName = LangValData | LangValSymbol
+    type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
     type LangValFunctionJustDelay = LangValRec // WIP
     type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
     type LangValRec = any // WIP
@@ -217,7 +219,7 @@ const TheLanguage: any = {};
     const delay_apply_p = make_two_p(delay_apply_t);
     const delay_apply_f = make_get_two_a(delay_apply_t);
     const delay_apply_xs = make_get_two_b(delay_apply_t); // JSList LangVal
-    function force_all_rec(x) {
+    function force_all_rec(x: LangVal): LangVal {
         x = force_all(x);
         switch (type_of(x)) {
             case data_t:
@@ -291,19 +293,19 @@ const TheLanguage: any = {};
     exports.symbols.the_world_stopped = the_world_stopped_sym;
     const the_world_stopped_v = new_error(sys_sym, new_list(the_world_stopped_sym, sth_sym));
 
-    function make_sys_sym_f(x) {
+    function make_sys_sym_f(x: LangVal): LangValSysName {
         return new_data(name_sym, new_list(sys_sym, x));
     }
 
-    function make_builtin_f_new_sym_f(x_sym) {
+    function make_builtin_f_new_sym_f(x_sym: LangValSymbol): LangValSysName {
         return make_sys_sym_f(new_list(a_sym, new_list(func_sym, sth_sym, x_sym), the_sym));
     }
 
-    function make_builtin_f_get_sym_f(t_sym, x_sym) {
+    function make_builtin_f_get_sym_f(t_sym: LangValSymbol, x_sym: LangVal): LangValSysName {
         return make_sys_sym_f(new_list(a_sym, new_list(func_sym, new_list(t_sym), sth_sym), x_sym));
     }
 
-    function make_builtin_f_p_sym_f(t_sym) {
+    function make_builtin_f_p_sym_f(t_sym: LangValSymbol): LangValSysName {
         return make_sys_sym_f(new_list(a_sym, func_sym, new_list(isornot_sym, new_list(a_sym, t_sym, sth_sym))));
     }
     exports.symbols.builtin = {};
