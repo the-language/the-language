@@ -2,9 +2,9 @@
 cd "$(dirname $0)"
 . init-path.sh
 f=$(mktemp)
-./node.test.sh 2>&1 | cat > $f &
 ./compile.sh
 js-beautify -r *.js *.ts
+./node.test.sh 2>&1 | cat > $f &
 echo press enter to continue
 read
 git add .;git diff --cached

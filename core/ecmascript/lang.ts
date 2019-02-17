@@ -41,16 +41,28 @@ const TheLanguage: any = {};
     }
 
     // {{{ 相對獨立的部分。內建數據結構
-    const symbol_t = 0;
-    const cons_t = 1;
-    const null_t = 2;
-    const data_t = 3;
-    const error_t = 4;
-    const just_t = 5;
-    const delay_eval_t = 6;
-    const delay_builtin_func_t = 7;
-    const delay_builtin_form_t = 8;
-    const delay_apply_t = 9;
+    enum LangValType {
+        symbol_t,
+        cons_t,
+        null_t,
+        data_t,
+        error_t,
+        just_t,
+        delay_eval_t,
+        delay_builtin_func_t,
+        delay_builtin_form_t,
+        delay_apply_t,
+    }
+    const symbol_t = LangValType.symbol_t
+    const cons_t = LangValType.cons_t
+    const null_t = LangValType.null_t
+    const data_t = LangValType.data_t
+    const error_t = LangValType.error_t
+    const just_t = LangValType.just_t
+    const delay_eval_t = LangValType.delay_eval_t
+    const delay_builtin_func_t = LangValType.delay_builtin_func_t
+    const delay_builtin_form_t = LangValType.delay_builtin_form_t
+    const delay_apply_t = LangValType.delay_apply_t
 
     function type_of(x) {
         return x[0];

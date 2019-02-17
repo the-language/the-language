@@ -40,16 +40,29 @@ var TheLanguage = {};
         return x == null;
     }
     // {{{ 相對獨立的部分。內建數據結構
-    var symbol_t = 0;
-    var cons_t = 1;
-    var null_t = 2;
-    var data_t = 3;
-    var error_t = 4;
-    var just_t = 5;
-    var delay_eval_t = 6;
-    var delay_builtin_func_t = 7;
-    var delay_builtin_form_t = 8;
-    var delay_apply_t = 9;
+    var LangValType;
+    (function(LangValType) {
+        LangValType[LangValType["symbol_t"] = 0] = "symbol_t";
+        LangValType[LangValType["cons_t"] = 1] = "cons_t";
+        LangValType[LangValType["null_t"] = 2] = "null_t";
+        LangValType[LangValType["data_t"] = 3] = "data_t";
+        LangValType[LangValType["error_t"] = 4] = "error_t";
+        LangValType[LangValType["just_t"] = 5] = "just_t";
+        LangValType[LangValType["delay_eval_t"] = 6] = "delay_eval_t";
+        LangValType[LangValType["delay_builtin_func_t"] = 7] = "delay_builtin_func_t";
+        LangValType[LangValType["delay_builtin_form_t"] = 8] = "delay_builtin_form_t";
+        LangValType[LangValType["delay_apply_t"] = 9] = "delay_apply_t";
+    })(LangValType || (LangValType = {}));
+    var symbol_t = LangValType.symbol_t;
+    var cons_t = LangValType.cons_t;
+    var null_t = LangValType.null_t;
+    var data_t = LangValType.data_t;
+    var error_t = LangValType.error_t;
+    var just_t = LangValType.just_t;
+    var delay_eval_t = LangValType.delay_eval_t;
+    var delay_builtin_func_t = LangValType.delay_builtin_func_t;
+    var delay_builtin_form_t = LangValType.delay_builtin_form_t;
+    var delay_apply_t = LangValType.delay_apply_t;
 
     function type_of(x) {
         return x[0];
