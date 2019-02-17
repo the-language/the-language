@@ -367,12 +367,11 @@ const TheLanguage: any = {};
     const false_v = new_data(false_sym, new_list());
     const true_v = new_data(true_sym, new_list());
 
-    function symbol_eq_p(x, y) {
-        ASSERT(symbol_p(x) && symbol_p(y));
+    function symbol_eq_p(x: LangValSymbol, y: LangValSymbol): boolean {
         if (x === y) {
             return true;
         }
-        // 其他語言暫未實現。 WIP
+        // 其他自然語言暫未實現。 WIP
         if (un_symbol(x) === un_symbol(y)) {
             lang_set_do(x, y);
             return true;
@@ -383,7 +382,7 @@ const TheLanguage: any = {};
     // 相對獨立的部分。符號名稱 }}}
 
     // {{{ 相對獨立的部分。對內建數據結構的簡單處理
-    function jslist2list(xs) {
+    function jslist2list(xs: Array < LangVal > ): LangVal {
         // JSList a -> LangVal
         let ret: LangVal = null_v;
         for (let i = xs.length - 1; i >= 0; i--) {
