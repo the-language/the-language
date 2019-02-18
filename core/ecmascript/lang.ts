@@ -249,22 +249,26 @@ export const head_symbol = new_symbol("首")
 export const tail_symbol = new_symbol("尾")
 export const thing_symbol = new_symbol("物")
 export const theWorldStopped_symbol = new_symbol("宇宙亡矣")
+export const effect_symbol = new_symbol("效應")
+export const sequentialWordFormation_symbol = new_symbol('為符名連')
+export const inputOutput_symbol = new_symbol("出入改滅")
+
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
-function make_sys_sym_f(x: LangVal): LangValSysName {
+function systemName_make(x: LangVal): LangValSysName {
     return new_data(name_symbol, new_list(system_symbol, x))
 }
 
 function make_builtin_f_new_sym_f(x_sym: LangValSymbol): LangValSysName {
-    return make_sys_sym_f(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
+    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
 }
 
 function make_builtin_f_get_sym_f(t_sym: LangValSymbol, x_sym: LangVal): LangValSysName {
-    return make_sys_sym_f(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
+    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
 }
 
 function make_builtin_f_p_sym_f(t_sym: LangValSymbol): LangValSysName {
-    return make_sys_sym_f(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
+    return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
 }
 export const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
 export const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
@@ -285,18 +289,18 @@ export const symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbo
 
 export const null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
 
-export const equal_p_function_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
-export const apply_function_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, new_list(function_symbol, new_cons(function_symbol, something_symbol), something_symbol), apply_symbol))
-export const evaluate_function_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
+export const equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
+export const apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_cons(function_symbol, something_symbol), something_symbol), apply_symbol))
+export const evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
 export const list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
-export const if_function_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
+export const if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
 
-export const quote_form_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
-export const lambda_form_builtin_systemName = make_sys_sym_f(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
+export const quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
+export const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
 
-export const function_builtin_use_systemName = make_sys_sym_f(new_list(form_symbol, new_list(system_symbol, function_symbol)))
-export const form_builtin_use_systemName = make_sys_sym_f(new_list(form_symbol, new_list(system_symbol, form_symbol)))
-export const form_use_systemName = make_sys_sym_f(new_list(form_symbol, form_symbol))
+export const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
+export const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
+export const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
 
@@ -1860,13 +1864,13 @@ export function complex_parse(x: string): LangVal {
         if (symbol_p(x)) {
             return x
         }
-        return make_sys_sym_f(x)
+        return systemName_make(x)
     }
 }
 
 export function complex_print(val: LangVal): string {
     function print_sys_name(x, where) {
-        // 是 complex_print(make_sys_sym_f(x))
+        // 是 complex_print(systemName_make(x))
         // x : LangVal
         // inner : JSBoolean
         if (symbol_p(x)) {
@@ -1944,7 +1948,7 @@ export function complex_print(val: LangVal): string {
         if (where === 'inner') {
             return print(x)
         } else if (where === 'top') {
-            return print(make_sys_sym_f(x))
+            return print(systemName_make(x))
         }
         ERROR()
     }
@@ -1974,7 +1978,7 @@ export function complex_print(val: LangVal): string {
             const list = data_list(x)
             const maybe_xs = maybe_list_to_jsArray(list)
             if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
-                // make_sys_sym_f(maybe_xs[1])
+                // systemName_make(maybe_xs[1])
                 return print_sys_name(maybe_xs[1], 'top')
             }
             return "#" + complex_print(new_cons(name, list))
@@ -2000,8 +2004,9 @@ export function complex_print(val: LangVal): string {
 
 // {{{ 相對獨立的部分。IO
 
-export const return_io_symbol = complex_parse('效應/[:物]')
-export const bind_io_symbol = complex_parse('效應/連')
+export const return_inputOutput_systemName = complex_parse('效應/[:物]')
+export const bind_inputOutput_systemName = complex_parse('效應/連')
+export const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'))
 //WIP
 
 // 相對獨立的部分。IO }}}
