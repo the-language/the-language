@@ -8,6 +8,10 @@ do
     # mv "$f.tmp" "$f"
     
     # method 2
-    js-beautify -r "$f"
-    echo >> "$f"
+    # js-beautify -r "$f"
+    # echo >> "$f"
+    :
 done
+
+# method 3
+js-beautify -r *.js *.ts *.json

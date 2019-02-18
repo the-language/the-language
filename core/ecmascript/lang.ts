@@ -16,10 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-const TheLanguage: any = {};
 (() => {
-    const exports = TheLanguage
-
     function ERROR(): never {
         throw "TheLanguage PANIC"
     }
@@ -40,7 +37,7 @@ const TheLanguage: any = {};
     }
 
     // {{{ 相對獨立的部分。內建數據結構
-    enum LangValType {
+    const enum LangValType {
         symbol_t,
         cons_t,
         null_t,
@@ -2105,11 +2102,4 @@ const TheLanguage: any = {};
     //WIP
 
     // 相對獨立的部分。IO }}}
-
-    return exports
 })()
-if (exports) {
-    for (const key in TheLanguage) {
-        exports[key] = TheLanguage[key]
-    }
-}

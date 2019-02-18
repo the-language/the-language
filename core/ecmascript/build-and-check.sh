@@ -2,8 +2,11 @@
 cd "$(dirname $0)"
 . ./init-path.sh
 f=$(mktemp)
-./compile.sh || exit
+for tmp in ./tsconfig.json ./lang.js ./lang.min.js ./lang.min.externs.js ; do
+    rm $tmp 2>/dev/null
+done
 ./beautify.sh
+./compile.sh || exit
 ./node.test.sh 2>&1 | cat > $f &
 echo press enter to continue
 read
