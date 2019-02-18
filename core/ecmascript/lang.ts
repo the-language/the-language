@@ -328,7 +328,7 @@ export function jsArray_to_list(xs: Array < LangVal > ): LangVal {
 }
 
 function list_to_jsArray < T > (xs: LangVal, k_done: (p0: Array < LangVal > ) => T, k_tail: (p0: Array < LangVal > , p1: LangVal) => T): T {
-    let ret = []
+    let ret: Array < LangVal >= []
     while (cons_p(xs)) {
         ret.push(construction_head(xs))
         xs = construction_tail(xs)
@@ -349,7 +349,7 @@ export function new_list(...xs: Array < LangVal > ): LangVal {
 
 function un_just_all(raw: LangVal): LangVal {
     let x = raw
-    let xs = []
+    let xs: Array < LangVal >= []
     while (just_p(x)) {
         xs.push(x)
         x = un_just(x)
@@ -367,12 +367,12 @@ export {
     any_delay_just_p as delay_p
 }
 
-export function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace = [false, false]): LangVal {
+export function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
     // *history : Map String True
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {}
-    let x = raw
-    let xs = []
+    let x: LangVal = raw
+    let xs: Array < LangVal >= []
 
     function replace_this_with_stopped() {
         // 語言標準允許替換沒有值的東西為那種錯誤。
@@ -484,11 +484,11 @@ export function force1(raw: LangVal): LangVal {
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
-export type Env = any // WIP
-export const env_null_v = []
+export type Env = Array < LangVal > // WIP
+    export const env_null_v = []
 
 export function env_set(env: Env, key: LangVal, val: LangVal): Env {
-    let ret = []
+    let ret: Env = []
     for (let i = 0; i < env.length; i = i + 2) {
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(env[i + 0], key)) {
@@ -524,7 +524,7 @@ function must_env_get(env: Env, key: LangVal): LangVal {
             return env[i + 1]
         }
     }
-    ERROR()
+    return ERROR()
 }
 
 export function env2val(env: Env): LangVal {
@@ -546,7 +546,7 @@ export function val2env(x: LangVal): false | Env {
     if (!data_p(x)) {
         return false
     }
-    let s = force_all(data_name(x))
+    let s: LangVal = force_all(data_name(x))
     if (!symbol_p(s)) {
         return false
     }
@@ -560,8 +560,8 @@ export function val2env(x: LangVal): false | Env {
     if (!null_p(force_all(construction_tail(s)))) {
         return false
     }
-    let ret = []
-    let xs = force_all(construction_head(s))
+    let ret: Env = []
+    let xs: LangVal = force_all(construction_head(s))
     while (!null_p(xs)) {
         if (!cons_p(xs)) {
             return false
@@ -603,7 +603,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
     const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))))
     switch (type_of(x)) {
         case cons_t:
-            let xs = []
+            let xs: Array < LangVal >= []
             let rest: LangVal = x
             while (!null_p(rest)) {
                 if (any_delay_just_p(rest)) {
@@ -624,7 +624,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return error_v
                 }
                 const f = xs[1]
-                let args = []
+                let args: Array < LangVal >= []
                 for (let i = 2; i < xs.length; i++) {
                     args[i - 2] = xs[i]
                 }
@@ -679,14 +679,14 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return error_v
                 }
                 const f = xs[1]
-                let args = []
+                let args: Array < LangVal >= []
                 for (let i = 2; i < xs.length; i++) {
                     args[i - 2] = evaluate(env, xs[i])
                 }
                 return builtin_func_apply(f, args)
             } else {
                 const f = evaluate(env, xs[0])
-                let args = []
+                let args: Array < LangVal >= []
                 for (let i = 1; i < xs.length; i++) {
                     args[i - 1] = evaluate(env, xs[i])
                 }
@@ -702,7 +702,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
             return error_v
         default:
     }
-    ERROR()
+    return ERROR()
 }
 
 function name_p(x: LangVal): x is LangValName {
@@ -799,8 +799,8 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
     }],
     [apply_function_builtin_systemName, 2, function(f, xs, error_v) {
         // WIP delay未正確處理(影響較小)
-        let jslist = []
-        let iter = force_all(xs)
+        let jslist: Array < LangVal >= []
+        let iter: LangVal = force_all(xs)
         while (cons_p(iter)) {
             jslist.push(construction_head(iter))
             iter = force_all(construction_tail(iter))
@@ -882,18 +882,26 @@ function real_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
         return make_error_v()
     }
     const f_code = construction_head(f_list_cdr)
-    let env = env_null_v
+    let env: Env = env_null_v
+    // https://github.com/Microsoft/TypeScript/issues/10272
+    function isNotEmpty < T > (arr: T[]): arr is {
+        shift(): T;
+    } & Array < T > {
+        return !!arr.length;
+    }
     while (!null_p(args_pat)) {
         if (name_p(args_pat)) {
             env = env_set(env, args_pat, jsArray_to_list(xs))
             xs = []
             args_pat = null_v
         } else if (cons_p(args_pat)) {
-            if (xs.length === 0) {
+            if (isNotEmpty(xs)) {
+                const x: LangVal = xs.shift()
+                env = env_set(env, construction_head(args_pat), x)
+                args_pat = construction_tail(args_pat)
+            } else {
                 return make_error_v()
             }
-            env = env_set(env, construction_head(args_pat), xs.shift()) // xs.shift() 表達式副作用!
-            args_pat = construction_tail(args_pat)
         } else {
             return make_error_v()
         }
@@ -937,7 +945,7 @@ function real_builtin_form_apply(env, f: LangVal, xs: Array < LangVal > ): LangV
     return error_v
 }
 
-function new_lambda(env: Env, args_pat, body, error_v): LangVal {
+function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
     function make_error_v() {
         if (jsnull_p(error_v)) {
@@ -953,9 +961,9 @@ function new_lambda(env: Env, args_pat, body, error_v): LangVal {
 
     args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
 
-    let args_pat_vars = [] // : JSList LangVal/Name 順序有要求
-    let args_pat_is_dot = false // : Bool
-    let args_pat_iter = args_pat
+    let args_pat_vars: Array < LangVal >= [] // : JSList LangVal/Name 順序有要求
+    let args_pat_is_dot: boolean = false
+    let args_pat_iter: LangVal = args_pat
     while (!null_p(args_pat_iter)) {
         if (name_p(args_pat_iter)) {
             args_pat_vars.push(args_pat_iter)
@@ -973,7 +981,7 @@ function new_lambda(env: Env, args_pat, body, error_v): LangVal {
         args_pat_vars_val = jsArray_to_list(args_pat_vars)
     }
 
-    let env_vars = [] // : JSList LangVal/Name
+    let env_vars: Array < LangVal >= [] // : JSList LangVal/Name
     env_foreach(env, function(k, v) {
         for (let i = 0; i < args_pat_vars.length; i++) {
             if (jsbool_equal_p(args_pat_vars[i], k)) { // WIP delay未正確處理(影響較小)
@@ -1034,7 +1042,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
             return end_2(data_name, data_list)
         default:
     }
-    ERROR()
+    return ERROR()
 }
 export {
     jsbool_equal_p as equal_p
@@ -1087,7 +1095,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
             return false //WIP
         default:
     }
-    ERROR()
+    return ERROR()
 }
 
 // {{{ 相對獨立的部分。parser/printer
@@ -1130,7 +1138,7 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
                 return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
             default:
         }
-        ERROR()
+        return ERROR()
         // 大量重複代碼 print <-> complex_print ]]]
     }
     return print
@@ -1212,10 +1220,11 @@ export function read(x: string): LangVal {
             put(x)
             return false
         }
-        let ret = null
+        const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
+        let ret: LangVal = HOLE
 
         function set_last(lst) {
-            if (ret === null) {
+            if (ret === HOLE) {
                 ret = lst
                 return
             }
@@ -1225,7 +1234,7 @@ export function read(x: string): LangVal {
                     ERROR()
                 }
                 const d = construction_tail(x)
-                if (d === null) {
+                if (d === HOLE) {
                     break
                 }
                 x = construction_tail(x)
@@ -1233,14 +1242,14 @@ export function read(x: string): LangVal {
             if (!cons_p(x)) {
                 ERROR()
             }
-            if (x[2] !== null) {
+            if (x[2] !== HOLE) {
                 ERROR()
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
 
         function last_add(x) {
-            set_last(new_cons(x, null))
+            set_last(new_cons(x, HOLE))
         }
         while (true) {
             space()
@@ -1415,7 +1424,7 @@ export function read(x: string): LangVal {
                 return x
             }
         }
-        error()
+        return error()
     }
     return val()
     // 大量重複代碼 read <-> complex_parse ]]]
@@ -1497,10 +1506,11 @@ export function complex_parse(x: string): LangVal {
             put(x)
             return false
         }
-        let ret = null
+        const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
+        let ret: LangVal = HOLE
 
         function set_last(lst) {
-            if (ret === null) {
+            if (ret === HOLE) {
                 ret = lst
                 return
             }
@@ -1510,7 +1520,7 @@ export function complex_parse(x: string): LangVal {
                     ERROR()
                 }
                 const d = construction_tail(x)
-                if (d === null) {
+                if (d === HOLE) {
                     break
                 }
                 x = construction_tail(x)
@@ -1518,14 +1528,14 @@ export function complex_parse(x: string): LangVal {
             if (!cons_p(x)) {
                 ERROR()
             }
-            if (x[2] !== null) {
+            if (x[2] !== HOLE) {
                 ERROR()
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
 
         function last_add(x) {
-            set_last(new_cons(x, null))
+            set_last(new_cons(x, HOLE))
         }
         while (true) {
             space()
@@ -1700,7 +1710,7 @@ export function complex_parse(x: string): LangVal {
                 return x
             }
         }
-        error()
+        return error()
     }
     return val()
 
@@ -1779,7 +1789,7 @@ export function complex_parse(x: string): LangVal {
                     return may_xfx_xf(x)
                 }
         }
-        ERROR()
+        return ERROR()
 
         function readsysname_no_pack_inner_must(strict = false) {
             function readsysname_no_pack_bracket() {
@@ -1796,7 +1806,7 @@ export function complex_parse(x: string): LangVal {
                     return x
                 }
             }
-            error()
+            return error()
         }
 
         function may_xfx_xf(x) {
@@ -1830,7 +1840,7 @@ export function complex_parse(x: string): LangVal {
                     }
                 case '/':
                     {
-                        let ys = []
+                        let ys: Array < LangVal >= []
                         while (true) {
                             const y = readsysname_no_pack_inner_must(true)
                             ys.push(y)
@@ -1996,7 +2006,7 @@ export function complex_print(val: LangVal): string {
             return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
         default:
     }
-    ERROR()
+    return ERROR()
     // 大量重複代碼 print <-> complex_print ]]]
 }
 
