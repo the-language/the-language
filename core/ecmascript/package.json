@@ -2,7 +2,7 @@
     "name": "the-language",
     "version": "0.0.7.2",
     "description": "The Language",
-    "main": "index.js",
+    "main": "lang.js",
     "repository": "https://github.com/the-language/the-language",
     "author": "Zaoqi",
     "license": "AGPL-3.0-or-later",
