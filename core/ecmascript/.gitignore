@@ -1,4 +1,4 @@
 /tsconfig.json
 /lang.js
-/lang.min.js
-/lang.min.externs.js
+/lang.full.js
+/lang.externs.js

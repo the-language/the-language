@@ -2,7 +2,7 @@
 cd "$(dirname $0)"
 . ./init-path.sh
 f=$(mktemp)
-for tmp in ./tsconfig.json ./lang.js ./lang.min.js ./lang.min.externs.js ; do
+for tmp in ./tsconfig.json ./lang.js ./lang.full.js ./lang.externs.js ; do
     rm $tmp 2>/dev/null
 done
 ./beautify.sh

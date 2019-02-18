@@ -37,7 +37,7 @@
     }
 
     // {{{ 相對獨立的部分。內建數據結構
-    const enum LangValType {
+    const enum LangValType { // 如果沒有const不能過google-closure-compiler -O ADVANCED
         symbol_t,
         cons_t,
         null_t,
