@@ -59,28 +59,28 @@ const delay_builtin_func_t = LangValType.delay_builtin_func_t
 const delay_builtin_form_t = LangValType.delay_builtin_form_t
 const delay_apply_t = LangValType.delay_apply_t
 
-type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
-type LangValJustDelayType = LangValType.just_t | LangValDelayType
+export type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
+export type LangValJustDelayType = LangValType.just_t | LangValDelayType
 
 
-type LangValSymbol = [LangValType.symbol_t, string]
-type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
-type LangValNull = [LangValType.null_t]
-type LangValData = [LangValType.data_t, LangValRec, LangValRec]
-type LangValError = [LangValType.error_t, LangValRec, LangValRec]
-type LangValJust = [LangValType.just_t, LangValRec, null, null]
-type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
-type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array < LangValRec > ]
-type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array < LangValRec > ] // WIP
-type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
-type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
-type LangValJustDelay = LangValJust | LangValDelay
-type LangValSysName = LangValData // WIP
-type LangValName = LangValData | LangValSymbol
-type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
-type LangValFunctionJustDelay = LangValRec // WIP
-type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
-type LangValRec = any // WIP
+export type LangValSymbol = [LangValType.symbol_t, string]
+export type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
+export type LangValNull = [LangValType.null_t]
+export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
+export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
+export type LangValJust = [LangValType.just_t, LangValRec, null, null]
+export type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
+export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array < LangValRec > ]
+export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array < LangValRec > ] // WIP
+export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
+export type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+export type LangValJustDelay = LangValJust | LangValDelay
+export type LangValSysName = LangValData // WIP
+export type LangValName = LangValData | LangValSymbol
+export type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
+export type LangValFunctionJustDelay = LangValRec // WIP
+export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+export type LangValRec = any // WIP
 
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
@@ -484,7 +484,7 @@ export function force1(raw: LangVal): LangVal {
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
-type Env = any // WIP
+export type Env = any // WIP
 export const env_null_v = []
 
 export function env_set(env: Env, key: LangVal, val: LangVal): Env {
