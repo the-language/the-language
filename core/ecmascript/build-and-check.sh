@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname $0)"
 f=$(mktemp)
-for tmp in ./tsconfig.json ./lang.js ./lang.full.js ./lang.externs.js ; do
+for tmp in ./lang.js ./lang.full.js ./lang.externs.js ./lang.pretty-print.js ; do
     rm $tmp 2>/dev/null
 done
 ./beautify.sh

@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "types": ["node"],
+        "allowJs": true,
+        "module": "commonjs",
+        "target": "ES3"
+    },
+    "files": [
+        "lang.ts"
+    ]
+}

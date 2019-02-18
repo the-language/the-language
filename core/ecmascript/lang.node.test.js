@@ -113,7 +113,7 @@ test_block("eval", function() {
         ['$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))', '()'],
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP("print_force_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", () => L.print_force_rec(L.read(x[0])) === x[1])
+        ASSERT_WITH_EXP("print_force_all_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", () => L.print_force_all_rec(L.read(x[0])) === x[1])
     }
 })
 test_block('complex_parse', function() {
@@ -133,15 +133,15 @@ test_block('complex_parse', function() {
 })
 test_block('complex_parse,complex_print', function() {
     const xs = [
-        ['構.符名', L.symbols.builtin.func.data_name],
-        ['&式形', L.symbols.use_form],
-        ['解算:化滅', L.symbols.builtin.func.eval],
-        ['&+式形', L.symbols.use_builtin_form],
-        ['[:構]?', L.symbols.builtin.func.data_p],
-        ['等同?', L.symbols.builtin.func.equal_p],
-        ['化滅@應用', L.symbols.builtin.func.apply],
-        ['&:>化滅', L.symbols.builtin.form.lambda],
-        ['列.[:物]', L.symbols.builtin.func.list_choose_one],
+        ['構.符名', L.data_name_function_builtin_systemName],
+        ['&式形', L.form_use_systemName],
+        ['解算:化滅', L.evaluate_function_builtin_systemName],
+        ['&+式形', L.form_builtin_use_systemName],
+        ['[:構]?', L.data_p_function_builtin_systemName],
+        ['等同?', L.equal_p_function_builtin_systemName],
+        ['化滅@應用', L.apply_function_builtin_systemName],
+        ['&:>化滅', L.lambda_form_builtin_systemName],
+        ['列.[:物]', L.list_chooseOne_function_builtin_systemName],
     ]
     for (const x of xs) {
         ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", () => L.print(L.complex_parse(x[0])) === L.print(x[1]))
@@ -182,6 +182,6 @@ test_block('eval,complex_print,complex_parse', function() {
         ['$(#(映表 ()) (&+化滅 等同? (&+式形 引用:式形 (((&+式形 引用:式形 A) B))) (&+式形 引用:式形 (((&+式形 引用:式形 A) Bx)))))', '#(陰)'],
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP('complex_print(force_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_rec(L.complex_parse(x[0]))) === x[1])
+        ASSERT_WITH_EXP('complex_print(force_all_rec(complex_parse("' + x[0] + '")) === "' + x[1] + '"', () => L.complex_print(L.force_all_rec(L.complex_parse(x[0]))) === x[1])
     }
 })

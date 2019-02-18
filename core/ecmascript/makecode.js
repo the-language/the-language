@@ -22,11 +22,11 @@ const _E = module.exports
 
 const A = L.new_list // apply
 function M(macro, ...args) { // apply macro
-    return L.new_list(L.symbols.use_form, macro, ...args)
+    return L.new_list(L.form_use_systemName, macro, ...args)
 }
 
 function quote(x) {
-    return L.new_list(L.symbols.use_builtin_form, L.symbols.builtin.form.quote, x)
+    return L.new_list(L.form_builtin_use_systemName, L.quote_form_builtin_systemName, x)
 }
 _E.quote = quote
 const S = L.new_symbol
@@ -38,12 +38,12 @@ function quoteS(x) {
 _E.quoteS = quoteS
 
 function cons(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_cons, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.new_construction_function_builtin_systemName, x, y)
 }
 _E.cons = cons
 
 function data(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_data, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.new_data_function_builtin_systemName, x, y)
 }
 _E.data = data
 const null_v = L.null_v
@@ -59,37 +59,37 @@ function list(...xs) {
 _E.list = list
 
 function car(p) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.cons_car, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.construction_head_function_builtin_systemName, x, y)
 }
 _E.car = car
 
 function cdr(p) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.cons_cdr, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.construction_tail_function_builtin_systemName, x, y)
 }
 _E.cdr = cdr
 
 function error(x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.new_error, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.new_error_function_builtin_systemName, x, y)
 }
 _E.error = error
 
 function calc(env, x) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.eval, env, x)
+    return L.new_list(L.function_builtin_use_systemName, L.evaluate_function_builtin_systemName, env, x)
 }
 _E.calc = calc
 
 function make_func(args, x) {
-    return data(quote(L.symbols.func), list(args, x));
+    return data(quote(L.function_symbol), list(args, x));
 }
 _E.make_func = make_func
 
 function make_macro(args, x) {
-    return data(quote(L.symbols.form), list(make_func(args, x)))
+    return data(quote(L.form_symbol), list(make_func(args, x)))
 }
 _E.make_macro = make_macro
 
 function if_then_else(b, x, y) {
-    return L.new_list(L.symbols.use_builtin_function, L.symbols.builtin.func.if, b, x, y)
+    return L.new_list(L.function_builtin_use_systemName, L.if_function_builtin_systemName, b, x, y)
 }
 _E.if_then_else = if_then_else
 
