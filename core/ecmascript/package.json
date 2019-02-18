@@ -1,24 +1,23 @@
 {
     "name": "the-language",
-    "version": "0.0.7.2",
+    "version": "0.0.8",
     "description": "The Language",
     "main": "lang.js",
-    "repository": "https://github.com/the-language/the-language",
+    "repository": {
+        "url": "https://github.com/the-language/the-language",
+        "type": "git"
+    },
     "author": "Zaoqi",
     "license": "AGPL-3.0-or-later",
     "devDependencies": {
+        "@types/node": "^11.9.4",
         "google-closure-compiler": "^20190121.0.0",
         "js-beautify": "^1.8.9",
         "node": "^11.10.0",
-        "typescript": "^3.3.3",
-        "@types/node": "^11.9.4"
+        "typescript": "^3.3.3"
     },
     "scripts": {
         "compile": "./compile.sh",
         "test": "./test.sh"
-    },
-    "repository": {
-        "url": "https://github.com/the-language/the-language",
-        "type": "git"
     }
 }
