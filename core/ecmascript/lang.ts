@@ -27,12 +27,9 @@ function ASSERT(x: boolean): void {
 }
 
 function DEBUG(x: string): void {
-    //[禁用] console.log(x)
-}
-
-function jsnull_p(x: any): boolean {
-    // undefined/null
-    return x == null
+    if (false) { //[禁用]
+        console.log(x)
+    }
 }
 
 // {{{ 相對獨立的部分。內建數據結構
@@ -945,10 +942,10 @@ function real_builtin_form_apply(env, f: LangVal, xs: Array < LangVal > ): LangV
     return error_v
 }
 
-function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal): LangVal {
+function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal | null = null): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
-    function make_error_v() {
-        if (jsnull_p(error_v)) {
+    function make_error_v(): LangVal {
+        if (error_v === null) {
             return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), lambda_form_builtin_systemName, jsArray_to_list([args_pat, body]))))
         } else {
             return error_v
