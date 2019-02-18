@@ -10,7 +10,8 @@
         "google-closure-compiler": "^20190121.0.0",
         "js-beautify": "^1.8.9",
         "node": "^11.10.0",
-        "typescript": "^3.3.3"
+        "typescript": "^3.3.3",
+        "@types/node": "^11.9.4"
     },
     "scripts": {
         "compile": "./compile.sh",
