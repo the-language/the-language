@@ -16,5 +16,9 @@
     "scripts": {
         "compile": "./compile.sh",
         "test": "./test.sh"
+    },
+    "repository": {
+        "url": "https://github.com/the-language/the-language",
+        "type": "git"
     }
 }
