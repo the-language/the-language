@@ -1,2 +1,3 @@
-tsconfig.json
-lang.js
+/tsconfig.json
+/lang.js
+/lang.min.js

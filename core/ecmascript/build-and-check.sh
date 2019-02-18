@@ -1,6 +1,6 @@
 #!/bin/bash
 cd "$(dirname $0)"
-. init-path.sh
+. ./init-path.sh
 f=$(mktemp)
 ./compile.sh || exit
 ./beautify.sh

@@ -1,5 +1,5 @@
 #!/bin/sh
-. init-path.sh
+. ./init-path.sh
 
 for f in *.js *.ts *.json
 do
