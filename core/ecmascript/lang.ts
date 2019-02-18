@@ -138,37 +138,64 @@ function make_get_three_c(t) {
     }
 }
 
-export const new_symbol: (x: string) => LangValSymbol = make_new_one < LangValType.symbol_t,
+const new_symbol: (x: string) => LangValSymbol = make_new_one < LangValType.symbol_t,
     string > (symbol_t)
 
-export function symbol_p(x: LangVal): x is LangValSymbol {
+function symbol_p(x: LangVal): x is LangValSymbol {
     return type_of(x) === LangValType.symbol_t
 }
-export const un_symbol = make_get_one_a(symbol_t)
-
-export const new_cons: (x: LangVal, y: LangVal) => LangValCons = make_new_two < LangValType.cons_t,
-    LangVal, LangVal > (cons_t)
-export const cons_p = make_two_p(cons_t)
-export const construction_head = make_get_two_a(cons_t)
-export const construction_tail = make_get_two_b(cons_t)
-
-export const null_v: LangValNull = [null_t]
-
-export function null_p(x: LangVal): x is LangValNull {
-    return x[0] === null_t
+const un_symbol = make_get_one_a(symbol_t)
+export {
+    new_symbol,
+    symbol_p,
+    un_symbol
 }
 
-export const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two < LangValType.data_t,
-    LangVal, LangVal > (data_t)
-export const data_p = make_two_p(data_t)
-export const data_name = make_get_two_a(data_t)
-export const data_list = make_get_two_b(data_t)
+const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two < LangValType.cons_t,
+    LangVal, LangVal > (cons_t)
+const cons_p = make_two_p(cons_t)
+const construction_head = make_get_two_a(cons_t)
+const construction_tail = make_get_two_b(cons_t)
+export {
+    new_construction,
+    cons_p,
+    construction_head,
+    construction_tail
+}
 
-export const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two < LangValType.error_t,
+const null_v: LangValNull = [null_t]
+
+function null_p(x: LangVal): x is LangValNull {
+    return x[0] === null_t
+}
+export {
+    null_v,
+    null_p
+}
+
+const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two < LangValType.data_t,
+    LangVal, LangVal > (data_t)
+const data_p = make_two_p(data_t)
+const data_name = make_get_two_a(data_t)
+const data_list = make_get_two_b(data_t)
+export {
+    new_data,
+    data_p,
+    data_name,
+    data_list
+}
+
+const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two < LangValType.error_t,
     LangVal, LangVal > (error_t)
-export const error_p = make_two_p(error_t)
-export const error_name = make_get_two_a(error_t)
-export const error_list = make_get_two_b(error_t)
+const error_p = make_two_p(error_t)
+const error_name = make_get_two_a(error_t)
+const error_list = make_get_two_b(error_t)
+export {
+    new_error,
+    error_p,
+    error_name,
+    error_list
+}
 
 function lang_set_do(x, y) {
     // 只用于x与y等价的情况
@@ -182,8 +209,11 @@ function lang_set_do(x, y) {
 }
 const just_p = make_one_p(just_t)
 const un_just = make_get_one_a(just_t)
-export const evaluate: (x: any, y: LangVal) => LangValDelayEval = make_new_two < LangValType.delay_eval_t,
+const evaluate: (x: any, y: LangVal) => LangValDelayEval = make_new_two < LangValType.delay_eval_t,
     any, LangVal > (delay_eval_t) // type WIP
+export {
+    evaluate
+}
 const delay_eval_p = make_two_p(delay_eval_t)
 const delay_eval_env = make_get_two_a(delay_eval_t) // Env
 const delay_eval_x = make_get_two_b(delay_eval_t)
@@ -198,12 +228,15 @@ const builtin_func_apply: (x: LangVal, y: Array < LangValRec > ) => LangValDelay
 const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
 const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
 const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
-export const apply: (f: LangValFunctionJustDelay, xs: Array < LangValRec > ) => LangValDelayApply = make_new_two < LangValType.delay_apply_t,
+const apply: (f: LangValFunctionJustDelay, xs: Array < LangValRec > ) => LangValDelayApply = make_new_two < LangValType.delay_apply_t,
     LangValFunctionJustDelay, Array < LangValRec >> (delay_apply_t)
+export {
+    apply
+}
 const delay_apply_p = make_two_p(delay_apply_t)
 const delay_apply_f = make_get_two_a(delay_apply_t)
 const delay_apply_xs = make_get_two_b(delay_apply_t) // JSList LangVal
-export function force_all_rec(x: LangVal): LangVal {
+function force_all_rec(x: LangVal): LangVal {
     x = force_all(x)
     switch (type_of(x)) {
         case data_t:
@@ -216,39 +249,74 @@ export function force_all_rec(x: LangVal): LangVal {
             return x
     }
 }
+export {
+    force_all_rec
+}
 // 相對獨立的部分。內建數據結構 }}}
 
 // {{{ 相對獨立的部分。符號名稱
-export const system_symbol = new_symbol("太始初核")
-export const name_symbol = new_symbol("符名")
-export const function_symbol = new_symbol("化滅")
-export const form_symbol = new_symbol("式形")
-export const equal_symbol = new_symbol("等同")
-export const evaluate_sym = new_symbol("解算")
-export const theThing_symbol = new_symbol("特定其物")
-export const something_symbol = new_symbol("省略一物")
-export const mapping_symbol = new_symbol("映表")
-export const if_symbol = new_symbol("若")
-export const typeAnnotation_symbol = new_symbol("一類何物")
-export const isOrNot_symbol = new_symbol("是非")
-export const sub_symbol = new_symbol("其子")
-export const true_symbol = new_symbol("陽")
-export const false_symbol = new_symbol("陰")
-export const quote_symbol = new_symbol("引用")
-export const apply_symbol = new_symbol("應用")
-export const null_symbol = new_symbol("空")
-export const construction_symbol = new_symbol("連")
-export const data_symbol = new_symbol("構")
-export const error_symbol = new_symbol("誤")
-export const symbol_symbol = new_symbol("詞素")
-export const list_symbol = new_symbol("列")
-export const head_symbol = new_symbol("首")
-export const tail_symbol = new_symbol("尾")
-export const thing_symbol = new_symbol("物")
-export const theWorldStopped_symbol = new_symbol("宇宙亡矣")
-export const effect_symbol = new_symbol("效應")
-export const sequentialWordFormation_symbol = new_symbol('為符名連')
-export const inputOutput_symbol = new_symbol("出入改滅")
+const system_symbol = new_symbol("太始初核")
+const name_symbol = new_symbol("符名")
+const function_symbol = new_symbol("化滅")
+const form_symbol = new_symbol("式形")
+const equal_symbol = new_symbol("等同")
+const evaluate_sym = new_symbol("解算")
+const theThing_symbol = new_symbol("特定其物")
+const something_symbol = new_symbol("省略一物")
+const mapping_symbol = new_symbol("映表")
+const if_symbol = new_symbol("若")
+const typeAnnotation_symbol = new_symbol("一類何物")
+const isOrNot_symbol = new_symbol("是非")
+const sub_symbol = new_symbol("其子")
+const true_symbol = new_symbol("陽")
+const false_symbol = new_symbol("陰")
+const quote_symbol = new_symbol("引用")
+const apply_symbol = new_symbol("應用")
+const null_symbol = new_symbol("空")
+const construction_symbol = new_symbol("連")
+const data_symbol = new_symbol("構")
+const error_symbol = new_symbol("誤")
+const symbol_symbol = new_symbol("詞素")
+const list_symbol = new_symbol("列")
+const head_symbol = new_symbol("首")
+const tail_symbol = new_symbol("尾")
+const thing_symbol = new_symbol("物")
+const theWorldStopped_symbol = new_symbol("宇宙亡矣")
+const effect_symbol = new_symbol("效應")
+const sequentialWordFormation_symbol = new_symbol('為符名連')
+const inputOutput_symbol = new_symbol("出入改滅")
+export {
+    system_symbol,
+    name_symbol,
+    function_symbol,
+    form_symbol,
+    equal_symbol,
+    evaluate_sym,
+    theThing_symbol,
+    something_symbol,
+    mapping_symbol,
+    if_symbol,
+    typeAnnotation_symbol,
+    isOrNot_symbol,
+    sub_symbol,
+    true_symbol,
+    false_symbol,
+    quote_symbol,
+    apply_symbol,
+    null_symbol,
+    construction_symbol,
+    data_symbol,
+    error_symbol,
+    symbol_symbol,
+    list_symbol,
+    head_symbol,
+    tail_symbol,
+    thing_symbol,
+    theWorldStopped_symbol,
+    effect_symbol,
+    sequentialWordFormation_symbol,
+    inputOutput_symbol
+}
 
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
@@ -267,37 +335,63 @@ function make_builtin_f_get_sym_f(t_sym: LangValSymbol, x_sym: LangVal): LangVal
 function make_builtin_f_p_sym_f(t_sym: LangValSymbol): LangValSysName {
     return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
 }
-export const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
-export const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
-export const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol)
-export const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol)
+const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
+const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
+const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol)
+const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol)
 
-export const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol)
-export const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol)
-export const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol)
-export const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol)
+const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol)
+const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol)
+const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol)
+const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol)
 
-export const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol)
-export const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol)
-export const construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol)
-export const construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol)
+const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol)
+const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol)
+const construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol)
+const construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol)
 
-export const symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol)
+const symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol)
 
-export const null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
+const null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
 
-export const equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
-export const apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_cons(function_symbol, something_symbol), something_symbol), apply_symbol))
-export const evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
-export const list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
-export const if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
+const equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
+const apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(function_symbol, something_symbol), something_symbol), apply_symbol))
+const evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
+const list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
+const if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
 
-export const quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
-export const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
+const quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
+const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
 
-export const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
-export const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
-export const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
+const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
+const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
+const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
+export {
+    new_data_function_builtin_systemName,
+    data_name_function_builtin_systemName,
+    data_list_function_builtin_systemName,
+    data_p_function_builtin_systemName,
+    new_error_function_builtin_systemName,
+    error_name_function_builtin_systemName,
+    error_list_function_builtin_systemName,
+    error_p_function_builtin_systemName,
+    new_construction_function_builtin_systemName,
+    construction_p_function_builtin_systemName,
+    construction_head_function_builtin_systemName,
+    construction_tail_function_builtin_systemName,
+    symbol_p_function_builtin_systemName,
+    null_p_function_builtin_systemName,
+    equal_p_function_builtin_systemName,
+    apply_function_builtin_systemName,
+    evaluate_function_builtin_systemName,
+    list_chooseOne_function_builtin_systemName,
+    if_function_builtin_systemName,
+    quote_form_builtin_systemName,
+    lambda_form_builtin_systemName,
+    function_builtin_use_systemName,
+    form_builtin_use_systemName,
+    form_use_systemName
+}
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
 
@@ -316,10 +410,10 @@ function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
 // 相對獨立的部分。符號名稱 }}}
 
 // {{{ 相對獨立的部分。對內建數據結構的簡單處理
-export function jsArray_to_list(xs: Array < LangVal > ): LangVal {
+function jsArray_to_list(xs: Array < LangVal > ): LangVal {
     let ret: LangVal = null_v
     for (let i = xs.length - 1; i >= 0; i--) {
-        ret = new_cons(xs[i], ret)
+        ret = new_construction(xs[i], ret)
     }
     return ret
 }
@@ -336,12 +430,17 @@ function list_to_jsArray < T > (xs: LangVal, k_done: (p0: Array < LangVal > ) =>
     return k_tail(ret, xs)
 }
 
-export function maybe_list_to_jsArray(xs: LangVal): false | Array < LangVal > {
+function maybe_list_to_jsArray(xs: LangVal): false | Array < LangVal > {
     return list_to_jsArray < false | Array < LangVal >> (xs, (xs) => xs, (xs, x) => false)
 }
 
-export function new_list(...xs: Array < LangVal > ): LangVal {
+function new_list(...xs: Array < LangVal > ): LangVal {
     return jsArray_to_list(xs)
+}
+export {
+    jsArray_to_list,
+    maybe_list_to_jsArray,
+    new_list
 }
 
 function un_just_all(raw: LangVal): LangVal {
@@ -364,7 +463,7 @@ export {
     any_delay_just_p as delay_p
 }
 
-export function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
+function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
     // *history : Map String True
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {}
@@ -459,7 +558,7 @@ export function force_all(raw: LangVal, parents_history = {}, ref_novalue_replac
     return x
 }
 
-export function force1(raw: LangVal): LangVal {
+function force1(raw: LangVal): LangVal {
     const x = un_just_all(raw)
     let ret
     ASSERT(!just_p(x))
@@ -478,13 +577,18 @@ export function force1(raw: LangVal): LangVal {
     lang_set_do(x, ret)
     return ret
 }
+export {
+    force_all,
+    force1
+}
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
 export type Env = Array < LangVal > // WIP
-    export const env_null_v = []
 
-export function env_set(env: Env, key: LangVal, val: LangVal): Env {
+    const env_null_v: Env = []
+
+function env_set(env: Env, key: LangVal, val: LangVal): Env {
     let ret: Env = []
     for (let i = 0; i < env.length; i = i + 2) {
         // WIP delay未正確處理(影響較小)
@@ -506,7 +610,7 @@ export function env_set(env: Env, key: LangVal, val: LangVal): Env {
     return ret
 }
 
-export function env_get < T > (env: Env, key: LangVal, default_v: T): T | LangVal {
+function env_get < T > (env: Env, key: LangVal, default_v: T): T | LangVal {
     for (let i = 0; i < env.length; i = i + 2) {
         if (jsbool_equal_p(env[i + 0], key)) {
             return env[i + 1]
@@ -524,21 +628,21 @@ function must_env_get(env: Env, key: LangVal): LangVal {
     return ERROR()
 }
 
-export function env2val(env: Env): LangVal {
+function env2val(env: Env): LangVal {
     let ret: LangVal = null_v
     for (let i = 0; i < env.length; i = i + 2) {
-        ret = new_cons(new_list(env[i + 0], env[i + 1]), ret)
+        ret = new_construction(new_list(env[i + 0], env[i + 1]), ret)
     }
     return new_data(mapping_symbol, new_list(ret))
 }
 
-export function env_foreach(env: Env, f: (k: LangVal, v: LangVal) => void): void {
+function env_foreach(env: Env, f: (k: LangVal, v: LangVal) => void): void {
     for (let i = 0; i < env.length; i = i + 2) {
         f(env[i + 0], env[i + 1])
     }
 }
 
-export function val2env(x: LangVal): false | Env {
+function val2env(x: LangVal): false | Env {
     x = force_all(x)
     if (!data_p(x)) {
         return false
@@ -589,6 +693,14 @@ export function val2env(x: LangVal): false | Env {
         })()
     }
     return ret
+}
+export {
+    env_null_v,
+    env_set,
+    env_get,
+    env2val,
+    env_foreach,
+    val2env
 }
 // 相對獨立的部分。變量之環境 }}}
 
@@ -745,7 +857,7 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
     make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
 
     make_builtin_p_func(null_p_function_builtin_systemName, null_p),
-    [new_construction_function_builtin_systemName, 2, new_cons],
+    [new_construction_function_builtin_systemName, 2, new_construction],
     make_builtin_p_func(construction_p_function_builtin_systemName, cons_p),
     make_builtin_get_func(construction_head_function_builtin_systemName, cons_p, construction_head),
     make_builtin_get_func(construction_tail_function_builtin_systemName, cons_p, construction_tail),
@@ -990,15 +1102,15 @@ function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal
 
     let new_args_pat = args_pat_vars_val // : LangVal
     for (let i = env_vars.length - 1; i >= 0; i--) {
-        new_args_pat = new_cons(env_vars[i], new_args_pat)
+        new_args_pat = new_construction(env_vars[i], new_args_pat)
     }
 
     let new_args = args_pat_vars_val // : LangVal
     for (let i = env_vars.length - 1; i >= 0; i--) {
-        new_args = new_cons(make_quote(must_env_get(env, env_vars[i])), new_args)
+        new_args = new_construction(make_quote(must_env_get(env, env_vars[i])), new_args)
     }
 
-    return new_data(function_symbol, new_list(args_pat, new_cons(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
+    return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
 }
 
 function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
@@ -1120,9 +1232,9 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
                 }
                 return temp
             case data_t:
-                return "#" + print(new_cons(data_name(x), data_list(x)))
+                return "#" + print(new_construction(data_name(x), data_list(x)))
             case error_t:
-                return "!" + print(new_cons(error_name(x), error_list(x)))
+                return "!" + print(new_construction(error_name(x), error_list(x)))
             case symbol_t:
                 return un_symbol(x)
             case delay_eval_t:
@@ -1140,10 +1252,14 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
     }
     return print
 }
-export const print = make_printer(un_just_all)
-export const print_force_all_rec = make_printer(force_all)
+const print = make_printer(un_just_all)
+const print_force_all_rec = make_printer(force_all)
+export {
+    print,
+    print_force_all_rec
+}
 
-export function read(x: string): LangVal {
+function read(x: string): LangVal {
     // [[[ 大量重複代碼 read <-> complex_parse
     let state = x.split("") // State : List Char
     function eof() {
@@ -1246,7 +1362,7 @@ export function read(x: string): LangVal {
         }
 
         function last_add(x) {
-            set_last(new_cons(x, HOLE))
+            set_last(new_construction(x, HOLE))
         }
         while (true) {
             space()
@@ -1426,10 +1542,13 @@ export function read(x: string): LangVal {
     return val()
     // 大量重複代碼 read <-> complex_parse ]]]
 }
+export {
+    read
+}
 // 相對獨立的部分。parser/printer }}}
 
 // {{{ 相對獨立的部分。complex parser/complex printer
-export function complex_parse(x: string): LangVal {
+function complex_parse(x: string): LangVal {
     // [[[ 大量重複代碼 read <-> complex_parse
     let state = x.split("") // State : List Char
     function eof() {
@@ -1532,7 +1651,7 @@ export function complex_parse(x: string): LangVal {
         }
 
         function last_add(x) {
-            set_last(new_cons(x, HOLE))
+            set_last(new_construction(x, HOLE))
         }
         while (true) {
             space()
@@ -1829,7 +1948,7 @@ export function complex_parse(x: string): LangVal {
                 case '@':
                     {
                         const y = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, new_list(function_symbol, new_cons(x, something_symbol), something_symbol), y)
+                        return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
                     }
                 case '?':
                     {
@@ -1874,8 +1993,11 @@ export function complex_parse(x: string): LangVal {
         return systemName_make(x)
     }
 }
+export {
+    complex_parse
+}
 
-export function complex_print(val: LangVal): string {
+function complex_print(val: LangVal): string {
     function print_sys_name(x, where) {
         // 是 complex_print(systemName_make(x))
         // x : LangVal
@@ -1903,7 +2025,7 @@ export function complex_print(val: LangVal): string {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'))
                 } else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_cons(construction_head(maybe_lst_2[1]), something_symbol), something_symbol), maybe_xs[2])
+                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(maybe_lst_2[1]), something_symbol), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'))
                 } else if (jsbool_no_force_equal_p(maybe_lst_2[1], something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
@@ -1988,9 +2110,9 @@ export function complex_print(val: LangVal): string {
                 // systemName_make(maybe_xs[1])
                 return print_sys_name(maybe_xs[1], 'top')
             }
-            return "#" + complex_print(new_cons(name, list))
+            return "#" + complex_print(new_construction(name, list))
         case error_t:
-            return "!" + complex_print(new_cons(error_name(x), error_list(x)))
+            return "!" + complex_print(new_construction(error_name(x), error_list(x)))
         case symbol_t:
             return un_symbol(x)
         case delay_eval_t:
@@ -2006,14 +2128,21 @@ export function complex_print(val: LangVal): string {
     return ERROR()
     // 大量重複代碼 print <-> complex_print ]]]
 }
-
+export {
+    complex_print
+}
 // 相對獨立的部分。complex parser/complex printer }}}
 
 // {{{ 相對獨立的部分。IO
 
-export const return_inputOutput_systemName = complex_parse('效應/[:物]')
-export const bind_inputOutput_systemName = complex_parse('效應/連')
-export const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'))
+const return_inputOutput_systemName = complex_parse('效應/[:物]')
+const bind_inputOutput_systemName = complex_parse('效應/連')
+const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'))
+export {
+    return_inputOutput_systemName,
+    bind_inputOutput_systemName,
+    ecmascript_systemName
+}
 //WIP
 
 // 相對獨立的部分。IO }}}
