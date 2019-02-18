@@ -13,3 +13,7 @@ done
 
 # method 3
 npx js-beautify -r *.js *.ts *.json
+for f in *.js *.ts *.json
+do
+    echo >> $f
+done
