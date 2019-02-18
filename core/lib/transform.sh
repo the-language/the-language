@@ -21,7 +21,7 @@ done
 
 cd ../transformed
 prog=$(cat << "EOF"
-const L = require('lang')
+const L = require('the-language')
 const fs = require('fs')
 for(const file of fs.readdirSync('.')) {
     fs.readFile(file, 'utf8', (err, data) => {
@@ -33,4 +33,4 @@ for(const file of fs.readdirSync('.')) {
 }
 EOF
 )
-NODE_PATH=../../ecmascript ../../ecmascript/node -e "$prog"
+NODE_PATH=~/.config/yarn/global/node_modules/ npx node -e "$prog"
