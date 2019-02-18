@@ -1,0 +1,19 @@
+{
+    "name": "the-language",
+    "version": "0.0.7.2",
+    "description": "The Language",
+    "main": "index.js",
+    "repository": "https://github.com/the-language/the-language",
+    "author": "Zaoqi",
+    "license": "AGPL-3.0-or-later",
+    "devDependencies": {
+        "google-closure-compiler": "^20190121.0.0",
+        "js-beautify": "^1.8.9",
+        "node": "^11.10.0",
+        "typescript": "^3.3.3"
+    },
+    "scripts": {
+        "compile": "./compile.sh",
+        "test": "./test.sh"
+    }
+}

@@ -1,13 +1,12 @@
 #!/bin/bash
 cd "$(dirname $0)"
-. ./init-path.sh
 f=$(mktemp)
 for tmp in ./tsconfig.json ./lang.js ./lang.full.js ./lang.externs.js ; do
     rm $tmp 2>/dev/null
 done
 ./beautify.sh
 ./compile.sh || exit
-./node.test.sh 2>&1 | cat > $f &
+./test.sh 2>&1 | cat > $f &
 echo press enter to continue
 read
 git add .;git diff --cached
@@ -38,7 +37,7 @@ function main(){
 }
 main()
 EOF
-node $printer&
+npx node $printer&
 echo "---[TEST]---"
 sleep 1s
 wait %1
