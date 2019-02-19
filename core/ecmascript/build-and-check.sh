@@ -4,7 +4,7 @@ f=$(mktemp)
 for tmp in ./lang.js ./lang.full.js ./lang.externs.js ./lang.pretty-print.js ; do
     rm $tmp 2>/dev/null
 done
-./beautify.sh
+# ./beautify.sh 用編輯器代替
 ./compile.sh || exit
 ./test.sh 2>&1 | cat > $f &
 echo press enter to continue

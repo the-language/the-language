@@ -5,8 +5,8 @@
         "module": "commonjs",
         "target": "ES3"
         "strictNullChecks": true,
-    },
-    "files": [
-        "lang.ts"
-    ]
+    }
+
+    ,
+    "files": ["lang.ts"]
 }

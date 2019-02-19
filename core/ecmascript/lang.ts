@@ -19,23 +19,22 @@
 function ERROR(): never {
     throw "TheLanguage PANIC"
 }
-
 function ASSERT(x: boolean): void {
     if (!x) {
         ERROR()
     }
 }
-
 function DEBUG(x: string): void {
-    if (false) { //[禁用]
+    if (false) {
+        //[禁用]
         console.log(x)
     }
 }
-
 // 用export{}，不用export const .../export function...，否則生成的代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
 
 // {{{ 相對獨立的部分。內建數據結構
-const enum LangValType { // 如果沒有const不能過google-closure-compiler -O ADVANCED
+// 如果沒有const不能過google-closure-compiler -O ADVANCED
+export const enum LangValType {
     symbol_t,
     cons_t,
     null_t,
@@ -57,11 +56,8 @@ const delay_eval_t = LangValType.delay_eval_t
 const delay_builtin_func_t = LangValType.delay_builtin_func_t
 const delay_builtin_form_t = LangValType.delay_builtin_form_t
 const delay_apply_t = LangValType.delay_apply_t
-
 export type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
 export type LangValJustDelayType = LangValType.just_t | LangValDelayType
-
-
 export type LangValSymbol = [LangValType.symbol_t, string]
 export type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
 export type LangValNull = [LangValType.null_t]
@@ -69,9 +65,9 @@ export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
 export type LangValJust = [LangValType.just_t, LangValRec, null, null]
 export type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
-export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array < LangValRec > ]
-export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array < LangValRec > ] // WIP
-export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array < LangValRec > ]
+export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
+export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
+export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
 export type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValSysName = LangValData // WIP
@@ -89,33 +85,24 @@ export type LangValRec = any // WIP
 function type_of(x: LangVal): LangValType {
     return x[0]
 }
-
 function make_one_p(t) {
-    return function(x) {
-        return x[0] === t
-    }
+    return (x) => x[0] === t
 }
 const make_two_p = make_one_p
 const make_three_p = make_one_p
-
-function make_new_one < T, A > (t: T): (x: A) => [T, A] {
-    return function(x) {
-        return [t, x]
-    }
+function make_new_one<T, A>(t: T): (x: A) => [T, A] {
+    return (x) => [t, x]
 }
-
-function make_new_two < T, A, B > (t: T): (x: A, y: B) => [T, A, B] {
+function make_new_two<T, A, B>(t: T): (x: A, y: B) => [T, A, B] {
     return function(x, y) {
         return [t, x, y] // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
     }
 }
-
-function make_new_three < T, A, B, C > (t: T): (x: A, y: B, z: C) => [T, A, B, C] {
+function make_new_three<T, A, B, C>(t: T): (x: A, y: B, z: C) => [T, A, B, C] {
     return function(x, y, z) {
         return [t, x, y, z]
     }
 }
-
 function make_get_one_a(t) {
     return function(x) {
         ASSERT(x[0] === t)
@@ -124,80 +111,50 @@ function make_get_one_a(t) {
 }
 const make_get_two_a = make_get_one_a
 const make_get_three_a = make_get_one_a
-
 function make_get_two_b(t) {
-    return function(x) {
+    return (x) => {
         ASSERT(x[0] === t)
         return x[2]
     }
 }
 const make_get_three_b = make_get_two_b
-
 function make_get_three_c(t) {
-    return function(x) {
+    return (x) => {
         ASSERT(x[0] === t)
         return x[3]
     }
 }
 
-const new_symbol: (x: string) => LangValSymbol = make_new_one < LangValType.symbol_t,
-    string > (symbol_t)
-
+const new_symbol: (x: string) => LangValSymbol = make_new_one<LangValType.symbol_t, string>(symbol_t)
 function symbol_p(x: LangVal): x is LangValSymbol {
     return type_of(x) === LangValType.symbol_t
 }
 const un_symbol = make_get_one_a(symbol_t)
-export {
-    new_symbol,
-    symbol_p,
-    un_symbol
-}
+export { new_symbol, symbol_p, un_symbol }
 
-const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two < LangValType.cons_t,
-    LangVal, LangVal > (cons_t)
+const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two<LangValType.cons_t, LangVal, LangVal>(cons_t)
 const cons_p = make_two_p(cons_t)
 const construction_head = make_get_two_a(cons_t)
 const construction_tail = make_get_two_b(cons_t)
-export {
-    new_construction,
-    cons_p,
-    construction_head,
-    construction_tail
-}
+export { new_construction, cons_p, construction_head, construction_tail }
 
 const null_v: LangValNull = [null_t]
-
 function null_p(x: LangVal): x is LangValNull {
     return x[0] === null_t
 }
-export {
-    null_v,
-    null_p
-}
+export { null_v, null_p }
 
-const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two < LangValType.data_t,
-    LangVal, LangVal > (data_t)
+const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two<LangValType.data_t, LangVal, LangVal>(data_t)
 const data_p = make_two_p(data_t)
 const data_name = make_get_two_a(data_t)
 const data_list = make_get_two_b(data_t)
-export {
-    new_data,
-    data_p,
-    data_name,
-    data_list
-}
+export { new_data, data_p, data_name, data_list }
 
-const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two < LangValType.error_t,
-    LangVal, LangVal > (error_t)
+const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two<LangValType.error_t, LangVal, LangVal>(error_t)
 const error_p = make_two_p(error_t)
 const error_name = make_get_two_a(error_t)
 const error_list = make_get_two_b(error_t)
-export {
-    new_error,
-    error_p,
-    error_name,
-    error_list
-}
+export { new_error, error_p, error_name, error_list }
 
 function lang_set_do(x, y) {
     // 只用于x与y等价的情况
@@ -211,30 +168,27 @@ function lang_set_do(x, y) {
 }
 const just_p = make_one_p(just_t)
 const un_just = make_get_one_a(just_t)
-const evaluate: (x: any, y: LangVal) => LangValDelayEval = make_new_two < LangValType.delay_eval_t,
-    any, LangVal > (delay_eval_t) // type WIP
-export {
-    evaluate
-}
+const evaluate: (x: any, y: LangVal) => LangValDelayEval =
+    make_new_two<LangValType.delay_eval_t, any, LangVal>(delay_eval_t) // type WIP
+export { evaluate }
 const delay_eval_p = make_two_p(delay_eval_t)
 const delay_eval_env = make_get_two_a(delay_eval_t) // Env
 const delay_eval_x = make_get_two_b(delay_eval_t)
-const builtin_form_apply: (x: any, y: LangVal, z: Array < LangValRec > ) => LangValDelayBuiltinForm = make_new_three < LangValType.delay_builtin_form_t,
-    any, LangVal, Array < LangValRec >> (delay_builtin_form_t) // type WIP
+const builtin_form_apply: (x: any, y: LangVal, z: Array<LangValRec>) => LangValDelayBuiltinForm =
+    make_new_three<LangValType.delay_builtin_form_t, any, LangVal, Array<LangValRec>>(delay_builtin_form_t) // type WIP
 const delay_builtin_form_p = make_three_p(delay_builtin_form_t)
 const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t) // Env
 const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
 const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t) // JSList LangVal
-const builtin_func_apply: (x: LangVal, y: Array < LangValRec > ) => LangValDelayBuiltinFunc = make_new_two < LangValType.delay_builtin_func_t,
-    LangVal, Array < LangValRec >> (delay_builtin_func_t)
+const builtin_func_apply: (x: LangVal, y: Array<LangValRec>) => LangValDelayBuiltinFunc =
+    make_new_two<LangValType.delay_builtin_func_t, LangVal, Array<LangValRec>>(delay_builtin_func_t)
 const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
 const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
 const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
-const apply: (f: LangValFunctionJustDelay, xs: Array < LangValRec > ) => LangValDelayApply = make_new_two < LangValType.delay_apply_t,
-    LangValFunctionJustDelay, Array < LangValRec >> (delay_apply_t)
-export {
-    apply
-}
+
+const apply: (f: LangValFunctionJustDelay, xs: Array<LangValRec>) => LangValDelayApply =
+    make_new_two<LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>>(delay_apply_t)
+export { apply }
 const delay_apply_p = make_two_p(delay_apply_t)
 const delay_apply_f = make_get_two_a(delay_apply_t)
 const delay_apply_xs = make_get_two_b(delay_apply_t) // JSList LangVal
@@ -251,9 +205,7 @@ function force_all_rec(x: LangVal): LangVal {
             return x
     }
 }
-export {
-    force_all_rec
-}
+export { force_all_rec }
 // 相對獨立的部分。內建數據結構 }}}
 
 // {{{ 相對獨立的部分。符號名稱
@@ -325,15 +277,12 @@ const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldS
 function systemName_make(x: LangVal): LangValSysName {
     return new_data(name_symbol, new_list(system_symbol, x))
 }
-
 function make_builtin_f_new_sym_f(x_sym: LangValSymbol): LangValSysName {
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
 }
-
 function make_builtin_f_get_sym_f(t_sym: LangValSymbol, x_sym: LangVal): LangValSysName {
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
 }
-
 function make_builtin_f_p_sym_f(t_sym: LangValSymbol): LangValSysName {
     return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
 }
@@ -394,9 +343,9 @@ export {
     form_builtin_use_systemName,
     form_use_systemName
 }
+
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
-
 function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
     if (x === y) {
         return true
@@ -409,10 +358,11 @@ function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
         return false
     }
 }
+
 // 相對獨立的部分。符號名稱 }}}
 
 // {{{ 相對獨立的部分。對內建數據結構的簡單處理
-function jsArray_to_list(xs: Array < LangVal > ): LangVal {
+function jsArray_to_list(xs: Array<LangVal>): LangVal {
     let ret: LangVal = null_v
     for (let i = xs.length - 1; i >= 0; i--) {
         ret = new_construction(xs[i], ret)
@@ -420,8 +370,11 @@ function jsArray_to_list(xs: Array < LangVal > ): LangVal {
     return ret
 }
 
-function list_to_jsArray < T > (xs: LangVal, k_done: (p0: Array < LangVal > ) => T, k_tail: (p0: Array < LangVal > , p1: LangVal) => T): T {
-    let ret: Array < LangVal >= []
+function list_to_jsArray<T>(
+    xs: LangVal,
+    k_done: (p0: Array<LangVal>) => T,
+    k_tail: (p0: Array<LangVal>, p1: LangVal) => T): T {
+    let ret: Array<LangVal> = []
     while (cons_p(xs)) {
         ret.push(construction_head(xs))
         xs = construction_tail(xs)
@@ -432,46 +385,47 @@ function list_to_jsArray < T > (xs: LangVal, k_done: (p0: Array < LangVal > ) =>
     return k_tail(ret, xs)
 }
 
-function maybe_list_to_jsArray(xs: LangVal): false | Array < LangVal > {
-    return list_to_jsArray < false | Array < LangVal >> (xs, (xs) => xs, (xs, x) => false)
+function maybe_list_to_jsArray(xs: LangVal): false | Array<LangVal> {
+    return list_to_jsArray<false | Array<LangVal>>(xs, (xs) => xs, (xs, x) => false)
 }
-
-function new_list(...xs: Array < LangVal > ): LangVal {
+function new_list(...xs: Array<LangVal>): LangVal {
     return jsArray_to_list(xs)
 }
-export {
-    jsArray_to_list,
-    maybe_list_to_jsArray,
-    new_list
-}
+export { jsArray_to_list, maybe_list_to_jsArray, new_list }
 
 function un_just_all(raw: LangVal): LangVal {
     let x = raw
-    let xs: Array < LangVal >= []
+    let xs: Array<LangVal> = []
     while (just_p(x)) {
         xs.push(x)
         x = un_just(x)
     }
+
     for (let i = 0; i < xs.length; i++) {
         lang_set_do(xs[i], x)
     }
+
     return x
 }
 
 function any_delay_just_p(x: LangVal): x is LangValJustDelay {
-    return just_p(x) || delay_eval_p(x) || delay_builtin_form_p(x) || delay_builtin_func_p(x) || delay_apply_p(x)
+    return just_p(x) ||
+        delay_eval_p(x) ||
+        delay_builtin_form_p(x) ||
+        delay_builtin_func_p(x) ||
+        delay_apply_p(x)
 }
-export {
-    any_delay_just_p as delay_p
-}
+export { any_delay_just_p as delay_p }
 
-function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
+function force_all(
+    raw: LangVal,
+    parents_history = {}
+    , ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
     // *history : Map String True
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {}
     let x: LangVal = raw
-    let xs: Array < LangVal >= []
-
+    let xs: Array<LangVal> = []
     function replace_this_with_stopped() {
         // 語言標準允許替換沒有值的東西為那種錯誤。
         ref_novalue_replace[1] = true
@@ -481,7 +435,6 @@ function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boo
         }
         return the_world_stopped_v
     }
-
     function make_history() {
         let ret = {}
         for (const x_id in history) {
@@ -498,15 +451,24 @@ function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boo
             return replace_this_with_stopped()
         }
         if (history[x_id] === true) {
-            ref_novalue_replace[0] = true
-            // 減少替換範圍：(f <沒有值>) 的(f _)
+            ref_novalue_replace[0] = true // 減少替換範圍：(f <沒有值>) 的(f _)
             switch (type_of(x)) {
                 case delay_eval_t:
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 case delay_builtin_func_t:
                     const f = delay_builtin_func_f(x) // LangVal/Name
                     const xs = delay_builtin_func_xs(x) // JSList LangVal
-                    const elim_s = [data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName]
+                    const elim_s = [data_name_function_builtin_systemName,
+                        data_list_function_builtin_systemName,
+                        data_p_function_builtin_systemName,
+                        error_name_function_builtin_systemName,
+                        error_list_function_builtin_systemName,
+                        error_p_function_builtin_systemName,
+                        construction_p_function_builtin_systemName,
+                        construction_head_function_builtin_systemName,
+                        construction_tail_function_builtin_systemName,
+                        symbol_p_function_builtin_systemName,
+                        null_p_function_builtin_systemName]
                     let is_elim = false
                     for (let i = 0; i < elim_s.length; i++) {
                         if (jsbool_equal_p(elim_s[i], f)) {
@@ -548,6 +510,7 @@ function force_all(raw: LangVal, parents_history = {}, ref_novalue_replace: [boo
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 default:
             }
+
             ERROR()
         }
         history[x_id] = true
@@ -566,7 +529,8 @@ function force1(raw: LangVal): LangVal {
     ASSERT(!just_p(x))
     if (delay_eval_p(x)) {
         ret = real_evaluate(delay_eval_env(x), delay_eval_x(x))
-    } else if (delay_builtin_form_p(x)) {
+    }
+    else if (delay_builtin_form_p(x)) {
         ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x))
     } else if (delay_builtin_func_p(x)) {
         ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x))
@@ -579,17 +543,15 @@ function force1(raw: LangVal): LangVal {
     lang_set_do(x, ret)
     return ret
 }
-export {
-    force_all,
-    force1
-}
+
+export { force_all, force1 }
+
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
-export type Env = Array < LangVal > // WIP
+export type Env = Array<LangVal> // WIP
 
-    const env_null_v: Env = []
-
+const env_null_v: Env = []
 function env_set(env: Env, key: LangVal, val: LangVal): Env {
     let ret: Env = []
     for (let i = 0; i < env.length; i = i + 2) {
@@ -612,7 +574,7 @@ function env_set(env: Env, key: LangVal, val: LangVal): Env {
     return ret
 }
 
-function env_get < T > (env: Env, key: LangVal, default_v: T): T | LangVal {
+function env_get<T>(env: Env, key: LangVal, default_v: T): T | LangVal {
     for (let i = 0; i < env.length; i = i + 2) {
         if (jsbool_equal_p(env[i + 0], key)) {
             return env[i + 1]
@@ -696,6 +658,7 @@ function val2env(x: LangVal): false | Env {
     }
     return ret
 }
+
 export {
     env_null_v,
     env_set,
@@ -704,6 +667,7 @@ export {
     env_foreach,
     val2env
 }
+
 // 相對獨立的部分。變量之環境 }}}
 
 function real_evaluate(env: Env, raw: LangVal): LangVal {
@@ -711,17 +675,21 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
     if (any_delay_just_p(x)) {
         return evaluate(env, x)
     }
-    const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))))
+    const error_v = new_error(system_symbol,
+        new_list(
+            function_builtin_use_systemName,
+            new_list(
+                evaluate_function_builtin_systemName,
+                new_list(env2val(env), x))))
     switch (type_of(x)) {
         case cons_t:
-            let xs: Array < LangVal >= []
+            let xs: Array<LangVal> = []
             let rest: LangVal = x
             while (!null_p(rest)) {
                 if (any_delay_just_p(rest)) {
                     return evaluate(env, x)
                 } else if (cons_p(rest)) {
-                    xs.push(construction_head(rest))
-                    // WIP delay未正確處理(影響較小)
+                    xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
                     rest = force1(construction_tail(rest))
                 } else {
                     DEBUG("[ERROR/eval] not list")
@@ -735,7 +703,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return error_v
                 }
                 const f = xs[1]
-                let args: Array < LangVal >= []
+                let args: Array<LangVal> = []
                 for (let i = 2; i < xs.length; i++) {
                     args[i - 2] = xs[i]
                 }
@@ -790,14 +758,14 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return error_v
                 }
                 const f = xs[1]
-                let args: Array < LangVal >= []
+                let args: Array<LangVal> = []
                 for (let i = 2; i < xs.length; i++) {
                     args[i - 2] = evaluate(env, xs[i])
                 }
                 return builtin_func_apply(f, args)
             } else {
                 const f = evaluate(env, xs[0])
-                let args: Array < LangVal >= []
+                let args: Array<LangVal> = []
                 for (let i = 1; i < xs.length; i++) {
                     args[i - 1] = evaluate(env, xs[i])
                 }
@@ -820,34 +788,47 @@ function name_p(x: LangVal): x is LangValName {
     const t = type_of(x)
     return t === symbol_t || t === data_t
 }
+function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc)
+    : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
 
-function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc): [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
-    return [p_sym, 1, function(x, error_v) {
-        x = force1(x)
-        if (any_delay_just_p(x)) {
-            return builtin_func_apply(p_sym, [x])
-        }
-        if (p_jsfunc(x)) {
-            return true_v
-        }
-        return false_v
-    }]
+    return [p_sym,
+        1,
+        (x, error_v) => {
+            x = force1(x)
+            if (any_delay_just_p(x)) {
+                return builtin_func_apply(p_sym, [x])
+            }
+            if (p_jsfunc(x)) {
+                return true_v
+            }
+            return false_v
+        }]
 }
 
-function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc, f_jsfunc): [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
-    return [f_sym, 1, function(x, error_v) {
-        x = force1(x)
-        if (any_delay_just_p(x)) {
-            return builtin_func_apply(f_sym, [x])
-        }
-        if (p_jsfunc(x)) {
-            return f_jsfunc(x)
-        }
-        return error_v
-    }]
+function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc, f_jsfunc)
+    : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
+    return [f_sym,
+        1,
+        (x, error_v) => {
+            x = force1(x)
+            if (any_delay_just_p(x)) {
+                return builtin_func_apply(f_sym, [x])
+            }
+            if (p_jsfunc(x)) {
+                return f_jsfunc(x)
+            }
+            return error_v
+        }]
 }
-type real_builtin_func_apply_T = [LangValSysName, 1, (x: LangVal) => LangVal] | [LangValSysName, 2, (x: LangVal, y: LangVal) => LangVal] | [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal) => LangVal] | [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] | [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => LangVal] | [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal]
-const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
+type real_builtin_func_apply_T =
+    [LangValSysName, 1, (x: LangVal) => LangVal] |
+    [LangValSysName, 2, (x: LangVal, y: LangVal) => LangVal] |
+    [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal) => LangVal] |
+    [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] |
+    [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => LangVal] |
+    [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal]
+
+const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
     make_builtin_p_func(data_p_function_builtin_systemName, data_p),
     [new_data_function_builtin_systemName, 2, new_data],
     make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
@@ -864,7 +845,7 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
     make_builtin_get_func(construction_head_function_builtin_systemName, cons_p, construction_head),
     make_builtin_get_func(construction_tail_function_builtin_systemName, cons_p, construction_tail),
 
-    [equal_p_function_builtin_systemName, 2, function(x, y, error_v) {
+    [equal_p_function_builtin_systemName, 2, (x, y, error_v) => {
         if (x === y) {
             return true_v
         }
@@ -879,19 +860,18 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
         if (type_of(x) !== type_of(y)) {
             return false_v
         }
-
         function H_if(b, x, y) {
             // H = helper
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
         }
-
         function H_and(x, y) {
             return H_if(x, y, false_v)
         }
         ASSERT(!any_delay_just_p(x))
-
         function end_2(f1, f2) {
-            return H_and(builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]), builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
+            return H_and(
+                builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
+                builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
         }
         switch (type_of(x)) {
             case null_t:
@@ -906,11 +886,11 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
                 return end_2(error_name, error_list)
             default:
         }
-        ERROR()
+        return ERROR()
     }],
-    [apply_function_builtin_systemName, 2, function(f, xs, error_v) {
+    [apply_function_builtin_systemName, 2, (f, xs, error_v) => {
         // WIP delay未正確處理(影響較小)
-        let jslist: Array < LangVal >= []
+        let jslist: Array<LangVal> = []
         let iter: LangVal = force_all(xs)
         while (cons_p(iter)) {
             jslist.push(construction_head(iter))
@@ -921,7 +901,7 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
         }
         return apply(f, jslist)
     }],
-    [evaluate_function_builtin_systemName, 2, function(env, x, error_v) {
+    [evaluate_function_builtin_systemName, 2, (env, x, error_v) => {
         // WIP delay未正確處理(影響較小)
         const maybeenv = val2env(env)
         if (maybeenv === false) {
@@ -932,7 +912,7 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
 
     make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
 
-    [list_chooseOne_function_builtin_systemName, 1, function(xs, error_v) {
+    [list_chooseOne_function_builtin_systemName, 1, (xs, error_v) => {
         // 一般返回第一个，可以因为优化返回其他的任意一个
         // xs可以無限長，不判斷是否真的是list
         xs = force1(xs)
@@ -944,7 +924,8 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
         }
         return construction_head(xs)
     }],
-    [if_function_builtin_systemName, 3, function(b, x, y, error_v) {
+
+    [if_function_builtin_systemName, 3, (b, x, y, error_v) => {
         b = force1(b)
         if (any_delay_just_p(b)) {
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
@@ -966,11 +947,15 @@ const real_builtin_func_apply_s: Array < real_builtin_func_apply_T > = [
         return error_v
     }],
 ]
-
-function real_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
+function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     // WIP delay未正確處理(影響較小)
     function make_error_v() {
-        return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))))
+        return new_error(system_symbol,
+            new_list(
+                function_builtin_use_systemName,
+                new_list(
+                    apply_function_builtin_systemName,
+                    new_list(f, jsArray_to_list(xs)))))
     }
     f = force1(f)
     if (any_delay_just_p(f)) {
@@ -994,10 +979,9 @@ function real_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
     }
     const f_code = construction_head(f_list_cdr)
     let env: Env = env_null_v
+
     // https://github.com/Microsoft/TypeScript/issues/10272
-    function isNotEmpty < T > (arr: T[]): arr is {
-        shift(): T;
-    } & Array < T > {
+    function isNotEmpty<T>(arr: T[]): arr is { shift(): T; } & Array<T> {
         return !!arr.length;
     }
     while (!null_p(args_pat)) {
@@ -1023,8 +1007,11 @@ function real_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
     return evaluate(env, f_code)
 }
 
-function real_builtin_func_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
-    const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))))
+function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
+
+    const error_v = new_error(system_symbol,
+        new_list(function_builtin_use_systemName,
+            new_list(f, jsArray_to_list(xs))))
     for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
@@ -1038,10 +1025,13 @@ function real_builtin_func_apply(f: LangVal, xs: Array < LangVal > ): LangVal {
     return error_v
 }
 
-function real_builtin_form_apply(env, f: LangVal, xs: Array < LangVal > ): LangVal {
+function real_builtin_form_apply(env, f: LangVal, xs: Array<LangVal>): LangVal {
     // Env, LangVal, JSList NotEvaledLangVal -> LangVal
-    const error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs))))
-    // WIP delay未正確處理(影響較小)
+
+    const error_v = new_error(system_symbol,
+        new_list(form_builtin_use_systemName,
+            new_list(env2val(env), f, jsArray_to_list(xs)))) // WIP delay未正確處理(影響較小)
+
     if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {
             return error_v
@@ -1056,23 +1046,29 @@ function real_builtin_form_apply(env, f: LangVal, xs: Array < LangVal > ): LangV
     return error_v
 }
 
-function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal | null = null): LangVal {
+function new_lambda(
+    env: Env,
+    args_pat: LangVal,
+    body: LangVal,
+    error_v: LangVal | null = null): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
     function make_error_v(): LangVal {
         if (error_v === null) {
-            return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), lambda_form_builtin_systemName, jsArray_to_list([args_pat, body]))))
+            return new_error(system_symbol,
+                new_list(form_builtin_use_systemName,
+                    new_list(
+                        env2val(env),
+                        lambda_form_builtin_systemName,
+                        jsArray_to_list([args_pat, body]))))
         } else {
             return error_v
         }
     }
-
     function make_quote(x) {
         return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
     }
-
     args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
-
-    let args_pat_vars: Array < LangVal >= [] // : JSList LangVal/Name 順序有要求
+    let args_pat_vars: Array<LangVal> = [] // : JSList LangVal/Name 順序有要求
     let args_pat_is_dot: boolean = false
     let args_pat_iter: LangVal = args_pat
     while (!null_p(args_pat_iter)) {
@@ -1091,27 +1087,24 @@ function new_lambda(env: Env, args_pat: LangVal, body: LangVal, error_v: LangVal
     if (args_pat_is_dot) {
         args_pat_vars_val = jsArray_to_list(args_pat_vars)
     }
-
-    let env_vars: Array < LangVal >= [] // : JSList LangVal/Name
+    let env_vars: Array<LangVal> = [] // : JSList LangVal/Name
     env_foreach(env, function(k, v) {
         for (let i = 0; i < args_pat_vars.length; i++) {
-            if (jsbool_equal_p(args_pat_vars[i], k)) { // WIP delay未正確處理(影響較小)
+            if (jsbool_equal_p(args_pat_vars[i], k)) {
+                // WIP delay未正確處理(影響較小)
                 return
             }
         }
         env_vars.push(k)
     })
-
     let new_args_pat = args_pat_vars_val // : LangVal
     for (let i = env_vars.length - 1; i >= 0; i--) {
         new_args_pat = new_construction(env_vars[i], new_args_pat)
     }
-
     let new_args = args_pat_vars_val // : LangVal
     for (let i = env_vars.length - 1; i >= 0; i--) {
         new_args = new_construction(make_quote(must_env_get(env, env_vars[i])), new_args)
     }
-
     return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
 }
 
@@ -1129,7 +1122,6 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x_type !== y_type) {
         return false
     }
-
     function end_2(f1, f2) {
         if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
@@ -1155,9 +1147,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     }
     return ERROR()
 }
-export {
-    jsbool_equal_p as equal_p
-}
+export { jsbool_equal_p as equal_p }
 
 function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
@@ -1173,7 +1163,6 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x_type !== y_type) {
         return false
     }
-
     function end_2(f1, f2) {
         if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
@@ -1195,7 +1184,6 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
             return end_2(error_name, error_list)
         case data_t:
             return end_2(data_name, data_list)
-
         case delay_eval_t:
             return false //WIP
         case delay_builtin_func_t:
@@ -1249,17 +1237,14 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
                 return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
             default:
         }
-        return ERROR()
-        // 大量重複代碼 print <-> complex_print ]]]
+        return ERROR() // 大量重複代碼 print <-> complex_print ]]]
     }
     return print
 }
+
 const print = make_printer(un_just_all)
 const print_force_all_rec = make_printer(force_all)
-export {
-    print,
-    print_force_all_rec
-}
+export { print, print_force_all_rec }
 
 function read(x: string): LangVal {
     // [[[ 大量重複代碼 read <-> complex_parse
@@ -1267,23 +1252,18 @@ function read(x: string): LangVal {
     function eof() {
         return state.length === 0
     }
-
     function get() {
         return state.shift()
     }
-
     function put(x) {
         state.unshift(x)
     }
-
     function error(): never {
         throw "TheLanguage parse ERROR!"
     }
-
     function a_space_p(x) {
         return x === " " || x === "\n" || x === "\t" || x === "\r"
     }
-
     function space() {
         const p = a_space_p
         if (eof()) {
@@ -1302,7 +1282,6 @@ function read(x: string): LangVal {
         }
         return true
     }
-
     function symbol() {
         const p = a_symbol_p
         if (eof()) {
@@ -1325,7 +1304,6 @@ function read(x: string): LangVal {
         }
         return new_symbol(ret)
     }
-
     function list() {
         if (eof()) {
             return false
@@ -1337,7 +1315,6 @@ function read(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-
         function set_last(lst) {
             if (ret === HOLE) {
                 ret = lst
@@ -1362,7 +1339,6 @@ function read(x: string): LangVal {
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
-
         function last_add(x) {
             set_last(new_construction(x, HOLE))
         }
@@ -1401,7 +1377,6 @@ function read(x: string): LangVal {
             last_add(e)
         }
     }
-
     function data() {
         if (eof()) {
             return false
@@ -1420,7 +1395,6 @@ function read(x: string): LangVal {
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
-
     function readerror() {
         if (eof()) {
             return false
@@ -1439,9 +1413,8 @@ function read(x: string): LangVal {
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
-
     function make_read_two(prefix, k) {
-        return function() {
+        return () => {
             if (eof()) {
                 return false
             }
@@ -1464,9 +1437,8 @@ function read(x: string): LangVal {
             return k(construction_head(xs), construction_head(x))
         }
     }
-
     function make_read_three(prefix, k) {
-        return function() {
+        return () => {
             if (eof()) {
                 return false
             }
@@ -1493,18 +1465,18 @@ function read(x: string): LangVal {
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
     }
-    const readeval = make_read_two("$", function(e, x) {
+    const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
             error()
         }
         return evaluate(env, x)
     })
-    const readfuncapply = make_read_two("%", function(f, xs) {
+    const readfuncapply = make_read_two("%", (f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return builtin_func_apply(f, jsxs)
     })
-    const readformbuiltin = make_read_three("@", function(e, f, xs) {
+    const readformbuiltin = make_read_three("@", (e, f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         const env = val2env(e)
         if (env === false) {
@@ -1512,16 +1484,17 @@ function read(x: string): LangVal {
         }
         return builtin_form_apply(env, f, jsxs)
     })
-    const readapply = make_read_two("^", function(f, xs) {
+    const readapply = make_read_two("^", (f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return apply(f, jsxs)
     })
-
     function a_symbol_p(x) {
         if (a_space_p(x)) {
             return false
         }
-        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', '/', '-', '>', '_', ':', '?', '[', ']', '&']
+        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@",
+            '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
+        ]
         for (let i = 0; i < not_xs.length; i++) {
             if (x == not_xs[i]) {
                 return false
@@ -1529,7 +1502,6 @@ function read(x: string): LangVal {
         }
         return true
     }
-
     function val() {
         space()
         const fs = [list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
@@ -1541,12 +1513,12 @@ function read(x: string): LangVal {
         }
         return error()
     }
-    return val()
-    // 大量重複代碼 read <-> complex_parse ]]]
+    return val() // 大量重複代碼 read <-> complex_parse ]]]
 }
 export {
     read
 }
+
 // 相對獨立的部分。parser/printer }}}
 
 // {{{ 相對獨立的部分。complex parser/complex printer
@@ -1556,23 +1528,18 @@ function complex_parse(x: string): LangVal {
     function eof() {
         return state.length === 0
     }
-
     function get() {
         return state.shift()
     }
-
     function put(x) {
         state.unshift(x)
     }
-
     function error(): never {
         throw "TheLanguage parse ERROR!"
     }
-
     function a_space_p(x) {
         return x === " " || x === "\n" || x === "\t" || x === "\r"
     }
-
     function space() {
         const p = a_space_p
         if (eof()) {
@@ -1591,7 +1558,6 @@ function complex_parse(x: string): LangVal {
         }
         return true
     }
-
     function symbol() {
         const p = a_symbol_p
         if (eof()) {
@@ -1614,7 +1580,6 @@ function complex_parse(x: string): LangVal {
         }
         return new_symbol(ret)
     }
-
     function list() {
         if (eof()) {
             return false
@@ -1626,7 +1591,6 @@ function complex_parse(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-
         function set_last(lst) {
             if (ret === HOLE) {
                 ret = lst
@@ -1651,7 +1615,6 @@ function complex_parse(x: string): LangVal {
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
-
         function last_add(x) {
             set_last(new_construction(x, HOLE))
         }
@@ -1690,7 +1653,6 @@ function complex_parse(x: string): LangVal {
             last_add(e)
         }
     }
-
     function data() {
         if (eof()) {
             return false
@@ -1709,7 +1671,6 @@ function complex_parse(x: string): LangVal {
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
-
     function readerror() {
         if (eof()) {
             return false
@@ -1728,9 +1689,8 @@ function complex_parse(x: string): LangVal {
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
-
     function make_read_two(prefix, k) {
-        return function() {
+        return () => {
             if (eof()) {
                 return false
             }
@@ -1753,9 +1713,8 @@ function complex_parse(x: string): LangVal {
             return k(construction_head(xs), construction_head(x))
         }
     }
-
     function make_read_three(prefix, k) {
-        return function() {
+        return () => {
             if (eof()) {
                 return false
             }
@@ -1782,18 +1741,18 @@ function complex_parse(x: string): LangVal {
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
     }
-    const readeval = make_read_two("$", function(e, x) {
+    const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
             error()
         }
         return evaluate(env, x)
     })
-    const readfuncapply = make_read_two("%", function(f, xs) {
+    const readfuncapply = make_read_two("%", (f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return builtin_func_apply(f, jsxs)
     })
-    const readformbuiltin = make_read_three("@", function(e, f, xs) {
+    const readformbuiltin = make_read_three("@", (e, f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         const env = val2env(e)
         if (env === false) {
@@ -1801,16 +1760,17 @@ function complex_parse(x: string): LangVal {
         }
         return builtin_form_apply(env, f, jsxs)
     })
-    const readapply = make_read_two("^", function(f, xs) {
+    const readapply = make_read_two("^", (f, xs) => {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return apply(f, jsxs)
     })
-
     function a_symbol_p(x) {
         if (a_space_p(x)) {
             return false
         }
-        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@", '~', '/', '-', '>', '_', ':', '?', '[', ']', '&']
+        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@",
+            '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
+        ]
         for (let i = 0; i < not_xs.length; i++) {
             if (x == not_xs[i]) {
                 return false
@@ -1818,7 +1778,6 @@ function complex_parse(x: string): LangVal {
         }
         return true
     }
-
     function val() {
         space()
         const fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
@@ -1830,85 +1789,80 @@ function complex_parse(x: string): LangVal {
         }
         return error()
     }
-    return val()
-
-    // 大量重複代碼 read <-> complex_parse ]]]
-
-    function un_maybe < T > (x: false | T): T {
+    return val() // 大量重複代碼 read <-> complex_parse ]]]
+    function un_maybe<T>(x: false | T): T {
         if (x === false) {
             return error()
         }
         return x
     }
-
     function not_eof() {
         return !eof()
     }
-
     function assert_get(c) {
         un_maybe(not_eof())
         un_maybe(get() === c)
     }
-
     function readsysname_no_pack() {
         if (eof()) {
             return false
         }
         const head = get()
         switch (head) {
-            case '&':
-                {
-                    un_maybe(not_eof())
-                    const c0 = get()
-                    if (c0 === ':') {
-                        assert_get('>')
-                        const x = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x)), theThing_symbol)
-                    } else if (c0 === '+') {
-                        const x = readsysname_no_pack_inner_must()
-                        return new_list(form_symbol, new_list(system_symbol, x))
-                    } else {
-                        put(c0)
-                    }
+            case '&': {
+                un_maybe(not_eof())
+                const c0 = get()
+                if (c0 === '+') {
                     const x = readsysname_no_pack_inner_must()
-                    return new_list(form_symbol, x)
+                    return new_list(form_symbol, new_list(system_symbol, x))
                 }
-            case ':':
-                {
-                    un_maybe(not_eof())
-                    const c0 = get()
-                    if (c0 === '>') {
-                        const x = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x), theThing_symbol)
-                    } else {
-                        put(c0)
-                    }
+                else {
+                    put(c0)
+                }
+                const x = readsysname_no_pack_inner_must()
+                return new_list(form_symbol, x)
+            } case ':': {
+                un_maybe(not_eof())
+                const c0 = get()
+                if (c0 === '&') {
+                    assert_get('>')
                     const x = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol, x, something_symbol)
+                    return new_list(typeAnnotation_symbol,
+                        new_list(form_symbol,
+                            new_list(function_symbol, something_symbol, x)),
+                        theThing_symbol)
                 }
-            case '+':
-                {
+                else if (c0 === '>') {
                     const x = readsysname_no_pack_inner_must()
-                    return new_list(system_symbol, x)
+                    return new_list(typeAnnotation_symbol,
+                        new_list(function_symbol, something_symbol, x),
+                        theThing_symbol)
+                } else {
+                    put(c0)
                 }
-            case '[':
-                {
-                    const x = readsysname_no_pack_inner_must()
-                    assert_get(']')
-                    return may_xfx_xf(x)
+                const x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, x, theThing_symbol)
+            } case '+': {
+                const x = readsysname_no_pack_inner_must()
+                return new_list(system_symbol, x)
+            } case '[': {
+                const x = readsysname_no_pack_inner_must()
+                assert_get(']')
+                return may_xfx_xf(x)
+            } case '_': {
+                assert_get(':')
+                const x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, x, something_symbol)
+            } default: {
+                put(head)
+                const x = symbol()
+                if (x === false) {
+                    return false
                 }
-            default:
-                {
-                    put(head)
-                    const x = symbol()
-                    if (x === false) {
-                        return false
-                    }
-                    return may_xfx_xf(x)
-                }
+                return may_xfx_xf(x)
+            }
         }
         return ERROR()
-
         function readsysname_no_pack_inner_must(strict = false) {
             function readsysname_no_pack_bracket() {
                 assert_get('[')
@@ -1916,8 +1870,10 @@ function complex_parse(x: string): LangVal {
                 assert_get(']')
                 return x
             }
-            const fs =
-                strict ? [list, symbol, readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply, readformbuiltin, readapply] : [list, readsysname_no_pack, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
+            const fs = strict ? [list, symbol, readsysname_no_pack_bracket, data,
+                readerror, readeval, readfuncapply, readformbuiltin, readapply] :
+                [list, readsysname_no_pack, data,
+                    readerror, readeval, readfuncapply, readformbuiltin, readapply]
             for (let i = 0; i < fs.length; i++) {
                 const x = fs[i]()
                 if (x !== false) {
@@ -1926,64 +1882,48 @@ function complex_parse(x: string): LangVal {
             }
             return error()
         }
-
         function may_xfx_xf(x) {
             if (eof()) {
                 return x
             }
             const head = get()
             switch (head) {
-                case '.':
-                    {
-                        const y = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y)
-                    }
-                case ':':
-                    {
-                        const y = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, y, x)
-                    }
-                case '~':
-                    {
-                        return new_list(isOrNot_symbol, x)
-                    }
-                case '@':
-                    {
-                        const y = readsysname_no_pack_inner_must()
-                        return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
-                    }
-                case '?':
-                    {
-                        return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x))
-                    }
-                case '/':
-                    {
-                        let ys: Array < LangVal >= []
-                        while (true) {
-                            const y = readsysname_no_pack_inner_must(true)
-                            ys.push(y)
-                            if (eof()) {
-                                break
-                            }
-                            const c0 = get()
-                            if (c0 !== '/') {
-                                put(c0)
-                                break
-                            }
+                case '.': {
+                    const y = readsysname_no_pack_inner_must()
+                    return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y)
+                } case ':': {
+                    const y = readsysname_no_pack_inner_must()
+                    return new_list(typeAnnotation_symbol, y, x)
+                } case '~': {
+                    return new_list(isOrNot_symbol, x)
+                } case '@': {
+                    const y = readsysname_no_pack_inner_must()
+                    return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
+                } case '?': {
+                    return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x))
+                } case '/': {
+                    let ys: Array<LangVal> = []
+                    while (true) {
+                        const y = readsysname_no_pack_inner_must(true)
+                        ys.push(y)
+                        if (eof()) {
+                            break
+                        } const c0 = get()
+                        if (c0 !== '/') {
+                            put(c0)
+                            break
                         }
-                        return new_list(sub_symbol, x, jsArray_to_list(ys))
                     }
-                default:
-                    {
-                        put(head)
-                        return x
-                    }
+                    return new_list(sub_symbol, x, jsArray_to_list(ys))
+                } default: {
+                    put(head)
+                    return x
+                }
             }
             ERROR()
         }
         ERROR()
     }
-
     function readsysname() {
         const x = readsysname_no_pack()
         if (x === false) {
@@ -1995,10 +1935,7 @@ function complex_parse(x: string): LangVal {
         return systemName_make(x)
     }
 }
-export {
-    complex_parse
-}
-
+export { complex_parse }
 function complex_print(val: LangVal): string {
     function print_sys_name(x, where) {
         // 是 complex_print(systemName_make(x))
@@ -2007,7 +1944,6 @@ function complex_print(val: LangVal): string {
         if (symbol_p(x)) {
             return un_symbol(x)
         }
-
         function inner_bracket(x) {
             if (where === 'inner') {
                 return '[' + x + ']'
@@ -2026,15 +1962,15 @@ function complex_print(val: LangVal): string {
                 if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'))
-                } else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
+                }
+                else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(maybe_lst_2[1]), something_symbol), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'))
                 } else if (jsbool_no_force_equal_p(maybe_lst_2[1], something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], 'inner'))
                 }
-            }
-            const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2])
+            } const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2])
             if (jsbool_no_force_equal_p(maybe_xs[1], function_symbol) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_symbol)) {
                 // new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, maybe_lst_44[1]))
                 const maybe_lst_45 = maybe_list_to_jsArray(maybe_lst_44[1])
@@ -2045,11 +1981,15 @@ function complex_print(val: LangVal): string {
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1])
                 if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_symbol) && jsbool_no_force_equal_p(maybe_lst_88[1], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, maybe_lst_88[2])), theThing_symbol)
-                    return inner_bracket('&:>' + print_sys_name(maybe_lst_88[2], 'inner'))
+                    return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], 'inner'))
                 }
             }
-            return inner_bracket((jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '' : print_sys_name(maybe_xs[2], 'inner')) + ':' + print_sys_name(maybe_xs[1], 'inner'))
-        } else if (maybe_xs !== false && maybe_xs.length === 2) {
+            const hd = jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '_' :
+                jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) ? '' :
+                    print_sys_name(maybe_xs[2], 'inner')
+            return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], 'inner'))
+        }
+        else if (maybe_xs !== false && maybe_xs.length === 2) {
             if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {
                 // new_list(form_symbol, maybe_xs[1])
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1])
@@ -2127,16 +2067,12 @@ function complex_print(val: LangVal): string {
             return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
         default:
     }
-    return ERROR()
-    // 大量重複代碼 print <-> complex_print ]]]
+    return ERROR() // 大量重複代碼 print <-> complex_print ]]]
 }
-export {
-    complex_print
-}
+export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}
 
 // {{{ 相對獨立的部分。IO
-
 const return_inputOutput_systemName = complex_parse('效應/[:物]')
 const bind_inputOutput_systemName = complex_parse('效應/連')
 const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'))
@@ -2146,5 +2082,4 @@ export {
     ecmascript_systemName
 }
 //WIP
-
 // 相對獨立的部分。IO }}}
