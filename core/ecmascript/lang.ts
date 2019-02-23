@@ -482,8 +482,7 @@ function force_all(
                         if (ref_novalue_replace[1]) {
                             return force_all(builtin_func_apply(f, [inner]))
                         } else {
-                            ERROR() //我覺得沒有這種情況
-                            return replace_this_with_stopped()
+                            return ERROR() //我覺得沒有這種情況
                         }
                     }
                     if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
@@ -499,11 +498,10 @@ function force_all(
                         if (ref_novalue_replace[1]) {
                             return force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]))
                         } else {
-                            ERROR() //我覺得沒有這種情況
-                            return replace_this_with_stopped()
+                            return ERROR() //我覺得沒有這種情況
                         }
                     }
-                    ERROR() //我覺得沒有這種情況
+                    return ERROR() //我覺得沒有這種情況
                 case delay_builtin_form_t:
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 case delay_apply_t:

@@ -4,6 +4,7 @@
         "module": "commonjs",
         "target": "ES3"
         "strictNullChecks": true,
+        "noFallthroughCasesInSwitch":true
     }
 
     ,
