@@ -24,12 +24,6 @@ function ASSERT(x: boolean): void {
         ERROR()
     }
 }
-function DEBUG(x: string): void {
-    if (false) {
-        //[禁用]
-        console.log(x)
-    }
-}
 // 用export{}，不用export const .../export function...，否則生成的代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
 
 // {{{ 相對獨立的部分。內建數據結構
@@ -84,8 +78,8 @@ export type LangValRec = any // WIP
 function type_of(x: LangVal): LangValType {
     return x[0]
 }
-function make_one_p(t) {
-    return (x) => x[0] === t
+function make_one_p(t: LangValType) {
+    return (x: LangVal) => x[0] === t
 }
 const make_two_p = make_one_p
 const make_three_p = make_one_p
@@ -102,23 +96,23 @@ function make_new_three<T, A, B, C>(t: T): (x: A, y: B, z: C) => [T, A, B, C] {
         return [t, x, y, z]
     }
 }
-function make_get_one_a(t) {
-    return function(x) {
+function make_get_one_a(t: LangValType) {
+    return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[1]
     }
 }
 const make_get_two_a = make_get_one_a
 const make_get_three_a = make_get_one_a
-function make_get_two_b(t) {
-    return (x) => {
+function make_get_two_b(t: LangValType) {
+    return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[2]
     }
 }
 const make_get_three_b = make_get_two_b
-function make_get_three_c(t) {
-    return (x) => {
+function make_get_three_c(t: LangValType) {
+    return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[3]
     }
@@ -155,7 +149,7 @@ const error_name = make_get_two_a(error_t)
 const error_list = make_get_two_b(error_t)
 export { new_error, error_p, error_name, error_list }
 
-function lang_set_do(x, y) {
+function lang_set_do(x: LangVal, y: LangVal): void {
     // 只用于x与y等价的情况
     if (x === y) {
         return
@@ -425,11 +419,10 @@ export { any_delay_just_p as delay_p }
 
 function force_all(
     raw: LangVal,
-    parents_history = {}
+    parents_history: { [key: string]: true } = {}
     , ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
-    // *history : Map String True
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
-    let history = {}
+    let history: { [key: string]: true } = {}
     let x: LangVal = raw
     let xs: Array<LangVal> = []
     function replace_this_with_stopped() {
@@ -442,7 +435,7 @@ function force_all(
         return the_world_stopped_v
     }
     function make_history() {
-        let ret = {}
+        let ret: { [key: string]: true } = {}
         for (const x_id in history) {
             ret[x_id] = true
         }
@@ -528,8 +521,8 @@ function force_all(
 }
 
 function force1(raw: LangVal): LangVal {
-    const x = un_just_all(raw)
-    let ret
+    const x: LangVal = un_just_all(raw)
+    let ret: LangVal
     ASSERT(!just_p(x))
     if (delay_eval_p(x)) {
         ret = real_evaluate(delay_eval_env(x), delay_eval_x(x))
@@ -696,14 +689,12 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
                     rest = force1(construction_tail(rest))
                 } else {
-                    DEBUG("[ERROR/eval] not list")
                     return error_v
                 }
             }
             // WIP delay未正確處理(影響較小)
             if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
                 if (xs.length === 1) {
-                    DEBUG("[ERROR/eval] builtin_form/len=1")
                     return error_v
                 }
                 const f = xs[1]
@@ -714,13 +705,11 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                 return builtin_form_apply(env, f, args)
             } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
                 if (xs.length === 1) {
-                    DEBUG("[ERROR/eval] form/len=1")
                     return error_v
                 }
                 // WIP delay未正確處理(影響較小)
                 const f = force_all(evaluate(env, xs[1]))
                 if (!data_p(f)) {
-                    DEBUG("[ERROR/eval] form/not data{{{" + complex_print(f) + "}}}")
                     return error_v
                 }
                 const f_type = force1(data_name(f))
@@ -728,11 +717,9 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return evaluate(env, x)
                 }
                 if (!symbol_p(f_type)) {
-                    DEBUG("[ERROR/eval] form/not form/not symbol")
                     return error_v
                 }
                 if (!symbol_equal_p(f_type, form_symbol)) {
-                    DEBUG("[ERROR/eval] form/not form")
                     return error_v
                 }
                 const f_list = force1(data_list(f))
@@ -740,7 +727,6 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return evaluate(env, x)
                 }
                 if (!cons_p(f_list)) {
-                    DEBUG("[ERROR/eval] form/not form/0")
                     return error_v
                 }
                 const f_x = construction_head(f_list)
@@ -749,7 +735,6 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                     return evaluate(env, x)
                 }
                 if (!null_p(f_list_cdr)) {
-                    DEBUG("[ERROR/eval] form/not form/multi args")
                     return error_v
                 }
                 const args = [env2val(env)]
@@ -794,7 +779,7 @@ function name_p(x: LangVal): x is LangValName {
     const t = type_of(x)
     return t === symbol_t || t === data_t
 }
-function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc)
+function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
 
     return [p_sym,
@@ -811,7 +796,7 @@ function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc)
         }]
 }
 
-function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc, f_jsfunc)
+function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean, f_jsfunc: (x: LangVal) => LangVal)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
     return [f_sym,
         1,
@@ -851,7 +836,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
     make_builtin_get_func(construction_head_function_builtin_systemName, cons_p, construction_head),
     make_builtin_get_func(construction_tail_function_builtin_systemName, cons_p, construction_tail),
 
-    [equal_p_function_builtin_systemName, 2, (x, y, error_v) => {
+    [equal_p_function_builtin_systemName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => {
         if (x === y) {
             return true_v
         }
@@ -866,15 +851,15 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         if (type_of(x) !== type_of(y)) {
             return false_v
         }
-        function H_if(b, x, y) {
+        function H_if(b: LangVal, x: LangVal, y: LangVal): LangVal {
             // H = helper
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
         }
-        function H_and(x, y) {
+        function H_and(x: LangVal, y: LangVal): LangVal {
             return H_if(x, y, false_v)
         }
         ASSERT(!any_delay_just_p(x))
-        function end_2(f1, f2) {
+        function end_2(f1: (x: LangVal) => LangVal, f2: (x: LangVal) => LangVal): LangVal {
             return H_and(
                 builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
                 builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
@@ -883,7 +868,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             case null_t:
                 return true_v
             case symbol_t:
-                return symbol_equal_p(x, y) ? true_v : false_v
+                return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) ? true_v : false_v // type WIP
             case data_t:
                 return end_2(data_name, data_list)
             case cons_t:
@@ -895,7 +880,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         }
         return ERROR()
     }],
-    [apply_function_builtin_systemName, 2, (f, xs, error_v) => {
+    [apply_function_builtin_systemName, 2, (f: LangVal, xs: LangVal, error_v: LangVal) => {
         // WIP delay未正確處理(影響較小)
         let jslist: Array<LangVal> = []
         let iter: LangVal = force_all(xs)
@@ -908,7 +893,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         }
         return apply(f, jslist)
     }],
-    [evaluate_function_builtin_systemName, 2, (env, x, error_v) => {
+    [evaluate_function_builtin_systemName, 2, (env: LangVal, x: LangVal, error_v: LangVal) => {
         // WIP delay未正確處理(影響較小)
         const maybeenv = val2env(env)
         if (maybeenv === false) {
@@ -919,7 +904,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
 
     make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
 
-    [list_chooseOne_function_builtin_systemName, 1, (xs, error_v) => {
+    [list_chooseOne_function_builtin_systemName, 1, (xs: LangVal, error_v: LangVal) => {
         // 一般返回第一个，可以因为优化返回其他的任意一个
         // xs可以無限長，不判斷是否真的是list
         xs = force1(xs)
@@ -1032,9 +1017,7 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     return error_v
 }
 
-function real_builtin_form_apply(env, f: LangVal, xs: Array<LangVal>): LangVal {
-    // Env, LangVal, JSList NotEvaledLangVal -> LangVal
-
+function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>): LangVal {
     const error_v = new_error(system_symbol,
         new_list(form_builtin_use_systemName,
             new_list(env2val(env), f, jsArray_to_list(xs)))) // WIP delay未正確處理(影響較小)
@@ -1071,7 +1054,7 @@ function new_lambda(
             return error_v
         }
     }
-    function make_quote(x) {
+    function make_quote(x: LangVal): LangVal {
         return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
     }
     args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
@@ -1355,7 +1338,7 @@ function read(x: string): LangVal {
         while (true) {
             space()
             if (eof()) {
-                error()
+                return error()
             }
             x = get()
             if (x === ")") {
@@ -1366,23 +1349,23 @@ function read(x: string): LangVal {
                 space()
                 const e = val()
                 if (e === false) {
-                    error()
+                    return error()
                 }
                 set_last(e)
                 space()
                 if (eof()) {
-                    error()
+                    return error()
                 }
                 x = get()
                 if (x !== ")") {
-                    error()
+                    return error()
                 }
                 return ret
             }
             put(x)
             const e = val()
             if (e === false) {
-                error()
+                return error()
             }
             last_add(e)
         }
@@ -1398,10 +1381,10 @@ function read(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            error()
+            return error()
         }
         if (!cons_p(xs)) {
-            error()
+            return error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
@@ -1416,10 +1399,10 @@ function read(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            error()
+            return error()
         }
         if (!cons_p(xs)) {
-            error()
+            return error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
@@ -1428,21 +1411,21 @@ function read(x: string): LangVal {
             if (eof()) {
                 return false
             }
-            let x = get()
-            if (x !== prefix) {
-                put(x)
+            const c = get()
+            if (c !== prefix) {
+                put(c)
                 return false
             }
             const xs = list()
             if (xs === false) {
-                error()
+                return error()
             }
             if (!cons_p(xs)) {
-                error()
+                return error()
             }
-            x = construction_tail(xs)
+            const x = construction_tail(xs)
             if (!(cons_p(x) && null_p(construction_tail(x)))) {
-                error()
+                return error()
             }
             return k(construction_head(xs), construction_head(x))
         }
@@ -1452,25 +1435,25 @@ function read(x: string): LangVal {
             if (eof()) {
                 return false
             }
-            let x = get()
-            if (x !== prefix) {
-                put(x)
+            const c = get()
+            if (c !== prefix) {
+                put(c)
                 return false
             }
             const xs = list()
             if (xs === false) {
-                error()
+                return error()
             }
             if (!cons_p(xs)) {
-                error()
+                return error()
             }
-            x = construction_tail(xs)
+            const x = construction_tail(xs)
             if (!cons_p(x)) {
-                error()
+                return error()
             }
             const x_d = construction_tail(x)
             if (!(cons_p(x_d) && null_p(construction_tail(x_d)))) {
-                error()
+                return error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
@@ -1478,7 +1461,7 @@ function read(x: string): LangVal {
     const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
-            error()
+            return error()
         }
         return evaluate(env, x)
     })
@@ -1490,7 +1473,7 @@ function read(x: string): LangVal {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         const env = val2env(e)
         if (env === false) {
-            error()
+            return error()
         }
         return builtin_form_apply(env, f, jsxs)
     })
@@ -1631,7 +1614,7 @@ function complex_parse(x: string): LangVal {
         while (true) {
             space()
             if (eof()) {
-                error()
+                return error()
             }
             x = get()
             if (x === ")") {
@@ -1642,23 +1625,23 @@ function complex_parse(x: string): LangVal {
                 space()
                 const e = val()
                 if (e === false) {
-                    error()
+                    return error()
                 }
                 set_last(e)
                 space()
                 if (eof()) {
-                    error()
+                    return error()
                 }
                 x = get()
                 if (x !== ")") {
-                    error()
+                    return error()
                 }
                 return ret
             }
             put(x)
             const e = val()
             if (e === false) {
-                error()
+                return error()
             }
             last_add(e)
         }
@@ -1674,10 +1657,10 @@ function complex_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            error()
+            return error()
         }
         if (!cons_p(xs)) {
-            error()
+            return error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
@@ -1692,10 +1675,10 @@ function complex_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            error()
+            return error()
         }
         if (!cons_p(xs)) {
-            error()
+            return error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
@@ -1704,21 +1687,21 @@ function complex_parse(x: string): LangVal {
             if (eof()) {
                 return false
             }
-            let x = get()
-            if (x !== prefix) {
-                put(x)
+            const c = get()
+            if (c !== prefix) {
+                put(c)
                 return false
             }
             const xs = list()
             if (xs === false) {
-                error()
+                return error()
             }
             if (!cons_p(xs)) {
-                error()
+                return error()
             }
-            x = construction_tail(xs)
+            const x = construction_tail(xs)
             if (!(cons_p(x) && null_p(construction_tail(x)))) {
-                error()
+                return error()
             }
             return k(construction_head(xs), construction_head(x))
         }
@@ -1728,25 +1711,25 @@ function complex_parse(x: string): LangVal {
             if (eof()) {
                 return false
             }
-            let x = get()
-            if (x !== prefix) {
-                put(x)
+            const c = get()
+            if (c !== prefix) {
+                put(c)
                 return false
             }
             const xs = list()
             if (xs === false) {
-                error()
+                return error()
             }
             if (!cons_p(xs)) {
-                error()
+                return error()
             }
-            x = construction_tail(xs)
+            const x = construction_tail(xs)
             if (!cons_p(x)) {
-                error()
+                return error()
             }
             const x_d = construction_tail(x)
             if (!(cons_p(x_d) && null_p(construction_tail(x_d)))) {
-                error()
+                return error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
@@ -1754,7 +1737,7 @@ function complex_parse(x: string): LangVal {
     const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
-            error()
+            return error()
         }
         return evaluate(env, x)
     })
@@ -1766,7 +1749,7 @@ function complex_parse(x: string): LangVal {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         const env = val2env(e)
         if (env === false) {
-            error()
+            return error()
         }
         return builtin_form_apply(env, f, jsxs)
     })
@@ -1983,7 +1966,6 @@ function complex_print(val: LangVal): string {
             } const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2])
             if (jsbool_no_force_equal_p(maybe_xs[1], function_symbol) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_symbol)) {
                 // new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, maybe_lst_44[1]))
-                const maybe_lst_45 = maybe_list_to_jsArray(maybe_lst_44[1])
                 return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?')
             }
             if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) && jsbool_no_force_equal_p(maybe_lst_2[0], form_symbol)) {

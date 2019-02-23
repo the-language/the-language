@@ -1,12 +1,17 @@
 {
     "compilerOptions": {
+        "noImplicitUseStrict": true,
         "types": ["node"],
         "module": "commonjs",
-        "target": "ES3"
-        "strictNullChecks": true,
-        "noFallthroughCasesInSwitch":true
-    }
+        "target": "ES3",
 
-    ,
-    "files": ["lang.ts"]
+        // strict
+        //"strictNullChecks": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": true,
+        //"noImplicitAny": true,
+    },
+    "files": ["lang.ts"],
 }
