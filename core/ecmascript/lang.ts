@@ -196,7 +196,13 @@ function force_all_rec(x: LangVal): LangVal {
     x = force_all(x)
     switch (type_of(x)) {
         case data_t:
+            x[1] = force_all_rec(x[1])
+            x[2] = force_all_rec(x[2])
+            return x
         case error_t:
+            x[1] = force_all_rec(x[1])
+            x[2] = force_all_rec(x[2])
+            return x
         case cons_t:
             x[1] = force_all_rec(x[1])
             x[2] = force_all_rec(x[2])
@@ -204,6 +210,7 @@ function force_all_rec(x: LangVal): LangVal {
         default:
             return x
     }
+    return ERROR()
 }
 export { force_all_rec }
 // 相對獨立的部分。內建數據結構 }}}
@@ -507,9 +514,9 @@ function force_all(
                 case delay_apply_t:
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 default:
+    return ERROR()
             }
-
-            ERROR()
+    return ERROR()
         }
         history[x_id] = true
         xs.push(x)
@@ -643,16 +650,16 @@ function val2env(x: LangVal): false | Env {
         if (!null_p(force_all(construction_tail(x)))) {
             return false
         }
-        (function() {
+        block:{
             for (let i = 0; i < ret.length; i = i + 2) {
                 if (jsbool_equal_p(ret[i + 0], k)) {
                     ret[i + 1] = v
-                    return
+                    break block
                 }
             }
             ret.push(k)
             ret.push(v)
-        })()
+        }
     }
     return ret
 }
@@ -773,11 +780,13 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
         case null_t:
             return x
         case symbol_t: //name_p
+            return env_get(env, x, error_v)
         case data_t: //name_p
             return env_get(env, x, error_v)
         case error_t:
             return error_v
         default:
+    return ERROR()
     }
     return ERROR()
 }
@@ -883,6 +892,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             case error_t:
                 return end_2(error_name, error_list)
             default:
+    return ERROR()
         }
         return ERROR()
     }],
@@ -1142,6 +1152,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
         case data_t:
             return end_2(data_name, data_list)
         default:
+    return ERROR()
     }
     return ERROR()
 }
@@ -1191,6 +1202,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
         case delay_apply_t:
             return false //WIP
         default:
+    return ERROR()
     }
     return ERROR()
 }
@@ -1234,6 +1246,7 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
             case delay_apply_t:
                 return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
             default:
+    return ERROR()
         }
         return ERROR() // 大量重複代碼 print <-> complex_print ]]]
     }
@@ -2064,6 +2077,7 @@ function complex_print(val: LangVal): string {
         case delay_apply_t:
             return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
         default:
+    return ERROR()
     }
     return ERROR() // 大量重複代碼 print <-> complex_print ]]]
 }
