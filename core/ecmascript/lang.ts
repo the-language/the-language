@@ -76,7 +76,6 @@ export type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
 export type LangValFunctionJustDelay = LangValRec // WIP
 export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
 export type LangValRec = any // WIP
-
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
     interface t extends trec < null > {}
@@ -514,9 +513,9 @@ function force_all(
                 case delay_apply_t:
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 default:
-    return ERROR()
+                    return ERROR()
             }
-    return ERROR()
+            return ERROR()
         }
         history[x_id] = true
         xs.push(x)
@@ -650,7 +649,7 @@ function val2env(x: LangVal): false | Env {
         if (!null_p(force_all(construction_tail(x)))) {
             return false
         }
-        block:{
+        block: {
             for (let i = 0; i < ret.length; i = i + 2) {
                 if (jsbool_equal_p(ret[i + 0], k)) {
                     ret[i + 1] = v
@@ -786,7 +785,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
         case error_t:
             return error_v
         default:
-    return ERROR()
+            return ERROR()
     }
     return ERROR()
 }
@@ -892,7 +891,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             case error_t:
                 return end_2(error_name, error_list)
             default:
-    return ERROR()
+                return ERROR()
         }
         return ERROR()
     }],
@@ -1152,7 +1151,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
         case data_t:
             return end_2(data_name, data_list)
         default:
-    return ERROR()
+            return ERROR()
     }
     return ERROR()
 }
@@ -1202,7 +1201,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
         case delay_apply_t:
             return false //WIP
         default:
-    return ERROR()
+            return ERROR()
     }
     return ERROR()
 }
@@ -1246,7 +1245,7 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
             case delay_apply_t:
                 return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
             default:
-    return ERROR()
+                return ERROR()
         }
         return ERROR() // 大量重複代碼 print <-> complex_print ]]]
     }
@@ -2077,7 +2076,7 @@ function complex_print(val: LangVal): string {
         case delay_apply_t:
             return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
         default:
-    return ERROR()
+            return ERROR()
     }
     return ERROR() // 大量重複代碼 print <-> complex_print ]]]
 }
