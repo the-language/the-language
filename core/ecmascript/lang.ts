@@ -82,7 +82,7 @@ function make_one_p(t: LangValType) {
     return (x: LangVal) => x[0] === t
 }
 const make_two_p = make_one_p
-const make_three_p = make_one_p
+// const make_three_p = make_one_p // - error TS6133: 'make_three_p' is declared but its value is never read.
 function make_new_one<T, A>(t: T): (x: A) => [T, A] {
     return (x) => [t, x]
 }
@@ -111,12 +111,13 @@ function make_get_two_b(t: LangValType) {
     }
 }
 const make_get_three_b = make_get_two_b
+/* // - error TS6133: 'make_get_three_c' is declared but its value is never read.
 function make_get_three_c(t: LangValType) {
     return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[3]
     }
-}
+}*/
 
 const new_symbol: (x: string) => LangValSymbol = make_new_one<LangValType.symbol_t, string>(symbol_t)
 function symbol_p(x: LangVal): x is LangValSymbol {
@@ -169,10 +170,14 @@ const delay_eval_env = make_get_two_a(delay_eval_t) // Env
 const delay_eval_x = make_get_two_b(delay_eval_t)
 const builtin_form_apply: (x: any, y: LangVal, z: Array<LangValRec>) => LangValDelayBuiltinForm =
     make_new_three<LangValType.delay_builtin_form_t, any, LangVal, Array<LangValRec>>(delay_builtin_form_t) // type WIP
-const delay_builtin_form_p = make_three_p(delay_builtin_form_t)
+function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
+    return type_of(x) === delay_builtin_form_t
+}
 const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t) // Env
 const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
-const delay_builtin_form_xs = make_get_three_c(delay_builtin_form_t) // JSList LangVal
+function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangValRec> {
+    return x[3]
+}
 const builtin_func_apply: (x: LangVal, y: Array<LangValRec>) => LangValDelayBuiltinFunc =
     make_new_two<LangValType.delay_builtin_func_t, LangVal, Array<LangValRec>>(delay_builtin_func_t)
 const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
@@ -1224,7 +1229,11 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
             case delay_builtin_func_t:
                 return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
             case delay_builtin_form_t:
-                return "@(" + print(env2val(delay_builtin_form_env(x))) + " " + print(delay_builtin_form_f(x)) + " " + print(jsArray_to_list(delay_builtin_form_xs(x))) + ")"
+                return "@(" +
+                    print(env2val(delay_builtin_form_env(x))) +
+                    " " + print(delay_builtin_form_f(x)) +
+                    " " + print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
+                    ")"
             case delay_apply_t:
                 return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
             default:
@@ -2054,7 +2063,11 @@ function complex_print(val: LangVal): string {
         case delay_builtin_func_t:
             return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
         case delay_builtin_form_t:
-            return "@(" + complex_print(env2val(delay_builtin_form_env(x))) + " " + complex_print(delay_builtin_form_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x))) + ")"
+            return "@(" +
+                complex_print(env2val(delay_builtin_form_env(x))) +
+                " " + complex_print(delay_builtin_form_f(x)) +
+                " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
+                ")"
         case delay_apply_t:
             return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
         default:

@@ -6,7 +6,7 @@
         "target": "ES3",
 
         // strict
-        //"strictNullChecks": true,
+        "strictNullChecks": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
