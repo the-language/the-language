@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "types": ["node"],
-        "allowJs": true,
         "module": "commonjs",
         "target": "ES3"
         "strictNullChecks": true,
