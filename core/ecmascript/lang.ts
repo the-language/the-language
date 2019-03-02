@@ -30,7 +30,7 @@ function ASSERT(x: boolean): void {
 // 如果沒有const不能過google-closure-compiler -O ADVANCED
 export const enum LangValType {
     symbol_t,
-    cons_t,
+    construction_t,
     null_t,
     data_t,
     error_t,
@@ -41,7 +41,7 @@ export const enum LangValType {
     delay_apply_t,
 }
 const symbol_t = LangValType.symbol_t
-const cons_t = LangValType.cons_t
+const construction_t = LangValType.construction_t
 const null_t = LangValType.null_t
 const data_t = LangValType.data_t
 const error_t = LangValType.error_t
@@ -53,7 +53,7 @@ const delay_apply_t = LangValType.delay_apply_t
 export type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
 export type LangValJustDelayType = LangValType.just_t | LangValDelayType
 export type LangValSymbol = [LangValType.symbol_t, string]
-export type LangValCons = [LangValType.cons_t, LangValRec, LangValRec]
+export type LangValCons = [LangValType.construction_t, LangValRec, LangValRec]
 export type LangValNull = [LangValType.null_t]
 export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
@@ -111,13 +111,6 @@ function make_get_two_b(t: LangValType) {
     }
 }
 const make_get_three_b = make_get_two_b
-/* // - error TS6133: 'make_get_three_c' is declared but its value is never read.
-function make_get_three_c(t: LangValType) {
-    return (x: LangVal) => {
-        ASSERT(x[0] === t)
-        return x[3]
-    }
-}*/
 
 const new_symbol: (x: string) => LangValSymbol = make_new_one<LangValType.symbol_t, string>(symbol_t)
 function symbol_p(x: LangVal): x is LangValSymbol {
@@ -126,11 +119,11 @@ function symbol_p(x: LangVal): x is LangValSymbol {
 const un_symbol = make_get_one_a(symbol_t)
 export { new_symbol, symbol_p, un_symbol }
 
-const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two<LangValType.cons_t, LangVal, LangVal>(cons_t)
-const cons_p = make_two_p(cons_t)
-const construction_head = make_get_two_a(cons_t)
-const construction_tail = make_get_two_b(cons_t)
-export { new_construction, cons_p, construction_head, construction_tail }
+const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two<LangValType.construction_t, LangVal, LangVal>(construction_t)
+const construction_p = make_two_p(construction_t)
+const construction_head = make_get_two_a(construction_t)
+const construction_tail = make_get_two_b(construction_t)
+export { new_construction, construction_p, construction_head, construction_tail }
 
 const null_v: LangValNull = [null_t]
 function null_p(x: LangVal): x is LangValNull {
@@ -165,9 +158,9 @@ const un_just = make_get_one_a(just_t)
 const evaluate: (x: any, y: LangVal) => LangValDelayEval =
     make_new_two<LangValType.delay_eval_t, any, LangVal>(delay_eval_t) // type WIP
 export { evaluate }
-const delay_eval_p = make_two_p(delay_eval_t)
-const delay_eval_env = make_get_two_a(delay_eval_t) // Env
-const delay_eval_x = make_get_two_b(delay_eval_t)
+const delay_evaluate_p = make_two_p(delay_eval_t)
+const delay_evaluate_env = make_get_two_a(delay_eval_t) // Env
+const delay_evaluate_x = make_get_two_b(delay_eval_t)
 const builtin_form_apply: (x: any, y: LangVal, z: Array<LangValRec>) => LangValDelayBuiltinForm =
     make_new_three<LangValType.delay_builtin_form_t, any, LangVal, Array<LangValRec>>(delay_builtin_form_t) // type WIP
 function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
@@ -201,7 +194,7 @@ function force_all_rec(x: LangVal): LangVal {
             x[1] = force_all_rec(x[1])
             x[2] = force_all_rec(x[2])
             return x
-        case cons_t:
+        case construction_t:
             x[1] = force_all_rec(x[1])
             x[2] = force_all_rec(x[2])
             return x
@@ -380,7 +373,7 @@ function list_to_jsArray<T>(
     k_done: (p0: Array<LangVal>) => T,
     k_tail: (p0: Array<LangVal>, p1: LangVal) => T): T {
     let ret: Array<LangVal> = []
-    while (cons_p(xs)) {
+    while (construction_p(xs)) {
         ret.push(construction_head(xs))
         xs = construction_tail(xs)
     }
@@ -415,7 +408,7 @@ function un_just_all(raw: LangVal): LangVal {
 
 function any_delay_just_p(x: LangVal): x is LangValJustDelay {
     return just_p(x) ||
-        delay_eval_p(x) ||
+        delay_evaluate_p(x) ||
         delay_builtin_form_p(x) ||
         delay_builtin_func_p(x) ||
         delay_apply_p(x)
@@ -529,8 +522,8 @@ function force1(raw: LangVal): LangVal {
     const x: LangVal = un_just_all(raw)
     let ret: LangVal
     ASSERT(!just_p(x))
-    if (delay_eval_p(x)) {
-        ret = real_evaluate(delay_eval_env(x), delay_eval_x(x))
+    if (delay_evaluate_p(x)) {
+        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x))
     }
     else if (delay_builtin_form_p(x)) {
         ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x))
@@ -621,7 +614,7 @@ function val2env(x: LangVal): false | Env {
         return false
     }
     s = force_all(data_list(x))
-    if (!cons_p(s)) {
+    if (!construction_p(s)) {
         return false
     }
     if (!null_p(force_all(construction_tail(s)))) {
@@ -630,17 +623,17 @@ function val2env(x: LangVal): false | Env {
     let ret: Env = []
     let xs: LangVal = force_all(construction_head(s))
     while (!null_p(xs)) {
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return false
         }
         let x = force_all(construction_head(xs))
         xs = force_all(construction_tail(xs))
-        if (!cons_p(x)) {
+        if (!construction_p(x)) {
             return false
         }
         const k = construction_head(x)
         x = force_all(construction_tail(x))
-        if (!cons_p(x)) {
+        if (!construction_p(x)) {
             return false
         }
         const v = construction_head(x)
@@ -684,13 +677,13 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                 evaluate_function_builtin_systemName,
                 new_list(env2val(env), x))))
     switch (type_of(x)) {
-        case cons_t:
+        case construction_t:
             let xs: Array<LangVal> = []
             let rest: LangVal = x
             while (!null_p(rest)) {
                 if (any_delay_just_p(rest)) {
                     return evaluate(env, x)
-                } else if (cons_p(rest)) {
+                } else if (construction_p(rest)) {
                     xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
                     rest = force1(construction_tail(rest))
                 } else {
@@ -731,7 +724,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
                 if (any_delay_just_p(f_list)) {
                     return evaluate(env, x)
                 }
-                if (!cons_p(f_list)) {
+                if (!construction_p(f_list)) {
                     return error_v
                 }
                 const f_x = construction_head(f_list)
@@ -837,9 +830,9 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
 
     make_builtin_p_func(null_p_function_builtin_systemName, null_p),
     [new_construction_function_builtin_systemName, 2, new_construction],
-    make_builtin_p_func(construction_p_function_builtin_systemName, cons_p),
-    make_builtin_get_func(construction_head_function_builtin_systemName, cons_p, construction_head),
-    make_builtin_get_func(construction_tail_function_builtin_systemName, cons_p, construction_tail),
+    make_builtin_p_func(construction_p_function_builtin_systemName, construction_p),
+    make_builtin_get_func(construction_head_function_builtin_systemName, construction_p, construction_head),
+    make_builtin_get_func(construction_tail_function_builtin_systemName, construction_p, construction_tail),
 
     [equal_p_function_builtin_systemName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => {
         if (x === y) {
@@ -876,7 +869,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
                 return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) ? true_v : false_v // type WIP
             case data_t:
                 return end_2(data_name, data_list)
-            case cons_t:
+            case construction_t:
                 return end_2(construction_head, construction_tail)
             case error_t:
                 return end_2(error_name, error_list)
@@ -889,7 +882,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         // WIP delay未正確處理(影響較小)
         let jslist: Array<LangVal> = []
         let iter: LangVal = force_all(xs)
-        while (cons_p(iter)) {
+        while (construction_p(iter)) {
             jslist.push(construction_head(iter))
             iter = force_all(construction_tail(iter))
         }
@@ -916,7 +909,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         if (any_delay_just_p(xs)) {
             return builtin_func_apply(list_chooseOne_function_builtin_systemName, [xs])
         }
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return error_v
         }
         return construction_head(xs)
@@ -966,12 +959,12 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
         return make_error_v()
     }
     const f_list = force_all(data_list(f))
-    if (!cons_p(f_list)) {
+    if (!construction_p(f_list)) {
         return make_error_v()
     }
     let args_pat = force_all_rec(construction_head(f_list))
     const f_list_cdr = force_all(construction_tail(f_list))
-    if (!(cons_p(f_list_cdr) && null_p(force_all(construction_tail(f_list_cdr))))) {
+    if (!(construction_p(f_list_cdr) && null_p(force_all(construction_tail(f_list_cdr))))) {
         return make_error_v()
     }
     const f_code = construction_head(f_list_cdr)
@@ -986,7 +979,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
             env = env_set(env, args_pat, jsArray_to_list(xs))
             xs = []
             args_pat = null_v
-        } else if (cons_p(args_pat)) {
+        } else if (construction_p(args_pat)) {
             if (isNotEmpty(xs)) {
                 const x: LangVal = xs.shift()
                 env = env_set(env, construction_head(args_pat), x)
@@ -1082,7 +1075,7 @@ function new_lambda(
             args_pat_vars.push(args_pat_iter)
             args_pat_is_dot = true
             args_pat_iter = null_v
-        } else if (cons_p(args_pat_iter)) {
+        } else if (construction_p(args_pat_iter)) {
             args_pat_vars.push(construction_head(args_pat_iter))
             args_pat_iter = construction_tail(args_pat_iter)
         } else {
@@ -1143,7 +1136,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
             return true
         case symbol_t:
             return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) // type WIP
-        case cons_t:
+        case construction_t:
             return end_2(construction_head, construction_tail)
         case error_t:
             return end_2(error_name, error_list)
@@ -1185,7 +1178,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
             return true
         case symbol_t:
             return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) // type WIP
-        case cons_t:
+        case construction_t:
             return end_2(construction_head, construction_tail)
         case error_t:
             return end_2(error_name, error_list)
@@ -1215,10 +1208,10 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
         switch (type_of(x)) {
             case null_t:
                 return "()"
-            case cons_t:
+            case construction_t:
                 temp = "("
                 prefix = ""
-                while (cons_p(x)) {
+                while (construction_p(x)) {
                     temp += prefix + print(construction_head(x))
                     prefix = " "
                     x = forcer(construction_tail(x))
@@ -1236,7 +1229,7 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
             case symbol_t:
                 return un_symbol(x)
             case delay_eval_t:
-                return "$(" + print(env2val(delay_eval_env(x))) + " " + print(delay_eval_x(x)) + ")"
+                return "$(" + print(env2val(delay_evaluate_env(x))) + " " + print(delay_evaluate_x(x)) + ")"
             case delay_builtin_func_t:
                 return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
             case delay_builtin_form_t:
@@ -1333,7 +1326,7 @@ function read(x: string): LangVal {
             }
             let x = ret
             while (true) {
-                if (!cons_p(x)) {
+                if (!construction_p(x)) {
                     ERROR()
                 }
                 const d = construction_tail(x)
@@ -1342,7 +1335,7 @@ function read(x: string): LangVal {
                 }
                 x = construction_tail(x)
             }
-            if (!cons_p(x)) {
+            if (!construction_p(x)) {
                 ERROR()
             }
             if (x[2] !== HOLE) {
@@ -1395,7 +1388,7 @@ function read(x: string): LangVal {
         if (xs === false) {
             return error()
         }
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
@@ -1413,7 +1406,7 @@ function read(x: string): LangVal {
         if (xs === false) {
             return error()
         }
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
@@ -1432,11 +1425,11 @@ function read(x: string): LangVal {
             if (xs === false) {
                 return error()
             }
-            if (!cons_p(xs)) {
+            if (!construction_p(xs)) {
                 return error()
             }
             const x = construction_tail(xs)
-            if (!(cons_p(x) && null_p(construction_tail(x)))) {
+            if (!(construction_p(x) && null_p(construction_tail(x)))) {
                 return error()
             }
             return k(construction_head(xs), construction_head(x))
@@ -1456,15 +1449,15 @@ function read(x: string): LangVal {
             if (xs === false) {
                 return error()
             }
-            if (!cons_p(xs)) {
+            if (!construction_p(xs)) {
                 return error()
             }
             const x = construction_tail(xs)
-            if (!cons_p(x)) {
+            if (!construction_p(x)) {
                 return error()
             }
             const x_d = construction_tail(x)
-            if (!(cons_p(x_d) && null_p(construction_tail(x_d)))) {
+            if (!(construction_p(x_d) && null_p(construction_tail(x_d)))) {
                 return error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
@@ -1599,7 +1592,7 @@ function complex_parse(x: string): LangVal {
             }
             let x = ret
             while (true) {
-                if (!cons_p(x)) {
+                if (!construction_p(x)) {
                     ERROR()
                 }
                 const d = construction_tail(x)
@@ -1608,7 +1601,7 @@ function complex_parse(x: string): LangVal {
                 }
                 x = construction_tail(x)
             }
-            if (!cons_p(x)) {
+            if (!construction_p(x)) {
                 ERROR()
             }
             if (x[2] !== HOLE) {
@@ -1661,7 +1654,7 @@ function complex_parse(x: string): LangVal {
         if (xs === false) {
             return error()
         }
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
@@ -1679,7 +1672,7 @@ function complex_parse(x: string): LangVal {
         if (xs === false) {
             return error()
         }
-        if (!cons_p(xs)) {
+        if (!construction_p(xs)) {
             return error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
@@ -1698,11 +1691,11 @@ function complex_parse(x: string): LangVal {
             if (xs === false) {
                 return error()
             }
-            if (!cons_p(xs)) {
+            if (!construction_p(xs)) {
                 return error()
             }
             const x = construction_tail(xs)
-            if (!(cons_p(x) && null_p(construction_tail(x)))) {
+            if (!(construction_p(x) && null_p(construction_tail(x)))) {
                 return error()
             }
             return k(construction_head(xs), construction_head(x))
@@ -1722,15 +1715,15 @@ function complex_parse(x: string): LangVal {
             if (xs === false) {
                 return error()
             }
-            if (!cons_p(xs)) {
+            if (!construction_p(xs)) {
                 return error()
             }
             const x = construction_tail(xs)
-            if (!cons_p(x)) {
+            if (!construction_p(x)) {
                 return error()
             }
             const x_d = construction_tail(x)
-            if (!(cons_p(x_d) && null_p(construction_tail(x_d)))) {
+            if (!(construction_p(x_d) && null_p(construction_tail(x_d)))) {
                 return error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
@@ -1959,7 +1952,7 @@ function complex_print(val: LangVal): string {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'))
                 }
-                else if (cons_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
+                else if (construction_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(maybe_lst_2[1]), something_symbol), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'))
                 } else if (jsbool_no_force_equal_p(maybe_lst_2[1], something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
@@ -2025,10 +2018,10 @@ function complex_print(val: LangVal): string {
     switch (type_of(x)) {
         case null_t:
             return "()"
-        case cons_t:
+        case construction_t:
             temp = "("
             prefix = ""
-            while (cons_p(x)) {
+            while (construction_p(x)) {
                 temp += prefix + complex_print(construction_head(x))
                 prefix = " "
                 x = construction_tail(x)
@@ -2053,7 +2046,7 @@ function complex_print(val: LangVal): string {
         case symbol_t:
             return un_symbol(x)
         case delay_eval_t:
-            return "$(" + complex_print(env2val(delay_eval_env(x))) + " " + complex_print(delay_eval_x(x)) + ")"
+            return "$(" + complex_print(env2val(delay_evaluate_env(x))) + " " + complex_print(delay_evaluate_x(x)) + ")"
         case delay_builtin_func_t:
             return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
         case delay_builtin_form_t:
