@@ -177,12 +177,19 @@ const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
 const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
 const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
 
-const apply: (f: LangValFunctionJustDelay, xs: Array<LangValRec>) => LangValDelayApply =
-    make_new_two<LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>>(delay_apply_t)
+function apply(f: LangValFunctionJustDelay, xs: Array<LangVal>): LangValDelayApply {
+    return [delay_apply_t, f, xs]
+}
 export { apply }
-const delay_apply_p = make_two_p(delay_apply_t)
-const delay_apply_f = make_get_two_a(delay_apply_t)
-const delay_apply_xs = make_get_two_b(delay_apply_t) // JSList LangVal
+function delay_apply_p(x: LangVal): x is LangValDelayApply {
+    return x[0] === delay_apply_t
+}
+function delay_apply_f(x: LangValDelayApply): LangVal {
+    return x[1]
+}
+function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
+    return x[2]
+}
 function force_all_rec(x: LangVal): LangVal {
     x = force_all(x)
     switch (type_of(x)) {
