@@ -765,8 +765,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
 }
 
 function name_p(x: LangVal): x is LangValName {
-    const t = type_of(x)
-    return t === symbol_t || t === data_t
+    return symbol_p(x) || data_p(x)
 }
 function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
