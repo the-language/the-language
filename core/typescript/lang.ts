@@ -57,7 +57,7 @@ export type LangValCons = [LangValType.construction_t, LangValRec, LangValRec]
 export type LangValNull = [LangValType.null_t]
 export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
-export type LangValJust = [LangValType.just_t, LangValRec, null, null]
+export type LangValJust = [LangValType.just_t, LangValRec, undefined, undefined]
 export type LangValDelayEval = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
 export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
 export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
@@ -145,8 +145,8 @@ function lang_set_do(x: LangVal, y: LangVal): void {
     }
     x[0] = just_t
     x[1] = y
-    x[2] = null
-    x[3] = null
+    x[2] = undefined
+    x[3] = undefined
 }
 function just_p(x: LangVal): x is LangValJust {
     return x[0] === just_t
