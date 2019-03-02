@@ -673,99 +673,93 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
             new_list(
                 evaluate_function_builtin_systemName,
                 new_list(env2val(env), x))))
-    switch (type_of(x)) {
-        case construction_t:
-            let xs: Array<LangVal> = []
-            let rest: LangVal = x
-            while (!null_p(rest)) {
-                if (any_delay_just_p(rest)) {
-                    return evaluate(env, x)
-                } else if (construction_p(rest)) {
-                    xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
-                    rest = force1(construction_tail(rest))
-                } else {
-                    return error_v
-                }
+    if (construction_p(x)) {
+        let xs: Array<LangVal> = []
+        let rest: LangVal = x
+        while (!null_p(rest)) {
+            if (any_delay_just_p(rest)) {
+                return evaluate(env, x)
+            } else if (construction_p(rest)) {
+                xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
+                rest = force1(construction_tail(rest))
+            } else {
+                return error_v
+            }
+        }
+        // WIP delay未正確處理(影響較小)
+        if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
+            if (xs.length === 1) {
+                return error_v
+            }
+            const f = xs[1]
+            let args: Array<LangVal> = []
+            for (let i = 2; i < xs.length; i++) {
+                args[i - 2] = xs[i]
+            }
+            return builtin_form_apply(env, f, args)
+        } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
+            if (xs.length === 1) {
+                return error_v
             }
             // WIP delay未正確處理(影響較小)
-            if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
-                if (xs.length === 1) {
-                    return error_v
-                }
-                const f = xs[1]
-                let args: Array<LangVal> = []
-                for (let i = 2; i < xs.length; i++) {
-                    args[i - 2] = xs[i]
-                }
-                return builtin_form_apply(env, f, args)
-            } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
-                if (xs.length === 1) {
-                    return error_v
-                }
-                // WIP delay未正確處理(影響較小)
-                const f = force_all(evaluate(env, xs[1]))
-                if (!data_p(f)) {
-                    return error_v
-                }
-                const f_type = force1(data_name(f))
-                if (any_delay_just_p(f_type)) {
-                    return evaluate(env, x)
-                }
-                if (!symbol_p(f_type)) {
-                    return error_v
-                }
-                if (!symbol_equal_p(f_type, form_symbol)) {
-                    return error_v
-                }
-                const f_list = force1(data_list(f))
-                if (any_delay_just_p(f_list)) {
-                    return evaluate(env, x)
-                }
-                if (!construction_p(f_list)) {
-                    return error_v
-                }
-                const f_x = construction_head(f_list)
-                const f_list_cdr = force1(construction_tail(f_list))
-                if (any_delay_just_p(f_list_cdr)) {
-                    return evaluate(env, x)
-                }
-                if (!null_p(f_list_cdr)) {
-                    return error_v
-                }
-                const args = [env2val(env)]
-                for (let i = 2; i < xs.length; i++) {
-                    args[i - 1] = xs[i]
-                }
-                return apply(f_x, args)
-            } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
-                if (xs.length === 1) {
-                    return error_v
-                }
-                const f = xs[1]
-                let args: Array<LangVal> = []
-                for (let i = 2; i < xs.length; i++) {
-                    args[i - 2] = evaluate(env, xs[i])
-                }
-                return builtin_func_apply(f, args)
-            } else {
-                const f = evaluate(env, xs[0])
-                let args: Array<LangVal> = []
-                for (let i = 1; i < xs.length; i++) {
-                    args[i - 1] = evaluate(env, xs[i])
-                }
-                return apply(f, args)
+            const f = force_all(evaluate(env, xs[1]))
+            if (!data_p(f)) {
+                return error_v
             }
-            break
-        case null_t:
-            return x
-        case symbol_t: //name_p
-            return env_get(env, x, error_v)
-        case data_t: //name_p
-            return env_get(env, x, error_v)
-        case error_t:
-            return error_v
-        default:
-            return ERROR()
+            const f_type = force1(data_name(f))
+            if (any_delay_just_p(f_type)) {
+                return evaluate(env, x)
+            }
+            if (!symbol_p(f_type)) {
+                return error_v
+            }
+            if (!symbol_equal_p(f_type, form_symbol)) {
+                return error_v
+            }
+            const f_list = force1(data_list(f))
+            if (any_delay_just_p(f_list)) {
+                return evaluate(env, x)
+            }
+            if (!construction_p(f_list)) {
+                return error_v
+            }
+            const f_x = construction_head(f_list)
+            const f_list_cdr = force1(construction_tail(f_list))
+            if (any_delay_just_p(f_list_cdr)) {
+                return evaluate(env, x)
+            }
+            if (!null_p(f_list_cdr)) {
+                return error_v
+            }
+            const args = [env2val(env)]
+            for (let i = 2; i < xs.length; i++) {
+                args[i - 1] = xs[i]
+            }
+            return apply(f_x, args)
+        } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
+            if (xs.length === 1) {
+                return error_v
+            }
+            const f = xs[1]
+            let args: Array<LangVal> = []
+            for (let i = 2; i < xs.length; i++) {
+                args[i - 2] = evaluate(env, xs[i])
+            }
+            return builtin_func_apply(f, args)
+        } else {
+            const f = evaluate(env, xs[0])
+            let args: Array<LangVal> = []
+            for (let i = 1; i < xs.length; i++) {
+                args[i - 1] = evaluate(env, xs[i])
+            }
+            return apply(f, args)
+        }
+    } else if (null_p(x)) {
+        return x
+    } else if (name_p(x)) {
+        return env_get(env, x, error_v)
+    } else if (error_p(x)) {
+        return error_v
     }
     return ERROR()
 }
