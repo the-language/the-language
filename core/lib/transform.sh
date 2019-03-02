@@ -33,4 +33,4 @@ for(const file of fs.readdirSync('.')) {
 }
 EOF
 )
-NODE_PATH=~/.config/yarn/global/node_modules/ npx node -e "$prog"
+node -e "$prog"
