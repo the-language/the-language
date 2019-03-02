@@ -78,21 +78,16 @@ export type LangValRec = any // WIP
 function type_of(x: LangVal): LangValType {
     return x[0]
 }
-function make_new_one<T, A>(t: T): (x: A) => [T, A] {
-    return (x) => [t, x]
-}
-function make_get_one_a(t: LangValType) {
-    return (x: LangVal) => {
-        ASSERT(x[0] === t)
-        return x[1]
-    }
-}
 
-const new_symbol: (x: string) => LangValSymbol = make_new_one<LangValType.symbol_t, string>(symbol_t)
+function new_symbol(x: string): LangValSymbol {
+    return [symbol_t, x]
+}
 function symbol_p(x: LangVal): x is LangValSymbol {
     return type_of(x) === LangValType.symbol_t
 }
-const un_symbol = make_get_one_a(symbol_t)
+function un_symbol(x: LangValSymbol): string {
+    return x[1]
+}
 export { new_symbol, symbol_p, un_symbol }
 
 function new_construction(x: LangVal, y: LangVal): LangValCons {
