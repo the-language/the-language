@@ -1026,14 +1026,12 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
             }
             const f = real_builtin_func_apply_s[i][2]
             // type WIP
-            switch (actually_length) {
-                case 1:
-                    return (f as (x: LangVal, error_v: LangVal) => LangVal)(xs[0], error_v)
-                case 2:
-                    return (f as (x: LangVal, y: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], error_v)
-                case 3:
-                    return (f as (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], xs[2], error_v)
-                default:
+            if (actually_length === 1) {
+                return (f as (x: LangVal, error_v: LangVal) => LangVal)(xs[0], error_v)
+            } else if (actually_length === 2) {
+                return (f as (x: LangVal, y: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], error_v)
+            } else if (actually_length === 3) {
+                return (f as (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], xs[2], error_v)
             }
             return ERROR()
         }
@@ -1801,59 +1799,57 @@ function complex_parse(x: string): LangVal {
             return false
         }
         const head = get()
-        switch (head) {
-            case '&': {
-                un_maybe(not_eof())
-                const c0 = get()
-                if (c0 === '+') {
-                    const x = readsysname_no_pack_inner_must()
-                    return new_list(form_symbol, new_list(system_symbol, x))
-                }
-                else {
-                    put(c0)
-                }
+        if (head === '&') {
+            un_maybe(not_eof())
+            const c0 = get()
+            if (c0 === '+') {
                 const x = readsysname_no_pack_inner_must()
-                return new_list(form_symbol, x)
-            } case ':': {
-                un_maybe(not_eof())
-                const c0 = get()
-                if (c0 === '&') {
-                    assert_get('>')
-                    const x = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol,
-                        new_list(form_symbol,
-                            new_list(function_symbol, something_symbol, x)),
-                        theThing_symbol)
-                }
-                else if (c0 === '>') {
-                    const x = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol,
-                        new_list(function_symbol, something_symbol, x),
-                        theThing_symbol)
-                } else {
-                    put(c0)
-                }
-                const x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, x, theThing_symbol)
-            } case '+': {
-                const x = readsysname_no_pack_inner_must()
-                return new_list(system_symbol, x)
-            } case '[': {
-                const x = readsysname_no_pack_inner_must()
-                assert_get(']')
-                return may_xfx_xf(x)
-            } case '_': {
-                assert_get(':')
-                const x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, x, something_symbol)
-            } default: {
-                put(head)
-                const x = symbol()
-                if (x === false) {
-                    return false
-                }
-                return may_xfx_xf(x)
+                return new_list(form_symbol, new_list(system_symbol, x))
             }
+            else {
+                put(c0)
+            }
+            const x = readsysname_no_pack_inner_must()
+            return new_list(form_symbol, x)
+        } else if (head === ':') {
+            un_maybe(not_eof())
+            const c0 = get()
+            if (c0 === '&') {
+                assert_get('>')
+                const x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol,
+                    new_list(form_symbol,
+                        new_list(function_symbol, something_symbol, x)),
+                    theThing_symbol)
+            }
+            else if (c0 === '>') {
+                const x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol,
+                    new_list(function_symbol, something_symbol, x),
+                    theThing_symbol)
+            } else {
+                put(c0)
+            }
+            const x = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, x, theThing_symbol)
+        } else if (head === '+') {
+            const x = readsysname_no_pack_inner_must()
+            return new_list(system_symbol, x)
+        } else if (head === '[') {
+            const x = readsysname_no_pack_inner_must()
+            assert_get(']')
+            return may_xfx_xf(x)
+        } else if (head === '_') {
+            assert_get(':')
+            const x = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, x, something_symbol)
+        } else {
+            put(head)
+            const x = symbol()
+            if (x === false) {
+                return false
+            }
+            return may_xfx_xf(x)
         }
         return ERROR()
         function readsysname_no_pack_inner_must(strict = false): LangVal {
@@ -1881,38 +1877,36 @@ function complex_parse(x: string): LangVal {
                 return x
             }
             const head = get()
-            switch (head) {
-                case '.': {
-                    const y = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y)
-                } case ':': {
-                    const y = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol, y, x)
-                } case '~': {
-                    return new_list(isOrNot_symbol, x)
-                } case '@': {
-                    const y = readsysname_no_pack_inner_must()
-                    return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
-                } case '?': {
-                    return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x))
-                } case '/': {
-                    let ys: Array<LangVal> = []
-                    while (true) {
-                        const y = readsysname_no_pack_inner_must(true)
-                        ys.push(y)
-                        if (eof()) {
-                            break
-                        } const c0 = get()
-                        if (c0 !== '/') {
-                            put(c0)
-                            break
-                        }
+            if (head === '.') {
+                const y = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y)
+            } else if (head === ':') {
+                const y = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, y, x)
+            } else if (head === '~') {
+                return new_list(isOrNot_symbol, x)
+            } else if (head === '@') {
+                const y = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
+            } else if (head === '?') {
+                return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x))
+            } else if (head === '/') {
+                let ys: Array<LangVal> = []
+                while (true) {
+                    const y = readsysname_no_pack_inner_must(true)
+                    ys.push(y)
+                    if (eof()) {
+                        break
+                    } const c0 = get()
+                    if (c0 !== '/') {
+                        put(c0)
+                        break
                     }
-                    return new_list(sub_symbol, x, jsArray_to_list(ys))
-                } default: {
-                    put(head)
-                    return x
                 }
+                return new_list(sub_symbol, x, jsArray_to_list(ys))
+            } else {
+                put(head)
+                return x
             }
             return ERROR()
         }
