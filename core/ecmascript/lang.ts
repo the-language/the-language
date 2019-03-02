@@ -78,30 +78,13 @@ export type LangValRec = any // WIP
 function type_of(x: LangVal): LangValType {
     return x[0]
 }
-function make_one_p(t: LangValType) {
-    return (x: LangVal) => x[0] === t
-}
-const make_two_p = make_one_p
-// const make_three_p = make_one_p // - error TS6133: 'make_three_p' is declared but its value is never read.
 function make_new_one<T, A>(t: T): (x: A) => [T, A] {
     return (x) => [t, x]
-}
-function make_new_two<T, A, B>(t: T): (x: A, y: B) => [T, A, B] {
-    return function(x, y) {
-        return [t, x, y] // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
-    }
 }
 function make_get_one_a(t: LangValType) {
     return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[1]
-    }
-}
-const make_get_two_a = make_get_one_a
-function make_get_two_b(t: LangValType) {
-    return (x: LangVal) => {
-        ASSERT(x[0] === t)
-        return x[2]
     }
 }
 
@@ -112,10 +95,18 @@ function symbol_p(x: LangVal): x is LangValSymbol {
 const un_symbol = make_get_one_a(symbol_t)
 export { new_symbol, symbol_p, un_symbol }
 
-const new_construction: (x: LangVal, y: LangVal) => LangValCons = make_new_two<LangValType.construction_t, LangVal, LangVal>(construction_t)
-const construction_p = make_two_p(construction_t)
-const construction_head = make_get_two_a(construction_t)
-const construction_tail = make_get_two_b(construction_t)
+function new_construction(x: LangVal, y: LangVal): LangValCons {
+    return [construction_t, x, y]
+}
+function construction_p(x: LangVal): x is LangValCons {
+    return x[0] === construction_t
+}
+function construction_head(x: LangValCons): LangVal {
+    return x[1]
+}
+function construction_tail(x: LangValCons): LangVal {
+    return x[2]
+}
 export { new_construction, construction_p, construction_head, construction_tail }
 
 const null_v: LangValNull = [null_t]
@@ -124,16 +115,32 @@ function null_p(x: LangVal): x is LangValNull {
 }
 export { null_v, null_p }
 
-const new_data: (x: LangVal, y: LangVal) => LangValData = make_new_two<LangValType.data_t, LangVal, LangVal>(data_t)
-const data_p = make_two_p(data_t)
-const data_name = make_get_two_a(data_t)
-const data_list = make_get_two_b(data_t)
+function new_data(x: LangVal, y: LangVal): LangValData {
+    return [data_t, x, y]
+}
+function data_p(x: LangVal): x is LangValData {
+    return x[0] === data_t
+}
+function data_name(x: LangValData): LangVal {
+    return x[1]
+}
+function data_list(x: LangValData): LangVal {
+    return x[2]
+}
 export { new_data, data_p, data_name, data_list }
 
-const new_error: (x: LangVal, y: LangVal) => LangValError = make_new_two<LangValType.error_t, LangVal, LangVal>(error_t)
-const error_p = make_two_p(error_t)
-const error_name = make_get_two_a(error_t)
-const error_list = make_get_two_b(error_t)
+function new_error(x: LangVal, y: LangVal): LangValError {
+    return [error_t, x, y]
+}
+function error_p(x: LangVal): x is LangValError {
+    return x[0] === error_t
+}
+function error_name(x: LangValError): LangVal {
+    return x[1]
+}
+function error_list(x: LangValError): LangVal {
+    return x[2]
+}
 export { new_error, error_p, error_name, error_list }
 
 function lang_set_do(x: LangVal, y: LangVal): void {
@@ -806,7 +813,7 @@ function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => bo
         }]
 }
 
-function make_builtin_get_func<T extends LangVal>(f_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean, f_jsfunc: (x: LangVal) => LangVal)
+function make_builtin_get_func<T extends LangVal>(f_sym: LangValSysName, p_jsfunc: (x: LangVal) => x is T, f_jsfunc: (x: T) => LangVal)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
     return [f_sym,
         1,
@@ -1947,16 +1954,17 @@ function complex_print(val: LangVal): string {
             // new_list(typeAnnotation_symbol, maybe_xs[1], maybe_xs[2])
             const maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1])
             if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_symbol)) {
-                // new_list(typeAnnotation_symbol, new_list(function_symbol, maybe_lst_2[1], maybe_lst_2[2]), maybe_xs[2])
-                const maybe_lst_3 = maybe_list_to_jsArray(maybe_lst_2[1])
+                const var_2_1 = maybe_lst_2[1]
+                // new_list(typeAnnotation_symbol, new_list(function_symbol, var_2_1, maybe_lst_2[2]), maybe_xs[2])
+                const maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
                 if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'))
                 }
-                else if (construction_p(maybe_lst_2[1]) && jsbool_no_force_equal_p(construction_tail(maybe_lst_2[1]), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(maybe_lst_2[1]), something_symbol), something_symbol), maybe_xs[2])
-                    return inner_bracket(print_sys_name(construction_head(maybe_lst_2[1]), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'))
-                } else if (jsbool_no_force_equal_p(maybe_lst_2[1], something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
+                else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
+                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(var_2_1), something_symbol), something_symbol), maybe_xs[2])
+                    return inner_bracket(print_sys_name(construction_head(var_2_1), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'))
+                } else if (jsbool_no_force_equal_p(var_2_1, something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], 'inner'))
                 }
@@ -1966,7 +1974,7 @@ function complex_print(val: LangVal): string {
                 return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?')
             }
             if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) && jsbool_no_force_equal_p(maybe_lst_2[0], form_symbol)) {
-                // new_list(typeAnnotation_symbol, new_list(form_symbol, maybe_lst_2[1]), theThing_symbol)
+                // new_list(typeAnnotation_symbol, new_list(form_symbol, var_2_1), theThing_symbol)
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1])
                 if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_symbol) && jsbool_no_force_equal_p(maybe_lst_88[1], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, maybe_lst_88[2])), theThing_symbol)
