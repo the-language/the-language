@@ -1186,43 +1186,40 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
         x = forcer(x)
         let temp = ""
         let prefix = ""
-        switch (type_of(x)) {
-            case null_t:
-                return "()"
-            case construction_t:
-                temp = "("
-                prefix = ""
-                while (construction_p(x)) {
-                    temp += prefix + print(construction_head(x))
-                    prefix = " "
-                    x = forcer(construction_tail(x))
-                }
-                if (null_p(x)) {
-                    temp += ")"
-                } else {
-                    temp += " . " + print(x) + ")"
-                }
-                return temp
-            case data_t:
-                return "#" + print(new_construction(data_name(x), data_list(x)))
-            case error_t:
-                return "!" + print(new_construction(error_name(x), error_list(x)))
-            case symbol_t:
-                return un_symbol(x)
-            case delay_evaluate_t:
-                return "$(" + print(env2val(delay_evaluate_env(x))) + " " + print(delay_evaluate_x(x)) + ")"
-            case delay_builtin_func_t:
-                return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
-            case delay_builtin_form_t:
-                return "@(" +
-                    print(env2val(delay_builtin_form_env(x))) +
-                    " " + print(delay_builtin_form_f(x)) +
-                    " " + print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
-                    ")"
-            case delay_apply_t:
-                return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
-            default:
-                return ERROR()
+        if (null_p(x)) {
+            return "()"
+        } else if (construction_p(x)) {
+            temp = "("
+            prefix = ""
+            while (construction_p(x)) {
+                temp += prefix + print(construction_head(x))
+                prefix = " "
+                x = forcer(construction_tail(x))
+            }
+            if (null_p(x)) {
+                temp += ")"
+            } else {
+                temp += " . " + print(x) + ")"
+            }
+            return temp
+        } else if (data_p(x)) {
+            return "#" + print(new_construction(data_name(x), data_list(x)))
+        } else if (error_p(x)) {
+            return "!" + print(new_construction(error_name(x), error_list(x)))
+        } else if (symbol_p(x)) {
+            return un_symbol(x)
+        } else if (delay_evaluate_p(x)) {
+            return "$(" + print(env2val(delay_evaluate_env(x))) + " " + print(delay_evaluate_x(x)) + ")"
+        } else if (delay_builtin_func_p(x)) {
+            return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
+        } else if (delay_builtin_form_p(x)) {
+            return "@(" +
+                print(env2val(delay_builtin_form_env(x))) +
+                " " + print(delay_builtin_form_f(x)) +
+                " " + print(jsArray_to_list(delay_builtin_form_xs(x))) +
+                ")"
+        } else if (delay_apply_p(x)) {
+            return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
         }
         return ERROR() // 大量重複代碼 print <-> complex_print ]]]
     }
