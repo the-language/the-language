@@ -91,11 +91,6 @@ function make_new_two<T, A, B>(t: T): (x: A, y: B) => [T, A, B] {
         return [t, x, y] // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
     }
 }
-function make_new_three<T, A, B, C>(t: T): (x: A, y: B, z: C) => [T, A, B, C] {
-    return function(x, y, z) {
-        return [t, x, y, z]
-    }
-}
 function make_get_one_a(t: LangValType) {
     return (x: LangVal) => {
         ASSERT(x[0] === t)
@@ -103,14 +98,12 @@ function make_get_one_a(t: LangValType) {
     }
 }
 const make_get_two_a = make_get_one_a
-const make_get_three_a = make_get_one_a
 function make_get_two_b(t: LangValType) {
     return (x: LangVal) => {
         ASSERT(x[0] === t)
         return x[2]
     }
 }
-const make_get_three_b = make_get_two_b
 
 const new_symbol: (x: string) => LangValSymbol = make_new_one<LangValType.symbol_t, string>(symbol_t)
 function symbol_p(x: LangVal): x is LangValSymbol {
@@ -155,20 +148,32 @@ function lang_set_do(x: LangVal, y: LangVal): void {
 }
 const just_p = make_one_p(just_t)
 const un_just = make_get_one_a(just_t)
-const evaluate: (x: any, y: LangVal) => LangValDelayEval =
-    make_new_two<LangValType.delay_evaluate_t, any, LangVal>(delay_evaluate_t) // type WIP
-export { evaluate }
-const delay_evaluate_p = make_two_p(delay_evaluate_t)
-const delay_evaluate_env = make_get_two_a(delay_evaluate_t) // Env
-const delay_evaluate_x = make_get_two_b(delay_evaluate_t)
-const builtin_form_apply: (x: any, y: LangVal, z: Array<LangValRec>) => LangValDelayBuiltinForm =
-    make_new_three<LangValType.delay_builtin_form_t, any, LangVal, Array<LangValRec>>(delay_builtin_form_t) // type WIP
-function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
-    return type_of(x) === delay_builtin_form_t
+function evaluate(x: Env, y: LangVal): LangValDelayEval {
+    return [delay_evaluate_t, x, y]
 }
-const delay_builtin_form_env = make_get_three_a(delay_builtin_form_t) // Env
-const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
-function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangValRec> {
+export { evaluate }
+function delay_evaluate_p(x: LangVal): x is LangValDelayEval {
+    return x[0] === delay_evaluate_t
+}
+function delay_evaluate_env(x: LangValDelayEval): Env {
+    return x[1]
+}
+function delay_evaluate_x(x: LangValDelayEval): LangVal {
+    return x[2]
+}
+function builtin_form_apply(x: Env, y: LangVal, z: Array<LangVal>): LangValDelayBuiltinForm {
+    return [delay_builtin_form_t, x, y, z]
+}
+function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
+    return x[0] === delay_builtin_form_t
+}
+function delay_builtin_form_env(x: LangValDelayBuiltinForm): Env {
+    return x[1]
+}
+function delay_builtin_form_f(x: LangValDelayBuiltinForm): LangVal {
+    return x[2]
+}
+function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangVal> {
     return x[3]
 }
 function builtin_func_apply(x: LangVal, y: Array<LangVal>): LangValDelayBuiltinFunc {
