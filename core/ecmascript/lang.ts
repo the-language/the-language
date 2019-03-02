@@ -146,8 +146,12 @@ function lang_set_do(x: LangVal, y: LangVal): void {
     x[2] = null
     x[3] = null
 }
-const just_p = make_one_p(just_t)
-const un_just = make_get_one_a(just_t)
+function just_p(x: LangVal): x is LangValJust {
+    return x[0] === just_t
+}
+function un_just(x: LangValJust): LangVal {
+    return x[1]
+}
 function evaluate(x: Env, y: LangVal): LangValDelayEval {
     return [delay_evaluate_t, x, y]
 }
