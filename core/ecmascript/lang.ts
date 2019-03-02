@@ -171,11 +171,18 @@ const delay_builtin_form_f = make_get_three_b(delay_builtin_form_t)
 function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangValRec> {
     return x[3]
 }
-const builtin_func_apply: (x: LangVal, y: Array<LangValRec>) => LangValDelayBuiltinFunc =
-    make_new_two<LangValType.delay_builtin_func_t, LangVal, Array<LangValRec>>(delay_builtin_func_t)
-const delay_builtin_func_p = make_two_p(delay_builtin_func_t)
-const delay_builtin_func_f = make_get_two_a(delay_builtin_func_t) // LangVal/Name
-const delay_builtin_func_xs = make_get_two_b(delay_builtin_func_t) // JSList LangVal
+function builtin_func_apply(x: LangVal, y: Array<LangVal>): LangValDelayBuiltinFunc {
+    return [delay_builtin_func_t, x, y]
+}
+function delay_builtin_func_p(x: LangVal): x is LangValDelayBuiltinFunc {
+    return x[0] === delay_builtin_func_t
+}
+function delay_builtin_func_f(x: LangValDelayBuiltinFunc): LangVal {
+    return x[1]
+}
+function delay_builtin_func_xs(x: LangValDelayBuiltinFunc): Array<LangVal> {
+    return x[2]
+}
 
 function apply(f: LangValFunctionJustDelay, xs: Array<LangVal>): LangValDelayApply {
     return [delay_apply_t, f, xs]
