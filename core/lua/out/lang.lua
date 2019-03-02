@@ -1,9 +1,32 @@
-local TS = require(
-	game:GetService("ReplicatedStorage")
-		:WaitForChild("RobloxTS")
-		:WaitForChild("Include")
-		:WaitForChild("RuntimeLib")
-);
+/*
+--    The Language
+--    Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>
+
+--    This program is free software: you can redistribute it and/or modify
+--    it under the terms of the GNU Affero General Public License as published
+--    by the Free Software Foundation, either version 3 of the License, or
+--    (at your option) any later version.
+
+--    This program is distributed in the hope that it will be useful,
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--    GNU Affero General Public License for more details.
+
+--    You should have received a copy of the GNU Affero General Public License
+--    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+local TS = {}
+function TS.throw(value)
+  error("Uncaught " .. tostring(value), 2)
+end
+function TS.string_split(input, sep)
+	local result = {}
+	local count = 0
+	for str in input:gmatch(sep == "" and "." or "[^" .. sep .. "]+") do
+		count = count + 1
+		result[count] = str
+	end
+	return result
+end
 local _exports = {};
 local force_all_rec, new_list, force_all, force1, real_evaluate, name_p, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, jsbool_no_force_equal_p, simple_print, complex_print;
 local ERROR = function()
