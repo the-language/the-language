@@ -1012,11 +1012,22 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
-            if (xs.length != real_builtin_func_apply_s[i][1]) {
+            const actually_length = real_builtin_func_apply_s[i][1]
+            if (xs.length !== actually_length) {
                 return error_v
             }
-            xs.push(error_v)
-            return real_builtin_func_apply_s[i][2].apply(null, xs)
+            const f = real_builtin_func_apply_s[i][2]
+            // type WIP
+            switch (actually_length) {
+                case 1:
+                    return (f as (x: LangVal, error_v: LangVal) => LangVal)(xs[0], error_v)
+                case 2:
+                    return (f as (x: LangVal, y: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], error_v)
+                case 3:
+                    return (f as (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], xs[2], error_v)
+                default:
+            }
+            return ERROR()
         }
     }
     return error_v

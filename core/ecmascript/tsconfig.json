@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "noImplicitUseStrict": true,
         "types": ["node"],
         "module": "commonjs",
         "target": "ES3",
@@ -12,6 +11,7 @@
         "noUnusedLocals": true,
         "noImplicitThis": true,
         "noImplicitAny": true,
+        "strict": true,
     },
     "files": ["lang.ts"],
 }
