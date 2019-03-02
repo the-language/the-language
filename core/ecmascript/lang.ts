@@ -846,7 +846,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             return H_if(x, y, false_v)
         }
         ASSERT(!any_delay_just_p(x))
-        function end_2(f1: (x: LangVal) => LangVal, f2: (x: LangVal) => LangVal): LangVal {
+        function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): LangVal {
             return H_and(
                 builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
                 builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
@@ -857,13 +857,12 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             case symbol_t:
                 return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) ? true_v : false_v // type WIP
             case data_t:
-                return end_2(data_name, data_list)
+                return end_2(x as LangValData, y as LangValData, data_name, data_list) // type WIP
             case construction_t:
-                return end_2(construction_head, construction_tail)
+                return end_2(x as LangValCons, y as LangValCons, construction_head, construction_tail)
             case error_t:
-                return end_2(error_name, error_list)
+                return end_2(x as LangValError, y as LangValError, error_name, error_list) // type WIP
             default:
-                return ERROR()
         }
         return ERROR()
     }],
