@@ -208,25 +208,28 @@ function delay_apply_f(x: LangValDelayApply): LangVal {
 function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
     return x[2]
 }
-function force_all_rec(x: LangVal): LangVal {
-    x = force_all(x)
-    switch (x[0]) {
-        case data_t:
-            x[1] = force_all_rec(x[1])
-            x[2] = force_all_rec(x[2])
-            return x
-        case error_t:
-            x[1] = force_all_rec(x[1])
-            x[2] = force_all_rec(x[2])
-            return x
-        case construction_t:
-            x[1] = force_all_rec(x[1])
-            x[2] = force_all_rec(x[2])
-            return x
-        default:
-            return x
+function force_all_rec(raw: LangVal): LangVal {
+    const x = force_all(raw)
+    if (data_p(x)) {
+        const a: LangVal = x[1]
+        const d: LangVal = x[2]
+        x[1] = force_all_rec(a)
+        x[2] = force_all_rec(d)
+        return x
+    } else if (error_p(x)) {
+        const a: LangVal = x[1]
+        const d: LangVal = x[2]
+        x[1] = force_all_rec(a)
+        x[2] = force_all_rec(d)
+        return x
+    } else if (construction_p(x)) {
+        const a: LangVal = x[1]
+        const d: LangVal = x[2]
+        x[1] = force_all_rec(a)
+        x[2] = force_all_rec(d)
+        return x
     }
-    return ERROR()
+    return x
 }
 export { force_all_rec }
 // 相對獨立的部分。內建數據結構 }}}
@@ -662,13 +665,15 @@ function val2env(x: LangVal): false | Env {
         if (!null_p(force_all(construction_tail(x)))) {
             return false
         }
-        block: {
-            for (let i = 0; i < ret.length; i = i + 2) {
-                if (jsbool_equal_p(ret[i + 0], k)) {
-                    ret[i + 1] = v
-                    break block
-                }
+        let not_breaked: boolean = true
+        for (let i = 0; i < ret.length; i = i + 2) {
+            if (jsbool_equal_p(ret[i + 0], k)) {
+                ret[i + 1] = v
+                not_breaked = false
+                break
             }
+        }
+        if (not_breaked) {
             ret.push(k)
             ret.push(v)
         }
@@ -1061,10 +1066,10 @@ function new_lambda(
     env: Env,
     args_pat: LangVal,
     body: LangVal,
-    error_v: LangVal | null = null): LangVal {
+    error_v: LangVal | undefined = undefined): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
     function make_error_v(): LangVal {
-        if (error_v === null) {
+        if (error_v === undefined) {
             return new_error(system_symbol,
                 new_list(form_builtin_use_systemName,
                     new_list(
