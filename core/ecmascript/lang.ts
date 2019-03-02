@@ -1147,7 +1147,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x_type !== y_type) {
         return false
     }
-    function end_2(f1: (x: LangVal) => LangVal, f2: (x: LangVal) => LangVal) {
+    function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
         if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
             return true
@@ -1155,29 +1155,26 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
             return false
         }
     }
-    switch (x_type) {
-        case null_t:
-            lang_set_do(x, null_v)
-            lang_set_do(y, null_v)
-            return true
-        case symbol_t:
-            return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) // type WIP
-        case construction_t:
-            return end_2(construction_head, construction_tail)
-        case error_t:
-            return end_2(error_name, error_list)
-        case data_t:
-            return end_2(data_name, data_list)
-        case delay_evaluate_t:
-            return false //WIP
-        case delay_builtin_func_t:
-            return false //WIP
-        case delay_builtin_form_t:
-            return false //WIP
-        case delay_apply_t:
-            return false //WIP
-        default:
-            return ERROR()
+    if (null_p(x)) {
+        lang_set_do(x, null_v)
+        lang_set_do(y, null_v)
+        return true
+    } else if (symbol_p(x)) {
+        return symbol_equal_p(x, y as LangValSymbol) // type WIP
+    } else if (construction_p(x)) {
+        return end_2(x, y as LangValCons, construction_head, construction_tail) // type WIP
+    } else if (error_p(x)) {
+        return end_2(x, y as LangValError, error_name, error_list) // type WIP
+    } else if (data_p(x)) {
+        return end_2(x, y as LangValData, data_name, data_list) // type WIP
+    } else if (delay_evaluate_p(x)) {
+        return false //WIP
+    } else if (delay_builtin_func_p(x)) {
+        return false //WIP
+    } else if (delay_builtin_form_p(x)) {
+        return false //WIP
+    } else if (delay_apply_p(x)) {
+        return false //WIP
     }
     return ERROR()
 }
