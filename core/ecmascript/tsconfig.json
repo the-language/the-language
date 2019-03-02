@@ -11,7 +11,7 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noImplicitThis": true,
-        //"noImplicitAny": true,
+        "noImplicitAny": true,
     },
     "files": ["lang.ts"],
 }

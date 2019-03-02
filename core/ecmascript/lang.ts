@@ -1117,7 +1117,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x_type !== y_type) {
         return false
     }
-    function end_2(f1, f2) {
+    function end_2(f1: (x: LangVal) => LangVal, f2: (x: LangVal) => LangVal) {
         if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
             return true
@@ -1159,7 +1159,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x_type !== y_type) {
         return false
     }
-    function end_2(f1, f2) {
+    function end_2(f1: (x: LangVal) => LangVal, f2: (x: LangVal) => LangVal) {
         if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
             return true
@@ -1254,52 +1254,50 @@ function read(x: string): LangVal {
     function eof() {
         return state.length === 0
     }
-    function get() {
-        return state.shift()
+    function get(): string {
+        return state.shift() as string // type WIP
     }
-    function put(x) {
+    function put(x: string) {
         state.unshift(x)
     }
     function error(): never {
         throw "TheLanguage parse ERROR!"
     }
-    function a_space_p(x) {
+    function a_space_p(x: string): boolean {
         return x === " " || x === "\n" || x === "\t" || x === "\r"
     }
     function space() {
-        const p = a_space_p
         if (eof()) {
             return false
         }
-        let x = get()
-        if (!p(x)) {
+        let x: string = get()
+        if (!a_space_p(x)) {
             put(x)
             return false
         }
-        while (p(x) && !eof()) {
+        while (a_space_p(x) && !eof()) {
             x = get()
         }
-        if (!p(x)) {
+        if (!a_space_p(x)) {
             put(x)
         }
         return true
     }
     function symbol() {
-        const p = a_symbol_p
         if (eof()) {
             return false
         }
         let x = get()
         let ret = ""
-        if (!p(x)) {
+        if (!a_symbol_p(x)) {
             put(x)
             return false
         }
-        while (p(x) && !eof()) {
+        while (a_symbol_p(x) && !eof()) {
             ret += x
             x = get()
         }
-        if (p(x)) {
+        if (a_symbol_p(x)) {
             ret += x
         } else {
             put(x)
@@ -1317,7 +1315,7 @@ function read(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-        function set_last(lst) {
+        function set_last(lst: LangVal) {
             if (ret === HOLE) {
                 ret = lst
                 return
@@ -1341,7 +1339,7 @@ function read(x: string): LangVal {
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
-        function last_add(x) {
+        function last_add(x: LangVal) {
             set_last(new_construction(x, HOLE))
         }
         while (true) {
@@ -1356,10 +1354,7 @@ function read(x: string): LangVal {
             }
             if (x === ".") {
                 space()
-                const e = val()
-                if (e === false) {
-                    return error()
-                }
+                const e: LangVal = val()
                 set_last(e)
                 space()
                 if (eof()) {
@@ -1372,10 +1367,7 @@ function read(x: string): LangVal {
                 return ret
             }
             put(x)
-            const e = val()
-            if (e === false) {
-                return error()
-            }
+            const e: LangVal = val()
             last_add(e)
         }
     }
@@ -1415,7 +1407,7 @@ function read(x: string): LangVal {
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
-    function make_read_two(prefix, k) {
+    function make_read_two(prefix: string, k: (x: LangVal, y: LangVal) => LangVal): () => false | LangVal {
         return () => {
             if (eof()) {
                 return false
@@ -1439,7 +1431,7 @@ function read(x: string): LangVal {
             return k(construction_head(xs), construction_head(x))
         }
     }
-    function make_read_three(prefix, k) {
+    function make_read_three(prefix: string, k: (x: LangVal, y: LangVal, z: LangVal) => LangVal): () => false | LangVal {
         return () => {
             if (eof()) {
                 return false
@@ -1490,7 +1482,7 @@ function read(x: string): LangVal {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return apply(f, jsxs)
     })
-    function a_symbol_p(x) {
+    function a_symbol_p(x: string): boolean {
         if (a_space_p(x)) {
             return false
         }
@@ -1504,11 +1496,11 @@ function read(x: string): LangVal {
         }
         return true
     }
-    function val() {
+    function val(): LangVal {
         space()
-        const fs = [list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
+        const fs: Array<() => false | LangVal> = [list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
         for (let i = 0; i < fs.length; i++) {
-            const x = fs[i]()
+            const x: false | LangVal = fs[i]()
             if (x !== false) {
                 return x
             }
@@ -1517,9 +1509,7 @@ function read(x: string): LangVal {
     }
     return val() // 大量重複代碼 read <-> complex_parse ]]]
 }
-export {
-    read
-}
+export { read }
 
 // 相對獨立的部分。parser/printer }}}
 
@@ -1530,52 +1520,50 @@ function complex_parse(x: string): LangVal {
     function eof() {
         return state.length === 0
     }
-    function get() {
-        return state.shift()
+    function get(): string {
+        return state.shift() as string // type WIP
     }
-    function put(x) {
+    function put(x: string) {
         state.unshift(x)
     }
     function error(): never {
         throw "TheLanguage parse ERROR!"
     }
-    function a_space_p(x) {
+    function a_space_p(x: string): boolean {
         return x === " " || x === "\n" || x === "\t" || x === "\r"
     }
     function space() {
-        const p = a_space_p
         if (eof()) {
             return false
         }
-        let x = get()
-        if (!p(x)) {
+        let x: string = get()
+        if (!a_space_p(x)) {
             put(x)
             return false
         }
-        while (p(x) && !eof()) {
+        while (a_space_p(x) && !eof()) {
             x = get()
         }
-        if (!p(x)) {
+        if (!a_space_p(x)) {
             put(x)
         }
         return true
     }
     function symbol() {
-        const p = a_symbol_p
         if (eof()) {
             return false
         }
         let x = get()
         let ret = ""
-        if (!p(x)) {
+        if (!a_symbol_p(x)) {
             put(x)
             return false
         }
-        while (p(x) && !eof()) {
+        while (a_symbol_p(x) && !eof()) {
             ret += x
             x = get()
         }
-        if (p(x)) {
+        if (a_symbol_p(x)) {
             ret += x
         } else {
             put(x)
@@ -1593,7 +1581,7 @@ function complex_parse(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-        function set_last(lst) {
+        function set_last(lst: LangVal) {
             if (ret === HOLE) {
                 ret = lst
                 return
@@ -1617,7 +1605,7 @@ function complex_parse(x: string): LangVal {
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
-        function last_add(x) {
+        function last_add(x: LangVal) {
             set_last(new_construction(x, HOLE))
         }
         while (true) {
@@ -1632,10 +1620,7 @@ function complex_parse(x: string): LangVal {
             }
             if (x === ".") {
                 space()
-                const e = val()
-                if (e === false) {
-                    return error()
-                }
+                const e: LangVal = val()
                 set_last(e)
                 space()
                 if (eof()) {
@@ -1648,10 +1633,7 @@ function complex_parse(x: string): LangVal {
                 return ret
             }
             put(x)
-            const e = val()
-            if (e === false) {
-                return error()
-            }
+            const e: LangVal = val()
             last_add(e)
         }
     }
@@ -1691,7 +1673,7 @@ function complex_parse(x: string): LangVal {
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
-    function make_read_two(prefix, k) {
+    function make_read_two(prefix: string, k: (x: LangVal, y: LangVal) => LangVal): () => false | LangVal {
         return () => {
             if (eof()) {
                 return false
@@ -1715,7 +1697,7 @@ function complex_parse(x: string): LangVal {
             return k(construction_head(xs), construction_head(x))
         }
     }
-    function make_read_three(prefix, k) {
+    function make_read_three(prefix: string, k: (x: LangVal, y: LangVal, z: LangVal) => LangVal): () => false | LangVal {
         return () => {
             if (eof()) {
                 return false
@@ -1766,7 +1748,7 @@ function complex_parse(x: string): LangVal {
         const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
         return apply(f, jsxs)
     })
-    function a_symbol_p(x) {
+    function a_symbol_p(x: string): boolean {
         if (a_space_p(x)) {
             return false
         }
@@ -1780,11 +1762,11 @@ function complex_parse(x: string): LangVal {
         }
         return true
     }
-    function val() {
+    function val(): LangVal {
         space()
-        const fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
+        const fs: Array<() => false | LangVal> = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
         for (let i = 0; i < fs.length; i++) {
-            const x = fs[i]()
+            const x: false | LangVal = fs[i]()
             if (x !== false) {
                 return x
             }
@@ -1801,11 +1783,11 @@ function complex_parse(x: string): LangVal {
     function not_eof() {
         return !eof()
     }
-    function assert_get(c) {
+    function assert_get(c: string) {
         un_maybe(not_eof())
         un_maybe(get() === c)
     }
-    function readsysname_no_pack() {
+    function readsysname_no_pack(): false | LangVal {
         if (eof()) {
             return false
         }
@@ -1865,26 +1847,27 @@ function complex_parse(x: string): LangVal {
             }
         }
         return ERROR()
-        function readsysname_no_pack_inner_must(strict = false) {
+        function readsysname_no_pack_inner_must(strict = false): LangVal {
             function readsysname_no_pack_bracket() {
                 assert_get('[')
                 const x = readsysname_no_pack_inner_must()
                 assert_get(']')
                 return x
             }
-            const fs = strict ? [list, symbol, readsysname_no_pack_bracket, data,
+            // 重複自val()
+            const fs: Array<() => false | LangVal> = strict ? [list, symbol, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply] :
                 [list, readsysname_no_pack, data,
                     readerror, readeval, readfuncapply, readformbuiltin, readapply]
             for (let i = 0; i < fs.length; i++) {
-                const x = fs[i]()
+                const x: false | LangVal = fs[i]()
                 if (x !== false) {
                     return x
                 }
             }
             return error()
         }
-        function may_xfx_xf(x) {
+        function may_xfx_xf(x: LangVal): LangVal {
             if (eof()) {
                 return x
             }
@@ -1939,20 +1922,20 @@ function complex_parse(x: string): LangVal {
 }
 export { complex_parse }
 function complex_print(val: LangVal): string {
-    function print_sys_name(x, where) {
+    function print_sys_name(x: LangVal, where: 'inner' | 'top'): string {
         // 是 complex_print(systemName_make(x))
         // x : LangVal
         // inner : JSBoolean
         if (symbol_p(x)) {
             return un_symbol(x)
         }
-        function inner_bracket(x) {
+        function inner_bracket(x: string): string {
             if (where === 'inner') {
                 return '[' + x + ']'
             } else if (where === 'top') {
                 return x
             }
-            ERROR()
+            return ERROR()
         }
         const maybe_xs = maybe_list_to_jsArray(x)
         if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
@@ -1985,7 +1968,7 @@ function complex_print(val: LangVal): string {
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], 'inner'))
                 }
             }
-            const hd = jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '_' :
+            const hd: string = jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '_' :
                 jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) ? '' :
                     print_sys_name(maybe_xs[2], 'inner')
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], 'inner'))
@@ -2022,7 +2005,7 @@ function complex_print(val: LangVal): string {
         } else if (where === 'top') {
             return print(systemName_make(x))
         }
-        ERROR()
+        return ERROR()
     }
     // [[[ 大量重複代碼 print <-> complex_print
     let x = read(print(val)) // 去除所有just
