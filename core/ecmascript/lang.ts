@@ -449,62 +449,59 @@ function force_all(
         }
         if (history[x_id] === true) {
             ref_novalue_replace[0] = true // 減少替換範圍：(f <沒有值>) 的(f _)
-            switch (type_of(x)) {
-                case delay_evaluate_t:
-                    return replace_this_with_stopped() // 可能未減少應該減少的？
-                case delay_builtin_func_t:
-                    const f = delay_builtin_func_f(x) // LangVal/Name
-                    const xs = delay_builtin_func_xs(x) // JSList LangVal
-                    const elim_s = [data_name_function_builtin_systemName,
-                        data_list_function_builtin_systemName,
-                        data_p_function_builtin_systemName,
-                        error_name_function_builtin_systemName,
-                        error_list_function_builtin_systemName,
-                        error_p_function_builtin_systemName,
-                        construction_p_function_builtin_systemName,
-                        construction_head_function_builtin_systemName,
-                        construction_tail_function_builtin_systemName,
-                        symbol_p_function_builtin_systemName,
-                        null_p_function_builtin_systemName]
-                    let is_elim = false
-                    for (let i = 0; i < elim_s.length; i++) {
-                        if (jsbool_equal_p(elim_s[i], f)) {
-                            is_elim = true
-                        }
+            if (delay_evaluate_p(x)) {
+                return replace_this_with_stopped() // 可能未減少應該減少的？
+            } else if (delay_builtin_func_p(x)) {
+                const f = delay_builtin_func_f(x) // LangVal/Name
+                const xs = delay_builtin_func_xs(x) // JSList LangVal
+                const elim_s = [data_name_function_builtin_systemName,
+                    data_list_function_builtin_systemName,
+                    data_p_function_builtin_systemName,
+                    error_name_function_builtin_systemName,
+                    error_list_function_builtin_systemName,
+                    error_p_function_builtin_systemName,
+                    construction_p_function_builtin_systemName,
+                    construction_head_function_builtin_systemName,
+                    construction_tail_function_builtin_systemName,
+                    symbol_p_function_builtin_systemName,
+                    null_p_function_builtin_systemName]
+                let is_elim = false
+                for (let i = 0; i < elim_s.length; i++) {
+                    if (jsbool_equal_p(elim_s[i], f)) {
+                        is_elim = true
                     }
-                    if (is_elim) {
-                        ASSERT(xs.length === 1)
-                        ASSERT(ref_novalue_replace[1] === false)
-                        const inner = force_all(xs[0], make_history(), ref_novalue_replace)
-                        if (ref_novalue_replace[1]) {
-                            return force_all(builtin_func_apply(f, [inner]))
-                        } else {
-                            return ERROR() //我覺得沒有這種情況
-                        }
+                }
+                if (is_elim) {
+                    ASSERT(xs.length === 1)
+                    ASSERT(ref_novalue_replace[1] === false)
+                    const inner = force_all(xs[0], make_history(), ref_novalue_replace)
+                    if (ref_novalue_replace[1]) {
+                        return force_all(builtin_func_apply(f, [inner]))
+                    } else {
+                        return ERROR() //我覺得沒有這種情況
                     }
-                    if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
-                        return replace_this_with_stopped() //WIP
-                    } else if (jsbool_equal_p(f, apply_function_builtin_systemName)) {
-                        return replace_this_with_stopped() //WIP
-                    } else if (jsbool_equal_p(f, evaluate_function_builtin_systemName)) {
-                        return replace_this_with_stopped() //WIP
-                    } else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
-                        ASSERT(xs.length === 3)
-                        ASSERT(ref_novalue_replace[1] === false)
-                        const tf = force_all(xs[0], make_history(), ref_novalue_replace)
-                        if (ref_novalue_replace[1]) {
-                            return force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]))
-                        } else {
-                            return ERROR() //我覺得沒有這種情況
-                        }
+                }
+                if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
+                    return replace_this_with_stopped() //WIP
+                } else if (jsbool_equal_p(f, apply_function_builtin_systemName)) {
+                    return replace_this_with_stopped() //WIP
+                } else if (jsbool_equal_p(f, evaluate_function_builtin_systemName)) {
+                    return replace_this_with_stopped() //WIP
+                } else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
+                    ASSERT(xs.length === 3)
+                    ASSERT(ref_novalue_replace[1] === false)
+                    const tf = force_all(xs[0], make_history(), ref_novalue_replace)
+                    if (ref_novalue_replace[1]) {
+                        return force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]))
+                    } else {
+                        return ERROR() //我覺得沒有這種情況
                     }
-                    return ERROR() //我覺得沒有這種情況
-                case delay_builtin_form_t:
-                    return replace_this_with_stopped() // 可能未減少應該減少的？
-                case delay_apply_t:
-                    return replace_this_with_stopped() // 可能未減少應該減少的？
-                default:
-                    return ERROR()
+                }
+                return ERROR() //我覺得沒有這種情況
+            } else if (delay_builtin_form_p(x)) {
+                return replace_this_with_stopped() // 可能未減少應該減少的？
+            } else if (delay_apply_p(x)) {
+                return replace_this_with_stopped() // 可能未減少應該減少的？
             }
             return ERROR()
         }
