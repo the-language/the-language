@@ -91,7 +91,7 @@ function un_symbol(x: LangValSymbol): string {
 export { new_symbol, symbol_p, un_symbol }
 
 function new_construction(x: LangVal, y: LangVal): LangValCons {
-    return [construction_t, x, y]
+    return [construction_t, x, y] // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
 }
 function construction_p(x: LangVal): x is LangValCons {
     return x[0] === construction_t
@@ -471,7 +471,7 @@ function force_all(
         return ret
     }
     while (any_delay_just_p(x)) {
-        const x_id = print(x)
+        const x_id = simple_print(x)
         if (parents_history[x_id] === true) {
             return replace_this_with_stopped()
         }
@@ -1209,59 +1209,56 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     return ERROR()
 }
 
-// {{{ 相對獨立的部分。parser/printer
-function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
-    function print(x: LangVal): string {
-        // [[[ 大量重複代碼 print <-> complex_print
-        x = forcer(x)
-        let temp = ""
-        let prefix = ""
-        if (null_p(x)) {
-            return "()"
-        } else if (construction_p(x)) {
-            temp = "("
-            prefix = ""
-            while (construction_p(x)) {
-                temp += prefix + print(construction_head(x))
-                prefix = " "
-                x = forcer(construction_tail(x))
-            }
-            if (null_p(x)) {
-                temp += ")"
-            } else {
-                temp += " . " + print(x) + ")"
-            }
-            return temp
-        } else if (data_p(x)) {
-            return "#" + print(new_construction(data_name(x), data_list(x)))
-        } else if (error_p(x)) {
-            return "!" + print(new_construction(error_name(x), error_list(x)))
-        } else if (symbol_p(x)) {
-            return un_symbol(x)
-        } else if (delay_evaluate_p(x)) {
-            return "$(" + print(env2val(delay_evaluate_env(x))) + " " + print(delay_evaluate_x(x)) + ")"
-        } else if (delay_builtin_func_p(x)) {
-            return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
-        } else if (delay_builtin_form_p(x)) {
-            return "@(" +
-                print(env2val(delay_builtin_form_env(x))) +
-                " " + print(delay_builtin_form_f(x)) +
-                " " + print(jsArray_to_list(delay_builtin_form_xs(x))) +
-                ")"
-        } else if (delay_apply_p(x)) {
-            return "^(" + print(delay_apply_f(x)) + " " + print(jsArray_to_list(delay_apply_xs(x))) + ")"
+// {{{ 相對獨立的部分。simple parser/printer
+function simple_print(x: LangVal): string {
+    // [[[ 大量重複代碼 simple_print <-> complex_print
+    x = un_just_all(x)
+    let temp = ""
+    let prefix = ""
+    if (null_p(x)) {
+        return "()"
+    } else if (construction_p(x)) {
+        temp = "("
+        prefix = ""
+        while (construction_p(x)) {
+            temp += prefix + simple_print(construction_head(x))
+            prefix = " "
+            x = un_just_all(construction_tail(x))
         }
-        return ERROR() // 大量重複代碼 print <-> complex_print ]]]
+        if (null_p(x)) {
+            temp += ")"
+        } else {
+            temp += " . " + simple_print(x) + ")"
+        }
+        return temp
+    } else if (data_p(x)) {
+        return "#" + simple_print(new_construction(data_name(x), data_list(x)))
+    } else if (error_p(x)) {
+        return "!" + simple_print(new_construction(error_name(x), error_list(x)))
+    } else if (symbol_p(x)) {
+        return un_symbol(x)
+    } else if (delay_evaluate_p(x)) {
+        return "$(" + simple_print(env2val(delay_evaluate_env(x))) + " " + simple_print(delay_evaluate_x(x)) + ")"
+    } else if (delay_builtin_func_p(x)) {
+        return "%(" + simple_print(delay_builtin_func_f(x)) + " " + simple_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
+    } else if (delay_builtin_form_p(x)) {
+        return "@(" +
+            simple_print(env2val(delay_builtin_form_env(x))) +
+            " " + simple_print(delay_builtin_form_f(x)) +
+            " " + simple_print(jsArray_to_list(delay_builtin_form_xs(x))) +
+            ")"
+    } else if (delay_apply_p(x)) {
+        return "^(" + simple_print(delay_apply_f(x)) + " " + simple_print(jsArray_to_list(delay_apply_xs(x))) + ")"
     }
-    return print
+    return ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
+function simple_print_force_all_rec(x: LangVal): string {
+    return simple_print(force_all_rec(x))
+}
+export { simple_print, simple_print_force_all_rec }
 
-const print = make_printer(un_just_all)
-const print_force_all_rec = make_printer(force_all)
-export { print, print_force_all_rec }
-
-function read(x: string): LangVal {
-    // [[[ 大量重複代碼 read <-> complex_parse
+function simple_parse(x: string): LangVal {
+    // [[[ 大量重複代碼 simple_parse <-> complex_parse
     let state = x.split("") // State : List Char
     function eof() {
         return state.length === 0
@@ -1349,7 +1346,7 @@ function read(x: string): LangVal {
             if (x[2] !== HOLE) {
                 return ERROR()
             }
-            x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
+            x[2] = lst // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
         }
         function last_add(x: LangVal) {
             set_last(new_construction(x, HOLE))
@@ -1519,15 +1516,15 @@ function read(x: string): LangVal {
         }
         return error()
     }
-    return val() // 大量重複代碼 read <-> complex_parse ]]]
+    return val() // 大量重複代碼 simple_parse <-> complex_parse ]]]
 }
-export { read }
+export { simple_parse }
 
-// 相對獨立的部分。parser/printer }}}
+// 相對獨立的部分。simple parser/printer }}}
 
 // {{{ 相對獨立的部分。complex parser/complex printer
 function complex_parse(x: string): LangVal {
-    // [[[ 大量重複代碼 read <-> complex_parse
+    // [[[ 大量重複代碼 simple_parse <-> complex_parse
     let state = x.split("") // State : List Char
     function eof() {
         return state.length === 0
@@ -1615,7 +1612,7 @@ function complex_parse(x: string): LangVal {
             if (x[2] !== HOLE) {
                 return ERROR()
             }
-            x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
+            x[2] = lst // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
         }
         function last_add(x: LangVal) {
             set_last(new_construction(x, HOLE))
@@ -1785,7 +1782,7 @@ function complex_parse(x: string): LangVal {
         }
         return error()
     }
-    return val() // 大量重複代碼 read <-> complex_parse ]]]
+    return val() // 大量重複代碼 simple_parse <-> complex_parse ]]]
     function un_maybe<T>(x: false | T): T {
         if (x === false) {
             return error()
@@ -2014,14 +2011,14 @@ function complex_print(val: LangVal): string {
             }
         }
         if (where === 'inner') {
-            return print(x)
+            return simple_print(x)
         } else if (where === 'top') {
-            return print(systemName_make(x))
+            return simple_print(systemName_make(x))
         }
         return ERROR()
     }
-    // [[[ 大量重複代碼 print <-> complex_print
-    let x = read(print(val)) // 去除所有just
+    // [[[ 大量重複代碼 simple_print <-> complex_print
+    let x = simple_parse(simple_print(val)) // 去除所有just
     let temp = ""
     let prefix = ""
     if (null_p(x)) {
@@ -2066,7 +2063,7 @@ function complex_print(val: LangVal): string {
     } else if (delay_apply_p(x)) {
         return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
     }
-    return ERROR() // 大量重複代碼 print <-> complex_print ]]]
+    return ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
 export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}

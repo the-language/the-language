@@ -76,7 +76,7 @@ function seq_test_block(name, f) {
     eval(script)
 }
 const test_block = seq_test_block
-test_block("read,print", function() {
+test_block("simple_parse,simple_print", function() {
     const xs = [
         "(你好 世界！)",
         "!(#(a b) . c)",
@@ -87,7 +87,7 @@ test_block("read,print", function() {
         '^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))',
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP("print(read(\"" + x + "\")) === \"" + x + "\"", () => L.print(L.read(x)) === x)
+        ASSERT_WITH_EXP("simple_print(simple_parse(\"" + x + "\")) === \"" + x + "\"", () => L.simple_print(L.simple_parse(x)) === x)
     }
 })
 test_block("eval", function() {
@@ -113,7 +113,7 @@ test_block("eval", function() {
         ['$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))', '()'],
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP("print_force_all_rec(read(\"" + x[0] + "\")) === \"" + x[1] + "\"", () => L.print_force_all_rec(L.read(x[0])) === x[1])
+        ASSERT_WITH_EXP("simple_print_force_all_rec(simple_parse(\"" + x[0] + "\")) === \"" + x[1] + "\"", () => L.simple_print_force_all_rec(L.simple_parse(x[0])) === x[1])
     }
 })
 test_block('complex_parse', function() {
@@ -128,7 +128,7 @@ test_block('complex_parse', function() {
         '$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))',
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP('print(complex_parse("' + x + '")) === "' + x + '"', () => L.print(L.complex_parse(x)) === x)
+        ASSERT_WITH_EXP('simple_print(complex_parse("' + x + '")) === "' + x + '"', () => L.simple_print(L.complex_parse(x)) === x)
     }
 })
 test_block('complex_parse,complex_print', function() {
@@ -144,8 +144,8 @@ test_block('complex_parse,complex_print', function() {
         ['列.[_:物]', L.list_chooseOne_function_builtin_systemName],
     ]
     for (const x of xs) {
-        ASSERT_WITH_EXP("print(complex_parse(\"" + x[0] + "\")) === \"" + L.print(x[1]) + "\"", () => L.print(L.complex_parse(x[0])) === L.print(x[1]))
-        ASSERT_WITH_EXP("complex_print(read(\"" + L.print(x[1]) + "\")) === \"" + x[0] + "\"", () => L.complex_print(x[1]) === x[0])
+        ASSERT_WITH_EXP("simple_print(complex_parse(\"" + x[0] + "\")) === \"" + L.simple_print(x[1]) + "\"", () => L.simple_print(L.complex_parse(x[0])) === L.simple_print(x[1]))
+        ASSERT_WITH_EXP("complex_print(simple_parse(\"" + L.simple_print(x[1]) + "\")) === \"" + x[0] + "\"", () => L.complex_print(x[1]) === x[0])
     }
 })
 
