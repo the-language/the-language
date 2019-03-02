@@ -881,18 +881,16 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
                 builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
                 builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
         }
-        switch (type_of(x)) {
-            case null_t:
-                return true_v
-            case symbol_t:
-                return symbol_equal_p(x as LangValSymbol, y as LangValSymbol) ? true_v : false_v // type WIP
-            case data_t:
-                return end_2(x as LangValData, y as LangValData, data_name, data_list) // type WIP
-            case construction_t:
-                return end_2(x as LangValCons, y as LangValCons, construction_head, construction_tail)
-            case error_t:
-                return end_2(x as LangValError, y as LangValError, error_name, error_list) // type WIP
-            default:
+        if (null_p(x)) {
+            return true_v
+        } else if (symbol_p(x)) {
+            return symbol_equal_p(x, y as LangValSymbol) ? true_v : false_v // type WIP
+        } else if (data_p(x)) {
+            return end_2(x, y as LangValData, data_name, data_list) // type WIP
+        } else if (construction_p(x)) {
+            return end_2(x, y as LangValCons, construction_head, construction_tail) // type WIP
+        } else if (error_p(x)) {
+            return end_2(x, y as LangValError, error_name, error_list) // type WIP
         }
         return ERROR()
     }],
