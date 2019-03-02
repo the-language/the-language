@@ -2030,7 +2030,7 @@ function complex_print(val: LangVal): string {
         return "@(" +
             complex_print(env2val(delay_builtin_form_env(x))) +
             " " + complex_print(delay_builtin_form_f(x)) +
-            " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
+            " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x))) +
             ")"
     } else if (delay_apply_p(x)) {
         return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
