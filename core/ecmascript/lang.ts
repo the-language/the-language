@@ -1993,50 +1993,47 @@ function complex_print(val: LangVal): string {
     let x = read(print(val)) // 去除所有just
     let temp = ""
     let prefix = ""
-    switch (type_of(x)) {
-        case null_t:
-            return "()"
-        case construction_t:
-            temp = "("
-            prefix = ""
-            while (construction_p(x)) {
-                temp += prefix + complex_print(construction_head(x))
-                prefix = " "
-                x = construction_tail(x)
-            }
-            if (null_p(x)) {
-                temp += ")"
-            } else {
-                temp += " . " + complex_print(x) + ")"
-            }
-            return temp
-        case data_t:
-            const name = data_name(x)
-            const list = data_list(x)
-            const maybe_xs = maybe_list_to_jsArray(list)
-            if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
-                // systemName_make(maybe_xs[1])
-                return print_sys_name(maybe_xs[1], 'top')
-            }
-            return "#" + complex_print(new_construction(name, list))
-        case error_t:
-            return "!" + complex_print(new_construction(error_name(x), error_list(x)))
-        case symbol_t:
-            return un_symbol(x)
-        case delay_evaluate_t:
-            return "$(" + complex_print(env2val(delay_evaluate_env(x))) + " " + complex_print(delay_evaluate_x(x)) + ")"
-        case delay_builtin_func_t:
-            return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
-        case delay_builtin_form_t:
-            return "@(" +
-                complex_print(env2val(delay_builtin_form_env(x))) +
-                " " + complex_print(delay_builtin_form_f(x)) +
-                " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
-                ")"
-        case delay_apply_t:
-            return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
-        default:
-            return ERROR()
+    if (null_p(x)) {
+        return "()"
+    } else if (construction_p(x)) {
+        temp = "("
+        prefix = ""
+        while (construction_p(x)) {
+            temp += prefix + complex_print(construction_head(x))
+            prefix = " "
+            x = construction_tail(x)
+        }
+        if (null_p(x)) {
+            temp += ")"
+        } else {
+            temp += " . " + complex_print(x) + ")"
+        }
+        return temp
+    } else if (data_p(x)) {
+        const name = data_name(x)
+        const list = data_list(x)
+        const maybe_xs = maybe_list_to_jsArray(list)
+        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
+            // systemName_make(maybe_xs[1])
+            return print_sys_name(maybe_xs[1], 'top')
+        }
+        return "#" + complex_print(new_construction(name, list))
+    } else if (error_p(x)) {
+        return "!" + complex_print(new_construction(error_name(x), error_list(x)))
+    } else if (symbol_p(x)) {
+        return un_symbol(x)
+    } else if (delay_evaluate_p(x)) {
+        return "$(" + complex_print(env2val(delay_evaluate_env(x))) + " " + complex_print(delay_evaluate_x(x)) + ")"
+    } else if (delay_builtin_func_p(x)) {
+        return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
+    } else if (delay_builtin_form_p(x)) {
+        return "@(" +
+            complex_print(env2val(delay_builtin_form_env(x))) +
+            " " + complex_print(delay_builtin_form_f(x)) +
+            " " + complex_print(jsArray_to_list(delay_builtin_form_xs(x as LangValDelayBuiltinForm))) + // type WIP
+            ")"
+    } else if (delay_apply_p(x)) {
+        return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
     }
     return ERROR() // 大量重複代碼 print <-> complex_print ]]]
 }
