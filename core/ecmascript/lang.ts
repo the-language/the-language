@@ -769,7 +769,6 @@ function name_p(x: LangVal): x is LangValName {
 }
 function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
-
     return [p_sym,
         1,
         (x, error_v) => {
@@ -784,7 +783,7 @@ function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => bo
         }]
 }
 
-function make_builtin_get_func(f_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean, f_jsfunc: (x: LangVal) => LangVal)
+function make_builtin_get_func<T extends LangVal>(f_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean, f_jsfunc: (x: LangVal) => LangVal)
     : [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] {
     return [f_sym,
         1,
