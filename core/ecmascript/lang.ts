@@ -21,7 +21,7 @@ function ERROR(): never {
 }
 function ASSERT(x: boolean): void {
     if (!x) {
-        ERROR()
+        return ERROR()
     }
 }
 // 用export{}，不用export const .../export function...，否則生成的代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
@@ -986,7 +986,6 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
 }
 
 function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
-
     const error_v = new_error(system_symbol,
         new_list(function_builtin_use_systemName,
             new_list(f, jsArray_to_list(xs))))
@@ -1307,7 +1306,7 @@ function read(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-        function set_last(lst: LangVal) {
+        function set_last(lst: LangVal): void {
             if (ret === HOLE) {
                 ret = lst
                 return
@@ -1315,7 +1314,7 @@ function read(x: string): LangVal {
             let x = ret
             while (true) {
                 if (!construction_p(x)) {
-                    ERROR()
+                    return ERROR()
                 }
                 const d = construction_tail(x)
                 if (d === HOLE) {
@@ -1324,10 +1323,10 @@ function read(x: string): LangVal {
                 x = construction_tail(x)
             }
             if (!construction_p(x)) {
-                ERROR()
+                return ERROR()
             }
             if (x[2] !== HOLE) {
-                ERROR()
+                return ERROR()
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
@@ -1573,7 +1572,7 @@ function complex_parse(x: string): LangVal {
         }
         const HOLE: LangVal = new_symbol('!!@@READ||HOLE@@!!')
         let ret: LangVal = HOLE
-        function set_last(lst: LangVal) {
+        function set_last(lst: LangVal): void {
             if (ret === HOLE) {
                 ret = lst
                 return
@@ -1581,7 +1580,7 @@ function complex_parse(x: string): LangVal {
             let x = ret
             while (true) {
                 if (!construction_p(x)) {
-                    ERROR()
+                    return ERROR()
                 }
                 const d = construction_tail(x)
                 if (d === HOLE) {
@@ -1590,10 +1589,10 @@ function complex_parse(x: string): LangVal {
                 x = construction_tail(x)
             }
             if (!construction_p(x)) {
-                ERROR()
+                return ERROR()
             }
             if (x[2] !== HOLE) {
-                ERROR()
+                return ERROR()
             }
             x[2] = lst // 實現底層依賴[編號 0] read, complex_parse <-> 內建數據結構
         }
@@ -1897,9 +1896,9 @@ function complex_parse(x: string): LangVal {
                     return x
                 }
             }
-            ERROR()
+            return ERROR()
         }
-        ERROR()
+        return ERROR()
     }
     function readsysname() {
         const x = readsysname_no_pack()
