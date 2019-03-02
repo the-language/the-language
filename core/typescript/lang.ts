@@ -1269,7 +1269,7 @@ function simple_parse(x: string): LangVal {
     function put(x: string) {
         state.unshift(x)
     }
-    function error(): never {
+    function parse_error(): never {
         throw "TheLanguage parse ERROR!"
     }
     function a_space_p(x: string): boolean {
@@ -1354,7 +1354,7 @@ function simple_parse(x: string): LangVal {
         while (true) {
             space()
             if (eof()) {
-                return error()
+                return parse_error()
             }
             x = get()
             if (x === ")") {
@@ -1367,11 +1367,11 @@ function simple_parse(x: string): LangVal {
                 set_last(e)
                 space()
                 if (eof()) {
-                    return error()
+                    return parse_error()
                 }
                 x = get()
                 if (x !== ")") {
-                    return error()
+                    return parse_error()
                 }
                 return ret
             }
@@ -1391,10 +1391,10 @@ function simple_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            return error()
+            return parse_error()
         }
         if (!construction_p(xs)) {
-            return error()
+            return parse_error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
@@ -1409,10 +1409,10 @@ function simple_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            return error()
+            return parse_error()
         }
         if (!construction_p(xs)) {
-            return error()
+            return parse_error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
@@ -1428,14 +1428,14 @@ function simple_parse(x: string): LangVal {
             }
             const xs = list()
             if (xs === false) {
-                return error()
+                return parse_error()
             }
             if (!construction_p(xs)) {
-                return error()
+                return parse_error()
             }
             const x = construction_tail(xs)
             if (!(construction_p(x) && null_p(construction_tail(x)))) {
-                return error()
+                return parse_error()
             }
             return k(construction_head(xs), construction_head(x))
         }
@@ -1452,18 +1452,18 @@ function simple_parse(x: string): LangVal {
             }
             const xs = list()
             if (xs === false) {
-                return error()
+                return parse_error()
             }
             if (!construction_p(xs)) {
-                return error()
+                return parse_error()
             }
             const x = construction_tail(xs)
             if (!construction_p(x)) {
-                return error()
+                return parse_error()
             }
             const x_d = construction_tail(x)
             if (!(construction_p(x_d) && null_p(construction_tail(x_d)))) {
-                return error()
+                return parse_error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
@@ -1471,24 +1471,24 @@ function simple_parse(x: string): LangVal {
     const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
-            return error()
+            return parse_error()
         }
         return evaluate(env, x)
     })
     const readfuncapply = make_read_two("%", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         return builtin_func_apply(f, jsxs)
     })
     const readformbuiltin = make_read_three("@", (e, f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         const env = val2env(e)
         if (env === false) {
-            return error()
+            return parse_error()
         }
         return builtin_form_apply(env, f, jsxs)
     })
     const readapply = make_read_two("^", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         return apply(f, jsxs)
     })
     function a_symbol_p(x: string): boolean {
@@ -1514,7 +1514,7 @@ function simple_parse(x: string): LangVal {
                 return x
             }
         }
-        return error()
+        return parse_error()
     }
     return val() // 大量重複代碼 simple_parse <-> complex_parse ]]]
 }
@@ -1535,7 +1535,7 @@ function complex_parse(x: string): LangVal {
     function put(x: string) {
         state.unshift(x)
     }
-    function error(): never {
+    function parse_error(): never {
         throw "TheLanguage parse ERROR!"
     }
     function a_space_p(x: string): boolean {
@@ -1620,7 +1620,7 @@ function complex_parse(x: string): LangVal {
         while (true) {
             space()
             if (eof()) {
-                return error()
+                return parse_error()
             }
             x = get()
             if (x === ")") {
@@ -1633,11 +1633,11 @@ function complex_parse(x: string): LangVal {
                 set_last(e)
                 space()
                 if (eof()) {
-                    return error()
+                    return parse_error()
                 }
                 x = get()
                 if (x !== ")") {
-                    return error()
+                    return parse_error()
                 }
                 return ret
             }
@@ -1657,10 +1657,10 @@ function complex_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            return error()
+            return parse_error()
         }
         if (!construction_p(xs)) {
-            return error()
+            return parse_error()
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
@@ -1675,10 +1675,10 @@ function complex_parse(x: string): LangVal {
         }
         const xs = list()
         if (xs === false) {
-            return error()
+            return parse_error()
         }
         if (!construction_p(xs)) {
-            return error()
+            return parse_error()
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
@@ -1694,14 +1694,14 @@ function complex_parse(x: string): LangVal {
             }
             const xs = list()
             if (xs === false) {
-                return error()
+                return parse_error()
             }
             if (!construction_p(xs)) {
-                return error()
+                return parse_error()
             }
             const x = construction_tail(xs)
             if (!(construction_p(x) && null_p(construction_tail(x)))) {
-                return error()
+                return parse_error()
             }
             return k(construction_head(xs), construction_head(x))
         }
@@ -1718,18 +1718,18 @@ function complex_parse(x: string): LangVal {
             }
             const xs = list()
             if (xs === false) {
-                return error()
+                return parse_error()
             }
             if (!construction_p(xs)) {
-                return error()
+                return parse_error()
             }
             const x = construction_tail(xs)
             if (!construction_p(x)) {
-                return error()
+                return parse_error()
             }
             const x_d = construction_tail(x)
             if (!(construction_p(x_d) && null_p(construction_tail(x_d)))) {
-                return error()
+                return parse_error()
             }
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
@@ -1737,24 +1737,24 @@ function complex_parse(x: string): LangVal {
     const readeval = make_read_two("$", (e, x) => {
         const env = val2env(e)
         if (env === false) {
-            return error()
+            return parse_error()
         }
         return evaluate(env, x)
     })
     const readfuncapply = make_read_two("%", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         return builtin_func_apply(f, jsxs)
     })
     const readformbuiltin = make_read_three("@", (e, f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         const env = val2env(e)
         if (env === false) {
-            return error()
+            return parse_error()
         }
         return builtin_form_apply(env, f, jsxs)
     })
     const readapply = make_read_two("^", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => error())
+        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
         return apply(f, jsxs)
     })
     function a_symbol_p(x: string): boolean {
@@ -1780,12 +1780,12 @@ function complex_parse(x: string): LangVal {
                 return x
             }
         }
-        return error()
+        return parse_error()
     }
     return val() // 大量重複代碼 simple_parse <-> complex_parse ]]]
     function un_maybe<T>(x: false | T): T {
         if (x === false) {
-            return error()
+            return parse_error()
         }
         return x
     }
@@ -1874,7 +1874,7 @@ function complex_parse(x: string): LangVal {
                     return x
                 }
             }
-            return error()
+            return parse_error()
         }
         function may_xfx_xf(x: LangVal): LangVal {
             if (eof()) {
