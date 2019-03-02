@@ -83,7 +83,7 @@ function new_symbol(x: string): LangValSymbol {
     return [symbol_t, x]
 }
 function symbol_p(x: LangVal): x is LangValSymbol {
-    return type_of(x) === LangValType.symbol_t
+    return x[0] === LangValType.symbol_t
 }
 function un_symbol(x: LangValSymbol): string {
     return x[1]
@@ -210,7 +210,7 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 }
 function force_all_rec(x: LangVal): LangVal {
     x = force_all(x)
-    switch (type_of(x)) {
+    switch (x[0]) {
         case data_t:
             x[1] = force_all_rec(x[1])
             x[2] = force_all_rec(x[2])
