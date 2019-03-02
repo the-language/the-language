@@ -1343,9 +1343,10 @@ function simple_parse(x: string): LangVal {
             if (!construction_p(x)) {
                 return ERROR()
             }
-            if (x[2] !== HOLE) {
+            if (construction_tail(x) !== HOLE) {
                 return ERROR()
             }
+            // x[2]是construction_tail
             x[2] = lst // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
         }
         function last_add(x: LangVal) {
@@ -1499,7 +1500,7 @@ function simple_parse(x: string): LangVal {
             '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
         ]
         for (let i = 0; i < not_xs.length; i++) {
-            if (x == not_xs[i]) {
+            if (x === not_xs[i]) {
                 return false
             }
         }
@@ -1609,9 +1610,10 @@ function complex_parse(x: string): LangVal {
             if (!construction_p(x)) {
                 return ERROR()
             }
-            if (x[2] !== HOLE) {
+            if (construction_tail(x) !== HOLE) {
                 return ERROR()
             }
+            // x[2]是construction_tail
             x[2] = lst // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
         }
         function last_add(x: LangVal) {
@@ -1765,7 +1767,7 @@ function complex_parse(x: string): LangVal {
             '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
         ]
         for (let i = 0; i < not_xs.length; i++) {
-            if (x == not_xs[i]) {
+            if (x === not_xs[i]) {
                 return false
             }
         }
