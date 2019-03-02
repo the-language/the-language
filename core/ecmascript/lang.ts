@@ -35,7 +35,7 @@ export const enum LangValType {
     data_t,
     error_t,
     just_t,
-    delay_eval_t,
+    delay_evaluate_t,
     delay_builtin_func_t,
     delay_builtin_form_t,
     delay_apply_t,
@@ -46,11 +46,11 @@ const null_t = LangValType.null_t
 const data_t = LangValType.data_t
 const error_t = LangValType.error_t
 const just_t = LangValType.just_t
-const delay_eval_t = LangValType.delay_eval_t
+const delay_evaluate_t = LangValType.delay_evaluate_t
 const delay_builtin_func_t = LangValType.delay_builtin_func_t
 const delay_builtin_form_t = LangValType.delay_builtin_form_t
 const delay_apply_t = LangValType.delay_apply_t
-export type LangValDelayType = LangValType.delay_eval_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
+export type LangValDelayType = LangValType.delay_evaluate_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
 export type LangValJustDelayType = LangValType.just_t | LangValDelayType
 export type LangValSymbol = [LangValType.symbol_t, string]
 export type LangValCons = [LangValType.construction_t, LangValRec, LangValRec]
@@ -58,7 +58,7 @@ export type LangValNull = [LangValType.null_t]
 export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
 export type LangValJust = [LangValType.just_t, LangValRec, null, null]
-export type LangValDelayEval = [LangValType.delay_eval_t, any, LangValRec] // WIP
+export type LangValDelayEval = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
 export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
 export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
 export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
@@ -156,11 +156,11 @@ function lang_set_do(x: LangVal, y: LangVal): void {
 const just_p = make_one_p(just_t)
 const un_just = make_get_one_a(just_t)
 const evaluate: (x: any, y: LangVal) => LangValDelayEval =
-    make_new_two<LangValType.delay_eval_t, any, LangVal>(delay_eval_t) // type WIP
+    make_new_two<LangValType.delay_evaluate_t, any, LangVal>(delay_evaluate_t) // type WIP
 export { evaluate }
-const delay_evaluate_p = make_two_p(delay_eval_t)
-const delay_evaluate_env = make_get_two_a(delay_eval_t) // Env
-const delay_evaluate_x = make_get_two_b(delay_eval_t)
+const delay_evaluate_p = make_two_p(delay_evaluate_t)
+const delay_evaluate_env = make_get_two_a(delay_evaluate_t) // Env
+const delay_evaluate_x = make_get_two_b(delay_evaluate_t)
 const builtin_form_apply: (x: any, y: LangVal, z: Array<LangValRec>) => LangValDelayBuiltinForm =
     make_new_three<LangValType.delay_builtin_form_t, any, LangVal, Array<LangValRec>>(delay_builtin_form_t) // type WIP
 function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
@@ -450,7 +450,7 @@ function force_all(
         if (history[x_id] === true) {
             ref_novalue_replace[0] = true // 減少替換範圍：(f <沒有值>) 的(f _)
             switch (type_of(x)) {
-                case delay_eval_t:
+                case delay_evaluate_t:
                     return replace_this_with_stopped() // 可能未減少應該減少的？
                 case delay_builtin_func_t:
                     const f = delay_builtin_func_f(x) // LangVal/Name
@@ -1184,7 +1184,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
             return end_2(error_name, error_list)
         case data_t:
             return end_2(data_name, data_list)
-        case delay_eval_t:
+        case delay_evaluate_t:
             return false //WIP
         case delay_builtin_func_t:
             return false //WIP
@@ -1228,7 +1228,7 @@ function make_printer(forcer: (x: LangVal) => LangVal): (x: LangVal) => string {
                 return "!" + print(new_construction(error_name(x), error_list(x)))
             case symbol_t:
                 return un_symbol(x)
-            case delay_eval_t:
+            case delay_evaluate_t:
                 return "$(" + print(env2val(delay_evaluate_env(x))) + " " + print(delay_evaluate_x(x)) + ")"
             case delay_builtin_func_t:
                 return "%(" + print(delay_builtin_func_f(x)) + " " + print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
@@ -2045,7 +2045,7 @@ function complex_print(val: LangVal): string {
             return "!" + complex_print(new_construction(error_name(x), error_list(x)))
         case symbol_t:
             return un_symbol(x)
-        case delay_eval_t:
+        case delay_evaluate_t:
             return "$(" + complex_print(env2val(delay_evaluate_env(x))) + " " + complex_print(delay_evaluate_x(x)) + ")"
         case delay_builtin_func_t:
             return "%(" + complex_print(delay_builtin_func_f(x)) + " " + complex_print(jsArray_to_list(delay_builtin_func_xs(x))) + ")"
