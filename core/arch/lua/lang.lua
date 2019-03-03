@@ -9,54 +9,6 @@ __TS__ArrayPush = function(arr, ...)
     return #arr;
 end;
 
-__TS__ArrayShift = function(arr)
-    return table.remove(arr, 1);
-end;
-
-__TS__StringSplit = function(source, separator, limit)
-    if limit == nil then
-        limit = 4294967295;
-    end
-    if limit == 0 then
-        return {};
-    end
-    local out = {};
-    local index = 0;
-    local count = 0;
-    if (separator == nil) or (separator == "") then
-        while (index < ((#source) - 1)) and (count < limit) do
-            out[count + 1] = string.sub(source, index + 1, index + 1);
-            count = count + 1;
-            index = index + 1;
-        end
-    else
-        local separatorLength = #separator;
-        local nextIndex = (string.find(source, separator) or 0) - 1;
-        while (nextIndex >= 0) and (count < limit) do
-            out[count + 1] = string.sub(source, index + 1, nextIndex);
-            count = count + 1;
-            index = nextIndex + separatorLength;
-            nextIndex = (string.find(source, separator, index + 1, true) or 0) - 1;
-        end
-    end
-    if count < limit then
-        out[count + 1] = string.sub(source, index + 1);
-    end
-    return out;
-end;
-
-__TS__ArrayUnshift = function(arr, ...)
-    local items = ({...});
-    do
-        local i = (#items) - 1;
-        while i >= 0 do
-            table.insert(arr, 1, items[i + 1]);
-            i = i - 1;
-        end
-    end
-    return #arr;
-end;
-
 local exports = exports or {};
 local ERROR, ASSERT, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, type_of, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print;
 ERROR = function()
@@ -584,18 +536,24 @@ real_apply = function(f, xs)
     end
     local f_code = construction_head(f_list_cdr);
     local env = env_null_v;
-    local isNotEmpty;
-    isNotEmpty = function(arr)
-        return not (not (#arr));
-    end;
+    local xs_i = 0;
     while not null_p(args_pat) do
         if name_p(args_pat) then
-            env = env_set(env, args_pat, jsArray_to_list(xs));
-            xs = {};
+            local x = null_v;
+            do
+                local i = (#xs) - 1;
+                while i >= xs_i do
+                    x = new_construction(xs[i + 1], x);
+                    i = i - 1;
+                end
+            end
+            env = env_set(env, args_pat, x);
+            xs_i = #xs;
             args_pat = null_v;
         elseif construction_p(args_pat) then
-            if isNotEmpty(xs) then
-                local x = __TS__ArrayShift(xs);
+            if xs_i < (#xs) then
+                local x = xs[xs_i + 1];
+                xs_i = xs_i + 1;
                 env = env_set(env, construction_head(args_pat), x);
                 args_pat = construction_tail(args_pat);
             else
@@ -605,7 +563,7 @@ real_apply = function(f, xs)
             return make_error_v();
         end
     end
-    if (#xs) ~= 0 then
+    if (#xs) ~= xs_i then
         return make_error_v();
     end
     return evaluate(env, f_code);
@@ -1214,15 +1172,19 @@ exports.simple_print = simple_print;
 exports.simple_print_force_all_rec = simple_print_force_all_rec;
 local simple_parse;
 simple_parse = function(x)
-    local state, eof, get, put, parse_error, a_space_p, space, symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val;
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val;
     eof = function()
-        return (#state) == 0;
+        return (#state_const) == state;
     end;
     get = function()
-        return __TS__ArrayShift(state);
+        ASSERT(not eof());
+        local ret = string.sub(state_const, state + 1, state + 1);
+        state = state + 1;
+        return ret;
     end;
     put = function(x)
-        __TS__ArrayUnshift(state, x);
+        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x);
+        state = state - 1;
     end;
     parse_error = function()
         error("TheLanguage parse ERROR!");
@@ -1404,7 +1366,8 @@ simple_parse = function(x)
         end
         return parse_error();
     end;
-    state = __TS__StringSplit(x, "");
+    state_const = x;
+    state = 0;
     local make_read_two;
     make_read_two = function(prefix, k)
         return function()
@@ -1499,15 +1462,19 @@ end;
 exports.simple_parse = simple_parse;
 local complex_parse;
 complex_parse = function(x)
-    local state, eof, get, put, parse_error, a_space_p, space, symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack, readsysname;
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack, readsysname;
     eof = function()
-        return (#state) == 0;
+        return (#state_const) == state;
     end;
     get = function()
-        return __TS__ArrayShift(state);
+        ASSERT(not eof());
+        local ret = string.sub(state_const, state + 1, state + 1);
+        state = state + 1;
+        return ret;
     end;
     put = function(x)
-        __TS__ArrayUnshift(state, x);
+        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x);
+        state = state - 1;
     end;
     parse_error = function()
         error("TheLanguage parse ERROR!");
@@ -1828,7 +1795,8 @@ complex_parse = function(x)
         end
         return systemName_make(x);
     end;
-    state = __TS__StringSplit(x, "");
+    state_const = x;
+    state = 0;
     local make_read_two;
     make_read_two = function(prefix, k)
         return function()
