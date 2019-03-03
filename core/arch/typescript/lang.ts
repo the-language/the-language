@@ -986,18 +986,20 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     const f_code = construction_head(f_list_cdr)
     let env: Env = env_null_v
 
-    // https://github.com/Microsoft/TypeScript/issues/10272
-    function isNotEmpty<T>(arr: T[]): arr is { shift(): T; } & Array<T> {
-        return !!arr.length;
-    }
+    let xs_i = 0
     while (!null_p(args_pat)) {
         if (name_p(args_pat)) {
-            env = env_set(env, args_pat, jsArray_to_list(xs))
-            xs = []
+            let x: LangVal = null_v
+            for (let i = xs.length - 1; i >= xs_i; i--) {
+                x = new_construction(xs[i], x)
+            }
+            env = env_set(env, args_pat, x)
+            xs_i = xs.length
             args_pat = null_v
         } else if (construction_p(args_pat)) {
-            if (isNotEmpty(xs)) {
-                const x: LangVal = xs.shift()
+            if (xs_i < xs.length) {
+                const x: LangVal = xs[xs_i]
+                xs_i++
                 env = env_set(env, construction_head(args_pat), x)
                 args_pat = construction_tail(args_pat)
             } else {
@@ -1007,7 +1009,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
             return make_error_v()
         }
     }
-    if (xs.length !== 0) {
+    if (xs.length !== xs_i) {
         return make_error_v()
     }
     return evaluate(env, f_code)
@@ -1255,15 +1257,20 @@ export { simple_print, simple_print_force_all_rec }
 
 function simple_parse(x: string): LangVal {
     // [[[ 大量重複代碼 simple_parse <-> complex_parse
-    let state = x.split("") // State : List Char
+    const state_const = x
+    let state = 0
     function eof() {
-        return state.length === 0
+        return state_const.length === state
     }
     function get(): string {
-        return state.shift() as string // type WIP
+        ASSERT(!eof())
+        const ret = state_const[state]
+        state++
+        return ret
     }
     function put(x: string) {
-        state.unshift(x)
+        ASSERT(state_const[state - 1] === x)
+        state--
     }
     function parse_error(): never {
         throw "TheLanguage parse ERROR!"
@@ -1522,15 +1529,20 @@ export { simple_parse }
 // {{{ 相對獨立的部分。complex parser/complex printer
 function complex_parse(x: string): LangVal {
     // [[[ 大量重複代碼 simple_parse <-> complex_parse
-    let state = x.split("") // State : List Char
+    const state_const = x
+    let state = 0
     function eof() {
-        return state.length === 0
+        return state_const.length === state
     }
     function get(): string {
-        return state.shift() as string // type WIP
+        ASSERT(!eof())
+        const ret = state_const[state]
+        state++
+        return ret
     }
     function put(x: string) {
-        state.unshift(x)
+        ASSERT(state_const[state - 1] === x)
+        state--
     }
     function parse_error(): never {
         throw "TheLanguage parse ERROR!"
