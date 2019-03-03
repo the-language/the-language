@@ -9,8 +9,8 @@ __TS__ArrayPush = function(arr, ...)
     return #arr;
 end;
 
-local exports = exports or {};
-local ERROR, ASSERT, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, type_of, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print;
+local exports = {};
+local ERROR, ASSERT, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print;
 ERROR = function()
     error("TheLanguage PANIC");
 end;
@@ -18,9 +18,6 @@ ASSERT = function(x)
     if not x then
         return ERROR();
     end
-end;
-type_of = function(x)
-    return x[0 + 1];
 end;
 symbol_p = function(x)
     return x[0 + 1] == 0;
@@ -684,11 +681,6 @@ jsbool_equal_p = function(x, y)
     if x == y then
         return true;
     end
-    local x_type = type_of(x);
-    local y_type = type_of(y);
-    if x_type ~= y_type then
-        return false;
-    end
     local end_2;
     end_2 = function(x, y, f1, f2)
         if jsbool_equal_p(f1(x), f1(y)) and jsbool_equal_p(f2(x), f2(y)) then
@@ -699,16 +691,31 @@ jsbool_equal_p = function(x, y)
         end
     end;
     if null_p(x) then
+        if not null_p(y) then
+            return false;
+        end
         lang_set_do(x, null_v);
         lang_set_do(y, null_v);
         return true;
     elseif symbol_p(x) then
+        if not symbol_p(y) then
+            return false;
+        end
         return symbol_equal_p(x, y);
     elseif construction_p(x) then
+        if not construction_p(y) then
+            return false;
+        end
         return end_2(x, y, construction_head, construction_tail);
     elseif error_p(x) then
+        if not error_p(y) then
+            return false;
+        end
         return end_2(x, y, error_name, error_list);
     elseif data_p(x) then
+        if not data_p(y) then
+            return false;
+        end
         return end_2(x, y, data_name, data_list);
     end
     return ERROR();
@@ -1042,9 +1049,6 @@ real_builtin_func_apply_s = {make_builtin_p_func(data_p_function_builtin_systemN
     if x == y then
         return true_v;
     end
-    if type_of(x) ~= type_of(y) then
-        return false_v;
-    end
     local H_if;
     H_if = function(b, x, y)
         return builtin_func_apply(if_function_builtin_systemName, {b, x, y});
@@ -1059,14 +1063,29 @@ real_builtin_func_apply_s = {make_builtin_p_func(data_p_function_builtin_systemN
         return H_and(builtin_func_apply(equal_p_function_builtin_systemName, {f1(x), f1(y)}), builtin_func_apply(equal_p_function_builtin_systemName, {f2(x), f2(y)}));
     end;
     if null_p(x) then
+        if not null_p(x) then
+            return false_v;
+        end
         return true_v;
     elseif symbol_p(x) then
+        if not symbol_p(y) then
+            return false_v;
+        end
         return (symbol_equal_p(x, y) and true_v) or false_v;
     elseif data_p(x) then
+        if not data_p(y) then
+            return false_v;
+        end
         return end_2(x, y, data_name, data_list);
     elseif construction_p(x) then
+        if not construction_p(y) then
+            return false_v;
+        end
         return end_2(x, y, construction_head, construction_tail);
     elseif error_p(x) then
+        if not error_p(y) then
+            return false_v;
+        end
         return end_2(x, y, error_name, error_list);
     end
     return ERROR();
@@ -1127,11 +1146,6 @@ jsbool_no_force_equal_p = function(x, y)
     if x == y then
         return true;
     end
-    local x_type = type_of(x);
-    local y_type = type_of(y);
-    if x_type ~= y_type then
-        return false;
-    end
     local end_2;
     end_2 = function(x, y, f1, f2)
         if jsbool_no_force_equal_p(f1(x), f1(y)) and jsbool_no_force_equal_p(f2(x), f2(y)) then
@@ -1142,16 +1156,31 @@ jsbool_no_force_equal_p = function(x, y)
         end
     end;
     if null_p(x) then
+        if not null_p(y) then
+            return false;
+        end
         lang_set_do(x, null_v);
         lang_set_do(y, null_v);
         return true;
     elseif symbol_p(x) then
+        if not symbol_p(y) then
+            return false;
+        end
         return symbol_equal_p(x, y);
     elseif construction_p(x) then
+        if not construction_p(y) then
+            return false;
+        end
         return end_2(x, y, construction_head, construction_tail);
     elseif error_p(x) then
+        if not error_p(y) then
+            return false;
+        end
         return end_2(x, y, error_name, error_list);
     elseif data_p(x) then
+        if not data_p(y) then
+            return false;
+        end
         return end_2(x, y, data_name, data_list);
     elseif delay_evaluate_p(x) then
         return false;
