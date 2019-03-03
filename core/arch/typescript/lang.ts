@@ -75,10 +75,6 @@ export type LangValRec = any // WIP
     interface t extends trec < null > {}
     */
 
-function type_of(x: LangVal): LangValType {
-    return x[0]
-}
-
 function new_symbol(x: string): LangValSymbol {
     return [symbol_t, x]
 }
@@ -865,9 +861,6 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         if (x === y) {
             return true_v
         }
-        if (type_of(x) !== type_of(y)) {
-            return false_v
-        }
         function H_if(b: LangVal, x: LangVal, y: LangVal): LangVal {
             // H = helper
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
@@ -882,15 +875,20 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
                 builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
         }
         if (null_p(x)) {
+            if (!null_p(x)) { return false_v }
             return true_v
         } else if (symbol_p(x)) {
-            return symbol_equal_p(x, y as LangValSymbol) ? true_v : false_v // type WIP
+            if (!symbol_p(y)) { return false_v }
+            return symbol_equal_p(x, y) ? true_v : false_v
         } else if (data_p(x)) {
-            return end_2(x, y as LangValData, data_name, data_list) // type WIP
+            if (!data_p(y)) { return false_v }
+            return end_2(x, y, data_name, data_list)
         } else if (construction_p(x)) {
-            return end_2(x, y as LangValCons, construction_head, construction_tail) // type WIP
+            if (!construction_p(y)) { return false_v }
+            return end_2(x, y, construction_head, construction_tail)
         } else if (error_p(x)) {
-            return end_2(x, y as LangValError, error_name, error_list) // type WIP
+            if (!error_p(y)) { return false_v }
+            return end_2(x, y, error_name, error_list)
         }
         return ERROR()
     }],
@@ -1131,11 +1129,6 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
-    const x_type = type_of(x)
-    const y_type = type_of(y)
-    if (x_type !== y_type) {
-        return false
-    }
     function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
         if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
@@ -1145,17 +1138,22 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
         }
     }
     if (null_p(x)) {
+        if (!null_p(y)) { return false }
         lang_set_do(x, null_v)
         lang_set_do(y, null_v)
         return true
     } else if (symbol_p(x)) {
-        return symbol_equal_p(x, y as LangValSymbol) // type WIP
+        if (!symbol_p(y)) { return false }
+        return symbol_equal_p(x, y)
     } else if (construction_p(x)) {
-        return end_2(x, y as LangValCons, construction_head, construction_tail) // type WIP
+        if (!construction_p(y)) { return false }
+        return end_2(x, y, construction_head, construction_tail)
     } else if (error_p(x)) {
-        return end_2(x, y as LangValError, error_name, error_list) // type WIP
+        if (!error_p(y)) { return false }
+        return end_2(x, y, error_name, error_list)
     } else if (data_p(x)) {
-        return end_2(x, y as LangValData, data_name, data_list) // type WIP
+        if (!data_p(y)) { return false }
+        return end_2(x, y, data_name, data_list)
     }
     return ERROR()
 }
@@ -1170,11 +1168,6 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
-    const x_type = type_of(x)
-    const y_type = type_of(y)
-    if (x_type !== y_type) {
-        return false
-    }
     function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
         if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
             lang_set_do(x, y)
@@ -1184,17 +1177,22 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
         }
     }
     if (null_p(x)) {
+        if (!null_p(y)) { return false }
         lang_set_do(x, null_v)
         lang_set_do(y, null_v)
         return true
     } else if (symbol_p(x)) {
-        return symbol_equal_p(x, y as LangValSymbol) // type WIP
+        if (!symbol_p(y)) { return false }
+        return symbol_equal_p(x, y)
     } else if (construction_p(x)) {
-        return end_2(x, y as LangValCons, construction_head, construction_tail) // type WIP
+        if (!construction_p(y)) { return false }
+        return end_2(x, y, construction_head, construction_tail)
     } else if (error_p(x)) {
-        return end_2(x, y as LangValError, error_name, error_list) // type WIP
+        if (!error_p(y)) { return false }
+        return end_2(x, y, error_name, error_list)
     } else if (data_p(x)) {
-        return end_2(x, y as LangValData, data_name, data_list) // type WIP
+        if (!data_p(y)) { return false }
+        return end_2(x, y, data_name, data_list)
     } else if (delay_evaluate_p(x)) {
         return false //WIP
     } else if (delay_builtin_func_p(x)) {
