@@ -1,0 +1,2 @@
+#lang rash
+./transform.sh
