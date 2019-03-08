@@ -34,137 +34,137 @@ $the_language = call(new Func(function() {
     return new Arr($symbol_t, $x);
   });
   $symbol_p = new Func("symbol_p", function($x = null) {
-    return get($x, 0.0) === 0.0;
+    return $x[0] === 0;
   });
   $un_symbol = new Func("un_symbol", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $new_construction = new Func("new_construction", function($x = null, $y = null) use (&$construction_t) {
     return new Arr($construction_t, $x, $y);
   });
   $construction_p = new Func("construction_p", function($x = null) use (&$construction_t) {
-    return get($x, 0.0) === $construction_t;
+    return $x[0] === $construction_t;
   });
   $construction_head = new Func("construction_head", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $construction_tail = new Func("construction_tail", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $null_p = new Func("null_p", function($x = null) use (&$null_t) {
-    return get($x, 0.0) === $null_t;
+    return $x[0] === $null_t;
   });
   $new_data = new Func("new_data", function($x = null, $y = null) use (&$data_t) {
     return new Arr($data_t, $x, $y);
   });
   $data_p = new Func("data_p", function($x = null) use (&$data_t) {
-    return get($x, 0.0) === $data_t;
+    return $x[0] === $data_t;
   });
   $data_name = new Func("data_name", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $data_list = new Func("data_list", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $new_error = new Func("new_error", function($x = null, $y = null) use (&$error_t) {
     return new Arr($error_t, $x, $y);
   });
   $error_p = new Func("error_p", function($x = null) use (&$error_t) {
-    return get($x, 0.0) === $error_t;
+    return $x[0] === $error_t;
   });
   $error_name = new Func("error_name", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $error_list = new Func("error_list", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $lang_set_do = new Func("lang_set_do", function($x = null, $y = null) use (&$just_t) {
     if ($x === $y) {
       return ;
     }
-    set($x, 0.0, $just_t);
-    set($x, 1.0, $y);
-    set($x, 2.0, false);
-    set($x, 3.0, false);
+    set($x, 0, $just_t);
+    set($x, 1, $y);
+    set($x, 2, false);
+    set($x, 3, false);
   });
   $just_p = new Func("just_p", function($x = null) use (&$just_t) {
-    return get($x, 0.0) === $just_t;
+    return $x[0] === $just_t;
   });
   $un_just = new Func("un_just", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $evaluate = new Func("evaluate", function($x = null, $y = null) use (&$delay_evaluate_t) {
     return new Arr($delay_evaluate_t, $x, $y);
   });
   $delay_evaluate_p = new Func("delay_evaluate_p", function($x = null) use (&$delay_evaluate_t) {
-    return get($x, 0.0) === $delay_evaluate_t;
+    return $x[0] === $delay_evaluate_t;
   });
   $delay_evaluate_env = new Func("delay_evaluate_env", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $delay_evaluate_x = new Func("delay_evaluate_x", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $builtin_form_apply = new Func("builtin_form_apply", function($x = null, $y = null, $z = null) use (&$delay_builtin_form_t) {
     return new Arr($delay_builtin_form_t, $x, $y, $z);
   });
   $delay_builtin_form_p = new Func("delay_builtin_form_p", function($x = null) use (&$delay_builtin_form_t) {
-    return get($x, 0.0) === $delay_builtin_form_t;
+    return $x[0] === $delay_builtin_form_t;
   });
   $delay_builtin_form_env = new Func("delay_builtin_form_env", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $delay_builtin_form_f = new Func("delay_builtin_form_f", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $delay_builtin_form_xs = new Func("delay_builtin_form_xs", function($x = null) {
-    return get($x, 3.0);
+    return $x[3];
   });
   $builtin_func_apply = new Func("builtin_func_apply", function($x = null, $y = null) use (&$delay_builtin_func_t) {
     return new Arr($delay_builtin_func_t, $x, $y);
   });
   $delay_builtin_func_p = new Func("delay_builtin_func_p", function($x = null) use (&$delay_builtin_func_t) {
-    return get($x, 0.0) === $delay_builtin_func_t;
+    return $x[0] === $delay_builtin_func_t;
   });
   $delay_builtin_func_f = new Func("delay_builtin_func_f", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $delay_builtin_func_xs = new Func("delay_builtin_func_xs", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $apply = new Func("apply", function($f = null, $xs = null) use (&$delay_apply_t) {
     return new Arr($delay_apply_t, $f, $xs);
   });
   $delay_apply_p = new Func("delay_apply_p", function($x = null) use (&$delay_apply_t) {
-    return get($x, 0.0) === $delay_apply_t;
+    return $x[0] === $delay_apply_t;
   });
   $delay_apply_f = new Func("delay_apply_f", function($x = null) {
-    return get($x, 1.0);
+    return $x[1];
   });
   $delay_apply_xs = new Func("delay_apply_xs", function($x = null) {
-    return get($x, 2.0);
+    return $x[2];
   });
   $force_all_rec = new Func("force_all_rec", function($raw = null) use (&$force_all, &$data_p, &$error_p, &$construction_p) {
     $force_all_rec = Func::getCurrent();
     $x = null; $a = null; $d = null;
     $x = call($force_all, $raw);
     if (is(call($data_p, $x))) {
-      $a = get($x, 1.0);
-      $d = get($x, 2.0);
-      set($x, 1.0, call($force_all_rec, $a));
-      set($x, 2.0, call($force_all_rec, $d));
+      $a = $x[1];
+      $d = $x[2];
+      set($x, 1, call($force_all_rec, $a));
+      set($x, 2, call($force_all_rec, $d));
       return $x;
     } else if (is(call($error_p, $x))) {
-      $a = get($x, 1.0);
-      $d = get($x, 2.0);
-      set($x, 1.0, call($force_all_rec, $a));
-      set($x, 2.0, call($force_all_rec, $d));
+      $a = $x[1];
+      $d = $x[2];
+      set($x, 1, call($force_all_rec, $a));
+      set($x, 2, call($force_all_rec, $d));
       return $x;
     } else if (is(call($construction_p, $x))) {
-      $a = get($x, 1.0);
-      $d = get($x, 2.0);
-      set($x, 1.0, call($force_all_rec, $a));
-      set($x, 2.0, call($force_all_rec, $d));
+      $a = $x[1];
+      $d = $x[2];
+      set($x, 1, call($force_all_rec, $a));
+      set($x, 2, call($force_all_rec, $d));
       return $x;
     }
 
@@ -198,7 +198,7 @@ $the_language = call(new Func(function() {
   $jsArray_to_list = new Func("jsArray_to_list", function($xs = null) use (&$null_v, &$new_construction) {
     $ret = null; $i = null;
     $ret = $null_v;
-    for ($i = to_number(get($xs, "length")) - 1.0; $i >= 0.0; $i--) {
+    for ($i = to_number(get($xs, "length")) - 1; $i >= 0; $i--) {
       $ret = call($new_construction, get($xs, $i), $ret);
     }
     return $ret;
@@ -226,7 +226,7 @@ $the_language = call(new Func(function() {
     $arguments = Func::getArguments();
     $xs = null; $_i = null;
     $xs = new Arr();
-    for ($_i = 0.0; $_i < get($arguments, "length"); $_i++) {
+    for ($_i = 0; $_i < get($arguments, "length"); $_i++) {
       set($xs, $_i, get($arguments, $_i));
     }
     return call($jsArray_to_list, $xs);
@@ -239,7 +239,7 @@ $the_language = call(new Func(function() {
       call_method($xs, "push", $x);
       $x = call($un_just, $x);
     }
-    for ($i = 0.0; $i < get($xs, "length"); $i++) {
+    for ($i = 0; $i < get($xs, "length"); $i++) {
       call($lang_set_do, get($xs, $i), $x);
     }
     return $x;
@@ -252,9 +252,9 @@ $the_language = call(new Func(function() {
     $history = null; $x = null; $xs = null; $x_id = null; $f = null; $xs_1 = null; $elim_s = null; $is_elim = null; $i = null; $inner = null; $tf = null;
     $replace_this_with_stopped = new Func("replace_this_with_stopped", function() use (&$ref_novalue_replace, &$lang_set_do, &$x, &$the_world_stopped_v, &$xs) {
       $i = null;
-      set($ref_novalue_replace, 1.0, true);
+      set($ref_novalue_replace, 1, true);
       call($lang_set_do, $x, $the_world_stopped_v);
-      for ($i = 0.0; $i < get($xs, "length"); $i++) {
+      for ($i = 0; $i < get($xs, "length"); $i++) {
         call($lang_set_do, get($xs, $i), $the_world_stopped_v);
       }
       return $the_world_stopped_v;
@@ -270,10 +270,10 @@ $the_language = call(new Func(function() {
       }
       return $ret;
     });
-    if ($parents_history === _void(0.0)) {
+    if ($parents_history === _void(0)) {
       $parents_history = new Object();
     }
-    if ($ref_novalue_replace === _void(0.0)) {
+    if ($ref_novalue_replace === _void(0)) {
       $ref_novalue_replace = new Arr(false, false);
     }
     $history = new Object();
@@ -285,7 +285,7 @@ $the_language = call(new Func(function() {
         return call($replace_this_with_stopped);
       }
       if (get($history, $x_id) === true) {
-        set($ref_novalue_replace, 0.0, true);
+        set($ref_novalue_replace, 0, true);
         if (is(call($delay_evaluate_p, $x))) {
           return call($replace_this_with_stopped);
         } else if (is(call($delay_builtin_func_p, $x))) {
@@ -293,16 +293,16 @@ $the_language = call(new Func(function() {
           $xs_1 = call($delay_builtin_func_xs, $x);
           $elim_s = new Arr($data_name_function_builtin_systemName, $data_list_function_builtin_systemName, $data_p_function_builtin_systemName, $error_name_function_builtin_systemName, $error_list_function_builtin_systemName, $error_p_function_builtin_systemName, $construction_p_function_builtin_systemName, $construction_head_function_builtin_systemName, $construction_tail_function_builtin_systemName, $symbol_p_function_builtin_systemName, $null_p_function_builtin_systemName);
           $is_elim = false;
-          for ($i = 0.0; $i < get($elim_s, "length"); $i++) {
+          for ($i = 0; $i < get($elim_s, "length"); $i++) {
             if (is(call($jsbool_equal_p, get($elim_s, $i), $f))) {
               $is_elim = true;
             }
           }
           if (is($is_elim)) {
-            call($ASSERT, get($xs_1, "length") === 1.0);
-            call($ASSERT, get($ref_novalue_replace, 1.0) === false);
-            $inner = call($force_all, get($xs_1, 0.0), call($make_history), $ref_novalue_replace);
-            if (is(get($ref_novalue_replace, 1.0))) {
+            call($ASSERT, get($xs_1, "length") === 1);
+            call($ASSERT, $ref_novalue_replace[1] === false);
+            $inner = call($force_all, $xs_1[0], call($make_history), $ref_novalue_replace);
+            if (is($ref_novalue_replace[1])) {
               return call($force_all, call($builtin_func_apply, $f, new Arr($inner)));
             } else {
               return call($ERROR);
@@ -316,11 +316,11 @@ $the_language = call(new Func(function() {
           } else if (is(call($jsbool_equal_p, $f, $evaluate_function_builtin_systemName))) {
             return call($replace_this_with_stopped);
           } else if (is(call($jsbool_equal_p, $f, $if_function_builtin_systemName))) {
-            call($ASSERT, get($xs_1, "length") === 3.0);
-            call($ASSERT, get($ref_novalue_replace, 1.0) === false);
-            $tf = call($force_all, get($xs_1, 0.0), call($make_history), $ref_novalue_replace);
-            if (is(get($ref_novalue_replace, 1.0))) {
-              return call($force_all, call($builtin_func_apply, $if_function_builtin_systemName, new Arr($tf, get($xs_1, 1.0), get($xs_1, 2.0))));
+            call($ASSERT, get($xs_1, "length") === 3);
+            call($ASSERT, $ref_novalue_replace[1] === false);
+            $tf = call($force_all, $xs_1[0], call($make_history), $ref_novalue_replace);
+            if (is($ref_novalue_replace[1])) {
+              return call($force_all, call($builtin_func_apply, $if_function_builtin_systemName, new Arr($tf, $xs_1[1], $xs_1[2])));
             } else {
               return call($ERROR);
             }
@@ -344,7 +344,7 @@ $the_language = call(new Func(function() {
       call_method($xs, "push", $x);
       $x = call($force1, $x);
     }
-    for ($i = 0.0; $i < get($xs, "length"); $i++) {
+    for ($i = 0; $i < get($xs, "length"); $i++) {
       call($lang_set_do, get($xs, $i), $x);
     }
     return $x;
@@ -375,39 +375,39 @@ $the_language = call(new Func(function() {
   $env_set = new Func("env_set", function($env = null, $key = null, $val = null) use (&$jsbool_equal_p) {
     $ret = null; $i = null;
     $ret = new Arr();
-    for ($i = 0.0; $i < get($env, "length"); $i = _plus($i, 2.0)) {
-      if (is(call($jsbool_equal_p, get($env, _plus($i, 0.0)), $key))) {
-        set($ret, _plus($i, 0.0), $key);
-        set($ret, _plus($i, 1.0), $val);
-        for ($i = _plus($i, 2.0); $i < get($env, "length"); $i = _plus($i, 2.0)) {
-          set($ret, _plus($i, 0.0), get($env, _plus($i, 0.0)));
-          set($ret, _plus($i, 1.0), get($env, _plus($i, 1.0)));
+    for ($i = 0; $i < get($env, "length"); $i = _plus($i, 2)) {
+      if (is(call($jsbool_equal_p, $env, _plus($i[0]), $key))) {
+        set($ret, _plus($i, 0), $key);
+        set($ret, _plus($i, 1), $val);
+        for ($i = _plus($i, 2); $i < get($env, "length"); $i = _plus($i, 2)) {
+          set($ret, _plus($i, 0), $env, _plus($i[0]));
+          set($ret, _plus($i, 1), $env, _plus($i[1]));
         }
         return $ret;
       } else {
-        set($ret, _plus($i, 0.0), get($env, _plus($i, 0.0)));
-        set($ret, _plus($i, 1.0), get($env, _plus($i, 1.0)));
+        set($ret, _plus($i, 0), $env, _plus($i[0]));
+        set($ret, _plus($i, 1), $env, _plus($i[1]));
       }
 
     }
-    set($ret, _plus(get($env, "length"), 0.0), $key);
-    set($ret, _plus(get($env, "length"), 1.0), $val);
+    set($ret, _plus(get($env, "length"), 0), $key);
+    set($ret, _plus(get($env, "length"), 1), $val);
     return $ret;
   });
   $env_get = new Func("env_get", function($env = null, $key = null, $default_v = null) use (&$jsbool_equal_p) {
     $i = null;
-    for ($i = 0.0; $i < get($env, "length"); $i = _plus($i, 2.0)) {
-      if (is(call($jsbool_equal_p, get($env, _plus($i, 0.0)), $key))) {
-        return get($env, _plus($i, 1.0));
+    for ($i = 0; $i < get($env, "length"); $i = _plus($i, 2)) {
+      if (is(call($jsbool_equal_p, $env, _plus($i[0]), $key))) {
+        return $env, _plus($i[1]);
       }
     }
     return $default_v;
   });
   $must_env_get = new Func("must_env_get", function($env = null, $key = null) use (&$jsbool_equal_p, &$ERROR) {
     $i = null;
-    for ($i = 0.0; $i < get($env, "length"); $i = _plus($i, 2.0)) {
-      if (is(call($jsbool_equal_p, get($env, _plus($i, 0.0)), $key))) {
-        return get($env, _plus($i, 1.0));
+    for ($i = 0; $i < get($env, "length"); $i = _plus($i, 2)) {
+      if (is(call($jsbool_equal_p, $env, _plus($i[0]), $key))) {
+        return $env, _plus($i[1]);
       }
     }
     return call($ERROR);
@@ -415,15 +415,15 @@ $the_language = call(new Func(function() {
   $env2val = new Func("env2val", function($env = null) use (&$null_v, &$new_construction, &$new_list, &$new_data, &$mapping_symbol) {
     $ret = null; $i = null;
     $ret = $null_v;
-    for ($i = 0.0; $i < get($env, "length"); $i = _plus($i, 2.0)) {
-      $ret = call($new_construction, call($new_list, get($env, _plus($i, 0.0)), get($env, _plus($i, 1.0))), $ret);
+    for ($i = 0; $i < get($env, "length"); $i = _plus($i, 2)) {
+      $ret = call($new_construction, call($new_list, $env, _plus($i[0]), $env, _plus($i[1])), $ret);
     }
     return call($new_data, $mapping_symbol, call($new_list, $ret));
   });
   $env_foreach = new Func("env_foreach", function($env = null, $f = null) {
     $i = null;
-    for ($i = 0.0; $i < get($env, "length"); $i = _plus($i, 2.0)) {
-      call($f, get($env, _plus($i, 0.0)), get($env, _plus($i, 1.0)));
+    for ($i = 0; $i < get($env, "length"); $i = _plus($i, 2)) {
+      call($f, $env, _plus($i[0]), $env, _plus($i[1]));
     }
   });
   $val2env = new Func("val2env", function($x = null) use (&$force_all, &$data_p, &$data_name, &$symbol_p, &$symbol_equal_p, &$mapping_symbol, &$data_list, &$construction_p, &$null_p, &$construction_tail, &$construction_head, &$jsbool_equal_p) {
@@ -467,9 +467,9 @@ $the_language = call(new Func(function() {
         return false;
       }
       $not_breaked = true;
-      for ($i = 0.0; $i < get($ret, "length"); $i = _plus($i, 2.0)) {
-        if (is(call($jsbool_equal_p, get($ret, _plus($i, 0.0)), $k))) {
-          set($ret, _plus($i, 1.0), $v);
+      for ($i = 0; $i < get($ret, "length"); $i = _plus($i, 2)) {
+        if (is(call($jsbool_equal_p, $ret, _plus($i[0]), $k))) {
+          set($ret, _plus($i, 1), $v);
           $not_breaked = false;
           break;
         }
@@ -503,21 +503,21 @@ $the_language = call(new Func(function() {
 
 
       }
-      if (is(call($jsbool_equal_p, get($xs, 0.0), $form_builtin_use_systemName))) {
-        if (get($xs, "length") === 1.0) {
+      if (is(call($jsbool_equal_p, $xs[0], $form_builtin_use_systemName))) {
+        if (get($xs, "length") === 1) {
           return $error_v;
         }
-        $f = get($xs, 1.0);
+        $f = $xs[1];
         $args = new Arr();
-        for ($i = 2.0; $i < get($xs, "length"); $i++) {
-          set($args, to_number($i) - 2.0, get($xs, $i));
+        for ($i = 2; $i < get($xs, "length"); $i++) {
+          set($args, to_number($i) - 2, get($xs, $i));
         }
         return call($builtin_form_apply, $env, $f, $args);
-      } else if (is(call($jsbool_equal_p, get($xs, 0.0), $form_use_systemName))) {
-        if (get($xs, "length") === 1.0) {
+      } else if (is(call($jsbool_equal_p, $xs[0], $form_use_systemName))) {
+        if (get($xs, "length") === 1) {
           return $error_v;
         }
-        $f = call($force_all, call($evaluate, $env, get($xs, 1.0)));
+        $f = call($force_all, call($evaluate, $env, $xs[1]));
         if (not(call($data_p, $f))) {
           return $error_v;
         }
@@ -547,25 +547,25 @@ $the_language = call(new Func(function() {
           return $error_v;
         }
         $args = new Arr(call($env2val, $env));
-        for ($i = 2.0; $i < get($xs, "length"); $i++) {
-          set($args, to_number($i) - 1.0, get($xs, $i));
+        for ($i = 2; $i < get($xs, "length"); $i++) {
+          set($args, to_number($i) - 1, get($xs, $i));
         }
         return call($apply, $f_x, $args);
-      } else if (is(call($jsbool_equal_p, get($xs, 0.0), $function_builtin_use_systemName))) {
-        if (get($xs, "length") === 1.0) {
+      } else if (is(call($jsbool_equal_p, $xs[0], $function_builtin_use_systemName))) {
+        if (get($xs, "length") === 1) {
           return $error_v;
         }
-        $f = get($xs, 1.0);
+        $f = $xs[1];
         $args = new Arr();
-        for ($i = 2.0; $i < get($xs, "length"); $i++) {
-          set($args, to_number($i) - 2.0, call($evaluate, $env, get($xs, $i)));
+        for ($i = 2; $i < get($xs, "length"); $i++) {
+          set($args, to_number($i) - 2, call($evaluate, $env, get($xs, $i)));
         }
         return call($builtin_func_apply, $f, $args);
       } else {
-        $f = call($evaluate, $env, get($xs, 0.0));
+        $f = call($evaluate, $env, $xs[0]);
         $args = new Arr();
-        for ($i = 1.0; $i < get($xs, "length"); $i++) {
-          set($args, to_number($i) - 1.0, call($evaluate, $env, get($xs, $i)));
+        for ($i = 1; $i < get($xs, "length"); $i++) {
+          set($args, to_number($i) - 1, call($evaluate, $env, get($xs, $i)));
         }
         return call($apply, $f, $args);
       }
@@ -588,7 +588,7 @@ $the_language = call(new Func(function() {
     return (is($or_ = call($symbol_p, $x)) ? $or_ : call($data_p, $x));
   });
   $make_builtin_p_func = new Func("make_builtin_p_func", function($p_sym = null, $p_jsfunc = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$true_v, &$false_v) {
-    return new Arr($p_sym, 1.0, new Func(function($x = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$p_sym, &$p_jsfunc, &$true_v, &$false_v) {
+    return new Arr($p_sym, 1, new Func(function($x = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$p_sym, &$p_jsfunc, &$true_v, &$false_v) {
       $x = call($force1, $x);
       if (is(call($any_delay_just_p, $x))) {
         return call($builtin_func_apply, $p_sym, new Arr($x));
@@ -600,7 +600,7 @@ $the_language = call(new Func(function() {
     }));
   });
   $make_builtin_get_func = new Func("make_builtin_get_func", function($f_sym = null, $p_jsfunc = null, $f_jsfunc = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply) {
-    return new Arr($f_sym, 1.0, new Func(function($x = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$f_sym, &$p_jsfunc, &$f_jsfunc) {
+    return new Arr($f_sym, 1, new Func(function($x = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$f_sym, &$p_jsfunc, &$f_jsfunc) {
       $x = call($force1, $x);
       if (is(call($any_delay_just_p, $x))) {
         return call($builtin_func_apply, $f_sym, new Arr($x));
@@ -638,11 +638,11 @@ $the_language = call(new Func(function() {
     }
     $f_code = call($construction_head, $f_list_cdr);
     $env = $env_null_v;
-    $xs_i = 0.0;
+    $xs_i = 0;
     while (not(call($null_p, $args_pat))) {
       if (is(call($name_p, $args_pat))) {
         $x = $null_v;
-        for ($i = to_number(get($xs, "length")) - 1.0; $i >= $xs_i; $i--) {
+        for ($i = to_number(get($xs, "length")) - 1; $i >= $xs_i; $i--) {
           $x = call($new_construction, get($xs, $i), $x);
         }
         $env = call($env_set, $env, $args_pat, $x);
@@ -672,19 +672,19 @@ $the_language = call(new Func(function() {
   $real_builtin_func_apply = new Func("real_builtin_func_apply", function($f = null, $xs = null) use (&$new_error, &$system_symbol, &$new_list, &$function_builtin_use_systemName, &$jsArray_to_list, &$real_builtin_func_apply_s, &$jsbool_equal_p, &$ERROR) {
     $error_v = null; $i = null; $actually_length = null; $f_1 = null;
     $error_v = call($new_error, $system_symbol, call($new_list, $function_builtin_use_systemName, call($new_list, $f, call($jsArray_to_list, $xs))));
-    for ($i = 0.0; $i < get($real_builtin_func_apply_s, "length"); $i++) {
-      if (is(call($jsbool_equal_p, $f, get(get($real_builtin_func_apply_s, $i), 0.0)))) {
-        $actually_length = get(get($real_builtin_func_apply_s, $i), 1.0);
+    for ($i = 0; $i < get($real_builtin_func_apply_s, "length"); $i++) {
+      if (is(call($jsbool_equal_p, $f, get(get($real_builtin_func_apply_s, $i), 0)))) {
+        $actually_length = get(get($real_builtin_func_apply_s, $i), 1);
         if (get($xs, "length") !== $actually_length) {
           return $error_v;
         }
-        $f_1 = get(get($real_builtin_func_apply_s, $i), 2.0);
-        if ($actually_length === 1.0) {
-          return call($f_1, get($xs, 0.0), $error_v);
-        } else if ($actually_length === 2.0) {
-          return call($f_1, get($xs, 0.0), get($xs, 1.0), $error_v);
-        } else if ($actually_length === 3.0) {
-          return call($f_1, get($xs, 0.0), get($xs, 1.0), get($xs, 2.0), $error_v);
+        $f_1 = get(get($real_builtin_func_apply_s, $i), 2);
+        if ($actually_length === 1) {
+          return call($f_1, $xs[0], $error_v);
+        } else if ($actually_length === 2) {
+          return call($f_1, $xs[0], $xs[1], $error_v);
+        } else if ($actually_length === 3) {
+          return call($f_1, $xs[0], $xs[1], $xs[2], $error_v);
         }
 
 
@@ -697,15 +697,15 @@ $the_language = call(new Func(function() {
     $error_v = null;
     $error_v = call($new_error, $system_symbol, call($new_list, $form_builtin_use_systemName, call($new_list, call($env2val, $env), $f, call($jsArray_to_list, $xs))));
     if (is(call($jsbool_equal_p, $f, $quote_form_builtin_systemName))) {
-      if (get($xs, "length") !== 1.0) {
+      if (get($xs, "length") !== 1) {
         return $error_v;
       }
-      return get($xs, 0.0);
+      return $xs[0];
     } else if (is(call($jsbool_equal_p, $f, $lambda_form_builtin_systemName))) {
-      if (get($xs, "length") !== 2.0) {
+      if (get($xs, "length") !== 2) {
         return $error_v;
       }
-      return call($new_lambda, $env, get($xs, 0.0), get($xs, 1.0), $error_v);
+      return call($new_lambda, $env, $xs[0], $xs[1], $error_v);
     }
 
     return $error_v;
@@ -723,7 +723,7 @@ $the_language = call(new Func(function() {
     $make_quote = new Func("make_quote", function($x = null) use (&$new_list, &$form_builtin_use_systemName, &$quote_form_builtin_systemName) {
       return call($new_list, $form_builtin_use_systemName, $quote_form_builtin_systemName, $x);
     });
-    if ($error_v === _void(0.0)) {
+    if ($error_v === _void(0)) {
       $error_v = false;
     }
     $args_pat = call($force_all_rec, $args_pat);
@@ -751,7 +751,7 @@ $the_language = call(new Func(function() {
     $env_vars = new Arr();
     call($env_foreach, $env, new Func(function($k = null, $v = null) use (&$args_pat_vars, &$jsbool_equal_p, &$env_vars) {
       $i = null;
-      for ($i = 0.0; $i < get($args_pat_vars, "length"); $i++) {
+      for ($i = 0; $i < get($args_pat_vars, "length"); $i++) {
         if (is(call($jsbool_equal_p, get($args_pat_vars, $i), $k))) {
           return ;
         }
@@ -759,11 +759,11 @@ $the_language = call(new Func(function() {
       call_method($env_vars, "push", $k);
     }));
     $new_args_pat = $args_pat_vars_val;
-    for ($i = to_number(get($env_vars, "length")) - 1.0; $i >= 0.0; $i--) {
+    for ($i = to_number(get($env_vars, "length")) - 1; $i >= 0; $i--) {
       $new_args_pat = call($new_construction, get($env_vars, $i), $new_args_pat);
     }
     $new_args = $args_pat_vars_val;
-    for ($i = to_number(get($env_vars, "length")) - 1.0; $i >= 0.0; $i--) {
+    for ($i = to_number(get($env_vars, "length")) - 1; $i >= 0; $i--) {
       $new_args = call($new_construction, call($make_quote, call($must_env_get, $env, get($env_vars, $i))), $new_args);
     }
     return call($new_data, $function_symbol, call($new_list, $args_pat, call($new_construction, call($make_quote, call($new_data, $function_symbol, call($new_list, $new_args_pat, $body))), $new_args)));
@@ -950,7 +950,7 @@ $the_language = call(new Func(function() {
       return $ret;
     });
     $put = new Func("put", function($x = null) use (&$ASSERT, &$state_const, &$state) {
-      call($ASSERT, get($state_const, to_number($state) - 1.0) === $x);
+      call($ASSERT, get($state_const, to_number($state) - 1) === $x);
       $state--;
     });
     $parse_error = new Func("parse_error", function() {
@@ -1025,7 +1025,7 @@ $the_language = call(new Func(function() {
         if (call($construction_tail, $x) !== $HOLE) {
           return call($ERROR);
         }
-        set($x, 2.0, $lst);
+        set($x, 2, $lst);
       });
       $last_add = new Func("last_add", function($x = null) use (&$set_last, &$new_construction, &$HOLE) {
         call($set_last, call($new_construction, $x, $HOLE));
@@ -1167,7 +1167,7 @@ $the_language = call(new Func(function() {
         return false;
       }
       $not_xs = new Arr("(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&");
-      for ($i = 0.0; $i < get($not_xs, "length"); $i++) {
+      for ($i = 0; $i < get($not_xs, "length"); $i++) {
         if ($x === get($not_xs, $i)) {
           return false;
         }
@@ -1178,7 +1178,7 @@ $the_language = call(new Func(function() {
       $fs = null; $i = null; $x_2 = null;
       call($space);
       $fs = new Arr($list, $symbol, $data, $readerror, $readeval, $readfuncapply, $readformbuiltin, $readapply);
-      for ($i = 0.0; $i < get($fs, "length"); $i++) {
+      for ($i = 0; $i < get($fs, "length"); $i++) {
         $x_2 = call_method($fs, $i);
         if ($x_2 !== false) {
           return $x_2;
@@ -1187,7 +1187,7 @@ $the_language = call(new Func(function() {
       return call($parse_error);
     });
     $state_const = $x;
-    $state = 0.0;
+    $state = 0;
     $readeval = call($make_read_two, "\$", new Func(function($e = null, $x = null) use (&$val2env, &$parse_error, &$evaluate) {
       $env = null;
       $env = call($val2env, $e);
@@ -1242,7 +1242,7 @@ $the_language = call(new Func(function() {
       return $ret;
     });
     $put = new Func("put", function($x = null) use (&$ASSERT, &$state_const, &$state) {
-      call($ASSERT, get($state_const, to_number($state) - 1.0) === $x);
+      call($ASSERT, get($state_const, to_number($state) - 1) === $x);
       $state--;
     });
     $parse_error = new Func("parse_error", function() {
@@ -1317,7 +1317,7 @@ $the_language = call(new Func(function() {
         if (call($construction_tail, $x) !== $HOLE) {
           return call($ERROR);
         }
-        set($x, 2.0, $lst);
+        set($x, 2, $lst);
       });
       $last_add = new Func("last_add", function($x = null) use (&$set_last, &$new_construction, &$HOLE) {
         call($set_last, call($new_construction, $x, $HOLE));
@@ -1459,7 +1459,7 @@ $the_language = call(new Func(function() {
         return false;
       }
       $not_xs = new Arr("(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&");
-      for ($i = 0.0; $i < get($not_xs, "length"); $i++) {
+      for ($i = 0; $i < get($not_xs, "length"); $i++) {
         if ($x === get($not_xs, $i)) {
           return false;
         }
@@ -1470,7 +1470,7 @@ $the_language = call(new Func(function() {
       $fs = null; $i = null; $x_3 = null;
       call($space);
       $fs = new Arr($list, $readsysname, $data, $readerror, $readeval, $readfuncapply, $readformbuiltin, $readapply);
-      for ($i = 0.0; $i < get($fs, "length"); $i++) {
+      for ($i = 0; $i < get($fs, "length"); $i++) {
         $x_3 = call_method($fs, $i);
         if ($x_3 !== false) {
           return $x_3;
@@ -1504,11 +1504,11 @@ $the_language = call(new Func(function() {
           call($assert_get, "]");
           return $x;
         });
-        if ($strict === _void(0.0)) {
+        if ($strict === _void(0)) {
           $strict = false;
         }
         $fs = is($strict) ? new Arr($list, $symbol, $readsysname_no_pack_bracket, $data, $readerror, $readeval, $readfuncapply, $readformbuiltin, $readapply) : new Arr($list, $readsysname_no_pack, $data, $readerror, $readeval, $readfuncapply, $readformbuiltin, $readapply);
-        for ($i = 0.0; $i < get($fs, "length"); $i++) {
+        for ($i = 0; $i < get($fs, "length"); $i++) {
           $x_13 = call_method($fs, $i);
           if ($x_13 !== false) {
             return $x_13;
@@ -1634,7 +1634,7 @@ $the_language = call(new Func(function() {
       return call($systemName_make, $x);
     });
     $state_const = $x;
-    $state = 0.0;
+    $state = 0;
     $readeval = call($make_read_two, "\$", new Func(function($e = null, $x = null) use (&$val2env, &$parse_error, &$evaluate) {
       $env = null;
       $env = call($val2env, $e);
@@ -1695,55 +1695,55 @@ $the_language = call(new Func(function() {
         return call($un_symbol, $x);
       }
       $maybe_xs = call($maybe_list_to_jsArray, $x);
-      if ($maybe_xs !== false && get($maybe_xs, "length") === 3.0 && is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $typeAnnotation_symbol))) {
-        $maybe_lst_2 = call($maybe_list_to_jsArray, get($maybe_xs, 1.0));
-        if ($maybe_lst_2 !== false && get($maybe_lst_2, "length") === 3.0 && is(call($jsbool_no_force_equal_p, get($maybe_lst_2, 0.0), $function_symbol))) {
-          $var_2_1 = get($maybe_lst_2, 1.0);
+      if ($maybe_xs !== false && get($maybe_xs, "length") === 3 && is(call($jsbool_no_force_equal_p, $maybe_xs[0], $typeAnnotation_symbol))) {
+        $maybe_lst_2 = call($maybe_list_to_jsArray, $maybe_xs[1]);
+        if ($maybe_lst_2 !== false && get($maybe_lst_2, "length") === 3 && is(call($jsbool_no_force_equal_p, $maybe_lst_2[0], $function_symbol))) {
+          $var_2_1 = $maybe_lst_2[1];
           $maybe_lst_3 = call($maybe_list_to_jsArray, $var_2_1);
-          if ($maybe_lst_3 !== false && get($maybe_lst_3, "length") === 1.0 && is(call($jsbool_no_force_equal_p, get($maybe_lst_2, 2.0), $something_symbol))) {
-            return call($inner_bracket, _concat(call($print_sys_name, get($maybe_lst_3, 0.0), "inner"), ".", call($print_sys_name, get($maybe_xs, 2.0), "inner")));
-          } else if (is(call($construction_p, $var_2_1)) && is(call($jsbool_no_force_equal_p, call($construction_tail, $var_2_1), $something_symbol)) && is(call($jsbool_no_force_equal_p, get($maybe_lst_2, 2.0), $something_symbol))) {
-            return call($inner_bracket, _concat(call($print_sys_name, call($construction_head, $var_2_1), "inner"), "@", call($print_sys_name, get($maybe_xs, 2.0), "inner")));
-          } else if (is(call($jsbool_no_force_equal_p, $var_2_1, $something_symbol)) && is(call($jsbool_no_force_equal_p, get($maybe_xs, 2.0), $theThing_symbol))) {
-            return call($inner_bracket, _concat(":>", call($print_sys_name, get($maybe_lst_2, 2.0), "inner")));
+          if ($maybe_lst_3 !== false && get($maybe_lst_3, "length") === 1 && is(call($jsbool_no_force_equal_p, $maybe_lst_2[2], $something_symbol))) {
+            return call($inner_bracket, _concat(call($print_sys_name, $maybe_lst_3[0], "inner"), ".", call($print_sys_name, $maybe_xs[2], "inner")));
+          } else if (is(call($construction_p, $var_2_1)) && is(call($jsbool_no_force_equal_p, call($construction_tail, $var_2_1), $something_symbol)) && is(call($jsbool_no_force_equal_p, $maybe_lst_2[2], $something_symbol))) {
+            return call($inner_bracket, _concat(call($print_sys_name, call($construction_head, $var_2_1), "inner"), "@", call($print_sys_name, $maybe_xs[2], "inner")));
+          } else if (is(call($jsbool_no_force_equal_p, $var_2_1, $something_symbol)) && is(call($jsbool_no_force_equal_p, $maybe_xs[2], $theThing_symbol))) {
+            return call($inner_bracket, _concat(":>", call($print_sys_name, $maybe_lst_2[2], "inner")));
           }
 
 
         }
-        $maybe_lst_44 = call($maybe_list_to_jsArray, get($maybe_xs, 2.0));
-        if (is(call($jsbool_no_force_equal_p, get($maybe_xs, 1.0), $function_symbol)) && $maybe_lst_44 !== false && get($maybe_lst_44, "length") === 2.0 && is(call($jsbool_no_force_equal_p, get($maybe_lst_44, 0.0), $isOrNot_symbol))) {
-          return call($inner_bracket, _concat(call($print_sys_name, get($maybe_lst_44, 1.0), "inner"), "?"));
+        $maybe_lst_44 = call($maybe_list_to_jsArray, $maybe_xs[2]);
+        if (is(call($jsbool_no_force_equal_p, $maybe_xs[1], $function_symbol)) && $maybe_lst_44 !== false && get($maybe_lst_44, "length") === 2 && is(call($jsbool_no_force_equal_p, $maybe_lst_44[0], $isOrNot_symbol))) {
+          return call($inner_bracket, _concat(call($print_sys_name, $maybe_lst_44[1], "inner"), "?"));
         }
-        if ($maybe_lst_2 !== false && get($maybe_lst_2, "length") === 2.0 && is(call($jsbool_no_force_equal_p, get($maybe_xs, 2.0), $theThing_symbol)) && is(call($jsbool_no_force_equal_p, get($maybe_lst_2, 0.0), $form_symbol))) {
-          $maybe_lst_88 = call($maybe_list_to_jsArray, get($maybe_lst_2, 1.0));
-          if ($maybe_lst_88 !== false && get($maybe_lst_88, "length") === 3.0 && is(call($jsbool_no_force_equal_p, get($maybe_lst_88, 0.0), $function_symbol)) && is(call($jsbool_no_force_equal_p, get($maybe_lst_88, 1.0), $something_symbol))) {
-            return call($inner_bracket, _concat(":&>", call($print_sys_name, get($maybe_lst_88, 2.0), "inner")));
+        if ($maybe_lst_2 !== false && get($maybe_lst_2, "length") === 2 && is(call($jsbool_no_force_equal_p, $maybe_xs[2], $theThing_symbol)) && is(call($jsbool_no_force_equal_p, $maybe_lst_2[0], $form_symbol))) {
+          $maybe_lst_88 = call($maybe_list_to_jsArray, $maybe_lst_2[1]);
+          if ($maybe_lst_88 !== false && get($maybe_lst_88, "length") === 3 && is(call($jsbool_no_force_equal_p, $maybe_lst_88[0], $function_symbol)) && is(call($jsbool_no_force_equal_p, $maybe_lst_88[1], $something_symbol))) {
+            return call($inner_bracket, _concat(":&>", call($print_sys_name, $maybe_lst_88[2], "inner")));
           }
         }
-        $hd = is(call($jsbool_no_force_equal_p, get($maybe_xs, 2.0), $something_symbol)) ? "_" : (is(call($jsbool_no_force_equal_p, get($maybe_xs, 2.0), $theThing_symbol)) ? "" : call($print_sys_name, get($maybe_xs, 2.0), "inner"));
-        return call($inner_bracket, _concat($hd, ":", call($print_sys_name, get($maybe_xs, 1.0), "inner")));
-      } else if ($maybe_xs !== false && get($maybe_xs, "length") === 2.0) {
-        if (is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $form_symbol))) {
-          $maybe_lst_288 = call($maybe_list_to_jsArray, get($maybe_xs, 1.0));
-          if ($maybe_lst_288 !== false && get($maybe_lst_288, "length") === 2.0 && is(call($jsbool_no_force_equal_p, get($maybe_lst_288, 0.0), $system_symbol))) {
-            return call($inner_bracket, _concat("&+", call($print_sys_name, get($maybe_lst_288, 1.0), "inner")));
+        $hd = is(call($jsbool_no_force_equal_p, $maybe_xs[2], $something_symbol)) ? "_" : (is(call($jsbool_no_force_equal_p, $maybe_xs[2], $theThing_symbol)) ? "" : call($print_sys_name, $maybe_xs[2], "inner"));
+        return call($inner_bracket, _concat($hd, ":", call($print_sys_name, $maybe_xs[1], "inner")));
+      } else if ($maybe_xs !== false && get($maybe_xs, "length") === 2) {
+        if (is(call($jsbool_no_force_equal_p, $maybe_xs[0], $form_symbol))) {
+          $maybe_lst_288 = call($maybe_list_to_jsArray, $maybe_xs[1]);
+          if ($maybe_lst_288 !== false && get($maybe_lst_288, "length") === 2 && is(call($jsbool_no_force_equal_p, $maybe_lst_288[0], $system_symbol))) {
+            return call($inner_bracket, _concat("&+", call($print_sys_name, $maybe_lst_288[1], "inner")));
           }
-          return call($inner_bracket, _concat("&", call($print_sys_name, get($maybe_xs, 1.0), "inner")));
-        } else if (is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $isOrNot_symbol))) {
-          return call($inner_bracket, _concat(call($print_sys_name, get($maybe_xs, 1.0), "inner"), "~"));
-        } else if (is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $system_symbol))) {
-          return call($inner_bracket, _concat("+", call($print_sys_name, get($maybe_xs, 1.0), "inner")));
+          return call($inner_bracket, _concat("&", call($print_sys_name, $maybe_xs[1], "inner")));
+        } else if (is(call($jsbool_no_force_equal_p, $maybe_xs[0], $isOrNot_symbol))) {
+          return call($inner_bracket, _concat(call($print_sys_name, $maybe_xs[1], "inner"), "~"));
+        } else if (is(call($jsbool_no_force_equal_p, $maybe_xs[0], $system_symbol))) {
+          return call($inner_bracket, _concat("+", call($print_sys_name, $maybe_xs[1], "inner")));
         }
 
 
-      } else if ($maybe_xs !== false && get($maybe_xs, "length") === 3.0 && is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $sub_symbol))) {
-        $maybe_lst_8934 = call($maybe_list_to_jsArray, get($maybe_xs, 2.0));
-        if ($maybe_lst_8934 !== false && get($maybe_lst_8934, "length") !== 0.0) {
+      } else if ($maybe_xs !== false && get($maybe_xs, "length") === 3 && is(call($jsbool_no_force_equal_p, $maybe_xs[0], $sub_symbol))) {
+        $maybe_lst_8934 = call($maybe_list_to_jsArray, $maybe_xs[2]);
+        if ($maybe_lst_8934 !== false && get($maybe_lst_8934, "length") !== 0) {
           $tmp = "";
-          for ($i = 0.0; $i < get($maybe_lst_8934, "length"); $i++) {
+          for ($i = 0; $i < get($maybe_lst_8934, "length"); $i++) {
             $tmp += _concat("/", call($print_sys_name, get($maybe_lst_8934, $i), "inner"));
           }
-          return call($inner_bracket, _plus(call($print_sys_name, get($maybe_xs, 1.0), "inner"), $tmp));
+          return call($inner_bracket, _plus(call($print_sys_name, $maybe_xs[1], "inner"), $tmp));
         }
       }
 
@@ -1780,8 +1780,8 @@ $the_language = call(new Func(function() {
       $name_1 = call($data_name, $x);
       $list = call($data_list, $x);
       $maybe_xs = call($maybe_list_to_jsArray, $list);
-      if ($maybe_xs !== false && get($maybe_xs, "length") === 2.0 && is(call($jsbool_no_force_equal_p, $name_1, $name_symbol)) && is(call($jsbool_no_force_equal_p, get($maybe_xs, 0.0), $system_symbol))) {
-        return call($print_sys_name, get($maybe_xs, 1.0), "top");
+      if ($maybe_xs !== false && get($maybe_xs, "length") === 2 && is(call($jsbool_no_force_equal_p, $name_1, $name_symbol)) && is(call($jsbool_no_force_equal_p, $maybe_xs[0], $system_symbol))) {
+        return call($print_sys_name, $maybe_xs[1], "top");
       }
       return _concat("#", call($complex_print, call($new_construction, $name_1, $list)));
     } else if (is(call($error_p, $x))) {
@@ -1809,16 +1809,16 @@ $the_language = call(new Func(function() {
   });
   $exports = new Object();
   set($exports, "__esModule", true);
-  $symbol_t = 0.0;
-  $construction_t = 1.0;
-  $null_t = 2.0;
-  $data_t = 3.0;
-  $error_t = 4.0;
-  $just_t = 5.0;
-  $delay_evaluate_t = 6.0;
-  $delay_builtin_func_t = 7.0;
-  $delay_builtin_form_t = 8.0;
-  $delay_apply_t = 9.0;
+  $symbol_t = 0;
+  $construction_t = 1;
+  $null_t = 2;
+  $data_t = 3;
+  $error_t = 4;
+  $just_t = 5;
+  $delay_evaluate_t = 6;
+  $delay_builtin_func_t = 7;
+  $delay_builtin_form_t = 8;
+  $delay_apply_t = 9;
   set($exports, "new_symbol", $new_symbol);
   set($exports, "symbol_p", $symbol_p);
   set($exports, "un_symbol", $un_symbol);
@@ -1964,7 +1964,7 @@ $the_language = call(new Func(function() {
   set($exports, "env2val", $env2val);
   set($exports, "env_foreach", $env_foreach);
   set($exports, "val2env", $val2env);
-  $real_builtin_func_apply_s = new Arr(call($make_builtin_p_func, $data_p_function_builtin_systemName, $data_p), new Arr($new_data_function_builtin_systemName, 2.0, $new_data), call($make_builtin_get_func, $data_name_function_builtin_systemName, $data_p, $data_name), call($make_builtin_get_func, $data_list_function_builtin_systemName, $data_p, $data_list), call($make_builtin_p_func, $error_p_function_builtin_systemName, $error_p), new Arr($new_error_function_builtin_systemName, 2.0, $new_error), call($make_builtin_get_func, $error_name_function_builtin_systemName, $error_p, $error_name), call($make_builtin_get_func, $error_list_function_builtin_systemName, $error_p, $error_list), call($make_builtin_p_func, $null_p_function_builtin_systemName, $null_p), new Arr($new_construction_function_builtin_systemName, 2.0, $new_construction), call($make_builtin_p_func, $construction_p_function_builtin_systemName, $construction_p), call($make_builtin_get_func, $construction_head_function_builtin_systemName, $construction_p, $construction_head), call($make_builtin_get_func, $construction_tail_function_builtin_systemName, $construction_p, $construction_tail), new Arr($equal_p_function_builtin_systemName, 2.0, new Func(function($x = null, $y = null, $error_v = null) use (&$true_v, &$force1, &$any_delay_just_p, &$builtin_func_apply, &$equal_p_function_builtin_systemName, &$ASSERT, &$null_p, &$false_v, &$symbol_p, &$symbol_equal_p, &$data_p, &$data_name, &$data_list, &$construction_p, &$construction_head, &$construction_tail, &$error_p, &$error_name, &$error_list, &$ERROR, &$if_function_builtin_systemName) {
+  $real_builtin_func_apply_s = new Arr(call($make_builtin_p_func, $data_p_function_builtin_systemName, $data_p), new Arr($new_data_function_builtin_systemName, 2, $new_data), call($make_builtin_get_func, $data_name_function_builtin_systemName, $data_p, $data_name), call($make_builtin_get_func, $data_list_function_builtin_systemName, $data_p, $data_list), call($make_builtin_p_func, $error_p_function_builtin_systemName, $error_p), new Arr($new_error_function_builtin_systemName, 2, $new_error), call($make_builtin_get_func, $error_name_function_builtin_systemName, $error_p, $error_name), call($make_builtin_get_func, $error_list_function_builtin_systemName, $error_p, $error_list), call($make_builtin_p_func, $null_p_function_builtin_systemName, $null_p), new Arr($new_construction_function_builtin_systemName, 2, $new_construction), call($make_builtin_p_func, $construction_p_function_builtin_systemName, $construction_p), call($make_builtin_get_func, $construction_head_function_builtin_systemName, $construction_p, $construction_head), call($make_builtin_get_func, $construction_tail_function_builtin_systemName, $construction_p, $construction_tail), new Arr($equal_p_function_builtin_systemName, 2, new Func(function($x = null, $y = null, $error_v = null) use (&$true_v, &$force1, &$any_delay_just_p, &$builtin_func_apply, &$equal_p_function_builtin_systemName, &$ASSERT, &$null_p, &$false_v, &$symbol_p, &$symbol_equal_p, &$data_p, &$data_name, &$data_list, &$construction_p, &$construction_head, &$construction_tail, &$error_p, &$error_name, &$error_list, &$ERROR, &$if_function_builtin_systemName) {
     $H_if = new Func("H_if", function($b = null, $x = null, $y = null) use (&$builtin_func_apply, &$if_function_builtin_systemName) {
       return call($builtin_func_apply, $if_function_builtin_systemName, new Arr($b, $x, $y));
     });
@@ -2017,7 +2017,7 @@ $the_language = call(new Func(function() {
 
 
     return call($ERROR);
-  })), new Arr($apply_function_builtin_systemName, 2.0, new Func(function($f = null, $xs = null, $error_v = null) use (&$force_all, &$construction_p, &$construction_head, &$construction_tail, &$null_p, &$apply) {
+  })), new Arr($apply_function_builtin_systemName, 2, new Func(function($f = null, $xs = null, $error_v = null) use (&$force_all, &$construction_p, &$construction_head, &$construction_tail, &$null_p, &$apply) {
     $jslist = null; $iter = null;
     $jslist = new Arr();
     $iter = call($force_all, $xs);
@@ -2029,14 +2029,14 @@ $the_language = call(new Func(function() {
       return $error_v;
     }
     return call($apply, $f, $jslist);
-  })), new Arr($evaluate_function_builtin_systemName, 2.0, new Func(function($env = null, $x = null, $error_v = null) use (&$val2env, &$evaluate) {
+  })), new Arr($evaluate_function_builtin_systemName, 2, new Func(function($env = null, $x = null, $error_v = null) use (&$val2env, &$evaluate) {
     $maybeenv = null;
     $maybeenv = call($val2env, $env);
     if ($maybeenv === false) {
       return $error_v;
     }
     return call($evaluate, $maybeenv, $x);
-  })), call($make_builtin_p_func, $symbol_p_function_builtin_systemName, $symbol_p), new Arr($list_chooseOne_function_builtin_systemName, 1.0, new Func(function($xs = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$list_chooseOne_function_builtin_systemName, &$construction_p, &$construction_head) {
+  })), call($make_builtin_p_func, $symbol_p_function_builtin_systemName, $symbol_p), new Arr($list_chooseOne_function_builtin_systemName, 1, new Func(function($xs = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$list_chooseOne_function_builtin_systemName, &$construction_p, &$construction_head) {
     $xs = call($force1, $xs);
     if (is(call($any_delay_just_p, $xs))) {
       return call($builtin_func_apply, $list_chooseOne_function_builtin_systemName, new Arr($xs));
@@ -2045,7 +2045,7 @@ $the_language = call(new Func(function() {
       return $error_v;
     }
     return call($construction_head, $xs);
-  })), new Arr($if_function_builtin_systemName, 3.0, new Func(function($b = null, $x = null, $y = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$if_function_builtin_systemName, &$data_p, &$force_all, &$data_name, &$symbol_p, &$symbol_equal_p, &$true_symbol, &$false_symbol) {
+  })), new Arr($if_function_builtin_systemName, 3, new Func(function($b = null, $x = null, $y = null, $error_v = null) use (&$force1, &$any_delay_just_p, &$builtin_func_apply, &$if_function_builtin_systemName, &$data_p, &$force_all, &$data_name, &$symbol_p, &$symbol_equal_p, &$true_symbol, &$false_symbol) {
     $nam = null;
     $b = call($force1, $b);
     if (is(call($any_delay_just_p, $b))) {

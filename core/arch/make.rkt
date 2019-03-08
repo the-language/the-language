@@ -95,13 +95,14 @@
                  #{cat ../ecmascript/lang.raw.js}
                  "\nreturn exports;})();"
                  ))
-             (define raw #{echo $js-file | npx js2php --runtime runtime.php --quiet})
-             echo ka
+             (define raw0 #{echo $js-file | npx js2php --runtime runtime.php --quiet})
+             (define raw1 #{echo $raw0 | sed (id "s|get(\\([^)]*\\), \\([0-9]\\).0)|\\1[\\2]|g") | sed (id "s|\\([0-9]\\)\\.0|\\1|g")})
              (define out (string-append
                  "<?php\n"
                  c-generatedby
                  c-copyright
-                 (match raw
+                 #{cat runtime.php}
+                 (match raw1
                      [(regexp #rx"<?php\nrequire_once\\(\"runtime.php\"\\);\n(.*)" (list _ x)) x])
                  ))
              echo $out &>! lang.php
