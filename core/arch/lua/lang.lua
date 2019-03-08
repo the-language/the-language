@@ -70,8 +70,8 @@ lang_set_do = function(x, y)
     end
     x[0 + 1] = just_t;
     x[1 + 1] = y;
-    x[2 + 1] = nil;
-    x[3 + 1] = nil;
+    x[2 + 1] = false;
+    x[3 + 1] = false;
 end;
 just_p = function(x)
     return x[0 + 1] == just_t;
@@ -607,11 +607,11 @@ real_builtin_form_apply = function(env, f, xs)
 end;
 new_lambda = function(env, args_pat, body, error_v)
     if error_v == nil then
-        error_v = nil;
+        error_v = false;
     end
     local make_error_v;
     make_error_v = function()
-        if error_v == nil then
+        if error_v == false then
             return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), lambda_form_builtin_systemName, jsArray_to_list({args_pat, body}))));
         else
             return error_v;

@@ -57,7 +57,7 @@ export type LangValCons = [LangValType.construction_t, LangValRec, LangValRec]
 export type LangValNull = [LangValType.null_t]
 export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
-export type LangValJust = [LangValType.just_t, LangValRec, undefined, undefined]
+export type LangValJust = [LangValType.just_t, LangValRec, false, false]
 export type LangValDelayEval = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
 export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
 export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
@@ -141,8 +141,8 @@ function lang_set_do(x: LangVal, y: LangVal): void {
     }
     x[0] = just_t
     x[1] = y
-    x[2] = undefined
-    x[3] = undefined
+    x[2] = false
+    x[3] = false
 }
 function just_p(x: LangVal): x is LangValJust {
     return x[0] === just_t
@@ -1062,10 +1062,10 @@ function new_lambda(
     env: Env,
     args_pat: LangVal,
     body: LangVal,
-    error_v: LangVal | undefined = undefined): LangVal {
+    error_v: LangVal | false = false): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
     function make_error_v(): LangVal {
-        if (error_v === undefined) {
+        if (error_v === false) {
             return new_error(system_symbol,
                 new_list(form_builtin_use_systemName,
                     new_list(
