@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "ts2php": "^0.1.1"
+    "jstophp": "^0.2.7"
   }
 }

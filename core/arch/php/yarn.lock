@@ -2,53 +2,46 @@
 # yarn lockfile v1
 
 
-fs-extra@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.1.tgz#4f189c44aa123b895f722804f55ea23eadc348e9"
-  integrity sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==
+escope@^1.0.1:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/escope/-/escope-1.0.3.tgz#759dce8496c4248fec2d0caaf4108bcf3f1a7f5d"
+  integrity sha1-dZ3OhJbEJI/sLQyq9BCLzz8af10=
   dependencies:
-    graceful-fs "^4.1.2"
-    jsonfile "^4.0.0"
-    universalify "^0.1.0"
+    estraverse "^2.0.0"
 
-graceful-fs@^4.1.2, graceful-fs@^4.1.6:
-  version "4.1.15"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
-  integrity sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
+esprima@^1.2.2:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-1.2.5.tgz#0993502feaf668138325756f30f9a51feeec11e9"
+  integrity sha1-CZNQL+r2aBODJXVvMPmlH+7sEek=
 
-hash-sum@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/hash-sum/-/hash-sum-1.0.2.tgz#33b40777754c6432573c120cc3808bbd10d47f04"
-  integrity sha1-M7QHd3VMZDJXPBIMw4CLvRDUfwQ=
+esprima@~1.0:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-1.0.4.tgz#9f557e08fc3b4d26ece9dd34f8fbf476b62585ad"
+  integrity sha1-n1V+CPw7TSbs6d00+Pv0drYlha0=
 
-jsonfile@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-4.0.0.tgz#8771aae0799b64076b76640fca058f9c10e33ecb"
-  integrity sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=
-  optionalDependencies:
-    graceful-fs "^4.1.6"
+estraverse@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-2.0.0.tgz#5ae46963243600206674ccb24a09e16674fcdca1"
+  integrity sha1-WuRpYyQ2ACBmdMyySgnhZnT83KE=
 
-lodash@^4.17.11:
-  version "4.17.11"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
-  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
-
-ts2php@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/ts2php/-/ts2php-0.1.1.tgz#90c65975711f83afb7da9bae6dd894e5e19eada6"
-  integrity sha512-W8HYCfxtrP09t8xfI257qvdNf5T9Hp+lI48D+zO3W2J6ossJmSMZX+kRqVLjADdbKD5uxFReG0KntKStaQ9Ohw==
+jstophp@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/jstophp/-/jstophp-0.2.7.tgz#c38b74a0c1d8778d514f453290d37f1b86b8ed43"
+  integrity sha1-w4t0oMHYd41RT0UykNN/G4a47UM=
   dependencies:
-    fs-extra "^7.0.1"
-    hash-sum "^1.0.2"
-    lodash "^4.17.11"
-    typescript "^3.1.6"
+    escope "^1.0.1"
+    esprima "^1.2.2"
+    rocambole "^0.3.6"
+    yargs "^1.3.2"
 
-typescript@^3.1.6:
-  version "3.3.3333"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3333.tgz#171b2c5af66c59e9431199117a3bcadc66fdcfd6"
-  integrity sha512-JjSKsAfuHBE/fB2oZ8NxtRTk5iGcg6hkYXMnZ3Wc+b2RSqejEqTaem11mHASMnFilHrax3sLK0GDzcJrekZYLw==
+rocambole@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/rocambole/-/rocambole-0.3.6.tgz#4debbf5943144bc7b6006d95be8facc0b74352a7"
+  integrity sha1-Teu/WUMUS8e2AG2Vvo+swLdDUqc=
+  dependencies:
+    esprima "~1.0"
 
-universalify@^0.1.0:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
-  integrity sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
+yargs@^1.3.2:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-1.3.3.tgz#054de8b61f22eefdb7207059eaef9d6b83fb931a"
+  integrity sha1-BU3oth8i7v23IHBZ6u+da4P7kxo=
