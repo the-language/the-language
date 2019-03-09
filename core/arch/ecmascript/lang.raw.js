@@ -1879,7 +1879,7 @@ function complex_parse(x) {
                 return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x));
             }
             else if (head === '/') {
-                var ys = [];
+                var ys = [x];
                 while (true) {
                     var y = readsysname_no_pack_inner_must(true);
                     ys.push(y);
@@ -1892,7 +1892,7 @@ function complex_parse(x) {
                         break;
                     }
                 }
-                return new_list(sub_symbol, x, jsArray_to_list(ys));
+                return new_list(sub_symbol, jsArray_to_list(ys));
             }
             else {
                 put(head);
@@ -1988,16 +1988,16 @@ function complex_print(val) {
                 // new_list(system_symbol, maybe_xs[1])
                 return inner_bracket('+' + print_sys_name(maybe_xs[1], 'inner'));
             }
-        }
-        else if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], sub_symbol)) {
-            // new_list(sub_symbol, maybe_xs[1], maybe_xs[2])
-            var maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[2]);
-            if (maybe_lst_8934 !== false && maybe_lst_8934.length !== 0) {
-                var tmp = "";
-                for (var i = 0; i < maybe_lst_8934.length; i++) {
-                    tmp += '/' + print_sys_name(maybe_lst_8934[i], 'inner');
+            else if (jsbool_no_force_equal_p(maybe_xs[0], sub_symbol)) {
+                // new_list(sub_symbol, maybe_xs[1])
+                var maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1]);
+                if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
+                    var tmp = print_sys_name(maybe_lst_8934[0], 'inner');
+                    for (var i = 1; i < maybe_lst_8934.length; i++) {
+                        tmp += '/' + print_sys_name(maybe_lst_8934[i], 'inner');
+                    }
+                    return inner_bracket(tmp);
                 }
-                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + tmp);
             }
         }
         if (where === 'inner') {

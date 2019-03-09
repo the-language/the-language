@@ -1761,7 +1761,7 @@ complex_parse = function(x)
             elseif head == "?" then
                 return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x));
             elseif head == "/" then
-                local ys = {};
+                local ys = {x};
                 while true do
                     local y = readsysname_no_pack_inner_must(true);
                     __TS__ArrayPush(ys, y);
@@ -1774,7 +1774,7 @@ complex_parse = function(x)
                         break;
                     end
                 end
-                return new_list(sub_symbol, x, jsArray_to_list(ys));
+                return new_list(sub_symbol, jsArray_to_list(ys));
             else
                 put(head);
                 return x;
@@ -1989,19 +1989,19 @@ complex_print = function(val)
                 return inner_bracket(print_sys_name(maybe_xs[1 + 1], "inner") .. "~");
             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
                 return inner_bracket("+" .. print_sys_name(maybe_xs[1 + 1], "inner"));
-            end
-        elseif ((maybe_xs ~= false) and ((#maybe_xs) == 3)) and jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol) then
-            local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[2 + 1]);
-            if (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) ~= 0) then
-                local tmp = "";
-                do
-                    local i = 0;
-                    while i < (#maybe_lst_8934) do
-                        tmp = tmp .. ("/" .. print_sys_name(maybe_lst_8934[i + 1], "inner"));
-                        i = i + 1;
+            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol) then
+                local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1]);
+                if (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) > 1) then
+                    local tmp = print_sys_name(maybe_lst_8934[0 + 1], "inner");
+                    do
+                        local i = 1;
+                        while i < (#maybe_lst_8934) do
+                            tmp = tmp .. ("/" .. print_sys_name(maybe_lst_8934[i + 1], "inner"));
+                            i = i + 1;
+                        end
                     end
+                    return inner_bracket(tmp);
                 end
-                return inner_bracket(print_sys_name(maybe_xs[1 + 1], "inner") .. tmp);
             end
         end
         if where == "inner" then
