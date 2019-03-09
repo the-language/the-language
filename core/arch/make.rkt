@@ -46,8 +46,7 @@
 (make
     (("all" ("ecmascript/lang.js"
              "ecmascript/lang.raw.js"
-             "lua/lang.lua"
-             "php/lang.php")
+             "lua/lang.lua")
             (void))
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
@@ -87,25 +86,6 @@
                  #{sed (id "s|local exports = exports or {};|local exports = {};|") lang.lua}
                  ))
              echo $out &>! lang.lua
-     }})
-     ("php/lang.php" ("ecmascript/lang.raw.js" "php/runtime.php") {
-         in-dir "php" {
-             (define js-file (string-append
-                 "var the_language=(function(){var exports={};\n"
-                 #{cat ../ecmascript/lang.raw.js}
-                 "\nreturn exports;})();"
-                 ))
-             (define raw0 #{echo $js-file | npx js2php --runtime runtime.php --quiet})
-             (define raw1 #{echo $raw0 | sed (id "s|get(\\([^)]*\\), \\([0-9]\\).0)|\\1[\\2]|g") | sed (id "s|\\([0-9]\\)\\.0|\\1|g")})
-             (define out (string-append
-                 "<?php\n"
-                 c-generatedby
-                 c-copyright
-                 #{cat runtime.php}
-                 (match raw1
-                     [(regexp #rx"<?php\nrequire_once\\(\"runtime.php\"\\);\n(.*)" (list _ x)) x])
-                 ))
-             echo $out &>! lang.php
      }})
 
      )
