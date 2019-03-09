@@ -52,6 +52,7 @@
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
         in-dir "typescript" {
+            yarn
             touch lang.js
             rm lang.js
             npx tsc --build tsconfig.json
@@ -80,6 +81,7 @@
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
+             yarn
              npx tstl -p tsconfig.json
              (define out (string-append
                  haskell-generatedby
@@ -90,6 +92,7 @@
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
+             yarn
              npx tsc --build tsconfig.json
      }})
      )
