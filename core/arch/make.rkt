@@ -46,7 +46,8 @@
 (make
     (("all" ("ecmascript/lang.js"
              "ecmascript/lang.raw.js"
-             "lua/lang.lua")
+             "lua/lang.lua"
+             "ecmascript6/lang.js")
             (void))
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
@@ -87,6 +88,9 @@
                  ))
              echo $out &>! lang.lua
      }})
-
+     ("ecmascript6/lang.js" ("typescript/lang.ts") {
+         in-dir "ecmascript6" {
+             npx tsc --build tsconfig.json
+     }})
      )
     (current-command-line-arguments))
