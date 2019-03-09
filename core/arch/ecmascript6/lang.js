@@ -1984,10 +1984,16 @@ function complex_print(val) {
 }
 export { complex_print };
 // 相對獨立的部分。complex parser/complex printer }}}
+/*
 // {{{ 相對獨立的部分。IO
-const return_inputOutput_systemName = complex_parse('效應/[:物]');
-const bind_inputOutput_systemName = complex_parse('效應/連');
-const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'));
-export { return_inputOutput_systemName, bind_inputOutput_systemName, ecmascript_systemName };
+const return_inputOutput_systemName = complex_parse('效應/[:物]')
+const bind_inputOutput_systemName = complex_parse('效應/連')
+const ecmascript_systemName = systemName_make(complex_parse('(為符名連 e c m a s c r i p t)'))
+export {
+    return_inputOutput_systemName,
+    bind_inputOutput_systemName,
+    ecmascript_systemName
+}
 //WIP
 // 相對獨立的部分。IO }}}
+*/

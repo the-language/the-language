@@ -2072,6 +2072,7 @@ function complex_print(val: LangVal): string {
 export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}
 
+/*
 // {{{ 相對獨立的部分。IO
 const return_inputOutput_systemName = complex_parse('效應/[:物]')
 const bind_inputOutput_systemName = complex_parse('效應/連')
@@ -2083,3 +2084,4 @@ export {
 }
 //WIP
 // 相對獨立的部分。IO }}}
+*/

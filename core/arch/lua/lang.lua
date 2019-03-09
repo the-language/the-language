@@ -2054,10 +2054,4 @@ complex_print = function(val)
     return ERROR();
 end;
 exports.complex_print = complex_print;
-local return_inputOutput_systemName = complex_parse("效應/[:物]");
-local bind_inputOutput_systemName = complex_parse("效應/連");
-local ecmascript_systemName = systemName_make(complex_parse("(為符名連 e c m a s c r i p t)"));
-exports.return_inputOutput_systemName = return_inputOutput_systemName;
-exports.bind_inputOutput_systemName = bind_inputOutput_systemName;
-exports.ecmascript_systemName = ecmascript_systemName;
 return exports;
