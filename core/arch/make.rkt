@@ -62,9 +62,7 @@
             (define raw #{cat lang.js})
             (define full (string-append
                 c-generatedby
-                "(function(){\n"
                 raw
-                "\n})();"
             ))
             |> id full &>! lang.full.js
             (define google-closure-exports (string-append
@@ -101,11 +99,11 @@
              yarn
              npx tsc --build tsconfig.json
      }})
-     ("python/lang.py" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
+     ("python/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
          in-dir "python" {
              (define raw-js (string-append
-                 "var exports={};\n"
-                 #{cat ../ecmascript/lang.raw.js}))
+                 "var exports={};"
+                 #{cat ../ecmascript/lang.js}))
              |> id raw-js &>! lang.js
              |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python
              (define exports (filter-not (lambda (x) (equal? x "")) (string-split #{cat ../ecmascript/exports.list} "\n")))
