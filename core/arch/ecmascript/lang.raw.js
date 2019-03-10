@@ -408,6 +408,20 @@ function force_all(raw, parents_history, ref_novalue_replace) {
         }
         return the_world_stopped_v;
     }
+    function do_rewrite_force_all(newval) {
+        lang_set_do(x, newval);
+        for (var i = 0; i < xs.length; i++) {
+            lang_set_do(xs[i], newval);
+        }
+        if (any_delay_just_p(newval)) {
+            newval = force_all(newval);
+            lang_set_do(x, newval);
+            for (var i = 0; i < xs.length; i++) {
+                lang_set_do(xs[i], newval);
+            }
+        }
+        return newval;
+    }
     function make_history() {
         var ret = {};
         for (var x_id in history) {
@@ -453,7 +467,7 @@ function force_all(raw, parents_history, ref_novalue_replace) {
                     ASSERT(ref_novalue_replace[1] === false);
                     var inner = force_all(xs_1[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
-                        return force_all(builtin_func_apply(f, [inner]));
+                        return do_rewrite_force_all(builtin_func_apply(f, [inner]));
                     }
                     else {
                         return ERROR(); //我覺得沒有這種情況
@@ -473,7 +487,7 @@ function force_all(raw, parents_history, ref_novalue_replace) {
                     ASSERT(ref_novalue_replace[1] === false);
                     var tf = force_all(xs_1[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
-                        return force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs_1[1], xs_1[2]]));
+                        return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs_1[1], xs_1[2]]));
                     }
                     else {
                         return ERROR(); //我覺得沒有這種情況

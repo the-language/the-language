@@ -334,6 +334,20 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
         }
         return the_world_stopped_v;
     }
+    function do_rewrite_force_all(newval) {
+        lang_set_do(x, newval);
+        for (let i = 0; i < xs.length; i++) {
+            lang_set_do(xs[i], newval);
+        }
+        if (any_delay_just_p(newval)) {
+            newval = force_all(newval);
+            lang_set_do(x, newval);
+            for (let i = 0; i < xs.length; i++) {
+                lang_set_do(xs[i], newval);
+            }
+        }
+        return newval;
+    }
     function make_history() {
         let ret = {};
         for (const x_id in history) {
@@ -379,7 +393,7 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
                     ASSERT(ref_novalue_replace[1] === false);
                     const inner = force_all(xs[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
-                        return force_all(builtin_func_apply(f, [inner]));
+                        return do_rewrite_force_all(builtin_func_apply(f, [inner]));
                     }
                     else {
                         return ERROR(); //我覺得沒有這種情況
@@ -399,7 +413,7 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
                     ASSERT(ref_novalue_replace[1] === false);
                     const tf = force_all(xs[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
-                        return force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]));
+                        return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]));
                     }
                     else {
                         return ERROR(); //我覺得沒有這種情況

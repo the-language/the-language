@@ -119,7 +119,7 @@ var.put(u'new_lambda', PyJsHoisted_new_lambda_)
 @Js
 def PyJsHoisted_force_all_(raw, parents_history, ref_novalue_replace, this, arguments, var=var):
     var = Scope({u'ref_novalue_replace':ref_novalue_replace, u'raw':raw, u'this':this, u'arguments':arguments, u'parents_history':parents_history}, var)
-    var.registers([u'x_id', u'make_history', u'i', u'f', u'is_elim', u'ref_novalue_replace', u'raw', u'inner', u'replace_this_with_stopped', u'xs', u'tf', u'x', u'xs_1', u'elim_s', u'parents_history', u'history'])
+    var.registers([u'x_id', u'make_history', u'i', u'f', u'is_elim', u'ref_novalue_replace', u'raw', u'do_rewrite_force_all', u'inner', u'replace_this_with_stopped', u'xs', u'tf', u'x', u'xs_1', u'elim_s', u'parents_history', u'history'])
     @Js
     def PyJsHoisted_replace_this_with_stopped_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
@@ -136,6 +136,31 @@ def PyJsHoisted_force_all_(raw, parents_history, ref_novalue_replace, this, argu
         return var.get(u'the_world_stopped_v')
     PyJsHoisted_replace_this_with_stopped_.func_name = u'replace_this_with_stopped'
     var.put(u'replace_this_with_stopped', PyJsHoisted_replace_this_with_stopped_)
+    @Js
+    def PyJsHoisted_do_rewrite_force_all_(newval, this, arguments, var=var):
+        var = Scope({u'this':this, u'newval':newval, u'arguments':arguments}, var)
+        var.registers([u'i', u'newval'])
+        var.get(u'lang_set_do')(var.get(u'x'), var.get(u'newval'))
+        #for JS loop
+        var.put(u'i', Js(0.0))
+        while (var.get(u'i')<var.get(u'xs').get(u'length')):
+            try:
+                var.get(u'lang_set_do')(var.get(u'xs').get(var.get(u'i')), var.get(u'newval'))
+            finally:
+                    (var.put(u'i',Js(var.get(u'i').to_number())+Js(1))-Js(1))
+        if var.get(u'any_delay_just_p')(var.get(u'newval')):
+            var.put(u'newval', var.get(u'force_all')(var.get(u'newval')))
+            var.get(u'lang_set_do')(var.get(u'x'), var.get(u'newval'))
+            #for JS loop
+            var.put(u'i', Js(0.0))
+            while (var.get(u'i')<var.get(u'xs').get(u'length')):
+                try:
+                    var.get(u'lang_set_do')(var.get(u'xs').get(var.get(u'i')), var.get(u'newval'))
+                finally:
+                        (var.put(u'i',Js(var.get(u'i').to_number())+Js(1))-Js(1))
+        return var.get(u'newval')
+    PyJsHoisted_do_rewrite_force_all_.func_name = u'do_rewrite_force_all'
+    var.put(u'do_rewrite_force_all', PyJsHoisted_do_rewrite_force_all_)
     @Js
     def PyJsHoisted_make_history_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
@@ -160,6 +185,7 @@ def PyJsHoisted_force_all_(raw, parents_history, ref_novalue_replace, this, argu
     var.put(u'history', PyJs_Object_4_)
     var.put(u'x', var.get(u'raw'))
     var.put(u'xs', Js([]))
+    pass
     pass
     pass
     while var.get(u'any_delay_just_p')(var.get(u'x')):
@@ -189,7 +215,7 @@ def PyJsHoisted_force_all_(raw, parents_history, ref_novalue_replace, this, argu
                         var.get(u'ASSERT')(PyJsStrictEq(var.get(u'ref_novalue_replace').get(u'1'),Js(False)))
                         var.put(u'inner', var.get(u'force_all')(var.get(u'xs_1').get(u'0'), var.get(u'make_history')(), var.get(u'ref_novalue_replace')))
                         if var.get(u'ref_novalue_replace').get(u'1'):
-                            return var.get(u'force_all')(var.get(u'builtin_func_apply')(var.get(u'f'), Js([var.get(u'inner')])))
+                            return var.get(u'do_rewrite_force_all')(var.get(u'builtin_func_apply')(var.get(u'f'), Js([var.get(u'inner')])))
                         else:
                             return var.get(u'ERROR')()
                     if var.get(u'jsbool_equal_p')(var.get(u'f'), var.get(u'equal_p_function_builtin_systemName')):
@@ -206,7 +232,7 @@ def PyJsHoisted_force_all_(raw, parents_history, ref_novalue_replace, this, argu
                                     var.get(u'ASSERT')(PyJsStrictEq(var.get(u'ref_novalue_replace').get(u'1'),Js(False)))
                                     var.put(u'tf', var.get(u'force_all')(var.get(u'xs_1').get(u'0'), var.get(u'make_history')(), var.get(u'ref_novalue_replace')))
                                     if var.get(u'ref_novalue_replace').get(u'1'):
-                                        return var.get(u'force_all')(var.get(u'builtin_func_apply')(var.get(u'if_function_builtin_systemName'), Js([var.get(u'tf'), var.get(u'xs_1').get(u'1'), var.get(u'xs_1').get(u'2')])))
+                                        return var.get(u'do_rewrite_force_all')(var.get(u'builtin_func_apply')(var.get(u'if_function_builtin_systemName'), Js([var.get(u'tf'), var.get(u'xs_1').get(u'1'), var.get(u'xs_1').get(u'2')])))
                                     else:
                                         return var.get(u'ERROR')()
                     return var.get(u'ERROR')()

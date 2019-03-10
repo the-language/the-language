@@ -239,6 +239,29 @@ force_all = function(raw, parents_history, ref_novalue_replace)
         end
         return the_world_stopped_v;
     end;
+    local do_rewrite_force_all;
+    do_rewrite_force_all = function(newval)
+        lang_set_do(x, newval);
+        do
+            local i = 0;
+            while i < (#xs) do
+                lang_set_do(xs[i + 1], newval);
+                i = i + 1;
+            end
+        end
+        if any_delay_just_p(newval) then
+            newval = force_all(newval);
+            lang_set_do(x, newval);
+            do
+                local i = 0;
+                while i < (#xs) do
+                    lang_set_do(xs[i + 1], newval);
+                    i = i + 1;
+                end
+            end
+        end
+        return newval;
+    end;
     local make_history;
     make_history = function()
         local ret = {};
@@ -278,7 +301,7 @@ force_all = function(raw, parents_history, ref_novalue_replace)
                     ASSERT(ref_novalue_replace[1 + 1] == false);
                     local inner = force_all(xs[0 + 1], make_history(), ref_novalue_replace);
                     if ref_novalue_replace[1 + 1] then
-                        return force_all(builtin_func_apply(f, {inner}));
+                        return do_rewrite_force_all(builtin_func_apply(f, {inner}));
                     else
                         return ERROR();
                     end
@@ -294,7 +317,7 @@ force_all = function(raw, parents_history, ref_novalue_replace)
                     ASSERT(ref_novalue_replace[1 + 1] == false);
                     local tf = force_all(xs[0 + 1], make_history(), ref_novalue_replace);
                     if ref_novalue_replace[1 + 1] then
-                        return force_all(builtin_func_apply(if_function_builtin_systemName, {tf, xs[1 + 1], xs[2 + 1]}));
+                        return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, {tf, xs[1 + 1], xs[2 + 1]}));
                     else
                         return ERROR();
                     end
