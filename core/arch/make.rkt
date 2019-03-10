@@ -110,14 +110,20 @@
              |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python
              (define exports (filter-not (lambda (x) (equal? x "")) (string-split #{cat ../ecmascript/exports.list} "\n")))
              (define exports-py (string-append
-                 "__lang__ = var.to_python()\n"
-                 (apply string-append (map (lambda (x) (string-append x" = __lang__.exports."x"\n")) exports))
+                 "exports = var.to_python().exports\n"
+                 (apply string-append (map (lambda (x) (string-append x" = exports."x"\n")) exports))
                  ))
-             (define py-raw-head #{head -n -1 lang.py})
-             (define py-raw-tail #{tail -n 1 lang.py})
+             (define all-py (string-append
+                 "__all__ = ["
+                 (apply string-append (add-between (map (lambda (x) (string-append "'"x"'")) exports)", "))
+                 "]\n"
+                 ))
+             (define py-raw (string-split #{cat lang.py} "\n"))
+             (match-define (list py-raw-head py-raw-body ... py-raw-tail) py-raw)
              (define py (string-append
                  bash-generatedby
-                 py-raw-head
+                 (match py-raw-head ["__all__ = ['lang']" all-py])
+                 (apply string-append (add-between py-raw-body "\n"))
                  "\n"
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
