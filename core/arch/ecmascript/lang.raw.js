@@ -1,5 +1,3 @@
-"use strict";
-exports.__esModule = true;
 /*
     The Language
     Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>

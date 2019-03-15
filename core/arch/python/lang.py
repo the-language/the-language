@@ -1292,7 +1292,6 @@ PyJsHoisted_ub_.func_name = u'ub'
 var.put(u'ub', PyJsHoisted_ub_)
 PyJs_Object_0_ = Js({})
 var.put(u'exports', PyJs_Object_0_)
-var.get(u'exports').put(u'a', Js(0.0).neg())
 pass
 @Js
 def PyJs_anonymous_1_(a, this, arguments, var=var):
@@ -2048,6 +2047,7 @@ pass
 
 
 # Add lib to the module scope
+
 exports = var.to_python().exports
 new_symbol = exports.new_symbol
 symbol_p = exports.symbol_p

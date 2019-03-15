@@ -60,7 +60,8 @@
             touch lang.js
             rm lang.js
             npx tsc --build tsconfig.json
-            (define raw #{cat lang.js})
+            (define raw (match (string-split #{cat lang.js} "\n")
+                [(list "\"use strict\";" "exports.__esModule = true;" xs ...) (apply string-append (map (lambda (x) (string-append x"\n")) xs))]))
             (define full (string-append
                 c-generatedby
                 raw
@@ -68,11 +69,11 @@
             |> id full &>! lang.full.js
             (define exports
                 (filter-not
-                    (lambda (x) (or (equal? x "") (equal? x "__esModule")))
+                    (lambda (x) (equal? x ""))
                     (string-split
                         #{grep "^exports." lang.full.js | awk (id "{print $1}") | sed (id "s|^exports.\\(.*\\)$|\\1|")}
                         "\n")))
-            (define exports.list (apply string-append (add-between exports "\n")))
+            (define exports.list (apply string-append (map (lambda (x) (string-append x"\n")) exports)))
             (define google-closure-exports (string-append
                 c-generatedby
                 "var exports = {};\n"
@@ -127,7 +128,7 @@
              (define py (string-append
                  bash-generatedby
                  (match py-raw-head ["__all__ = ['lang']" all-py])
-                 (apply string-append (add-between py-raw-body "\n"))
+                 (apply string-append (map (lambda (x) (string-append x"\n")) py-raw-body))
                  "\n"
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
