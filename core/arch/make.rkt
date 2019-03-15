@@ -78,11 +78,6 @@
             |> id google-closure-exports &>! lang.externs.js
             npx google-closure-compiler -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js ../ecmascript/lang.raw.js --externs lang.externs.js -O ADVANCED &>! lang.js
             cp lang.js ../ecmascript
-            (define lang.pretty-print.js (string-append
-                c-generatedby
-                #{npx js-beautify lang.js}
-                ))
-            |> id lang.pretty-print.js &>! lang.pretty-print.js
             |> id exports.list &>! ../ecmascript/exports.list
             touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現
      }})
