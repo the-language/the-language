@@ -1,4 +1,11 @@
-## 依賴
+## 編譯
+
+```bash
+cd arch
+./make
+```
+
+### 依賴
 
 * NodeJS NPM https://nodejs.org/
 * yarn `npm i -g yarn`
