@@ -60,18 +60,14 @@
             touch lang.js
             rm lang.js
             npx tsc --build tsconfig.json
-            (define raw (match (string-split #{cat lang.js} "\n")
-                [(list "\"use strict\";" "exports.__esModule = true;" xs ...) (apply string-append (map (lambda (x) (string-append x"\n")) xs))]))
-            (define full (string-append
-                c-generatedby
-                raw
-            ))
-            |> id full &>! lang.full.js
+            (define raw (string-append c-generatedby (match (string-split #{cat lang.js} "\n")
+                [(list "\"use strict\";" "exports.__esModule = true;" xs ...) (apply string-append (map (lambda (x) (string-append x"\n")) xs))])))
+            |> id raw &>! ../ecmascript/lang.raw.js
             (define exports
                 (filter-not
                     (lambda (x) (equal? x ""))
                     (string-split
-                        #{grep "^exports." lang.full.js | awk (id "{print $1}") | sed (id "s|^exports.\\(.*\\)$|\\1|")}
+                        #{grep "^exports." ../ecmascript/lang.raw.js | awk (id "{print $1}") | sed (id "s|^exports.\\(.*\\)$|\\1|")}
                         "\n")))
             (define exports.list (apply string-append (map (lambda (x) (string-append x"\n")) exports)))
             (define google-closure-exports (string-append
@@ -80,15 +76,15 @@
                 (apply string-append (map (lambda (x) (string-append "exports."x"='something';\n")) exports))
                 ))
             |> id google-closure-exports &>! lang.externs.js
-            npx google-closure-compiler -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js lang.full.js --externs lang.externs.js -O ADVANCED &>! lang.js
+            npx google-closure-compiler -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js ../ecmascript/lang.raw.js --externs lang.externs.js -O ADVANCED &>! lang.js
             cp lang.js ../ecmascript
             (define lang.pretty-print.js (string-append
                 c-generatedby
                 #{npx js-beautify lang.js}
                 ))
             |> id lang.pretty-print.js &>! lang.pretty-print.js
-            |> id raw &>! ../ecmascript/lang.raw.js
             |> id exports.list &>! ../ecmascript/exports.list
+            touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
