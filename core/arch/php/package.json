@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "jstophp": "https://github.com/sstur/js2php.git"
+  }
+}
