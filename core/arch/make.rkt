@@ -97,6 +97,8 @@
          in-dir "ecmascript6" {
              yarn
              npx tsc --build tsconfig.json
+             (define raw #{cat lang.js})
+             |> string-append c-generatedby raw &>! lang.js
      }})
      ("python/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
          in-dir "python" {
