@@ -24,6 +24,6 @@
         git add .
         git commit -m (string-append "[NEW VERSION]"(p-new-version)"\n"(p-message))
         git tag -a (p-new-version) -m (p-message)
-        git push --tags --all
+        git push --tags
     }
 )
