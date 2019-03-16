@@ -23,3 +23,5 @@ pushd luaj-out
   java -jar ../jd-core-java/build/libs/jd-core-java-1.2.jar out.jar jd-out
 popd
 cp luaj-out/jd-out/lang.java ./
+clang-format -style=Mozilla lang.java > lang.java.1
+mv lang.java.1 lang.java
