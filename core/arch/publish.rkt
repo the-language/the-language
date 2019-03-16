@@ -11,13 +11,16 @@
     #:args ()
     {
         racket make.rkt
-        git add .
-        git commit -m (new-version)
-        git tag -a (new-version) -m (new-version)
-        git push
 
         in-dir "ecmascript" {
             yarn publish --no-git-tag-version --no-commit-hooks --new-version (new-version)
         }
+
+
+        git add .
+        git commit -m (new-version)
+        git tag -a (new-version) -m (new-version)
+        git push
+        git push --tags
     }
 )
