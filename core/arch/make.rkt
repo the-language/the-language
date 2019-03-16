@@ -50,7 +50,8 @@
              "ecmascript/lang.raw.js"
              "lua/lang.lua"
              "ecmascript6/lang.js"
-             "python/lang.py")
+             "python/lang.py"
+             "php/lang.php")
             (void))
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
@@ -123,6 +124,12 @@
                  "\n"
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
+     }})
+     ("php/lang.php" ("ecmascript/lang.raw.js") {
+         in-dir "php" {
+             (define raw-js (string-append "var exports={};\n" #{cat ../ecmascript/lang.raw.js}))
+             |> id raw-js &>! lang.js
+             npx js2php lang.js &>! lang.php
      }})
      )
     (current-command-line-arguments))
