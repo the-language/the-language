@@ -13,7 +13,7 @@
         racket make.rkt
         git add .
         git commit -m (new-version)
-        git tag -a (new-version)
+        git tag -a (new-version) -m (new-version)
         git push
 
         in-dir "ecmascript" {
