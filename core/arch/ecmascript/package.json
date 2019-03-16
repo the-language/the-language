@@ -1,1 +1,12 @@
-../typescript/package.json
+{
+    "name": "the-language",
+    "version": "0.0.10-a",
+    "description": "The Language",
+    "main": "lang.js",
+    "repository": {
+        "url": "https://github.com/the-language/the-language",
+        "type": "git"
+    },
+    "author": "Zaoqi",
+    "license": "AGPL-3.0-or-later"
+}
