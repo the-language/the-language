@@ -22,3 +22,4 @@ pushd luaj-out
   mkdir jd-out
   java -jar ../jd-core-java/build/libs/jd-core-java-1.2.jar out.jar jd-out
 popd
+cp luaj-out/jd-out/lang.java ./
