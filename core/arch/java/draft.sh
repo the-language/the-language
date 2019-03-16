@@ -14,6 +14,7 @@ cd luaj-out
 jar cf lang.jar *
 cd -
 
-rm -fr Krakatau-out
-mkdir Krakatau-out
-python ./Krakatau/decompile.py -path "/usr/lib/jvm/default-java/jre/lib/rt.jar;./luaj/luaj-jse-3.0.2.jar" -out ./Krakatau-out/ luaj-out/lang.jar
+rm -fr src
+mkdir src
+python ./Krakatau/decompile.py -path "/usr/lib/jvm/default-java/jre/lib/rt.jar;./luaj/luaj-jse-3.0.2.jar" -out ./src/ luaj-out/lang.jar
+cp -r ./luaj/build/jse/src/* ./src/
