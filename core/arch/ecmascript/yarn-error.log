@@ -1,0 +1,47 @@
+Arguments: 
+  /usr/bin/node /usr/share/yarn/bin/yarn.js publish --no-git-tag-version --no-commit-hooks --new-version 0.0.11-e --message
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/1828_sandbox/.local/bin
+
+Yarn version: 
+  1.13.0
+
+Node version: 
+  11.11.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/share/yarn/lib/cli.js:125657:13)
+      at Interface.emit (events.js:197:13)
+      at Interface._ttyWrite (readline.js:820:16)
+      at ReadStream.onkeypress (readline.js:184:10)
+      at ReadStream.emit (events.js:197:13)
+      at emitKeys (internal/readline.js:424:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1093:36)
+      at ReadStream.emit (events.js:197:13)
+      at addChunk (_stream_readable.js:288:12)
+
+npm manifest: 
+  {
+      "name": "the-language",
+      "version": "0.0.11-e",
+      "description": "The Language",
+      "main": "lang.js",
+      "repository": {
+          "url": "https://github.com/the-language/the-language",
+          "type": "git"
+      },
+      "author": "Zaoqi",
+      "license": "AGPL-3.0-or-later"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -83,6 +83,7 @@
             touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
+         ;; TODO | fix [__TS__ArrayPush 不是local的+性能不好]
          in-dir "lua" {
              yarn
              npx tstl -p tsconfig.json
