@@ -5,12 +5,10 @@ public class lang$luaj$56$2 extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u3;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
-    final static org.luaj.vm2.LuaValue k2;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(0);
         k1 = org.luaj.vm2.LuaValue.valueOf(1);
-        k2 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
     }
     
     public lang$luaj$56$2() {
@@ -26,7 +24,7 @@ public class lang$luaj$56$2 extends org.luaj.vm2.lib.TwoArgFunction {
             }
             a1 = a1.add(k1);
         }
-        this.u2.get(k2).call(this.u3, a);
+        this.u2.call(this.u3, a);
         return org.luaj.vm2.LuaValue.NONE;
     }
 }

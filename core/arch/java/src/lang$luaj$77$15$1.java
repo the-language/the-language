@@ -19,7 +19,6 @@ public class lang$luaj$77$15$1 extends org.luaj.vm2.lib.VarArgFunction {
     final static org.luaj.vm2.LuaValue k3;
     final static org.luaj.vm2.LuaValue k4;
     final static org.luaj.vm2.LuaValue k5;
-    final static org.luaj.vm2.LuaValue k6;
     
     static {
         k0 = org.luaj.vm2.LuaString.valueOf(".");
@@ -28,7 +27,6 @@ public class lang$luaj$77$15$1 extends org.luaj.vm2.lib.VarArgFunction {
         k3 = org.luaj.vm2.LuaString.valueOf("@");
         k4 = org.luaj.vm2.LuaString.valueOf("?");
         k5 = org.luaj.vm2.LuaString.valueOf("/");
-        k6 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
     }
     
     public lang$luaj$77$15$1() {
@@ -76,7 +74,7 @@ public class lang$luaj$77$15$1 extends org.luaj.vm2.lib.VarArgFunction {
         ((org.luaj.vm2.LuaValue)a12).rawset(1, a0);
         while(true) {
             org.luaj.vm2.LuaValue a13 = this.u2[0].call((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.TRUE);
-            this.u9.get(k6).call((org.luaj.vm2.LuaValue)a12, a13);
+            this.u9.call((org.luaj.vm2.LuaValue)a12, a13);
             if (!this.u0.call().toboolean()) {
                 org.luaj.vm2.LuaValue a14 = this.u1.call();
                 if (a14.eq_b(k5)) {

@@ -83,20 +83,45 @@
             touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
-         ;; TODO | fix [__TS__ArrayPush 不是local的+性能不好]
          in-dir "lua" {
              yarn
+             touch lang.lua
+             rm lang.lua
              npx tstl -p tsconfig.json
+             (define raw #{cat lang.lua})
              (define out (string-append
                  haskell-generatedby
                  haskell-copyright
-                 #{sed (id "s|local exports = exports or {};|local exports = {};|") lang.lua}
+                 (match (string-split raw "\n")
+                    [(list "--[[ Generated with https://github.com/Perryvw/TypescriptToLua ]]"
+                    "-- Lua Library inline imports"
+                    "__TS__ArrayPush = function(arr, ...)"
+                    "    local items = ({...});"
+                    "    for ____TS_index = 1, #items do"
+                    "        local item = items[____TS_index];"
+                    "        arr[(#arr) + 1] = item;"
+                    "    end"
+                    "    return #arr;"
+                    "end;"
+                    ""
+                    "local exports = exports or {};"
+                    xs ...
+                    ) (string-append
+                          "local __TS__ArrayPush = function(arr, item)\n"
+                          "    arr[#arr+1] = item\n"
+                          "    return #arr\n"
+                          "end\n"
+                          "local exports = {}\n"
+                          (apply string-append (map (lambda (x) (string-append x"\n")) xs))
+                      )])
                  ))
              |> id out &>! lang.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
              yarn
+             touch lang.js
+             rm lang.js
              npx tsc --build tsconfig.json
              (define raw #{cat lang.js})
              |> string-append c-generatedby raw &>! lang.js

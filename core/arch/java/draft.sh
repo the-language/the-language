@@ -1,5 +1,5 @@
 #!/bin/bash
-[ -d luaj ] || git clone --depth 1 https://github.com/zaoqi/luaj.git
+[ -d luaj ] || git clone --depth 1 https://github.com/luaj/luaj.git
 cd luaj
 [ -f luaj-jse-3.0.2.jar ] || ant
 cd -
@@ -20,3 +20,5 @@ rm -fr src
 mkdir src
 python ./Krakatau/decompile.py -path "/usr/lib/jvm/default-java/jre/lib/rt.jar;./luaj/luaj-jse-3.0.2.jar" -out ./src/ luaj-out/lang.jar
 cp -r ./luaj/build/jse/src/* ./src/
+echo '*.class' > ./src/.gitignore
+CLASSPATH="$PWD/src" javac './src/lang$luaj.java'

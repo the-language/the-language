@@ -30,19 +30,18 @@ public class lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u28;
     org.luaj.vm2.LuaValue u29;
     org.luaj.vm2.LuaValue u30;
-    org.luaj.vm2.LuaValue[] u31;
+    org.luaj.vm2.LuaValue u31;
+    org.luaj.vm2.LuaValue[] u32;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
     final static org.luaj.vm2.LuaValue k3;
-    final static org.luaj.vm2.LuaValue k4;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(1);
         k1 = org.luaj.vm2.LuaValue.valueOf(0);
         k2 = org.luaj.vm2.LuaValue.valueOf(2);
         k3 = org.luaj.vm2.LuaValue.valueOf(3);
-        k4 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
     }
     
     public lang$luaj$44() {
@@ -188,8 +187,8 @@ public class lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
                 }
             } else {
                 ((org.luaj.vm2.LuaValue)a8).set(a13, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.TRUE);
-                this.u4.get(k4).call((org.luaj.vm2.LuaValue)a9, a0[0]);
-                a0[0] = this.u31[0].call(a0[0]);
+                this.u31.call((org.luaj.vm2.LuaValue)a9, a0[0]);
+                a0[0] = this.u32[0].call(a0[0]);
             }
         }
         org.luaj.vm2.LuaValue a39 = k1;
