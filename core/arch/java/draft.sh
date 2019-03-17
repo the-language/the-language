@@ -18,18 +18,11 @@ jar cf lang.jar *
 cd -
 
 rm -fr src
-mkdir -p  src/lang
-python ./Krakatau/decompile.py -path "/usr/lib/jvm/default-java/jre/lib/rt.jar;./luaj/luaj-jse-3.0.2.jar" -out ./src/lang luaj-out/lang.jar
-for f in ./src/lang/*.java ;do
-  cp "$f" "$f".1
-  echo 'package lang;' > "$f"
-  cat "$f".1 >> "$f"
-  rm "$f".1
-done
+python ./Krakatau/decompile.py -path "/usr/lib/jvm/default-java/jre/lib/rt.jar;./luaj/luaj-jse-3.0.2.jar" -out ./src/ luaj-out/lang.jar
 cp -r ./luaj/build/jse/src/* ./src/
 cp -r ./real-src/* ./src/
 
 cd src
-javac lang/Lang.java
+javac Lang.java
 javac testmain.java
 cd -

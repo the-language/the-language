@@ -16,9 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-
-public class testmain {
-  public static void main(String[] args) throws Exception {
-    System.out.println(Lang.simple_print(Lang.simple_parse("a")));
-  }
+import org.luaj.vm2.LuaValue;
+public final class LangValue {
+  public LuaValue luavalue;
+  public LangValue(LuaValue luav) { luavalue = luav; }
 }
