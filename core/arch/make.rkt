@@ -88,7 +88,7 @@
              touch lang.lua
              rm lang.lua
              npx tstl -p tsconfig.json
-             (define raw #{cat lang.lua})
+             (define raw #{sed (id "s|string.sub(\\([a-zA-Z0-9_]*\\), *|\\1:sub(|g") lang.lua})
              (define out (string-append
                  haskell-generatedby
                  haskell-copyright

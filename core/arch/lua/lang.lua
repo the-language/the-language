@@ -1241,12 +1241,12 @@ simple_parse = function(x)
     end;
     get = function()
         ASSERT(not eof());
-        local ret = string.sub(state_const, state + 1, state + 1);
+        local ret = state_const:sub(state + 1, state + 1);
         state = state + 1;
         return ret;
     end;
     put = function(x)
-        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x);
+        ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x);
         state = state - 1;
     end;
     parse_error = function()
@@ -1531,12 +1531,12 @@ complex_parse = function(x)
     end;
     get = function()
         ASSERT(not eof());
-        local ret = string.sub(state_const, state + 1, state + 1);
+        local ret = state_const:sub(state + 1, state + 1);
         state = state + 1;
         return ret;
     end;
     put = function(x)
-        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x);
+        ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x);
         state = state - 1;
     end;
     parse_error = function()
