@@ -1,3 +1,4 @@
+*.class
 /luaj/
-/luaj-out/
 /Krakatau/
+/luaj-out/
