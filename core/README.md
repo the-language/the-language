@@ -10,8 +10,12 @@ cd arch
 * NodeJS NPM https://nodejs.org/ `sudo apt install nodejs`
 * yarn `npm i -g yarn`
 * racket https://www.racket-lang.org/
-* clang-format http://clang.llvm.org/docs/ClangFormat.html `sudo apt install clang-format`
 * ant `sudo apt install ant`
+* gradle `sudo apt install gradle`
+* python `sudo apt install python`
+* php `sudo apt install php php7.0-mbstring`
+* git `sudo apt install git`
+* jre `/usr/lib/jvm/default-java/jre/lib/rt.jar` jdk
 
 ```bash
 raco pkg install --auto rash
