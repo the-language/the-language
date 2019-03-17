@@ -8,7 +8,9 @@ cd -
 
 [ -d luaj-out ] && rm -fr luaj-out
 mkdir luaj-out
-java -cp "luaj/luaj-jse-3.0.2.jar:luaj/lib/bcel-5.2.jar" luajc -s ../lua/ -d luaj-out lang.lua
+cp ../lua/lang.lua 'lang$luaj.lua'
+java -cp "luaj/luaj-jse-3.0.2.jar:luaj/lib/bcel-5.2.jar" luajc -s . -d luaj-out 'lang$luaj.lua'
+rm 'lang$luaj.lua'
 
 cd luaj-out
 jar cf lang.jar *
