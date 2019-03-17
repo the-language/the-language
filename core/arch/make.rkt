@@ -51,7 +51,8 @@
              "lua/lang.lua"
              "ecmascript6/lang.js"
              "python/lang.py"
-             "php/lang.php")
+             "php/lang.php"
+             "java/src")
             (void))
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
@@ -153,6 +154,13 @@
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
      }})
+     ("java/src" ("java/src/lang/Lang.java") (void))
+     ("java/src/lang/Lang.java" ("lua/lang.lua" "java/real-src/lang/Lang.java" "java/real-src/lang/LangValue.java") {
+         ;; TODO rewrite in rash
+         in-dir "java" {
+             ./compile.sh
+         }
+     })
      ("php/lang.php" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
          ;; TODO
          ;; * env_foreach

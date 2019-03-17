@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+import lang.*;
 
 public class testmain {
   public static void main(String[] args) throws Exception {
