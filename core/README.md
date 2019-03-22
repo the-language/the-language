@@ -7,6 +7,8 @@ cd arch
 
 ### 依賴
 
+* Maven `sudo apt install maven`
+* GHC+Cabal `sudo apt install ghc cabal-install` 因為某個地區的網絡的某些狀況，不採用Stack
 * NodeJS NPM https://nodejs.org/ `sudo apt install nodejs`
 * yarn `npm i -g yarn`
 * racket https://www.racket-lang.org/
@@ -21,4 +23,6 @@ cd arch
 raco pkg install --auto rash
 raco pkg install --auto make
 pip install js2py
+cabal update
+cabal install hslua
 ```
