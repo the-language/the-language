@@ -15,7 +15,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
   (void) k;
   (void) base;
   
-  // [22]	CLOSURE  	0 0	; 0x55961ef2bf20
+  // [22]	CLOSURE  	0 0	; 0x559f63792f20
   label_0: {
     Instruction i = 0x0000002c;
     ci->u.l.savedpc++;
@@ -69,7 +69,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [27]	CLOSURE  	97 1	; 0x55961ef2d160
+  // [27]	CLOSURE  	97 1	; 0x559f63794160
   label_3: {
     Instruction i = 0x0000586c;
     ci->u.l.savedpc++;
@@ -101,7 +101,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [32]	CLOSURE  	97 2	; 0x55961ef2d330
+  // [32]	CLOSURE  	97 2	; 0x559f63794330
   label_5: {
     Instruction i = 0x0000986c;
     ci->u.l.savedpc++;
@@ -133,7 +133,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [35]	CLOSURE  	97 3	; 0x55961ef2d4f0
+  // [35]	CLOSURE  	97 3	; 0x559f637944f0
   label_7: {
     Instruction i = 0x0000d86c;
     ci->u.l.savedpc++;
@@ -165,7 +165,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [38]	CLOSURE  	97 4	; 0x55961ef2d710
+  // [38]	CLOSURE  	97 4	; 0x559f63794710
   label_9: {
     Instruction i = 0x0001186c;
     ci->u.l.savedpc++;
@@ -197,7 +197,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [41]	CLOSURE  	97 5	; 0x55961ef2fa00
+  // [41]	CLOSURE  	97 5	; 0x559f63796a00
   label_11: {
     Instruction i = 0x0001586c;
     ci->u.l.savedpc++;
@@ -229,7 +229,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [44]	CLOSURE  	97 6	; 0x55961ef2fb30
+  // [44]	CLOSURE  	97 6	; 0x559f63796b30
   label_13: {
     Instruction i = 0x0001986c;
     ci->u.l.savedpc++;
@@ -261,7 +261,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [47]	CLOSURE  	97 7	; 0x55961ef2fcb0
+  // [47]	CLOSURE  	97 7	; 0x559f63796cb0
   label_15: {
     Instruction i = 0x0001d86c;
     ci->u.l.savedpc++;
@@ -293,7 +293,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [50]	CLOSURE  	97 8	; 0x55961ef2ff90
+  // [50]	CLOSURE  	97 8	; 0x559f63796f90
   label_17: {
     Instruction i = 0x0002186c;
     ci->u.l.savedpc++;
@@ -325,7 +325,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [53]	CLOSURE  	97 9	; 0x55961ef30020
+  // [53]	CLOSURE  	97 9	; 0x559f63797020
   label_19: {
     Instruction i = 0x0002586c;
     ci->u.l.savedpc++;
@@ -357,7 +357,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [56]	CLOSURE  	97 10	; 0x55961ef30190
+  // [56]	CLOSURE  	97 10	; 0x559f63797190
   label_21: {
     Instruction i = 0x0002986c;
     ci->u.l.savedpc++;
@@ -389,7 +389,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [59]	CLOSURE  	97 11	; 0x55961ef302c0
+  // [59]	CLOSURE  	97 11	; 0x559f637972c0
   label_23: {
     Instruction i = 0x0002d86c;
     ci->u.l.savedpc++;
@@ -421,7 +421,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [62]	CLOSURE  	97 12	; 0x55961ef30440
+  // [62]	CLOSURE  	97 12	; 0x559f63797440
   label_25: {
     Instruction i = 0x0003186c;
     ci->u.l.savedpc++;
@@ -453,7 +453,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [65]	CLOSURE  	97 13	; 0x55961ef30570
+  // [65]	CLOSURE  	97 13	; 0x559f63797570
   label_27: {
     Instruction i = 0x0003586c;
     ci->u.l.savedpc++;
@@ -485,7 +485,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [68]	CLOSURE  	97 14	; 0x55961ef306c0
+  // [68]	CLOSURE  	97 14	; 0x559f637976c0
   label_29: {
     Instruction i = 0x0003986c;
     ci->u.l.savedpc++;
@@ -517,7 +517,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [71]	CLOSURE  	97 15	; 0x55961ef30830
+  // [71]	CLOSURE  	97 15	; 0x559f63797830
   label_31: {
     Instruction i = 0x0003d86c;
     ci->u.l.savedpc++;
@@ -549,7 +549,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [74]	CLOSURE  	97 16	; 0x55961ef2ff00
+  // [74]	CLOSURE  	97 16	; 0x559f63796f00
   label_33: {
     Instruction i = 0x0004186c;
     ci->u.l.savedpc++;
@@ -581,7 +581,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [77]	CLOSURE  	97 17	; 0x55961ef30c70
+  // [77]	CLOSURE  	97 17	; 0x559f63797c70
   label_35: {
     Instruction i = 0x0004586c;
     ci->u.l.savedpc++;
@@ -613,7 +613,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [86]	CLOSURE  	97 18	; 0x55961ef30dc0
+  // [86]	CLOSURE  	97 18	; 0x559f63797dc0
   label_37: {
     Instruction i = 0x0004986c;
     ci->u.l.savedpc++;
@@ -645,7 +645,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [89]	CLOSURE  	97 19	; 0x55961ef31060
+  // [89]	CLOSURE  	97 19	; 0x559f63798060
   label_39: {
     Instruction i = 0x0004d86c;
     ci->u.l.savedpc++;
@@ -677,7 +677,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [92]	CLOSURE  	97 20	; 0x55961ef311e0
+  // [92]	CLOSURE  	97 20	; 0x559f637981e0
   label_41: {
     Instruction i = 0x0005186c;
     ci->u.l.savedpc++;
@@ -709,7 +709,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [95]	CLOSURE  	97 21	; 0x55961ef31310
+  // [95]	CLOSURE  	97 21	; 0x559f63798310
   label_43: {
     Instruction i = 0x0005586c;
     ci->u.l.savedpc++;
@@ -741,7 +741,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [98]	CLOSURE  	97 22	; 0x55961ef31440
+  // [98]	CLOSURE  	97 22	; 0x559f63798440
   label_45: {
     Instruction i = 0x0005986c;
     ci->u.l.savedpc++;
@@ -773,7 +773,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [101]	CLOSURE  	97 23	; 0x55961ef315c0
+  // [101]	CLOSURE  	97 23	; 0x559f637985c0
   label_47: {
     Instruction i = 0x0005d86c;
     ci->u.l.savedpc++;
@@ -805,7 +805,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [104]	CLOSURE  	97 24	; 0x55961ef316f0
+  // [104]	CLOSURE  	97 24	; 0x559f637986f0
   label_49: {
     Instruction i = 0x0006186c;
     ci->u.l.savedpc++;
@@ -837,7 +837,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [107]	CLOSURE  	97 25	; 0x55961ef31820
+  // [107]	CLOSURE  	97 25	; 0x559f63798820
   label_51: {
     Instruction i = 0x0006586c;
     ci->u.l.savedpc++;
@@ -869,7 +869,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [110]	CLOSURE  	97 26	; 0x55961ef31990
+  // [110]	CLOSURE  	97 26	; 0x559f63798990
   label_53: {
     Instruction i = 0x0006986c;
     ci->u.l.savedpc++;
@@ -901,7 +901,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [113]	CLOSURE  	97 27	; 0x55961ef31b10
+  // [113]	CLOSURE  	97 27	; 0x559f63798b10
   label_55: {
     Instruction i = 0x0006d86c;
     ci->u.l.savedpc++;
@@ -933,7 +933,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [116]	CLOSURE  	97 28	; 0x55961ef31c40
+  // [116]	CLOSURE  	97 28	; 0x559f63798c40
   label_57: {
     Instruction i = 0x0007186c;
     ci->u.l.savedpc++;
@@ -965,7 +965,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [119]	CLOSURE  	97 29	; 0x55961ef31db0
+  // [119]	CLOSURE  	97 29	; 0x559f63798db0
   label_59: {
     Instruction i = 0x0007586c;
     ci->u.l.savedpc++;
@@ -997,7 +997,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [122]	CLOSURE  	97 30	; 0x55961ef31f20
+  // [122]	CLOSURE  	97 30	; 0x559f63798f20
   label_61: {
     Instruction i = 0x0007986c;
     ci->u.l.savedpc++;
@@ -1029,7 +1029,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [125]	CLOSURE  	97 31	; 0x55961ef32090
+  // [125]	CLOSURE  	97 31	; 0x559f63799090
   label_63: {
     Instruction i = 0x0007d86c;
     ci->u.l.savedpc++;
@@ -1061,7 +1061,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [128]	CLOSURE  	97 32	; 0x55961ef2fde0
+  // [128]	CLOSURE  	97 32	; 0x559f63796de0
   label_65: {
     Instruction i = 0x0008186c;
     ci->u.l.savedpc++;
@@ -1093,7 +1093,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [131]	CLOSURE  	97 33	; 0x55961ef32680
+  // [131]	CLOSURE  	97 33	; 0x559f63799680
   label_67: {
     Instruction i = 0x0008586c;
     ci->u.l.savedpc++;
@@ -1125,7 +1125,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [134]	CLOSURE  	97 34	; 0x55961ef327b0
+  // [134]	CLOSURE  	97 34	; 0x559f637997b0
   label_69: {
     Instruction i = 0x0008986c;
     ci->u.l.savedpc++;
@@ -1157,7 +1157,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [137]	CLOSURE  	97 35	; 0x55961ef32900
+  // [137]	CLOSURE  	97 35	; 0x559f63799900
   label_71: {
     Instruction i = 0x0008d86c;
     ci->u.l.savedpc++;
@@ -1189,7 +1189,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [140]	CLOSURE  	97 36	; 0x55961ef32a80
+  // [140]	CLOSURE  	97 36	; 0x559f63799a80
   label_73: {
     Instruction i = 0x0009186c;
     ci->u.l.savedpc++;
@@ -1221,7 +1221,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [143]	CLOSURE  	97 37	; 0x55961ef32bb0
+  // [143]	CLOSURE  	97 37	; 0x559f63799bb0
   label_75: {
     Instruction i = 0x0009586c;
     ci->u.l.savedpc++;
@@ -1253,7 +1253,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [166]	CLOSURE  	97 38	; 0x55961ef32d00
+  // [166]	CLOSURE  	97 38	; 0x559f63799d00
   label_77: {
     Instruction i = 0x0009986c;
     ci->u.l.savedpc++;
@@ -1285,7 +1285,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [177]	CLOSURE  	97 39	; 0x55961ef33000
+  // [177]	CLOSURE  	97 39	; 0x559f6379a000
   label_79: {
     Instruction i = 0x0009d86c;
     ci->u.l.savedpc++;
@@ -1317,7 +1317,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [188]	CLOSURE  	97 40	; 0x55961ef33490
+  // [188]	CLOSURE  	97 40	; 0x559f6379a490
   label_81: {
     Instruction i = 0x000a186c;
     ci->u.l.savedpc++;
@@ -1349,7 +1349,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [192]	CLOSURE  	97 41	; 0x55961ef2da90
+  // [192]	CLOSURE  	97 41	; 0x559f63794a90
   label_83: {
     Instruction i = 0x000a586c;
     ci->u.l.savedpc++;
@@ -1381,7 +1381,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [208]	CLOSURE  	97 42	; 0x55961ef2dbc0
+  // [208]	CLOSURE  	97 42	; 0x559f63794bc0
   label_85: {
     Instruction i = 0x000a986c;
     ci->u.l.savedpc++;
@@ -1413,7 +1413,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [211]	CLOSURE  	97 43	; 0x55961ef2df00
+  // [211]	CLOSURE  	97 43	; 0x559f63794f00
   label_87: {
     Instruction i = 0x000ad86c;
     ci->u.l.savedpc++;
@@ -1445,7 +1445,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [338]	CLOSURE  	97 44	; 0x55961ef2e1e0
+  // [338]	CLOSURE  	97 44	; 0x559f637951e0
   label_89: {
     Instruction i = 0x000b186c;
     ci->u.l.savedpc++;
@@ -1477,7 +1477,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [357]	CLOSURE  	97 45	; 0x55961ef2e6d0
+  // [357]	CLOSURE  	97 45	; 0x559f637956d0
   label_91: {
     Instruction i = 0x000b586c;
     ci->u.l.savedpc++;
@@ -1509,7 +1509,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [385]	CLOSURE  	97 46	; 0x55961ef2e760
+  // [385]	CLOSURE  	97 46	; 0x559f63795760
   label_93: {
     Instruction i = 0x000b986c;
     ci->u.l.savedpc++;
@@ -1541,7 +1541,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [397]	CLOSURE  	97 47	; 0x55961ef358f0
+  // [397]	CLOSURE  	97 47	; 0x559f6379c8f0
   label_95: {
     Instruction i = 0x000bd86c;
     ci->u.l.savedpc++;
@@ -1573,7 +1573,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [409]	CLOSURE  	97 48	; 0x55961ef36fa0
+  // [409]	CLOSURE  	97 48	; 0x559f6379dfa0
   label_97: {
     Instruction i = 0x000c186c;
     ci->u.l.savedpc++;
@@ -1605,7 +1605,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [420]	CLOSURE  	97 49	; 0x55961ef37240
+  // [420]	CLOSURE  	97 49	; 0x559f6379e240
   label_99: {
     Instruction i = 0x000c586c;
     ci->u.l.savedpc++;
@@ -1637,7 +1637,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [429]	CLOSURE  	97 50	; 0x55961ef37570
+  // [429]	CLOSURE  	97 50	; 0x559f6379e570
   label_101: {
     Instruction i = 0x000c986c;
     ci->u.l.savedpc++;
@@ -1669,7 +1669,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [539]	CLOSURE  	97 51	; 0x55961ef37650
+  // [539]	CLOSURE  	97 51	; 0x559f6379e650
   label_103: {
     Instruction i = 0x000cd86c;
     ci->u.l.savedpc++;
@@ -1701,7 +1701,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [542]	CLOSURE  	97 52	; 0x55961ef37730
+  // [542]	CLOSURE  	97 52	; 0x559f6379e730
   label_105: {
     Instruction i = 0x000d186c;
     ci->u.l.savedpc++;
@@ -1733,7 +1733,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [601]	CLOSURE  	97 53	; 0x55961ef38e50
+  // [601]	CLOSURE  	97 53	; 0x559f6379fe50
   label_107: {
     Instruction i = 0x000d586c;
     ci->u.l.savedpc++;
@@ -1765,7 +1765,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [626]	CLOSURE  	97 54	; 0x55961ef37b00
+  // [626]	CLOSURE  	97 54	; 0x559f6379eb00
   label_109: {
     Instruction i = 0x000d986c;
     ci->u.l.savedpc++;
@@ -1797,7 +1797,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [641]	CLOSURE  	97 55	; 0x55961ef39950
+  // [641]	CLOSURE  	97 55	; 0x559f637a0950
   label_111: {
     Instruction i = 0x000dd86c;
     ci->u.l.savedpc++;
@@ -1829,7 +1829,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [708]	CLOSURE  	97 56	; 0x55961ef38480
+  // [708]	CLOSURE  	97 56	; 0x559f6379f480
   label_113: {
     Instruction i = 0x000e186c;
     ci->u.l.savedpc++;
@@ -1861,7 +1861,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [756]	CLOSURE  	97 57	; 0x55961ef3a660
+  // [756]	CLOSURE  	97 57	; 0x559f637a1660
   label_115: {
     Instruction i = 0x000e586c;
     ci->u.l.savedpc++;
@@ -1893,7 +1893,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [793]	CLOSURE  	97 58	; 0x55961ef3ab80
+  // [793]	CLOSURE  	97 58	; 0x559f637a1b80
   label_117: {
     Instruction i = 0x000e986c;
     ci->u.l.savedpc++;
@@ -2081,7 +2081,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [807]	CLOSURE  	99 59	; 0x55961ef3a2d0
+  // [807]	CLOSURE  	99 59	; 0x559f637a12d0
   label_130: {
     Instruction i = 0x000ed8ec;
     ci->u.l.savedpc++;
@@ -4631,7 +4631,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [893]	CLOSURE  	126 60	; 0x55961ef3b660
+  // [893]	CLOSURE  	126 60	; 0x559f637a2660
   label_289: {
     Instruction i = 0x000f1fac;
     ci->u.l.savedpc++;
@@ -4679,7 +4679,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [897]	CLOSURE  	127 61	; 0x55961ef3b8d0
+  // [897]	CLOSURE  	127 61	; 0x559f637a28d0
   label_292: {
     Instruction i = 0x000f5fec;
     ci->u.l.savedpc++;
@@ -4727,7 +4727,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [901]	CLOSURE  	128 62	; 0x55961ef2f560
+  // [901]	CLOSURE  	128 62	; 0x559f63796560
   label_295: {
     Instruction i = 0x000fa02c;
     ci->u.l.savedpc++;
@@ -4775,7 +4775,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [905]	CLOSURE  	129 63	; 0x55961ef2f7b0
+  // [905]	CLOSURE  	129 63	; 0x559f637967b0
   label_298: {
     Instruction i = 0x000fe06c;
     ci->u.l.savedpc++;
@@ -7830,7 +7830,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [967]	CLOSURE  	136 64	; 0x55961ef309b0
+  // [967]	CLOSURE  	136 64	; 0x559f637979b0
   label_494: {
     Instruction i = 0x0010222c;
     ci->u.l.savedpc++;
@@ -7878,7 +7878,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [975]	CLOSURE  	137 65	; 0x55961ef35450
+  // [975]	CLOSURE  	137 65	; 0x559f6379c450
   label_497: {
     Instruction i = 0x0010626c;
     ci->u.l.savedpc++;
@@ -8048,7 +8048,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1041]	CLOSURE  	138 66	; 0x55961ef2ef60
+  // [1041]	CLOSURE  	138 66	; 0x559f63795f60
   label_508: {
     Instruction i = 0x0010a2ac;
     ci->u.l.savedpc++;
@@ -8186,7 +8186,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1060]	CLOSURE  	139 67	; 0x55961ef42f50
+  // [1060]	CLOSURE  	139 67	; 0x559f637a9f50
   label_517: {
     Instruction i = 0x0010e2ec;
     ci->u.l.savedpc++;
@@ -8234,7 +8234,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1073]	CLOSURE  	140 68	; 0x55961ef3cae0
+  // [1073]	CLOSURE  	140 68	; 0x559f637a3ae0
   label_520: {
     Instruction i = 0x0011232c;
     ci->u.l.savedpc++;
@@ -9299,7 +9299,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1126]	CLOSURE  	157 69	; 0x55961ef34000
+  // [1126]	CLOSURE  	157 69	; 0x559f6379b000
   label_587: {
     Instruction i = 0x0011676c;
     ci->u.l.savedpc++;
@@ -9395,7 +9395,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1137]	CLOSURE  	158 70	; 0x55961ef34c70
+  // [1137]	CLOSURE  	158 70	; 0x559f6379bc70
   label_592: {
     Instruction i = 0x0011a7ac;
     ci->u.l.savedpc++;
@@ -9491,7 +9491,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1143]	CLOSURE  	159 71	; 0x55961ef34320
+  // [1143]	CLOSURE  	159 71	; 0x559f6379b320
   label_597: {
     Instruction i = 0x0011e7ec;
     ci->u.l.savedpc++;
@@ -9649,7 +9649,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1152]	CLOSURE  	161 72	; 0x55961ef45490
+  // [1152]	CLOSURE  	161 72	; 0x559f637ac490
   label_606: {
     Instruction i = 0x0012286c;
     ci->u.l.savedpc++;
@@ -9745,7 +9745,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1171]	CLOSURE  	162 73	; 0x55961ef45f40
+  // [1171]	CLOSURE  	162 73	; 0x559f637acf40
   label_611: {
     Instruction i = 0x001268ac;
     ci->u.l.savedpc++;
@@ -9870,7 +9870,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1229]	CLOSURE  	141 74	; 0x55961ef460f0
+  // [1229]	CLOSURE  	141 74	; 0x559f637ad0f0
   label_617: {
     Instruction i = 0x0012a36c;
     ci->u.l.savedpc++;
@@ -9918,7 +9918,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1233]	CLOSURE  	142 75	; 0x55961ef465b0
+  // [1233]	CLOSURE  	142 75	; 0x559f637ad5b0
   label_620: {
     Instruction i = 0x0012e3ac;
     ci->u.l.savedpc++;
@@ -9996,7 +9996,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1524]	CLOSURE  	143 76	; 0x55961ef46400
+  // [1524]	CLOSURE  	143 76	; 0x559f637ad400
   label_625: {
     Instruction i = 0x001323ec;
     ci->u.l.savedpc++;
@@ -10059,7 +10059,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1953]	CLOSURE  	144 77	; 0x55961ef46a30
+  // [1953]	CLOSURE  	144 77	; 0x559f637ada30
   label_629: {
     Instruction i = 0x0013642c;
     ci->u.l.savedpc++;
@@ -10122,7 +10122,7 @@ static int zz_magic_function_0 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [2071]	CLOSURE  	145 78	; 0x55961ef525f0
+  // [2071]	CLOSURE  	145 78	; 0x559f637b95f0
   label_633: {
     Instruction i = 0x0013a46c;
     ci->u.l.savedpc++;
@@ -17325,7 +17325,7 @@ static int zz_magic_function_45 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [234]	CLOSURE  	7 0	; 0x55961ef2e350
+  // [234]	CLOSURE  	7 0	; 0x559f63795350
   label_15: {
     Instruction i = 0x000001ec;
     ci->u.l.savedpc++;
@@ -17373,7 +17373,7 @@ static int zz_magic_function_45 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [257]	CLOSURE  	8 1	; 0x55961ef2e830
+  // [257]	CLOSURE  	8 1	; 0x559f63795830
   label_18: {
     Instruction i = 0x0000422c;
     ci->u.l.savedpc++;
@@ -17421,7 +17421,7 @@ static int zz_magic_function_45 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [268]	CLOSURE  	9 2	; 0x55961ef35530
+  // [268]	CLOSURE  	9 2	; 0x559f6379c530
   label_21: {
     Instruction i = 0x0000826c;
     ci->u.l.savedpc++;
@@ -32293,7 +32293,7 @@ static int zz_magic_function_57 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [547]	CLOSURE  	3 0	; 0x55961ef38f30
+  // [547]	CLOSURE  	3 0	; 0x559f6379ff30
   label_1: {
     Instruction i = 0x000000ec;
     ci->u.l.savedpc++;
@@ -37406,7 +37406,7 @@ static int zz_magic_function_61 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [653]	CLOSURE  	5 0	; 0x55961ef39060
+  // [653]	CLOSURE  	5 0	; 0x559f637a0060
   label_4: {
     Instruction i = 0x0000016c;
     ci->u.l.savedpc++;
@@ -37454,7 +37454,7 @@ static int zz_magic_function_61 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [657]	CLOSURE  	6 1	; 0x55961ef39fd0
+  // [657]	CLOSURE  	6 1	; 0x559f637a0fd0
   label_7: {
     Instruction i = 0x000041ac;
     ci->u.l.savedpc++;
@@ -38366,7 +38366,7 @@ static int zz_magic_function_61 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [690]	CLOSURE  	13 2	; 0x55961ef39d50
+  // [690]	CLOSURE  	13 2	; 0x559f637a0d50
   label_63: {
     Instruction i = 0x0000836c;
     ci->u.l.savedpc++;
@@ -40540,7 +40540,7 @@ static int zz_magic_function_65 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [726]	CLOSURE  	3 0	; 0x55961ef3a3b0
+  // [726]	CLOSURE  	3 0	; 0x559f637a13b0
   label_17: {
     Instruction i = 0x000000ec;
     ci->u.l.savedpc++;
@@ -48372,7 +48372,7 @@ static int zz_magic_function_74 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [972]	CLOSURE  	3 0	; 0x55961ef2eda0
+  // [972]	CLOSURE  	3 0	; 0x559f63795da0
   label_2: {
     Instruction i = 0x000000ec;
     ci->u.l.savedpc++;
@@ -48391,7 +48391,7 @@ static int zz_magic_function_74 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [974]	CLOSURE  	4 1	; 0x55961ef2ee80
+  // [974]	CLOSURE  	4 1	; 0x559f63795e80
   label_3: {
     Instruction i = 0x0000412c;
     ci->u.l.savedpc++;
@@ -51288,7 +51288,7 @@ static int zz_magic_function_78 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1059]	CLOSURE  	5 0	; 0x55961ef3c650
+  // [1059]	CLOSURE  	5 0	; 0x559f637a3650
   label_3: {
     Instruction i = 0x0000016c;
     ci->u.l.savedpc++;
@@ -51892,7 +51892,7 @@ static int zz_magic_function_80 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1072]	CLOSURE  	6 0	; 0x55961ef3cba0
+  // [1072]	CLOSURE  	6 0	; 0x559f637a3ba0
   label_3: {
     Instruction i = 0x000001ac;
     ci->u.l.savedpc++;
@@ -53064,7 +53064,7 @@ static int zz_magic_function_82 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1089]	CLOSURE  	4 0	; 0x55961ef34200
+  // [1089]	CLOSURE  	4 0	; 0x559f6379b200
   label_35: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -53112,7 +53112,7 @@ static int zz_magic_function_82 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1093]	CLOSURE  	5 1	; 0x55961ef346b0
+  // [1093]	CLOSURE  	5 1	; 0x559f6379b6b0
   label_38: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -53262,7 +53262,7 @@ static int zz_magic_function_82 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1098]	CLOSURE  	6 2	; 0x55961ef347c0
+  // [1098]	CLOSURE  	6 2	; 0x559f6379b7c0
   label_47: {
     Instruction i = 0x000081ac;
     ci->u.l.savedpc++;
@@ -58213,7 +58213,7 @@ static int zz_magic_function_90 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1191]	CLOSURE  	3 0	; 0x55961ef46520
+  // [1191]	CLOSURE  	3 0	; 0x559f637ad520
   label_17: {
     Instruction i = 0x000000ec;
     ci->u.l.savedpc++;
@@ -61182,7 +61182,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1241]	CLOSURE  	19 0	; 0x55961ef46b10
+  // [1241]	CLOSURE  	19 0	; 0x559f637adb10
   label_1: {
     Instruction i = 0x000004ec;
     ci->u.l.savedpc++;
@@ -61214,7 +61214,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1247]	CLOSURE  	19 1	; 0x55961ef46c20
+  // [1247]	CLOSURE  	19 1	; 0x559f637adc20
   label_3: {
     Instruction i = 0x000044ec;
     ci->u.l.savedpc++;
@@ -61246,7 +61246,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1251]	CLOSURE  	19 2	; 0x55961ef335b0
+  // [1251]	CLOSURE  	19 2	; 0x559f6379a5b0
   label_5: {
     Instruction i = 0x000084ec;
     ci->u.l.savedpc++;
@@ -61278,7 +61278,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1254]	CLOSURE  	19 3	; 0x55961ef337b0
+  // [1254]	CLOSURE  	19 3	; 0x559f6379a7b0
   label_7: {
     Instruction i = 0x0000c4ec;
     ci->u.l.savedpc++;
@@ -61310,7 +61310,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1257]	CLOSURE  	19 4	; 0x55961ef33840
+  // [1257]	CLOSURE  	19 4	; 0x559f6379a840
   label_9: {
     Instruction i = 0x000104ec;
     ci->u.l.savedpc++;
@@ -61342,7 +61342,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1274]	CLOSURE  	19 5	; 0x55961ef338d0
+  // [1274]	CLOSURE  	19 5	; 0x559f6379a8d0
   label_11: {
     Instruction i = 0x000144ec;
     ci->u.l.savedpc++;
@@ -61374,7 +61374,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1295]	CLOSURE  	19 6	; 0x55961ef33ca0
+  // [1295]	CLOSURE  	19 6	; 0x559f6379aca0
   label_13: {
     Instruction i = 0x000184ec;
     ci->u.l.savedpc++;
@@ -61406,7 +61406,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1364]	CLOSURE  	19 7	; 0x55961ef339b0
+  // [1364]	CLOSURE  	19 7	; 0x559f6379a9b0
   label_15: {
     Instruction i = 0x0001c4ec;
     ci->u.l.savedpc++;
@@ -61438,7 +61438,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1382]	CLOSURE  	19 8	; 0x55961ef48830
+  // [1382]	CLOSURE  	19 8	; 0x559f637af830
   label_17: {
     Instruction i = 0x000204ec;
     ci->u.l.savedpc++;
@@ -61470,7 +61470,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1400]	CLOSURE  	19 9	; 0x55961ef48a30
+  // [1400]	CLOSURE  	19 9	; 0x559f637afa30
   label_19: {
     Instruction i = 0x000244ec;
     ci->u.l.savedpc++;
@@ -61502,7 +61502,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1416]	CLOSURE  	19 10	; 0x55961ef490c0
+  // [1416]	CLOSURE  	19 10	; 0x559f637b00c0
   label_21: {
     Instruction i = 0x000284ec;
     ci->u.l.savedpc++;
@@ -61534,7 +61534,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1431]	CLOSURE  	19 11	; 0x55961ef49cf0
+  // [1431]	CLOSURE  	19 11	; 0x559f637b0cf0
   label_23: {
     Instruction i = 0x0002c4ec;
     ci->u.l.savedpc++;
@@ -61609,7 +61609,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1458]	CLOSURE  	20 12	; 0x55961ef4a260
+  // [1458]	CLOSURE  	20 12	; 0x559f637b1260
   label_28: {
     Instruction i = 0x0003052c;
     ci->u.l.savedpc++;
@@ -61657,7 +61657,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1487]	CLOSURE  	21 13	; 0x55961ef4a5d0
+  // [1487]	CLOSURE  	21 13	; 0x559f637b15d0
   label_31: {
     Instruction i = 0x0003456c;
     ci->u.l.savedpc++;
@@ -61716,7 +61716,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1494]	CLOSURE  	23 14	; 0x55961ef48950
+  // [1494]	CLOSURE  	23 14	; 0x559f637af950
   label_35: {
     Instruction i = 0x000385ec;
     ci->u.l.savedpc++;
@@ -61798,7 +61798,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1502]	CLOSURE  	23 15	; 0x55961ef49310
+  // [1502]	CLOSURE  	23 15	; 0x559f637b0310
   label_40: {
     Instruction i = 0x0003c5ec;
     ci->u.l.savedpc++;
@@ -61880,7 +61880,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1514]	CLOSURE  	23 16	; 0x55961ef487a0
+  // [1514]	CLOSURE  	23 16	; 0x559f637af7a0
   label_45: {
     Instruction i = 0x000405ec;
     ci->u.l.savedpc++;
@@ -61962,7 +61962,7 @@ static int zz_magic_function_93 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1522]	CLOSURE  	23 17	; 0x55961ef4bba0
+  // [1522]	CLOSURE  	23 17	; 0x559f637b2ba0
   label_50: {
     Instruction i = 0x000445ec;
     ci->u.l.savedpc++;
@@ -65265,7 +65265,7 @@ static int zz_magic_function_101 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1331]	CLOSURE  	4 0	; 0x55961ef488c0
+  // [1331]	CLOSURE  	4 0	; 0x559f637af8c0
   label_20: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -65313,7 +65313,7 @@ static int zz_magic_function_101 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1335]	CLOSURE  	5 1	; 0x55961ef48be0
+  // [1335]	CLOSURE  	5 1	; 0x559f637afbe0
   label_23: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -69901,7 +69901,7 @@ static int zz_magic_function_108 (lua_State *L, LClosure *cl)
   (void) k;
   (void) base;
   
-  // [1457]	CLOSURE  	2 0	; 0x55961ef4a2f0
+  // [1457]	CLOSURE  	2 0	; 0x559f637b12f0
   label_0: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -71011,7 +71011,7 @@ static int zz_magic_function_110 (lua_State *L, LClosure *cl)
   (void) k;
   (void) base;
   
-  // [1486]	CLOSURE  	2 0	; 0x55961ef4a660
+  // [1486]	CLOSURE  	2 0	; 0x559f637b1660
   label_0: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -72640,7 +72640,7 @@ static int zz_magic_function_113 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1498]	CLOSURE  	4 0	; 0x55961ef4b1a0
+  // [1498]	CLOSURE  	4 0	; 0x559f637b21a0
   label_2: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -72659,7 +72659,7 @@ static int zz_magic_function_113 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1500]	CLOSURE  	5 1	; 0x55961ef4b230
+  // [1500]	CLOSURE  	5 1	; 0x559f637b2230
   label_3: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -72979,7 +72979,7 @@ static int zz_magic_function_116 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1506]	CLOSURE  	5 0	; 0x55961ef4b530
+  // [1506]	CLOSURE  	5 0	; 0x559f637b2530
   label_2: {
     Instruction i = 0x0000016c;
     ci->u.l.savedpc++;
@@ -72998,7 +72998,7 @@ static int zz_magic_function_116 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1508]	CLOSURE  	6 1	; 0x55961ef4b610
+  // [1508]	CLOSURE  	6 1	; 0x559f637b2610
   label_3: {
     Instruction i = 0x000041ac;
     ci->u.l.savedpc++;
@@ -73473,7 +73473,7 @@ static int zz_magic_function_119 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1518]	CLOSURE  	4 0	; 0x55961ef4bc30
+  // [1518]	CLOSURE  	4 0	; 0x559f637b2c30
   label_2: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -73492,7 +73492,7 @@ static int zz_magic_function_119 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1520]	CLOSURE  	5 1	; 0x55961ef4bcc0
+  // [1520]	CLOSURE  	5 1	; 0x559f637b2cc0
   label_3: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -73801,7 +73801,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1531]	CLOSURE  	24 0	; 0x55961ef4c020
+  // [1531]	CLOSURE  	24 0	; 0x559f637b3020
   label_1: {
     Instruction i = 0x0000062c;
     ci->u.l.savedpc++;
@@ -73833,7 +73833,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1537]	CLOSURE  	24 1	; 0x55961ef4c100
+  // [1537]	CLOSURE  	24 1	; 0x559f637b3100
   label_3: {
     Instruction i = 0x0000462c;
     ci->u.l.savedpc++;
@@ -73865,7 +73865,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1541]	CLOSURE  	24 2	; 0x55961ef4c490
+  // [1541]	CLOSURE  	24 2	; 0x559f637b3490
   label_5: {
     Instruction i = 0x0000862c;
     ci->u.l.savedpc++;
@@ -73897,7 +73897,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1544]	CLOSURE  	24 3	; 0x55961ef4c760
+  // [1544]	CLOSURE  	24 3	; 0x559f637b3760
   label_7: {
     Instruction i = 0x0000c62c;
     ci->u.l.savedpc++;
@@ -73929,7 +73929,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1547]	CLOSURE  	24 4	; 0x55961ef4c8e0
+  // [1547]	CLOSURE  	24 4	; 0x559f637b38e0
   label_9: {
     Instruction i = 0x0001062c;
     ci->u.l.savedpc++;
@@ -73961,7 +73961,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1564]	CLOSURE  	24 5	; 0x55961ef4cab0
+  // [1564]	CLOSURE  	24 5	; 0x559f637b3ab0
   label_11: {
     Instruction i = 0x0001462c;
     ci->u.l.savedpc++;
@@ -73993,7 +73993,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1585]	CLOSURE  	24 6	; 0x55961ef4cc80
+  // [1585]	CLOSURE  	24 6	; 0x559f637b3c80
   label_13: {
     Instruction i = 0x0001862c;
     ci->u.l.savedpc++;
@@ -74025,7 +74025,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1654]	CLOSURE  	24 7	; 0x55961ef4d0f0
+  // [1654]	CLOSURE  	24 7	; 0x559f637b40f0
   label_15: {
     Instruction i = 0x0001c62c;
     ci->u.l.savedpc++;
@@ -74057,7 +74057,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1672]	CLOSURE  	24 8	; 0x55961ef4d400
+  // [1672]	CLOSURE  	24 8	; 0x559f637b4400
   label_17: {
     Instruction i = 0x0002062c;
     ci->u.l.savedpc++;
@@ -74089,7 +74089,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1690]	CLOSURE  	24 9	; 0x55961ef4d680
+  // [1690]	CLOSURE  	24 9	; 0x559f637b4680
   label_19: {
     Instruction i = 0x0002462c;
     ci->u.l.savedpc++;
@@ -74121,7 +74121,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1706]	CLOSURE  	24 10	; 0x55961ef4dd10
+  // [1706]	CLOSURE  	24 10	; 0x559f637b4d10
   label_21: {
     Instruction i = 0x0002862c;
     ci->u.l.savedpc++;
@@ -74153,7 +74153,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1721]	CLOSURE  	24 11	; 0x55961ef4eb70
+  // [1721]	CLOSURE  	24 11	; 0x559f637b5b70
   label_23: {
     Instruction i = 0x0002c62c;
     ci->u.l.savedpc++;
@@ -74185,7 +74185,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1727]	CLOSURE  	24 12	; 0x55961ef4edf0
+  // [1727]	CLOSURE  	24 12	; 0x559f637b5df0
   label_25: {
     Instruction i = 0x0003062c;
     ci->u.l.savedpc++;
@@ -74217,7 +74217,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1730]	CLOSURE  	24 13	; 0x55961ef4ee80
+  // [1730]	CLOSURE  	24 13	; 0x559f637b5e80
   label_27: {
     Instruction i = 0x0003462c;
     ci->u.l.savedpc++;
@@ -74249,7 +74249,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1734]	CLOSURE  	24 14	; 0x55961ef4ef60
+  // [1734]	CLOSURE  	24 14	; 0x559f637b5f60
   label_29: {
     Instruction i = 0x0003862c;
     ci->u.l.savedpc++;
@@ -74281,7 +74281,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1850]	CLOSURE  	24 15	; 0x55961ef4f0e0
+  // [1850]	CLOSURE  	24 15	; 0x559f637b60e0
   label_31: {
     Instruction i = 0x0003c62c;
     ci->u.l.savedpc++;
@@ -74313,7 +74313,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1860]	CLOSURE  	24 16	; 0x55961ef4d550
+  // [1860]	CLOSURE  	24 16	; 0x559f637b4550
   label_33: {
     Instruction i = 0x0004062c;
     ci->u.l.savedpc++;
@@ -74388,7 +74388,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1887]	CLOSURE  	25 17	; 0x55961ef4f380
+  // [1887]	CLOSURE  	25 17	; 0x559f637b6380
   label_38: {
     Instruction i = 0x0004466c;
     ci->u.l.savedpc++;
@@ -74436,7 +74436,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1916]	CLOSURE  	26 18	; 0x55961ef508f0
+  // [1916]	CLOSURE  	26 18	; 0x559f637b78f0
   label_41: {
     Instruction i = 0x000486ac;
     ci->u.l.savedpc++;
@@ -74495,7 +74495,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1923]	CLOSURE  	28 19	; 0x55961ef51310
+  // [1923]	CLOSURE  	28 19	; 0x559f637b8310
   label_45: {
     Instruction i = 0x0004c72c;
     ci->u.l.savedpc++;
@@ -74577,7 +74577,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1931]	CLOSURE  	28 20	; 0x55961ef516b0
+  // [1931]	CLOSURE  	28 20	; 0x559f637b86b0
   label_50: {
     Instruction i = 0x0005072c;
     ci->u.l.savedpc++;
@@ -74659,7 +74659,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1943]	CLOSURE  	28 21	; 0x55961ef51ba0
+  // [1943]	CLOSURE  	28 21	; 0x559f637b8ba0
   label_55: {
     Instruction i = 0x0005472c;
     ci->u.l.savedpc++;
@@ -74741,7 +74741,7 @@ static int zz_magic_function_122 (lua_State *L, LClosure *cl)
     setobj2s(L, ra, rb);
   }
   
-  // [1951]	CLOSURE  	28 22	; 0x55961ef521c0
+  // [1951]	CLOSURE  	28 22	; 0x559f637b91c0
   label_60: {
     Instruction i = 0x0005872c;
     ci->u.l.savedpc++;
@@ -78044,7 +78044,7 @@ static int zz_magic_function_130 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1621]	CLOSURE  	4 0	; 0x55961ef4d4c0
+  // [1621]	CLOSURE  	4 0	; 0x559f637b44c0
   label_20: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -78092,7 +78092,7 @@ static int zz_magic_function_130 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1625]	CLOSURE  	5 1	; 0x55961ef4d830
+  // [1625]	CLOSURE  	5 1	; 0x559f637b4830
   label_23: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -83197,7 +83197,7 @@ static int zz_magic_function_140 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1760]	CLOSURE  	2 0	; 0x55961ef4f1c0
+  // [1760]	CLOSURE  	2 0	; 0x559f637b61c0
   label_1: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -83229,7 +83229,7 @@ static int zz_magic_function_140 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1799]	CLOSURE  	2 1	; 0x55961ef4fb30
+  // [1799]	CLOSURE  	2 1	; 0x559f637b6b30
   label_3: {
     Instruction i = 0x000040ac;
     ci->u.l.savedpc++;
@@ -85911,7 +85911,7 @@ static int zz_magic_function_141 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1747]	CLOSURE  	2 0	; 0x55961ef4f2f0
+  // [1747]	CLOSURE  	2 0	; 0x559f637b62f0
   label_4: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -89133,7 +89133,7 @@ static int zz_magic_function_145 (lua_State *L, LClosure *cl)
   (void) k;
   (void) base;
   
-  // [1886]	CLOSURE  	2 0	; 0x55961ef4f590
+  // [1886]	CLOSURE  	2 0	; 0x559f637b6590
   label_0: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -90243,7 +90243,7 @@ static int zz_magic_function_147 (lua_State *L, LClosure *cl)
   (void) k;
   (void) base;
   
-  // [1915]	CLOSURE  	2 0	; 0x55961ef4df60
+  // [1915]	CLOSURE  	2 0	; 0x559f637b4f60
   label_0: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -91872,7 +91872,7 @@ static int zz_magic_function_150 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1927]	CLOSURE  	4 0	; 0x55961ef517e0
+  // [1927]	CLOSURE  	4 0	; 0x559f637b87e0
   label_2: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -91891,7 +91891,7 @@ static int zz_magic_function_150 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1929]	CLOSURE  	5 1	; 0x55961ef51b10
+  // [1929]	CLOSURE  	5 1	; 0x559f637b8b10
   label_3: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -92211,7 +92211,7 @@ static int zz_magic_function_153 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1935]	CLOSURE  	5 0	; 0x55961ef51cd0
+  // [1935]	CLOSURE  	5 0	; 0x559f637b8cd0
   label_2: {
     Instruction i = 0x0000016c;
     ci->u.l.savedpc++;
@@ -92230,7 +92230,7 @@ static int zz_magic_function_153 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1937]	CLOSURE  	6 1	; 0x55961ef51db0
+  // [1937]	CLOSURE  	6 1	; 0x559f637b8db0
   label_3: {
     Instruction i = 0x000041ac;
     ci->u.l.savedpc++;
@@ -92705,7 +92705,7 @@ static int zz_magic_function_156 (lua_State *L, LClosure *cl)
     setobjs2s(L, ra, RB(i));
   }
   
-  // [1947]	CLOSURE  	4 0	; 0x55961ef52250
+  // [1947]	CLOSURE  	4 0	; 0x559f637b9250
   label_2: {
     Instruction i = 0x0000012c;
     ci->u.l.savedpc++;
@@ -92724,7 +92724,7 @@ static int zz_magic_function_156 (lua_State *L, LClosure *cl)
     checkGC(L, ra + 1);
   }
   
-  // [1949]	CLOSURE  	5 1	; 0x55961ef52330
+  // [1949]	CLOSURE  	5 1	; 0x559f637b9330
   label_3: {
     Instruction i = 0x0000416c;
     ci->u.l.savedpc++;
@@ -93033,7 +93033,7 @@ static int zz_magic_function_159 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [2029]	CLOSURE  	2 0	; 0x55961ef4e170
+  // [2029]	CLOSURE  	2 0	; 0x559f637b5170
   label_1: {
     Instruction i = 0x000000ac;
     ci->u.l.savedpc++;
@@ -97579,7 +97579,7 @@ static int zz_magic_function_160 (lua_State *L, LClosure *cl)
     } while (b--);
   }
   
-  // [1970]	CLOSURE  	3 0	; 0x55961ef4f960
+  // [1970]	CLOSURE  	3 0	; 0x559f637b6960
   label_10: {
     Instruction i = 0x000000ec;
     ci->u.l.savedpc++;

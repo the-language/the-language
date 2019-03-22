@@ -1,4 +1,4 @@
-/lua-out/
+/lua-aot/
 *.s
 *.so
 *.o
