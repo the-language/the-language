@@ -32,3 +32,11 @@ cd src
 javac ./lang/Lang.java
 javac testmain.java
 cd -
+
+for f in $(find src -name '*.java') ;do
+  name="${f%.java}"
+  if [ ! -f "$name.class" ] ;then
+    rm -fv "$f"
+  fi
+done
+rm -fvr src/META-INF
