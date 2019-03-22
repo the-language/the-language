@@ -18,11 +18,22 @@
 */
 package lang;
 
-import org.luaj.vm2.lib.jse.JsePlatform;
+import org.luaj.vm2.lib.BaseLib;
+import org.luaj.vm2.lib.Bit32Lib;
+import org.luaj.vm2.lib.CoroutineLib;
+import org.luaj.vm2.lib.DebugLib;
+import org.luaj.vm2.lib.MathLib;
+import org.luaj.vm2.lib.OsLib;
+import org.luaj.vm2.lib.PackageLib;
+import org.luaj.vm2.lib.ResourceFinder;
+import org.luaj.vm2.lib.StringLib;
+import org.luaj.vm2.lib.TableLib;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaString;
+import org.luaj.vm2.compiler.LuaC;
+import org.luaj.vm2.LoadState;
 public final class Lang {
   private static Globals globals;
   private static LuaTable exports;
@@ -36,7 +47,17 @@ public final class Lang {
   private static LuaValue force_all_rec;
   private static void init() throws Exception {
     if (!inited) {
-      globals = JsePlatform.standardGlobals();
+      globals = new Globals();
+      globals.load(new BaseLib());
+      globals.load(new PackageLib());
+      globals.load(new Bit32Lib());
+      globals.load(new OsLib());
+      globals.load(new MathLib());
+      globals.load(new TableLib());
+      globals.load(new StringLib());
+      globals.load(new CoroutineLib());
+      LoadState.install(globals);
+      LuaC.install(globals);
       exports = (LuaTable)((LuaValue)(new lang_luaj()))
                     .call(LuaValue.valueOf("lang_luaj"), globals);
       complex_parse = exports.get("complex_parse");

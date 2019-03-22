@@ -20,6 +20,6 @@ import lang.*;
 
 public class testmain {
   public static void main(String[] args) throws Exception {
-    System.out.println(Lang.simple_print(Lang.simple_parse("a")));
+    System.out.println(Lang.simple_print(Lang.complex_parse(":&>化滅")));
   }
 }
