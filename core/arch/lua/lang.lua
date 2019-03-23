@@ -216,24 +216,8 @@ force_all = function(raw, parents_history, ref_novalue_replace)
     if ref_novalue_replace == nil then
         ref_novalue_replace = {false, false};
     end
-    local history = {};
-    local x = raw;
-    local xs = {};
-    local replace_this_with_stopped;
-    replace_this_with_stopped = function()
-        ref_novalue_replace[1 + 1] = true;
-        lang_set_do(x, the_world_stopped_v);
-        do
-            local i = 0;
-            while i < (#xs) do
-                lang_set_do(xs[i + 1], the_world_stopped_v);
-                i = i + 1;
-            end
-        end
-        return the_world_stopped_v;
-    end;
-    local do_rewrite_force_all;
-    do_rewrite_force_all = function(newval)
+    local x, xs, do_rewrite, do_rewrite_force_all;
+    do_rewrite = function(newval)
         lang_set_do(x, newval);
         do
             local i = 0;
@@ -242,18 +226,23 @@ force_all = function(raw, parents_history, ref_novalue_replace)
                 i = i + 1;
             end
         end
+        return newval;
+    end;
+    do_rewrite_force_all = function(newval)
+        do_rewrite(newval);
         if any_delay_just_p(newval) then
             newval = force_all(newval);
-            lang_set_do(x, newval);
-            do
-                local i = 0;
-                while i < (#xs) do
-                    lang_set_do(xs[i + 1], newval);
-                    i = i + 1;
-                end
-            end
+            do_rewrite(newval);
         end
         return newval;
+    end;
+    local history = {};
+    x = raw;
+    xs = {};
+    local replace_this_with_stopped;
+    replace_this_with_stopped = function()
+        ref_novalue_replace[1 + 1] = true;
+        return do_rewrite_force_all(the_world_stopped_v);
     end;
     local make_history;
     make_history = function()
@@ -327,14 +316,7 @@ force_all = function(raw, parents_history, ref_novalue_replace)
         __TS__ArrayPush(xs, x);
         x = force1(x);
     end
-    do
-        local i = 0;
-        while i < (#xs) do
-            lang_set_do(xs[i + 1], x);
-            i = i + 1;
-        end
-    end
-    return x;
+    return do_rewrite(x);
 end;
 force1 = function(raw)
     local x = un_just_all(raw);

@@ -447,26 +447,23 @@ function force_all(
     let history: { [key: string]: true } = {}
     let x: LangVal = raw
     let xs: Array<LangVal> = []
+    function do_rewrite(newval : LangVal):LangVal {
+          lang_set_do(x, newval)
+          for (let i = 0; i < xs.length; i++) {
+              lang_set_do(xs[i], newval)
+          }
+          return newval
+    }
     function replace_this_with_stopped() {
         // 語言標準允許替換沒有值的東西為那種錯誤。
         ref_novalue_replace[1] = true
-        lang_set_do(x, the_world_stopped_v)
-        for (let i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], the_world_stopped_v)
-        }
-        return the_world_stopped_v
+        return do_rewrite_force_all(the_world_stopped_v)
     }
     function do_rewrite_force_all(newval: LangVal) {
-        lang_set_do(x, newval)
-        for (let i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], newval)
-        }
+        do_rewrite(newval)
         if (any_delay_just_p(newval)) {
             newval = force_all(newval)
-            lang_set_do(x, newval)
-            for (let i = 0; i < xs.length; i++) {
-                lang_set_do(xs[i], newval)
-            }
+            do_rewrite(newval)
         }
         return newval
     }
@@ -547,10 +544,7 @@ function force_all(
         xs.push(x)
         x = force1(x)
     }
-    for (let i = 0; i < xs.length; i++) {
-        lang_set_do(xs[i], x)
-    }
-    return x
+    return do_rewrite(x)
 }
 
 function force1(raw: LangVal): LangVal {

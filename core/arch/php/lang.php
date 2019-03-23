@@ -3375,27 +3375,23 @@ $any_delay_just_p = new Func("any_delay_just_p", function($x = null) use (&$just
 $force_all = new Func("force_all", function($raw = null, $parents_history = null, $ref_novalue_replace = null) use (&$any_delay_just_p, &$simple_print, &$delay_evaluate_p, &$delay_builtin_func_p, &$delay_builtin_func_f, &$delay_builtin_func_xs, &$data_name_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_p_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_p_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_head_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$symbol_p_function_builtin_systemName, &$null_p_function_builtin_systemName, &$jsbool_equal_p, &$ASSERT, &$builtin_func_apply, &$ERROR, &$equal_p_function_builtin_systemName, &$apply_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$if_function_builtin_systemName, &$delay_builtin_form_p, &$delay_apply_p, &$force1, &$lang_set_do, &$the_world_stopped_v) {
   $force_all = Func::getCurrent();
   $history = null; $x = null; $xs = null; $x_id = null; $f = null; $xs_1 = null; $elim_s = null; $is_elim = null; $i = null; $inner = null; $tf = null;
-  $replace_this_with_stopped = new Func("replace_this_with_stopped", function() use (&$ref_novalue_replace, &$lang_set_do, &$x, &$the_world_stopped_v, &$xs) {
-    $i = null;
-    set($ref_novalue_replace, 1.0, true);
-    call($lang_set_do, $x, $the_world_stopped_v);
-    for ($i = 0.0; $i < get($xs, "length"); $i++) {
-      call($lang_set_do, get($xs, $i), $the_world_stopped_v);
-    }
-    return $the_world_stopped_v;
-  });
-  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$lang_set_do, &$x, &$xs, &$any_delay_just_p, &$force_all) {
+  $do_rewrite = new Func("do_rewrite", function($newval = null) use (&$lang_set_do, &$x, &$xs) {
     $i = null;
     call($lang_set_do, $x, $newval);
     for ($i = 0.0; $i < get($xs, "length"); $i++) {
       call($lang_set_do, get($xs, $i), $newval);
     }
+    return $newval;
+  });
+  $replace_this_with_stopped = new Func("replace_this_with_stopped", function() use (&$ref_novalue_replace, &$do_rewrite_force_all, &$the_world_stopped_v) {
+    set($ref_novalue_replace, 1.0, true);
+    return call($do_rewrite_force_all, $the_world_stopped_v);
+  });
+  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$do_rewrite, &$any_delay_just_p, &$force_all) {
+    call($do_rewrite, $newval);
     if (is(call($any_delay_just_p, $newval))) {
       $newval = call($force_all, $newval);
-      call($lang_set_do, $x, $newval);
-      for ($i = 0.0; $i < get($xs, "length"); $i++) {
-        call($lang_set_do, get($xs, $i), $newval);
-      }
+      call($do_rewrite, $newval);
     }
     return $newval;
   });
@@ -3484,10 +3480,7 @@ $force_all = new Func("force_all", function($raw = null, $parents_history = null
     call_method($xs, "push", $x);
     $x = call($force1, $x);
   }
-  for ($i = 0.0; $i < get($xs, "length"); $i++) {
-    call($lang_set_do, get($xs, $i), $x);
-  }
-  return $x;
+  return call($do_rewrite, $x);
 });
 $force1 = new Func("force1", function($raw = null) use (&$un_just_all, &$ASSERT, &$just_p, &$delay_evaluate_p, &$real_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_builtin_form_p, &$real_builtin_form_apply, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_xs, &$delay_builtin_func_p, &$real_builtin_func_apply, &$delay_builtin_func_f, &$delay_builtin_func_xs, &$delay_apply_p, &$real_apply, &$delay_apply_f, &$delay_apply_xs, &$lang_set_do) {
   $x = null; $ret = null;

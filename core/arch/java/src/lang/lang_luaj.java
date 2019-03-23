@@ -457,9 +457,9 @@ public class lang_luaj extends org.luaj.vm2.lib.VarArgFunction {
         a93.u4 = a85;
         lang_luaj$44 a94 = new lang_luaj$44();
         a94.u0 = a68;
-        a94.u1 = a18;
-        a94.u2 = a93;
-        a94.u3 = a39;
+        a94.u1 = a93;
+        a94.u2 = a39;
+        a94.u3 = a18;
         a94.u4 = this.u0;
         a94.u5 = a50;
         a94.u6 = a72;
