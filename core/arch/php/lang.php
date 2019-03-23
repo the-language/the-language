@@ -3372,9 +3372,9 @@ $un_just_all = new Func("un_just_all", function($raw = null) use (&$just_p, &$un
 $any_delay_just_p = new Func("any_delay_just_p", function($x = null) use (&$just_p, &$delay_evaluate_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_apply_p) {
   return (is($or_ = (is($or1_ = (is($or2_ = (is($or3_ = call($just_p, $x)) ? $or3_ : call($delay_evaluate_p, $x))) ? $or2_ : call($delay_builtin_form_p, $x))) ? $or1_ : call($delay_builtin_func_p, $x))) ? $or_ : call($delay_apply_p, $x));
 });
-$force_all = new Func("force_all", function($raw = null, $parents_history = null, $ref_novalue_replace = null) use (&$any_delay_just_p, &$simple_print, &$delay_evaluate_p, &$delay_builtin_func_p, &$delay_builtin_func_f, &$delay_builtin_func_xs, &$data_name_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_p_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_p_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_head_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$symbol_p_function_builtin_systemName, &$null_p_function_builtin_systemName, &$jsbool_equal_p, &$ASSERT, &$builtin_func_apply, &$ERROR, &$equal_p_function_builtin_systemName, &$apply_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$if_function_builtin_systemName, &$delay_builtin_form_p, &$delay_apply_p, &$force1, &$lang_set_do, &$the_world_stopped_v) {
+$force_all = new Func("force_all", function($raw = null, $parents_history = null, $ref_novalue_replace = null, $xs = null) use (&$any_delay_just_p, &$simple_print, &$delay_evaluate_p, &$delay_builtin_func_p, &$delay_builtin_func_f, &$delay_builtin_func_xs, &$data_name_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_p_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_p_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_head_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$symbol_p_function_builtin_systemName, &$null_p_function_builtin_systemName, &$jsbool_equal_p, &$ASSERT, &$builtin_func_apply, &$ERROR, &$equal_p_function_builtin_systemName, &$apply_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$if_function_builtin_systemName, &$delay_builtin_form_p, &$delay_apply_p, &$force1, &$lang_set_do, &$the_world_stopped_v) {
   $force_all = Func::getCurrent();
-  $history = null; $x = null; $xs = null; $x_id = null; $f = null; $xs_1 = null; $elim_s = null; $is_elim = null; $i = null; $inner = null; $tf = null;
+  $history = null; $x = null; $x_id = null; $f = null; $xs_1 = null; $elim_s = null; $is_elim = null; $i = null; $inner = null; $tf = null;
   $do_rewrite = new Func("do_rewrite", function($newval = null) use (&$lang_set_do, &$x, &$xs) {
     $i = null;
     call($lang_set_do, $x, $newval);
@@ -3387,11 +3387,11 @@ $force_all = new Func("force_all", function($raw = null, $parents_history = null
     set($ref_novalue_replace, 1.0, true);
     return call($do_rewrite_force_all, $the_world_stopped_v);
   });
-  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$do_rewrite, &$any_delay_just_p, &$force_all) {
+  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$do_rewrite, &$any_delay_just_p, &$x, &$xs, &$force_all) {
     call($do_rewrite, $newval);
     if (is(call($any_delay_just_p, $newval))) {
-      $newval = call($force_all, $newval);
-      call($do_rewrite, $newval);
+      call_method($xs, "push", $x);
+      return call($force_all, $newval, new Object(), new Arr(false, false), $xs);
     }
     return $newval;
   });
@@ -3412,9 +3412,11 @@ $force_all = new Func("force_all", function($raw = null, $parents_history = null
   if ($ref_novalue_replace === _void(0.0)) {
     $ref_novalue_replace = new Arr(false, false);
   }
+  if ($xs === _void(0.0)) {
+    $xs = new Arr();
+  }
   $history = new Object();
   $x = $raw;
-  $xs = new Arr();
   while (is(call($any_delay_just_p, $x))) {
     $x_id = call($simple_print, $x);
     if (get($parents_history, $x_id) === true) {

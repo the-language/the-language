@@ -441,18 +441,18 @@ export { any_delay_just_p as delay_p }
 
 function force_all(
     raw: LangVal,
-    parents_history: { [key: string]: true } = {}
-    , ref_novalue_replace: [boolean, boolean] = [false, false]): LangVal {
+    parents_history: { [key: string]: true } = {},// 函數內參數默認值依賴[0]
+    ref_novalue_replace: [boolean, boolean] = [false, false],
+    xs: Array<LangVal> = []): LangVal {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history: { [key: string]: true } = {}
     let x: LangVal = raw
-    let xs: Array<LangVal> = []
-    function do_rewrite(newval : LangVal):LangVal {
-          lang_set_do(x, newval)
-          for (let i = 0; i < xs.length; i++) {
-              lang_set_do(xs[i], newval)
-          }
-          return newval
+    function do_rewrite(newval: LangVal): LangVal {
+        lang_set_do(x, newval)
+        for (let i = 0; i < xs.length; i++) {
+            lang_set_do(xs[i], newval)
+        }
+        return newval
     }
     function replace_this_with_stopped() {
         // 語言標準允許替換沒有值的東西為那種錯誤。
@@ -462,8 +462,8 @@ function force_all(
     function do_rewrite_force_all(newval: LangVal) {
         do_rewrite(newval)
         if (any_delay_just_p(newval)) {
-            newval = force_all(newval)
-            do_rewrite(newval)
+            xs.push(x)
+            return force_all(newval, {}, [false, false], xs) // 函數內參數默認值依賴[0]
         }
         return newval
     }

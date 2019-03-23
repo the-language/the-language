@@ -209,14 +209,17 @@ end;
 any_delay_just_p = function(x)
     return (((just_p(x) or delay_evaluate_p(x)) or delay_builtin_form_p(x)) or delay_builtin_func_p(x)) or delay_apply_p(x);
 end;
-force_all = function(raw, parents_history, ref_novalue_replace)
+force_all = function(raw, parents_history, ref_novalue_replace, xs)
     if parents_history == nil then
         parents_history = {};
     end
     if ref_novalue_replace == nil then
         ref_novalue_replace = {false, false};
     end
-    local x, xs, do_rewrite, do_rewrite_force_all;
+    if xs == nil then
+        xs = {};
+    end
+    local x, do_rewrite, do_rewrite_force_all;
     do_rewrite = function(newval)
         lang_set_do(x, newval);
         do
@@ -231,14 +234,13 @@ force_all = function(raw, parents_history, ref_novalue_replace)
     do_rewrite_force_all = function(newval)
         do_rewrite(newval);
         if any_delay_just_p(newval) then
-            newval = force_all(newval);
-            do_rewrite(newval);
+            __TS__ArrayPush(xs, x);
+            return force_all(newval, {}, {false, false}, xs);
         end
         return newval;
     end;
     local history = {};
     x = raw;
-    xs = {};
     local replace_this_with_stopped;
     replace_this_with_stopped = function()
         ref_novalue_replace[1 + 1] = true;

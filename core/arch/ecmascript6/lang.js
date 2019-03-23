@@ -321,11 +321,11 @@ function any_delay_just_p(x) {
         delay_apply_p(x);
 }
 export { any_delay_just_p as delay_p };
-function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false]) {
+function force_all(raw, parents_history = {}, // 函數內參數默認值依賴[0]
+ref_novalue_replace = [false, false], xs = []) {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {};
     let x = raw;
-    let xs = [];
     function do_rewrite(newval) {
         lang_set_do(x, newval);
         for (let i = 0; i < xs.length; i++) {
@@ -341,8 +341,8 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
     function do_rewrite_force_all(newval) {
         do_rewrite(newval);
         if (any_delay_just_p(newval)) {
-            newval = force_all(newval);
-            do_rewrite(newval);
+            xs.push(x);
+            return force_all(newval, {}, [false, false], xs); // 函數內參數默認值依賴[0]
         }
         return newval;
     }
