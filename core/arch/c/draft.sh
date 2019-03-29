@@ -8,5 +8,7 @@ make
 cd ..
 
 ./lua-aot/src/luaot ../lua/lang.lua -o ./lang.c
-cc -Wall -Wextra -pedantic -fPIC -save-temps=obj -O2 -Wno-unused-label -g -I./lua-aot/src -shared ./lang.c -o ./lang.so
-rm ./lang.i
+clang -pedantic -fPIC -save-temps=obj -O3 -I./lua-aot/src -shared ./lang.c -o ./lang.so
+sed -i 's|//.*||' lang.c
+
+clang -O3 -I./lua-aot/src -o testmain testmain.c lang.c -L./lua-aot/src -llua -ldl -lm

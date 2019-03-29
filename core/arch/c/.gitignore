@@ -2,3 +2,6 @@
 *.s
 *.so
 *.o
+*.bc
+/lang.i
+/testmain
