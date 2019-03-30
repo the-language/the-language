@@ -7861,7 +7861,7 @@ static int lcf1_a_space_p(lua_State *L) {
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
-    lua_pushliteral(L, "\9");
+    lua_pushliteral(L, "	");
     const int lc677 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
     lua_pushboolean(L, lc677);
@@ -7869,7 +7869,7 @@ static int lcf1_a_space_p(lua_State *L) {
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
-    lua_pushliteral(L, "\13");
+    lua_pushliteral(L, "\r");
     const int lc678 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
     lua_pushboolean(L, lc678);
@@ -10268,7 +10268,7 @@ static int lcf2_a_space_p(lua_State *L) {
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
-    lua_pushliteral(L, "\9");
+    lua_pushliteral(L, "	");
     const int lc855 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
     lua_pushboolean(L, lc855);
@@ -10276,7 +10276,7 @@ static int lcf2_a_space_p(lua_State *L) {
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
-    lua_pushliteral(L, "\13");
+    lua_pushliteral(L, "\r");
     const int lc856 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
     lua_pushboolean(L, lc856);
