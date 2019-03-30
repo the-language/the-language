@@ -1,7 +1,5 @@
-/lua-aot/
-*.s
-*.so
-*.o
-*.bc
-/lang.i
+/lua-5.1.5/
+/lua2c/
+/lang.lua2c.out.c/
 /testmain
+/lang.lua2c.out.c

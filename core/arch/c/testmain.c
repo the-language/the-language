@@ -16,34 +16,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+#include "assert.h"
+#include "lang.h"
 #include "lauxlib.h"
 #include "lua.h"
 #include "lualib.h"
 #include "stdio.h"
-int luaopen_lang(lua_State *L);
-lua_State *L = NULL;
-void init(void) {
-  if (NULL == L) {
-    L = luaL_newstate();
-    luaL_openlibs(L);
-    luaopen_lang(L);
-    lua_setglobal(L, "L");
-  }
-}
-void close(void) {
-  if (NULL != L) {
-    lua_close(L);
-    L = NULL;
-  }
-}
+#include "stdlib.h"
 int main(void) {
-  init();
-  lua_getglobal(L, "L");
-  const char *s = lua_istable(L, -1) ? "T" : "F";
-  lua_remove(L, -1);
-  lua_getglobal(L, "print");
-  lua_pushstring(L, s);
-  lua_call(L, 1, 0);
-  close();
+  lang_state *L = lang_state_new_orNULL();
+  assert(L);
+  lang_value *x = lang_complex_parse_orNULL(L, ":&>化滅");
+  assert(x);
+  const char *s = lang_simple_print_orNULL(L, x);
+  lang_value_delete(L, x);
+  assert(s);
+  puts(s);
+  free(s);
   return 0;
 }
