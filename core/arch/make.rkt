@@ -167,7 +167,7 @@
              ./compile.sh
          }
      })
-     ("c/src" ("lua/lang.lua" "c/lang.tail.c" "c/testmain.c") {
+     ("c/src" ("lua/lang.lua" "c/lang.tail.c" "c/lang.h" "c/linit.c" "c/lualib.h" "c/testmain.c") {
        in-dir "c" {
              |> id "[ -d lua-5.1.5 ] || (wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic && cd ..)" | sh
              |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh
@@ -190,6 +190,9 @@
              cp ./lua-5.1.5/src/*.h ./src
              |> id out &>! ./src/lang.c
              cp lang.h ./src
+
+             cp linit.c lualib.h ./src
+             rm ./src/loslib.c ./src/lmathlib.c ./src/ltablib.c ./src/liolib.c
 
              clang -O3 -Oz -o testmain testmain.c -I./src/ ./src/*.c -lm
      }})
