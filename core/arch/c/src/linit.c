@@ -12,10 +12,8 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
-static const luaL_Reg lualibs[] = {{"", luaopen_base},
-                                   {LUA_LOADLIBNAME, luaopen_package},
-                                   {LUA_STRLIBNAME, luaopen_string},
-                                   {NULL, NULL}};
+static const luaL_Reg lualibs[] = {
+    {"", luaopen_base}, {LUA_STRLIBNAME, luaopen_string}, {NULL, NULL}};
 
 LUALIB_API void luaL_openlibs(lua_State *L) {
   const luaL_Reg *lib = lualibs;
