@@ -26,4 +26,5 @@ f=all.c
 npx codingame-merge -w src.cpp/ -o "$f"
 rm -fr src.cpp
 sed -i 's|^#if defined(LUA_CORE)$|#if 1|' "$f"
+sed -i 's|^#ifdef __cplusplus$|#if 0|' "$f"
 mv "$f" lang.c
