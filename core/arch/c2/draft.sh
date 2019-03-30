@@ -21,4 +21,4 @@
     ))
 |> id out &>! lang.c
 
-clang -o testmain testmain.c lang.c -I./lua-5.1.5/src/ ./lua-5.1.5/src/liblua.a -lm
+clang -O3 -Oz -o testmain testmain.c lang.c -I./lua-5.1.5/src/ ./lua-5.1.5/src/liblua.a -lm

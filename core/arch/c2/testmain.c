@@ -24,14 +24,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 int main(void) {
-  lang_state *L = state_new();
+  lang_state *L = lang_state_new_orNULL();
   assert(L);
-  lua_getglobal(L->L, "L");
-  const char *s = lua_istable(L->L, -1) ? "T" : "F";
-  lua_remove(L->L, -1);
-  lua_getglobal(L->L, "print");
-  lua_pushstring(L->L, s);
-  lua_call(L->L, 1, 0);
-  state_delete(L);
   return 0;
 }
