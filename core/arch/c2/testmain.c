@@ -26,5 +26,12 @@
 int main(void) {
   lang_state *L = lang_state_new_orNULL();
   assert(L);
+  lang_value *x = lang_complex_parse_orNULL(L, ":&>化滅");
+  assert(x);
+  const char *s = lang_simple_print_orNULL(L, x);
+  lang_value_delete(L, x);
+  assert(s);
+  puts(s);
+  free(s);
   return 0;
 }

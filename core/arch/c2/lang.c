@@ -19431,7 +19431,11 @@ lang_value *lang_value_from_lua_orNULL(lang_state *L) {
   if (NULL == ret) {
     return NULL;
   }
+  assert(lua_istable(L->L, -1));
   ret->lua_ref = luaL_ref(L->L, LUA_REGISTRYINDEX);
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, ret->lua_ref);
+  assert(lua_istable(L->L, -1));
+  lua_remove(L->L, -1);
   return ret;
 }
 extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str) {
@@ -19456,8 +19460,9 @@ extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val) {
   lua_remove(L->L, -2);
   lua_rawgeti(L->L, LUA_REGISTRYINDEX, val->lua_ref);
   lua_call(L->L, 1, 1);
-  assert(lua_istable(L->L, -1));
+  assert(lua_isstring(L->L, -1));
   const char *rawret = lua_tostring(L->L, -1);
+  lua_remove(L->L, -1);
   assert(lua_gettop(L->L) == 0);
   size_t len = strlen(rawret);
   const char *ret = malloc(len + 1);
@@ -19482,4 +19487,22 @@ extern lang_value *lang_simple_parse_orNULL(lang_state *L, const char *str) {
   assert(lua_gettop(L->L) == 0);
   return ret;
 }
-extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val) {}
+extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val) {
+  assert(lua_gettop(L->L) == 0);
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
+  lua_getfield(L->L, -1, "simple_print");
+  lua_remove(L->L, -2);
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, val->lua_ref);
+  lua_call(L->L, 1, 1);
+  assert(lua_isstring(L->L, -1));
+  const char *rawret = lua_tostring(L->L, -1);
+  lua_remove(L->L, -1);
+  assert(lua_gettop(L->L) == 0);
+  size_t len = strlen(rawret);
+  const char *ret = malloc(len + 1);
+  if (NULL == ret) {
+    return NULL;
+  }
+  memcpy(ret, rawret, len + 1);
+  return ret;
+}
