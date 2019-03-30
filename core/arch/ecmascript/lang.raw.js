@@ -391,8 +391,7 @@ function any_delay_just_p(x) {
         delay_apply_p(x);
 }
 exports.delay_p = any_delay_just_p;
-function force_all(raw, parents_history, // 函數內參數默認值依賴[0]
-ref_novalue_replace, xs) {
+function force_all(raw, parents_history, ref_novalue_replace, xs) {
     if (parents_history === void 0) { parents_history = {}; }
     if (ref_novalue_replace === void 0) { ref_novalue_replace = [false, false]; }
     if (xs === void 0) { xs = []; }
@@ -415,7 +414,7 @@ ref_novalue_replace, xs) {
         do_rewrite(newval);
         if (any_delay_just_p(newval)) {
             xs.push(x);
-            return force_all(newval, {}, [false, false], xs); // 函數內參數默認值依賴[0]
+            return force_all(newval, parents_history, [false, false], xs);
         }
         return newval;
     }

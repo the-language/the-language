@@ -235,7 +235,7 @@ force_all = function(raw, parents_history, ref_novalue_replace, xs)
         do_rewrite(newval);
         if any_delay_just_p(newval) then
             __TS__ArrayPush(xs, x);
-            return force_all(newval, {}, {false, false}, xs);
+            return force_all(newval, parents_history, {false, false}, xs);
         end
         return newval;
     end;

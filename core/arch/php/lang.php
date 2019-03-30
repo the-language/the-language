@@ -3387,11 +3387,11 @@ $force_all = new Func("force_all", function($raw = null, $parents_history = null
     set($ref_novalue_replace, 1.0, true);
     return call($do_rewrite_force_all, $the_world_stopped_v);
   });
-  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$do_rewrite, &$any_delay_just_p, &$x, &$xs, &$force_all) {
+  $do_rewrite_force_all = new Func("do_rewrite_force_all", function($newval = null) use (&$do_rewrite, &$any_delay_just_p, &$x, &$xs, &$force_all, &$parents_history) {
     call($do_rewrite, $newval);
     if (is(call($any_delay_just_p, $newval))) {
       call_method($xs, "push", $x);
-      return call($force_all, $newval, new Object(), new Arr(false, false), $xs);
+      return call($force_all, $newval, $parents_history, new Arr(false, false), $xs);
     }
     return $newval;
   });

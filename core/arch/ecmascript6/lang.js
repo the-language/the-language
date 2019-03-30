@@ -321,8 +321,7 @@ function any_delay_just_p(x) {
         delay_apply_p(x);
 }
 export { any_delay_just_p as delay_p };
-function force_all(raw, parents_history = {}, // 函數內參數默認值依賴[0]
-ref_novalue_replace = [false, false], xs = []) {
+function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false], xs = []) {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {};
     let x = raw;
@@ -342,7 +341,7 @@ ref_novalue_replace = [false, false], xs = []) {
         do_rewrite(newval);
         if (any_delay_just_p(newval)) {
             xs.push(x);
-            return force_all(newval, {}, [false, false], xs); // 函數內參數默認值依賴[0]
+            return force_all(newval, parents_history, [false, false], xs);
         }
         return newval;
     }

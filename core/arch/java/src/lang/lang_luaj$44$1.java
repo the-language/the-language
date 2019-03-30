@@ -6,6 +6,7 @@ public class lang_luaj$44$1 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u3;
     org.luaj.vm2.LuaValue[] u4;
     org.luaj.vm2.LuaValue[] u5;
+    org.luaj.vm2.LuaValue[] u6;
     
     public lang_luaj$44$1() {
     }
@@ -20,7 +21,7 @@ public class lang_luaj$44$1 extends org.luaj.vm2.lib.VarArgFunction {
         }
         this.u2.call(this.u3[0], this.u4[0]);
         org.luaj.vm2.LuaValue a2 = this.u5[0];
-        org.luaj.vm2.LuaTable a3 = org.luaj.vm2.LuaValue.tableOf(0, 0);
+        org.luaj.vm2.LuaValue a3 = this.u6[0];
         org.luaj.vm2.LuaTable a4 = org.luaj.vm2.LuaValue.tableOf(2, 0);
         org.luaj.vm2.LuaBoolean a5 = org.luaj.vm2.LuaValue.FALSE;
         org.luaj.vm2.LuaBoolean a6 = org.luaj.vm2.LuaValue.FALSE;

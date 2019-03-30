@@ -93,6 +93,7 @@ public class lang_luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
         a12.u3 = a7;
         a12.u4 = a0;
         a12.u5 = this.u3;
+        a12.u6 = a3;
         org.luaj.vm2.LuaTable a13 = org.luaj.vm2.LuaValue.tableOf(0, 0);
         a0[0] = a1;
         org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;

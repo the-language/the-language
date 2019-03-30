@@ -1303,11 +1303,11 @@ static int lcf1_do_rewrite_force_all(lua_State *L) {
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 1);
 
-    /* return force_all(newval, {}, {false, false}, xs) */
+    /* return force_all(newval, parents_history, {false, false}, xs) */
     const int lc58 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 2, 18);
     lua_pushvalue(L, 1);
-    lua_newtable(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 97);
     lua_createtable(L, 2, 0);
     lua_pushboolean(L, 0);
     lua_rawseti(L, -2, 1);
@@ -1547,7 +1547,7 @@ static int lcf1_force_all(lua_State *L) {
    *         do_rewrite(newval);
    *         if any_delay_just_p(newval) then
    *             __TS__ArrayPush(xs, x);
-   *             return force_all(newval, {}, {false, false}, xs);
+   *             return force_all(newval, parents_history, {false, false}, xs);
    *         end
    *         return newval;
    *     end */
@@ -15862,7 +15862,7 @@ static int lcf_main(lua_State *L) {
    *         do_rewrite(newval);
    *         if any_delay_just_p(newval) then
    *             __TS__ArrayPush(xs, x);
-   *             return force_all(newval, {}, {false, false}, xs);
+   *             return force_all(newval, parents_history, {false, false}, xs);
    *         end
    *         return newval;
    *     end;

@@ -441,7 +441,7 @@ export { any_delay_just_p as delay_p }
 
 function force_all(
     raw: LangVal,
-    parents_history: { [key: string]: true } = {},// 函數內參數默認值依賴[0]
+    parents_history: { [key: string]: true } = {},
     ref_novalue_replace: [boolean, boolean] = [false, false],
     xs: Array<LangVal> = []): LangVal {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
@@ -463,7 +463,7 @@ function force_all(
         do_rewrite(newval)
         if (any_delay_just_p(newval)) {
             xs.push(x)
-            return force_all(newval, {}, [false, false], xs) // 函數內參數默認值依賴[0]
+            return force_all(newval, parents_history, [false, false], xs)
         }
         return newval
     }
