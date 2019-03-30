@@ -18,9 +18,6 @@ LUALIB_API int(luaopen_base)(lua_State *L);
 #define LUA_STRLIBNAME "string"
 LUALIB_API int(luaopen_string)(lua_State *L);
 
-#define LUA_DBLIBNAME "debug"
-LUALIB_API int(luaopen_debug)(lua_State *L);
-
 #define LUA_LOADLIBNAME "package"
 LUALIB_API int(luaopen_package)(lua_State *L);
 

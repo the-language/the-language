@@ -192,7 +192,7 @@
              cp lang.h ./src
 
              cp linit.c lualib.h ./src
-             rm ./src/loslib.c ./src/lmathlib.c ./src/ltablib.c ./src/liolib.c
+             rm ./src/loslib.c ./src/lmathlib.c ./src/ltablib.c ./src/liolib.c ./src/ldblib.c
 
              clang -O3 -Oz -o testmain testmain.c -I./src/ ./src/*.c -lm
      }})
