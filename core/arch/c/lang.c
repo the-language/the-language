@@ -348,13 +348,11 @@ extern "C" {
 ** CHANGE them if you want to improve this functionality (e.g., by using
 ** GNU readline and history facilities).
 */
-#if defined(LUA_USE_READLINE)
+#if 0
 /*-- #include "src.cpp/stdio.h" start --*/
 /*-- #include "src.cpp/readline/readline.h" start --*/
-#include <readline/readline.h>
 
 /*-- #include "src.cpp/readline/history.h" start --*/
-#include <readline/history.h>
 
 #define lua_readline(L,b,p)	((void)L, ((b)=readline(p)) != NULL)
 #define lua_saveline(L,idx) \

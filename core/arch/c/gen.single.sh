@@ -17,16 +17,19 @@ for f in ./src.cpp/* ;do
   sed -i 's|^#include <\(.*\)>$|^#include "\1"|' "$f"
 done
 mkdir ./src.cpp/readline
-echo '#pragma once' > ./src.cpp/io.h
-for f in stddef.h stdio.h stdarg.h limits.h unistd.h readline/readline.h readline/history.h assert.h math.h stdlib.h string.h ctype.h errno.h setjmp.h locale.h ;do
+for f in io.h stddef.h stdio.h stdarg.h limits.h unistd.h readline/readline.h readline/history.h assert.h math.h stdlib.h string.h ctype.h errno.h setjmp.h locale.h ;do
   echo '#pragma once' > "./src.cpp/$f"
   echo "#include <$f>" >> "./src.cpp/$f"
+done
+for f in io.h readline/readline.h readline/history.h ;do
+  echo '#pragma once' > "./src.cpp/$f"
 done
 f=all.c
 npx codingame-merge -w src.cpp/ -o "$f"
 rm -fr src.cpp
-sed -i 's|^#if defined(LUA_CORE)$|#if 1|' "$f" # luai_num* macros
-sed -i 's|^#ifdef __cplusplus$|#if 0|' "$f" # extern "C" { ... }
+sed -i 's|^#if defined(LUA_CORE)$|#if 1|g' "$f" # luai_num* macros
+sed -i 's|^#ifdef __cplusplus$|#if 0|g' "$f" # extern "C" { ... }
+sed -i 's|^#if defined(LUA_USE_READLINE)$|#if 0|g' "$f"
 for x in LUA_API LUAI_FUNC ;do
   sed -i "s|^#define[  ]$x[	 ].*\$|#define $x static inline|g" "$f"
 done
