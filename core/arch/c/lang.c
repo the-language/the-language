@@ -230,14 +230,14 @@ extern "C" {
 #if defined(LUA_BUILD_AS_DLL)
 
 #if defined(LUA_CORE) || defined(LUA_LIB)
-#define LUA_API __declspec(dllexport)
+#define LUA_API static inline
 #else
-#define LUA_API __declspec(dllimport)
+#define LUA_API static inline
 #endif
 
 #else
 
-#define LUA_API		extern
+#define LUA_API static inline
 
 #endif
 
@@ -255,17 +255,17 @@ extern "C" {
 ** when Lua is compiled as a shared library.
 */
 #if defined(luaall_c)
-#define LUAI_FUNC	static
-#define LUAI_DATA	/* empty */
+#define LUAI_FUNC static inline
+#define LUAI_DATA /* empty */
 
 #elif defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
       defined(__ELF__)
-#define LUAI_FUNC	__attribute__((visibility("hidden"))) extern
-#define LUAI_DATA	LUAI_FUNC
+#define LUAI_FUNC static inline
+#define LUAI_DATA /* empty */
 
 #else
-#define LUAI_FUNC	extern
-#define LUAI_DATA	extern
+#define LUAI_FUNC static inline
+#define LUAI_DATA /* empty */
 #endif
 
 
@@ -20785,10 +20785,6 @@ static void lc_createarg(lua_State *L, const lc_args_t *const args) {
 #ifndef THE_LANGUAGE_h
 #define THE_LANGUAGE_h
 
-#if 0
-extern "C" {
-#endif
-
 struct lang_state;
 typedef struct lang_state lang_state;
 extern lang_state *lang_state_new_orNULL(void);
@@ -20802,10 +20798,6 @@ extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str);
 extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val);
 extern lang_value *lang_simple_parse_orNULL(lang_state *L, const char *str);
 extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val);
-
-#if 0
-}
-#endif
 
 #endif
 
@@ -20862,7 +20854,7 @@ extern lang_value *lang_value_copy_orNULL(lang_state *L, lang_value *val) {
   assert(lua_gettop(L->L) == 0);
   return ret;
 }
-lang_value *lang_value_from_lua_orNULL(lang_state *L) {
+static inline lang_value *lang_value_from_lua_orNULL(lang_state *L) {
   lang_value *ret = malloc(sizeof(lang_value));
   if (NULL == ret) {
     return NULL;
@@ -21467,7 +21459,7 @@ typedef struct Table {
 
 #define luaO_nilobject		(&luaO_nilobject_)
 
-LUAI_DATA const TValue luaO_nilobject_;
+static LUAI_DATA const TValue luaO_nilobject_;
 
 #define ceillog2(x)	(luaO_log2((x)-1) + 1)
 
@@ -21561,7 +21553,7 @@ typedef enum {
 
 #define fasttm(l,et,e)	gfasttm(G(l), et, e)
 
-LUAI_DATA const char *const luaT_typenames[];
+static LUAI_DATA const char *const luaT_typenames[];
 
 
 LUAI_FUNC const TValue *luaT_gettm (Table *events, TMS event, TString *ename);
@@ -22234,7 +22226,7 @@ LUAI_FUNC void luaV_concat (lua_State *L, int total, int last);
 
 
 
-const char lua_ident[] =
+static const char lua_ident[] =
   "$Lua: " LUA_RELEASE " " LUA_COPYRIGHT " $\n"
   "$Authors: " LUA_AUTHORS " $\n"
   "$URL: www.lua.org $\n";
@@ -24668,7 +24660,7 @@ enum RESERVED {
 
 
 /* array with token `names' */
-LUAI_DATA const char *const luaX_tokens [];
+static LUAI_DATA const char *const luaX_tokens [];
 
 
 typedef union {
@@ -24964,7 +24956,7 @@ enum OpArgMask {
   OpArgK   /* argument is a constant or register/constant */
 };
 
-LUAI_DATA const lu_byte luaP_opmodes[NUM_OPCODES];
+static LUAI_DATA const lu_byte luaP_opmodes[NUM_OPCODES];
 
 #define getOpMode(m)	(cast(enum OpMode, luaP_opmodes[m] & 3))
 #define getBMode(m)	(cast(enum OpArgMask, (luaP_opmodes[m] >> 4) & 3))
@@ -24973,7 +24965,7 @@ LUAI_DATA const lu_byte luaP_opmodes[NUM_OPCODES];
 #define testTMode(m)	(luaP_opmodes[m] & (1 << 7))
 
 
-LUAI_DATA const char *const luaP_opnames[NUM_OPCODES+1];  /* opcode names */
+static LUAI_DATA const char *const luaP_opnames[NUM_OPCODES+1];  /* opcode names */
 
 
 /* number of list items to accumulate before a SETLIST instruction */
@@ -28243,7 +28235,7 @@ LUALIB_API void luaL_openlibs(lua_State *L) {
 
 
 /* ORDER RESERVED */
-const char *const luaX_tokens [] = {
+static const char *const luaX_tokens [] = {
     "and", "break", "do", "else", "elseif",
     "end", "false", "for", "function", "if",
     "in", "local", "nil", "not", "or", "repeat",
@@ -28791,7 +28783,7 @@ void *luaM_realloc_ (lua_State *L, void *block, size_t osize, size_t nsize) {
 
 
 
-const TValue luaO_nilobject_ = {{NULL}, LUA_TNIL};
+static const TValue luaO_nilobject_ = {{NULL}, LUA_TNIL};
 
 
 /*
@@ -28999,7 +28991,7 @@ void luaO_chunkid (char *out, const char *source, size_t bufflen) {
 
 /* ORDER OP */
 
-const char *const luaP_opnames[NUM_OPCODES+1] = {
+static const char *const luaP_opnames[NUM_OPCODES+1] = {
   "MOVE",
   "LOADK",
   "LOADBOOL",
@@ -29044,7 +29036,7 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
 
 #define opmode(t,a,b,c,m) (((t)<<7) | ((a)<<6) | ((b)<<4) | ((c)<<2) | (m))
 
-const lu_byte luaP_opmodes[NUM_OPCODES] = {
+static const lu_byte luaP_opmodes[NUM_OPCODES] = {
 /*       T  A    B       C     mode		   opcode	*/
   opmode(0, 1, OpArgR, OpArgN, iABC) 		/* OP_MOVE */
  ,opmode(0, 1, OpArgK, OpArgN, iABx)		/* OP_LOADK */
@@ -32254,7 +32246,7 @@ int luaH_isdummy (Node *n) { return n == dummynode; }
 
 
 
-const char *const luaT_typenames[] = {
+static const char *const luaT_typenames[] = {
   "nil", "boolean", "userdata", "number",
   "string", "table", "function", "userdata", "thread",
   "proto", "upval"

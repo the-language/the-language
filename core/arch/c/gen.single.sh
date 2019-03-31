@@ -25,6 +25,15 @@ done
 f=all.c
 npx codingame-merge -w src.cpp/ -o "$f"
 rm -fr src.cpp
-sed -i 's|^#if defined(LUA_CORE)$|#if 1|' "$f"
-sed -i 's|^#ifdef __cplusplus$|#if 0|' "$f"
+sed -i 's|^#if defined(LUA_CORE)$|#if 1|' "$f" # luai_num* macros
+sed -i 's|^#ifdef __cplusplus$|#if 0|' "$f" # extern "C" { ... }
+for x in LUA_API LUAI_FUNC ;do
+  sed -i "s|^#define[  ]$x[	 ].*\$|#define $x static inline|g" "$f"
+done
+for x in LUAI_DATA ;do
+  sed -i "s|^#define[  ]$x[	 ].*\$|#define $x /* empty */|g" "$f"
+done
+for x in lua_ident luaX_tokens luaO_nilobject_ luaP_opnames luaP_opmodes luaT_typenames ;do
+  sed -i "s|^\([^=;]*const[^=;]*$x[^=;]*[=;].*\)$|static \1|g" "$f"
+done
 mv "$f" lang.c

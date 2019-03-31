@@ -199,7 +199,7 @@
              |> id single &>! lang.c
              touch lang.h
 
-             clang -O3 -Oz -o testmain testmain.c lang.c -lm
+             clang -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
      }})
      ("php/lang.php" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
          ;; TODO

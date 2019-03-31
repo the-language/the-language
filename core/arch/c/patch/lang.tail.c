@@ -53,7 +53,7 @@ extern lang_value *lang_value_copy_orNULL(lang_state *L, lang_value *val) {
   assert(lua_gettop(L->L) == 0);
   return ret;
 }
-lang_value *lang_value_from_lua_orNULL(lang_state *L) {
+static inline lang_value *lang_value_from_lua_orNULL(lang_state *L) {
   lang_value *ret = malloc(sizeof(lang_value));
   if (NULL == ret) {
     return NULL;
