@@ -20783,6 +20783,10 @@ static inline void lc_createarg(lua_State *L, const lc_args_t *const args) {
 #ifndef THE_LANGUAGE_h
 #define THE_LANGUAGE_h
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 struct lang_state;
 typedef struct lang_state lang_state;
 extern lang_state *lang_state_new_orNULL(void);
@@ -20796,6 +20800,10 @@ extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str);
 extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val);
 extern lang_value *lang_simple_parse_orNULL(lang_state *L, const char *str);
 extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 
