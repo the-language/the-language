@@ -1422,7 +1422,7 @@ LUALIB_API void(luaL_openlibs)(lua_State *L);
 
 /* pushes new closure table onto the stack, using closure table at
  * given index as its parent */
-static void lc_newclosuretable(lua_State *L, int idx) {
+static inline void lc_newclosuretable(lua_State *L, int idx) {
 
   lua_newtable(L);
   lua_pushvalue(L, idx);
@@ -1433,7 +1433,7 @@ static void lc_newclosuretable(lua_State *L, int idx) {
 
 /* __add metamethod handler.
  * warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
-static void lc_add(lua_State *L, int idxa, int idxb) {
+static inline void lc_add(lua_State *L, int idxa, int idxb) {
   if (lua_isnumber(L, idxa) && lua_isnumber(L, idxb)) {
     lua_pushnumber(L, lua_tonumber(L, idxa) + lua_tonumber(L, idxb));
   } else {
@@ -1450,7 +1450,7 @@ static void lc_add(lua_State *L, int idxa, int idxb) {
 
 /* name: __TS__ArrayPush
  * function(arr, item) */
-static int lcf1___TS__ArrayPush(lua_State *L) {
+static inline int lcf1___TS__ArrayPush(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1475,7 +1475,7 @@ static int lcf1___TS__ArrayPush(lua_State *L) {
 
 /* name: ERROR
  * function() */
-static int lcf1_ERROR(lua_State *L) {
+static inline int lcf1_ERROR(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -1487,7 +1487,7 @@ static int lcf1_ERROR(lua_State *L) {
   return 0;
 }
 
-static void lc_setupvalue(lua_State *L, int tidx, int level, int varid) {
+static inline void lc_setupvalue(lua_State *L, int tidx, int level, int varid) {
   if (level == 0) {
     lua_rawseti(L, tidx, varid);
   } else {
@@ -1505,7 +1505,7 @@ static void lc_setupvalue(lua_State *L, int tidx, int level, int varid) {
 
 /* gets upvalue with ID varid by consulting upvalue table at index
  * tidx for the upvalue table at given nesting level. */
-static void lc_getupvalue(lua_State *L, int tidx, int level, int varid) {
+static inline void lc_getupvalue(lua_State *L, int tidx, int level, int varid) {
   if (level == 0) {
     lua_rawgeti(L, tidx, varid);
   } else {
@@ -1522,7 +1522,7 @@ static void lc_getupvalue(lua_State *L, int tidx, int level, int varid) {
 
 /* name: ASSERT
  * function(x) */
-static int lcf1_ASSERT(lua_State *L) {
+static inline int lcf1_ASSERT(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1547,7 +1547,7 @@ static int lcf1_ASSERT(lua_State *L) {
 
 /* name: symbol_p
  * function(x) */
-static int lcf1_symbol_p(lua_State *L) {
+static inline int lcf1_symbol_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1564,7 +1564,7 @@ static int lcf1_symbol_p(lua_State *L) {
 
 /* name: un_symbol
  * function(x) */
-static int lcf1_un_symbol(lua_State *L) {
+static inline int lcf1_un_symbol(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1577,7 +1577,7 @@ static int lcf1_un_symbol(lua_State *L) {
 
 /* name: new_construction
  * function(x, y) */
-static int lcf1_new_construction(lua_State *L) {
+static inline int lcf1_new_construction(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1595,7 +1595,7 @@ static int lcf1_new_construction(lua_State *L) {
 
 /* name: construction_p
  * function(x) */
-static int lcf1_construction_p(lua_State *L) {
+static inline int lcf1_construction_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1612,7 +1612,7 @@ static int lcf1_construction_p(lua_State *L) {
 
 /* name: construction_head
  * function(x) */
-static int lcf1_construction_head(lua_State *L) {
+static inline int lcf1_construction_head(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1625,7 +1625,7 @@ static int lcf1_construction_head(lua_State *L) {
 
 /* name: construction_tail
  * function(x) */
-static int lcf1_construction_tail(lua_State *L) {
+static inline int lcf1_construction_tail(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1638,7 +1638,7 @@ static int lcf1_construction_tail(lua_State *L) {
 
 /* name: null_p
  * function(x) */
-static int lcf1_null_p(lua_State *L) {
+static inline int lcf1_null_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1655,7 +1655,7 @@ static int lcf1_null_p(lua_State *L) {
 
 /* name: new_data
  * function(x, y) */
-static int lcf1_new_data(lua_State *L) {
+static inline int lcf1_new_data(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1673,7 +1673,7 @@ static int lcf1_new_data(lua_State *L) {
 
 /* name: data_p
  * function(x) */
-static int lcf1_data_p(lua_State *L) {
+static inline int lcf1_data_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1690,7 +1690,7 @@ static int lcf1_data_p(lua_State *L) {
 
 /* name: data_name
  * function(x) */
-static int lcf1_data_name(lua_State *L) {
+static inline int lcf1_data_name(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1703,7 +1703,7 @@ static int lcf1_data_name(lua_State *L) {
 
 /* name: data_list
  * function(x) */
-static int lcf1_data_list(lua_State *L) {
+static inline int lcf1_data_list(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1716,7 +1716,7 @@ static int lcf1_data_list(lua_State *L) {
 
 /* name: new_error
  * function(x, y) */
-static int lcf1_new_error(lua_State *L) {
+static inline int lcf1_new_error(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1734,7 +1734,7 @@ static int lcf1_new_error(lua_State *L) {
 
 /* name: error_p
  * function(x) */
-static int lcf1_error_p(lua_State *L) {
+static inline int lcf1_error_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1751,7 +1751,7 @@ static int lcf1_error_p(lua_State *L) {
 
 /* name: error_name
  * function(x) */
-static int lcf1_error_name(lua_State *L) {
+static inline int lcf1_error_name(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1764,7 +1764,7 @@ static int lcf1_error_name(lua_State *L) {
 
 /* name: error_list
  * function(x) */
-static int lcf1_error_list(lua_State *L) {
+static inline int lcf1_error_list(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1777,7 +1777,7 @@ static int lcf1_error_list(lua_State *L) {
 
 /* name: lang_set_do
  * function(x, y) */
-static int lcf1_lang_set_do(lua_State *L) {
+static inline int lcf1_lang_set_do(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1828,7 +1828,7 @@ static int lcf1_lang_set_do(lua_State *L) {
 
 /* name: just_p
  * function(x) */
-static int lcf1_just_p(lua_State *L) {
+static inline int lcf1_just_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1845,7 +1845,7 @@ static int lcf1_just_p(lua_State *L) {
 
 /* name: un_just
  * function(x) */
-static int lcf1_un_just(lua_State *L) {
+static inline int lcf1_un_just(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1858,7 +1858,7 @@ static int lcf1_un_just(lua_State *L) {
 
 /* name: evaluate
  * function(x, y) */
-static int lcf1_evaluate(lua_State *L) {
+static inline int lcf1_evaluate(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -1876,7 +1876,7 @@ static int lcf1_evaluate(lua_State *L) {
 
 /* name: delay_evaluate_p
  * function(x) */
-static int lcf1_delay_evaluate_p(lua_State *L) {
+static inline int lcf1_delay_evaluate_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1893,7 +1893,7 @@ static int lcf1_delay_evaluate_p(lua_State *L) {
 
 /* name: delay_evaluate_env
  * function(x) */
-static int lcf1_delay_evaluate_env(lua_State *L) {
+static inline int lcf1_delay_evaluate_env(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1906,7 +1906,7 @@ static int lcf1_delay_evaluate_env(lua_State *L) {
 
 /* name: delay_evaluate_x
  * function(x) */
-static int lcf1_delay_evaluate_x(lua_State *L) {
+static inline int lcf1_delay_evaluate_x(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1919,7 +1919,7 @@ static int lcf1_delay_evaluate_x(lua_State *L) {
 
 /* name: builtin_form_apply
  * function(x, y, z) */
-static int lcf1_builtin_form_apply(lua_State *L) {
+static inline int lcf1_builtin_form_apply(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -1939,7 +1939,7 @@ static int lcf1_builtin_form_apply(lua_State *L) {
 
 /* name: delay_builtin_form_p
  * function(x) */
-static int lcf1_delay_builtin_form_p(lua_State *L) {
+static inline int lcf1_delay_builtin_form_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1956,7 +1956,7 @@ static int lcf1_delay_builtin_form_p(lua_State *L) {
 
 /* name: delay_builtin_form_env
  * function(x) */
-static int lcf1_delay_builtin_form_env(lua_State *L) {
+static inline int lcf1_delay_builtin_form_env(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1969,7 +1969,7 @@ static int lcf1_delay_builtin_form_env(lua_State *L) {
 
 /* name: delay_builtin_form_f
  * function(x) */
-static int lcf1_delay_builtin_form_f(lua_State *L) {
+static inline int lcf1_delay_builtin_form_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1982,7 +1982,7 @@ static int lcf1_delay_builtin_form_f(lua_State *L) {
 
 /* name: delay_builtin_form_xs
  * function(x) */
-static int lcf1_delay_builtin_form_xs(lua_State *L) {
+static inline int lcf1_delay_builtin_form_xs(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1995,7 +1995,7 @@ static int lcf1_delay_builtin_form_xs(lua_State *L) {
 
 /* name: builtin_func_apply
  * function(x, y) */
-static int lcf1_builtin_func_apply(lua_State *L) {
+static inline int lcf1_builtin_func_apply(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -2013,7 +2013,7 @@ static int lcf1_builtin_func_apply(lua_State *L) {
 
 /* name: delay_builtin_func_p
  * function(x) */
-static int lcf1_delay_builtin_func_p(lua_State *L) {
+static inline int lcf1_delay_builtin_func_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2030,7 +2030,7 @@ static int lcf1_delay_builtin_func_p(lua_State *L) {
 
 /* name: delay_builtin_func_f
  * function(x) */
-static int lcf1_delay_builtin_func_f(lua_State *L) {
+static inline int lcf1_delay_builtin_func_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2043,7 +2043,7 @@ static int lcf1_delay_builtin_func_f(lua_State *L) {
 
 /* name: delay_builtin_func_xs
  * function(x) */
-static int lcf1_delay_builtin_func_xs(lua_State *L) {
+static inline int lcf1_delay_builtin_func_xs(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2056,7 +2056,7 @@ static int lcf1_delay_builtin_func_xs(lua_State *L) {
 
 /* name: apply
  * function(f, xs) */
-static int lcf1_apply(lua_State *L) {
+static inline int lcf1_apply(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -2074,7 +2074,7 @@ static int lcf1_apply(lua_State *L) {
 
 /* name: delay_apply_p
  * function(x) */
-static int lcf1_delay_apply_p(lua_State *L) {
+static inline int lcf1_delay_apply_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2091,7 +2091,7 @@ static int lcf1_delay_apply_p(lua_State *L) {
 
 /* name: delay_apply_f
  * function(x) */
-static int lcf1_delay_apply_f(lua_State *L) {
+static inline int lcf1_delay_apply_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2104,7 +2104,7 @@ static int lcf1_delay_apply_f(lua_State *L) {
 
 /* name: delay_apply_xs
  * function(x) */
-static int lcf1_delay_apply_xs(lua_State *L) {
+static inline int lcf1_delay_apply_xs(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2117,7 +2117,7 @@ static int lcf1_delay_apply_xs(lua_State *L) {
 
 /* name: force_all_rec
  * function(raw) */
-static int lcf1_force_all_rec(lua_State *L) {
+static inline int lcf1_force_all_rec(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2270,7 +2270,7 @@ static int lcf1_force_all_rec(lua_State *L) {
 
 /* name: symbol_equal_p
  * function(x, y) */
-static int lcf1_symbol_equal_p(lua_State *L) {
+static inline int lcf1_symbol_equal_p(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -2331,7 +2331,7 @@ static int lcf1_symbol_equal_p(lua_State *L) {
 
 /* __sub metamethod handler.
  * warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
-static void lc_sub(lua_State *L, int idxa, int idxb) {
+static inline void lc_sub(lua_State *L, int idxa, int idxb) {
   if (lua_isnumber(L, idxa) && lua_isnumber(L, idxb)) {
     lua_pushnumber(L, lua_tonumber(L, idxa) - lua_tonumber(L, idxb));
   } else {
@@ -2347,7 +2347,7 @@ static void lc_sub(lua_State *L, int idxa, int idxb) {
 }
 
 /* warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
-static int lc_le(lua_State *L, int idxa, int idxb) {
+static inline int lc_le(lua_State *L, int idxa, int idxb) {
   if (lua_type(L, idxa) == LUA_TNUMBER && lua_type(L, idxb) == LUA_TNUMBER) {
     return lua_tonumber(L, idxa) <= lua_tonumber(L, idxb);
   } else if (lua_type(L, idxa) == LUA_TSTRING &&
@@ -2377,7 +2377,7 @@ static int lc_le(lua_State *L, int idxa, int idxb) {
 
 /* name: jsArray_to_list
  * function(xs) */
-static int lcf1_jsArray_to_list(lua_State *L) {
+static inline int lcf1_jsArray_to_list(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2440,7 +2440,7 @@ static int lcf1_jsArray_to_list(lua_State *L) {
 
 /* name: new_list
  * function(...) */
-static int lcf1_new_list(lua_State *L) {
+static inline int lcf1_new_list(lua_State *L) {
   enum { lc_nformalargs = 0 };
   const int lc_nactualargs = lua_gettop(L);
   const int lc_nextra = (lc_nactualargs - lc_nformalargs);
@@ -2470,7 +2470,7 @@ static int lcf1_new_list(lua_State *L) {
 
 /* name: un_just_all
  * function(raw) */
-static int lcf1_un_just_all(lua_State *L) {
+static inline int lcf1_un_just_all(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2560,7 +2560,7 @@ static int lcf1_un_just_all(lua_State *L) {
 
 /* name: any_delay_just_p
  * function(x) */
-static int lcf1_any_delay_just_p(lua_State *L) {
+static inline int lcf1_any_delay_just_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2599,7 +2599,7 @@ static int lcf1_any_delay_just_p(lua_State *L) {
 
 /* name: do_rewrite
  * function(newval) */
-static int lcf1_do_rewrite(lua_State *L) {
+static inline int lcf1_do_rewrite(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2664,7 +2664,7 @@ static int lcf1_do_rewrite(lua_State *L) {
 
 /* name: do_rewrite_force_all
  * function(newval) */
-static int lcf1_do_rewrite_force_all(lua_State *L) {
+static inline int lcf1_do_rewrite_force_all(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2716,7 +2716,7 @@ static int lcf1_do_rewrite_force_all(lua_State *L) {
 
 /* name: replace_this_with_stopped
  * function() */
-static int lcf1_replace_this_with_stopped(lua_State *L) {
+static inline int lcf1_replace_this_with_stopped(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -2741,7 +2741,7 @@ static int lcf1_replace_this_with_stopped(lua_State *L) {
 
 /* name: make_history
  * function() */
-static int lcf1_make_history(lua_State *L) {
+static inline int lcf1_make_history(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -2829,7 +2829,7 @@ static int lcf1_make_history(lua_State *L) {
 
 /* name: force_all
  * function(raw, parents_history, ref_novalue_replace, xs) */
-static int lcf1_force_all(lua_State *L) {
+static inline int lcf1_force_all(lua_State *L) {
   lua_checkstack(L, 25);
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
@@ -3518,7 +3518,7 @@ static int lcf1_force_all(lua_State *L) {
 
 /* name: force1
  * function(raw) */
-static int lcf1_force1(lua_State *L) {
+static inline int lcf1_force1(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -3676,7 +3676,7 @@ static int lcf1_force1(lua_State *L) {
 
 /* name: env_set
  * function(env, key, val) */
-static int lcf1_env_set(lua_State *L) {
+static inline int lcf1_env_set(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -3921,7 +3921,7 @@ static int lcf1_env_set(lua_State *L) {
 
 /* name: env_get
  * function(env, key, default_v) */
-static int lcf1_env_get(lua_State *L) {
+static inline int lcf1_env_get(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -3997,7 +3997,7 @@ static int lcf1_env_get(lua_State *L) {
 
 /* name: must_env_get
  * function(env, key) */
-static int lcf1_must_env_get(lua_State *L) {
+static inline int lcf1_must_env_get(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -4075,7 +4075,7 @@ static int lcf1_must_env_get(lua_State *L) {
 
 /* name: env2val
  * function(env) */
-static int lcf1_env2val(lua_State *L) {
+static inline int lcf1_env2val(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -4156,7 +4156,7 @@ static int lcf1_env2val(lua_State *L) {
 
 /* name: env_foreach
  * function(env, f) */
-static int lcf1_env_foreach(lua_State *L) {
+static inline int lcf1_env_foreach(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -4217,7 +4217,7 @@ static int lcf1_env_foreach(lua_State *L) {
 
 /* name: real_evaluate
  * function(env, raw) */
-static int lcf1_real_evaluate(lua_State *L) {
+static inline int lcf1_real_evaluate(lua_State *L) {
   lua_checkstack(L, 23);
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
@@ -5019,7 +5019,7 @@ static int lcf1_real_evaluate(lua_State *L) {
 
 /* name: name_p
  * function(x) */
-static int lcf1_name_p(lua_State *L) {
+static inline int lcf1_name_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -5039,7 +5039,7 @@ static int lcf1_name_p(lua_State *L) {
 
 /* name: make_error_v
  * function() */
-static int lcf1_make_error_v(lua_State *L) {
+static inline int lcf1_make_error_v(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -5072,7 +5072,7 @@ static int lcf1_make_error_v(lua_State *L) {
 
 /* name: real_apply
  * function(f, xs) */
-static int lcf1_real_apply(lua_State *L) {
+static inline int lcf1_real_apply(lua_State *L) {
   lua_checkstack(L, 23);
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
@@ -5501,7 +5501,7 @@ static int lcf1_real_apply(lua_State *L) {
 
 /* name: real_builtin_func_apply
  * function(f, xs) */
-static int lcf1_real_builtin_func_apply(lua_State *L) {
+static inline int lcf1_real_builtin_func_apply(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -5715,7 +5715,7 @@ static int lcf1_real_builtin_func_apply(lua_State *L) {
 
 /* name: real_builtin_form_apply
  * function(env, f, xs) */
-static int lcf1_real_builtin_form_apply(lua_State *L) {
+static inline int lcf1_real_builtin_form_apply(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -5839,7 +5839,7 @@ static int lcf1_real_builtin_form_apply(lua_State *L) {
 
 /* name: make_error_v
  * function() */
-static int lcf2_make_error_v(lua_State *L) {
+static inline int lcf2_make_error_v(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -5897,7 +5897,7 @@ static int lcf2_make_error_v(lua_State *L) {
 
 /* name: make_quote
  * function(x) */
-static int lcf1_make_quote(lua_State *L) {
+static inline int lcf1_make_quote(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -5914,7 +5914,7 @@ static int lcf1_make_quote(lua_State *L) {
 }
 
 /* function(k, v) */
-static int lcf356(lua_State *L) {
+static inline int lcf356(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -5985,7 +5985,7 @@ static int lcf356(lua_State *L) {
 
 /* name: new_lambda
  * function(env, args_pat, body, error_v) */
-static int lcf1_new_lambda(lua_State *L) {
+static inline int lcf1_new_lambda(lua_State *L) {
   lua_checkstack(L, 25);
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
@@ -6351,7 +6351,7 @@ static int lcf1_new_lambda(lua_State *L) {
 
 /* name: end_2
  * function(x, y, f1, f2) */
-static int lcf1_end_2(lua_State *L) {
+static inline int lcf1_end_2(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
@@ -6408,7 +6408,7 @@ static int lcf1_end_2(lua_State *L) {
 
 /* name: jsbool_equal_p
  * function(x, y) */
-static int lcf1_jsbool_equal_p(lua_State *L) {
+static inline int lcf1_jsbool_equal_p(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -6702,7 +6702,7 @@ static int lcf1_jsbool_equal_p(lua_State *L) {
 
 /* name: simple_print
  * function(x) */
-static int lcf1_simple_print(lua_State *L) {
+static inline int lcf1_simple_print(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7108,7 +7108,7 @@ static int lcf1_simple_print(lua_State *L) {
 
 /* name: new_symbol
  * function(x) */
-static int lcf1_new_symbol(lua_State *L) {
+static inline int lcf1_new_symbol(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7124,7 +7124,7 @@ static int lcf1_new_symbol(lua_State *L) {
 
 /* name: systemName_make
  * function(x) */
-static int lcf1_systemName_make(lua_State *L) {
+static inline int lcf1_systemName_make(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7144,7 +7144,7 @@ static int lcf1_systemName_make(lua_State *L) {
 
 /* name: make_builtin_f_new_sym_f
  * function(x_sym) */
-static int lcf1_make_builtin_f_new_sym_f(lua_State *L) {
+static inline int lcf1_make_builtin_f_new_sym_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7169,7 +7169,7 @@ static int lcf1_make_builtin_f_new_sym_f(lua_State *L) {
 
 /* name: make_builtin_f_get_sym_f
  * function(t_sym, x_sym) */
-static int lcf1_make_builtin_f_get_sym_f(lua_State *L) {
+static inline int lcf1_make_builtin_f_get_sym_f(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -7196,7 +7196,7 @@ static int lcf1_make_builtin_f_get_sym_f(lua_State *L) {
 
 /* name: make_builtin_f_p_sym_f
  * function(t_sym) */
-static int lcf1_make_builtin_f_p_sym_f(lua_State *L) {
+static inline int lcf1_make_builtin_f_p_sym_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7227,7 +7227,7 @@ static int lcf1_make_builtin_f_p_sym_f(lua_State *L) {
 
 /* name: list_to_jsArray
  * function(xs, k_done, k_tail) */
-static int lcf1_list_to_jsArray(lua_State *L) {
+static inline int lcf1_list_to_jsArray(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -7297,7 +7297,7 @@ static int lcf1_list_to_jsArray(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf497(lua_State *L) {
+static inline int lcf497(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7308,7 +7308,7 @@ static int lcf497(lua_State *L) {
 }
 
 /* function(xs, x) */
-static int lcf498(lua_State *L) {
+static inline int lcf498(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -7320,7 +7320,7 @@ static int lcf498(lua_State *L) {
 
 /* name: maybe_list_to_jsArray
  * function(xs) */
-static int lcf1_maybe_list_to_jsArray(lua_State *L) {
+static inline int lcf1_maybe_list_to_jsArray(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7341,7 +7341,7 @@ static int lcf1_maybe_list_to_jsArray(lua_State *L) {
 
 /* name: val2env
  * function(x) */
-static int lcf1_val2env(lua_State *L) {
+static inline int lcf1_val2env(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -7734,7 +7734,7 @@ static int lcf1_val2env(lua_State *L) {
 }
 
 /* function(x, error_v) */
-static int lcf541(lua_State *L) {
+static inline int lcf541(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -7793,7 +7793,7 @@ static int lcf541(lua_State *L) {
 
 /* name: make_builtin_p_func
  * function(p_sym, p_jsfunc) */
-static int lcf1_make_builtin_p_func(lua_State *L) {
+static inline int lcf1_make_builtin_p_func(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -7827,7 +7827,7 @@ static int lcf1_make_builtin_p_func(lua_State *L) {
 }
 
 /* function(x, error_v) */
-static int lcf549(lua_State *L) {
+static inline int lcf549(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -7889,7 +7889,7 @@ static int lcf549(lua_State *L) {
 
 /* name: make_builtin_get_func
  * function(f_sym, p_jsfunc, f_jsfunc) */
-static int lcf1_make_builtin_get_func(lua_State *L) {
+static inline int lcf1_make_builtin_get_func(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -7926,7 +7926,7 @@ static int lcf1_make_builtin_get_func(lua_State *L) {
 
 /* name: H_if
  * function(b, x, y) */
-static int lcf1_H_if(lua_State *L) {
+static inline int lcf1_H_if(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -7948,7 +7948,7 @@ static int lcf1_H_if(lua_State *L) {
 
 /* name: H_and
  * function(x, y) */
-static int lcf1_H_and(lua_State *L) {
+static inline int lcf1_H_and(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -7965,7 +7965,7 @@ static int lcf1_H_and(lua_State *L) {
 
 /* name: end_2
  * function(x, y, f1, f2) */
-static int lcf2_end_2(lua_State *L) {
+static inline int lcf2_end_2(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
@@ -8011,7 +8011,7 @@ static int lcf2_end_2(lua_State *L) {
 }
 
 /* function(x, y, error_v) */
-static int lcf591(lua_State *L) {
+static inline int lcf591(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -8368,7 +8368,7 @@ static int lcf591(lua_State *L) {
 }
 
 /* function(f, xs, error_v) */
-static int lcf598(lua_State *L) {
+static inline int lcf598(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -8446,7 +8446,7 @@ static int lcf598(lua_State *L) {
 }
 
 /* function(env, x, error_v) */
-static int lcf603(lua_State *L) {
+static inline int lcf603(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -8485,7 +8485,7 @@ static int lcf603(lua_State *L) {
 }
 
 /* function(xs, error_v) */
-static int lcf610(lua_State *L) {
+static inline int lcf610(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -8549,7 +8549,7 @@ static int lcf610(lua_State *L) {
 }
 
 /* function(b, x, y, error_v) */
-static int lcf623(lua_State *L) {
+static inline int lcf623(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
@@ -8678,7 +8678,7 @@ static int lcf623(lua_State *L) {
 
 /* name: end_2
  * function(x, y, f1, f2) */
-static int lcf3_end_2(lua_State *L) {
+static inline int lcf3_end_2(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
@@ -8736,7 +8736,7 @@ static int lcf3_end_2(lua_State *L) {
 
 /* name: jsbool_no_force_equal_p
  * function(x, y) */
-static int lcf1_jsbool_no_force_equal_p(lua_State *L) {
+static inline int lcf1_jsbool_no_force_equal_p(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -9098,7 +9098,7 @@ static int lcf1_jsbool_no_force_equal_p(lua_State *L) {
 
 /* name: simple_print_force_all_rec
  * function(x) */
-static int lcf1_simple_print_force_all_rec(lua_State *L) {
+static inline int lcf1_simple_print_force_all_rec(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9116,7 +9116,7 @@ static int lcf1_simple_print_force_all_rec(lua_State *L) {
 
 /* name: eof
  * function() */
-static int lcf1_eof(lua_State *L) {
+static inline int lcf1_eof(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9135,7 +9135,7 @@ static int lcf1_eof(lua_State *L) {
 
 /* name: get
  * function() */
-static int lcf1_get(lua_State *L) {
+static inline int lcf1_get(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9183,7 +9183,7 @@ static int lcf1_get(lua_State *L) {
 
 /* name: put
  * function(x) */
-static int lcf1_put(lua_State *L) {
+static inline int lcf1_put(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9232,7 +9232,7 @@ static int lcf1_put(lua_State *L) {
 
 /* name: parse_error
  * function() */
-static int lcf1_parse_error(lua_State *L) {
+static inline int lcf1_parse_error(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9246,7 +9246,7 @@ static int lcf1_parse_error(lua_State *L) {
 
 /* name: a_space_p
  * function(x) */
-static int lcf1_a_space_p(lua_State *L) {
+static inline int lcf1_a_space_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9286,7 +9286,7 @@ static int lcf1_a_space_p(lua_State *L) {
 
 /* name: space
  * function() */
-static int lcf1_space(lua_State *L) {
+static inline int lcf1_space(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9391,7 +9391,7 @@ static int lcf1_space(lua_State *L) {
 
 /* name: symbol
  * function() */
-static int lcf1_symbol(lua_State *L) {
+static inline int lcf1_symbol(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9517,7 +9517,7 @@ static int lcf1_symbol(lua_State *L) {
 
 /* name: set_last
  * function(lst) */
-static int lcf1_set_last(lua_State *L) {
+static inline int lcf1_set_last(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9671,7 +9671,7 @@ static int lcf1_set_last(lua_State *L) {
 
 /* name: last_add
  * function(x) */
-static int lcf1_last_add(lua_State *L) {
+static inline int lcf1_last_add(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9689,7 +9689,7 @@ static int lcf1_last_add(lua_State *L) {
 
 /* name: list
  * function() */
-static int lcf1_list(lua_State *L) {
+static inline int lcf1_list(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9981,7 +9981,7 @@ static int lcf1_list(lua_State *L) {
 
 /* name: data
  * function() */
-static int lcf1_data(lua_State *L) {
+static inline int lcf1_data(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -10095,7 +10095,7 @@ static int lcf1_data(lua_State *L) {
 
 /* name: readerror
  * function() */
-static int lcf1_readerror(lua_State *L) {
+static inline int lcf1_readerror(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -10209,7 +10209,7 @@ static int lcf1_readerror(lua_State *L) {
 
 /* name: a_symbol_p
  * function(x) */
-static int lcf1_a_symbol_p(lua_State *L) {
+static inline int lcf1_a_symbol_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -10334,7 +10334,7 @@ static int lcf1_a_symbol_p(lua_State *L) {
 
 /* name: val
  * function() */
-static int lcf1_val(lua_State *L) {
+static inline int lcf1_val(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -10436,7 +10436,7 @@ static int lcf1_val(lua_State *L) {
 }
 
 /* function() */
-static int lcf799(lua_State *L) {
+static inline int lcf799(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -10586,7 +10586,7 @@ static int lcf799(lua_State *L) {
 
 /* name: make_read_two
  * function(prefix, k) */
-static int lcf1_make_read_two(lua_State *L) {
+static inline int lcf1_make_read_two(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -10627,7 +10627,7 @@ static int lcf1_make_read_two(lua_State *L) {
 }
 
 /* function() */
-static int lcf822(lua_State *L) {
+static inline int lcf822(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -10808,7 +10808,7 @@ static int lcf822(lua_State *L) {
 
 /* name: make_read_three
  * function(prefix, k) */
-static int lcf1_make_read_three(lua_State *L) {
+static inline int lcf1_make_read_three(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -10854,7 +10854,7 @@ static int lcf1_make_read_three(lua_State *L) {
 }
 
 /* function(e, x) */
-static int lcf828(lua_State *L) {
+static inline int lcf828(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -10895,7 +10895,7 @@ static int lcf828(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf829(lua_State *L) {
+static inline int lcf829(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -10906,7 +10906,7 @@ static int lcf829(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf831(lua_State *L) {
+static inline int lcf831(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -10919,7 +10919,7 @@ static int lcf831(lua_State *L) {
 }
 
 /* function(f, xs) */
-static int lcf833(lua_State *L) {
+static inline int lcf833(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -10947,7 +10947,7 @@ static int lcf833(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf834(lua_State *L) {
+static inline int lcf834(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -10958,7 +10958,7 @@ static int lcf834(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf836(lua_State *L) {
+static inline int lcf836(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -10971,7 +10971,7 @@ static int lcf836(lua_State *L) {
 }
 
 /* function(e, f, xs) */
-static int lcf842(lua_State *L) {
+static inline int lcf842(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -11026,7 +11026,7 @@ static int lcf842(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf843(lua_State *L) {
+static inline int lcf843(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -11037,7 +11037,7 @@ static int lcf843(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf845(lua_State *L) {
+static inline int lcf845(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -11050,7 +11050,7 @@ static int lcf845(lua_State *L) {
 }
 
 /* function(f, xs) */
-static int lcf847(lua_State *L) {
+static inline int lcf847(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -11079,7 +11079,7 @@ static int lcf847(lua_State *L) {
 
 /* name: simple_parse
  * function(x) */
-static int lcf1_simple_parse(lua_State *L) {
+static inline int lcf1_simple_parse(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -11523,7 +11523,7 @@ static int lcf1_simple_parse(lua_State *L) {
 
 /* name: eof
  * function() */
-static int lcf2_eof(lua_State *L) {
+static inline int lcf2_eof(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -11542,7 +11542,7 @@ static int lcf2_eof(lua_State *L) {
 
 /* name: get
  * function() */
-static int lcf2_get(lua_State *L) {
+static inline int lcf2_get(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -11590,7 +11590,7 @@ static int lcf2_get(lua_State *L) {
 
 /* name: put
  * function(x) */
-static int lcf2_put(lua_State *L) {
+static inline int lcf2_put(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -11639,7 +11639,7 @@ static int lcf2_put(lua_State *L) {
 
 /* name: parse_error
  * function() */
-static int lcf2_parse_error(lua_State *L) {
+static inline int lcf2_parse_error(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -11653,7 +11653,7 @@ static int lcf2_parse_error(lua_State *L) {
 
 /* name: a_space_p
  * function(x) */
-static int lcf2_a_space_p(lua_State *L) {
+static inline int lcf2_a_space_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -11693,7 +11693,7 @@ static int lcf2_a_space_p(lua_State *L) {
 
 /* name: space
  * function() */
-static int lcf2_space(lua_State *L) {
+static inline int lcf2_space(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -11798,7 +11798,7 @@ static int lcf2_space(lua_State *L) {
 
 /* name: symbol
  * function() */
-static int lcf2_symbol(lua_State *L) {
+static inline int lcf2_symbol(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -11924,7 +11924,7 @@ static int lcf2_symbol(lua_State *L) {
 
 /* name: set_last
  * function(lst) */
-static int lcf2_set_last(lua_State *L) {
+static inline int lcf2_set_last(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -12078,7 +12078,7 @@ static int lcf2_set_last(lua_State *L) {
 
 /* name: last_add
  * function(x) */
-static int lcf2_last_add(lua_State *L) {
+static inline int lcf2_last_add(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -12096,7 +12096,7 @@ static int lcf2_last_add(lua_State *L) {
 
 /* name: list
  * function() */
-static int lcf2_list(lua_State *L) {
+static inline int lcf2_list(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12388,7 +12388,7 @@ static int lcf2_list(lua_State *L) {
 
 /* name: data
  * function() */
-static int lcf2_data(lua_State *L) {
+static inline int lcf2_data(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12502,7 +12502,7 @@ static int lcf2_data(lua_State *L) {
 
 /* name: readerror
  * function() */
-static int lcf2_readerror(lua_State *L) {
+static inline int lcf2_readerror(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12616,7 +12616,7 @@ static int lcf2_readerror(lua_State *L) {
 
 /* name: a_symbol_p
  * function(x) */
-static int lcf2_a_symbol_p(lua_State *L) {
+static inline int lcf2_a_symbol_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -12741,7 +12741,7 @@ static int lcf2_a_symbol_p(lua_State *L) {
 
 /* name: val
  * function() */
-static int lcf2_val(lua_State *L) {
+static inline int lcf2_val(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12844,7 +12844,7 @@ static int lcf2_val(lua_State *L) {
 
 /* name: un_maybe
  * function(x) */
-static int lcf1_un_maybe(lua_State *L) {
+static inline int lcf1_un_maybe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -12876,7 +12876,7 @@ static int lcf1_un_maybe(lua_State *L) {
 
 /* name: not_eof
  * function() */
-static int lcf1_not_eof(lua_State *L) {
+static inline int lcf1_not_eof(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12891,7 +12891,7 @@ static int lcf1_not_eof(lua_State *L) {
 
 /* name: assert_get
  * function(c) */
-static int lcf1_assert_get(lua_State *L) {
+static inline int lcf1_assert_get(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -12918,7 +12918,7 @@ static int lcf1_assert_get(lua_State *L) {
 
 /* name: readsysname_no_pack_bracket
  * function() */
-static int lcf1_readsysname_no_pack_bracket(lua_State *L) {
+static inline int lcf1_readsysname_no_pack_bracket(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -12947,7 +12947,7 @@ static int lcf1_readsysname_no_pack_bracket(lua_State *L) {
 
 /* name: readsysname_no_pack_inner_must
  * function(strict) */
-static int lcf1_readsysname_no_pack_inner_must(lua_State *L) {
+static inline int lcf1_readsysname_no_pack_inner_must(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -13106,7 +13106,7 @@ static int lcf1_readsysname_no_pack_inner_must(lua_State *L) {
 
 /* name: may_xfx_xf
  * function(x) */
-static int lcf1_may_xfx_xf(lua_State *L) {
+static inline int lcf1_may_xfx_xf(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -13407,7 +13407,7 @@ static int lcf1_may_xfx_xf(lua_State *L) {
 
 /* name: readsysname_no_pack
  * function() */
-static int lcf1_readsysname_no_pack(lua_State *L) {
+static inline int lcf1_readsysname_no_pack(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -13866,7 +13866,7 @@ static int lcf1_readsysname_no_pack(lua_State *L) {
 
 /* name: readsysname
  * function() */
-static int lcf1_readsysname(lua_State *L) {
+static inline int lcf1_readsysname(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -13920,7 +13920,7 @@ static int lcf1_readsysname(lua_State *L) {
 }
 
 /* function() */
-static int lcf1078(lua_State *L) {
+static inline int lcf1078(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -14070,7 +14070,7 @@ static int lcf1078(lua_State *L) {
 
 /* name: make_read_two
  * function(prefix, k) */
-static int lcf2_make_read_two(lua_State *L) {
+static inline int lcf2_make_read_two(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -14111,7 +14111,7 @@ static int lcf2_make_read_two(lua_State *L) {
 }
 
 /* function() */
-static int lcf1101(lua_State *L) {
+static inline int lcf1101(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -14292,7 +14292,7 @@ static int lcf1101(lua_State *L) {
 
 /* name: make_read_three
  * function(prefix, k) */
-static int lcf2_make_read_three(lua_State *L) {
+static inline int lcf2_make_read_three(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -14338,7 +14338,7 @@ static int lcf2_make_read_three(lua_State *L) {
 }
 
 /* function(e, x) */
-static int lcf1107(lua_State *L) {
+static inline int lcf1107(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14379,7 +14379,7 @@ static int lcf1107(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf1108(lua_State *L) {
+static inline int lcf1108(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -14390,7 +14390,7 @@ static int lcf1108(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf1110(lua_State *L) {
+static inline int lcf1110(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14403,7 +14403,7 @@ static int lcf1110(lua_State *L) {
 }
 
 /* function(f, xs) */
-static int lcf1112(lua_State *L) {
+static inline int lcf1112(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14431,7 +14431,7 @@ static int lcf1112(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf1113(lua_State *L) {
+static inline int lcf1113(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -14442,7 +14442,7 @@ static int lcf1113(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf1115(lua_State *L) {
+static inline int lcf1115(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14455,7 +14455,7 @@ static int lcf1115(lua_State *L) {
 }
 
 /* function(e, f, xs) */
-static int lcf1121(lua_State *L) {
+static inline int lcf1121(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -14510,7 +14510,7 @@ static int lcf1121(lua_State *L) {
 }
 
 /* function(xs) */
-static int lcf1122(lua_State *L) {
+static inline int lcf1122(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -14521,7 +14521,7 @@ static int lcf1122(lua_State *L) {
 }
 
 /* function(xs, y) */
-static int lcf1124(lua_State *L) {
+static inline int lcf1124(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14534,7 +14534,7 @@ static int lcf1124(lua_State *L) {
 }
 
 /* function(f, xs) */
-static int lcf1126(lua_State *L) {
+static inline int lcf1126(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -14563,7 +14563,7 @@ static int lcf1126(lua_State *L) {
 
 /* name: complex_parse
  * function(x) */
-static int lcf1_complex_parse(lua_State *L) {
+static inline int lcf1_complex_parse(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -15187,7 +15187,7 @@ static int lcf1_complex_parse(lua_State *L) {
 
 /* name: inner_bracket
  * function(x) */
-static int lcf1_inner_bracket(lua_State *L) {
+static inline int lcf1_inner_bracket(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -15243,7 +15243,7 @@ static int lcf1_inner_bracket(lua_State *L) {
 
 /* name: print_sys_name
  * function(x, where) */
-static int lcf1_print_sys_name(lua_State *L) {
+static inline int lcf1_print_sys_name(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
@@ -16082,7 +16082,7 @@ static int lcf1_print_sys_name(lua_State *L) {
 
 /* name: complex_print
  * function(val) */
-static int lcf1_complex_print(lua_State *L) {
+static inline int lcf1_complex_print(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -16671,7 +16671,7 @@ static int lcf1_complex_print(lua_State *L) {
 
 /* name: (main)
  * function(...) */
-static int lcf_main(lua_State *L) {
+static inline int lcf_main(lua_State *L) {
   lua_checkstack(L, 61);
   enum { lc_nformalargs = 0 };
   const int lc_nactualargs = lua_gettop(L);
@@ -20689,7 +20689,7 @@ static int lcf_main(lua_State *L) {
 }
 
 /* from lua.c */
-static int traceback(lua_State *L) {
+static inline int traceback(lua_State *L) {
   if (!lua_isstring(L, 1)) /* 'message' not a string? */
     return 1;              /* keep it intact */
   lua_getfield(L, LUA_GLOBALSINDEX, "debug");
@@ -20708,14 +20708,14 @@ static int traceback(lua_State *L) {
   return 1;
 }
 
-static void lc_l_message(const char *pname, const char *msg) {
+static inline void lc_l_message(const char *pname, const char *msg) {
   if (pname)
     fprintf(stderr, "%s: ", pname);
   fprintf(stderr, "%s\n", msg);
   fflush(stderr);
 }
 
-static int lc_report(lua_State *L, int status) {
+static inline int lc_report(lua_State *L, int status) {
   if (status && !lua_isnil(L, -1)) {
     const char *msg = lua_tostring(L, -1);
     if (msg == NULL)
@@ -20727,7 +20727,7 @@ static int lc_report(lua_State *L, int status) {
   return status;
 }
 
-static int lc_docall(lua_State *L, int narg, int clear) {
+static inline int lc_docall(lua_State *L, int narg, int clear) {
   int status;
   int base = lua_gettop(L) - narg; /* function index */
   lua_pushcfunction(L, traceback); /* push traceback function */
@@ -20742,17 +20742,17 @@ static int lc_docall(lua_State *L, int narg, int clear) {
   return status;
 }
 
-static int lc_dofile(lua_State *L, const char *name) {
+static inline int lc_dofile(lua_State *L, const char *name) {
   int status = luaL_loadfile(L, name) || lc_docall(L, 0, 1);
   return lc_report(L, status);
 }
 
-static int lc_dostring(lua_State *L, const char *s, const char *name) {
+static inline int lc_dostring(lua_State *L, const char *s, const char *name) {
   int status = luaL_loadbuffer(L, s, strlen(s), name) || lc_docall(L, 0, 1);
   return lc_report(L, status);
 }
 
-static int lc_handle_luainit(lua_State *L) {
+static inline int lc_handle_luainit(lua_State *L) {
   const char *init = getenv(LUA_INIT);
   if (init == NULL)
     return 0; /* status OK */
@@ -20768,7 +20768,7 @@ typedef struct {
 } lc_args_t;
 
 /* create global arg table */
-static void lc_createarg(lua_State *L, const lc_args_t *const args) {
+static inline void lc_createarg(lua_State *L, const lc_args_t *const args) {
   int i;
   lua_newtable(L);
   for (i = 0; i < args->c; i++) {
