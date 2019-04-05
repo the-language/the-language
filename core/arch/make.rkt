@@ -230,7 +230,7 @@
      ("c/lang.h" () (void))
      ("c/lang.c" ("lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/patch/linit.c" "c/patch/lualib.h" "c/testmain.c") {
        in-dir "c" {
-             |> id "[ -d lua-5.1.5 ] || (wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic && cd ..)" | sh
+             |> id "[ -d lua-5.1.5 ] || (wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd ..)" | sh
              |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh
 
              (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.lua" | sh | sed (id "s|static|static inline|g") | clang-format})

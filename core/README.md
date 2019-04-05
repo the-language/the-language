@@ -16,7 +16,6 @@ cd arch
 * php+mbstring `sudo apt install php php7.0-mbstring`
 * git `sudo apt install git`
 * jre jdk `/usr/lib/jvm/default-java/jre/lib/rt.jar`
-* gcc `sudo apt install gcc`
 * clang `sudo apt install clang`
 * clang-format `sudo apt install clang-format`
 * make `sudo apt install make`
