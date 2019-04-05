@@ -1,7 +1,9 @@
 #!/bin/bash
+./get-ant.sh
+
 [ -d luaj ] || git clone --depth 1 https://github.com/luaj/luaj.git
 cd luaj
-[ -f luaj-jse-3.0.2.jar ] || ant
+[ -f luaj-jse-3.0.2.jar ] || ../ant/bin/ant
 cd -
 
 [ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git
