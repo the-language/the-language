@@ -1,6 +1,6 @@
 {
     "devDependencies": {
-        "google-closure-compiler": "^20190215.0.1",
+        "google-closure-compiler": "^20190325.0.0",
         "prepack": "^0.2.54",
         "ts-node": "^8.0.2",
         "typescript": "^3.3.3333"
