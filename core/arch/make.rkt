@@ -170,7 +170,6 @@
      }})
      ("go/src" ("lua/lang.lua") {
          in-dir "go" {
-           ;; deps: golang 1.9+
            mkdir -p deps
            (define GOPATH "$PWD/deps")
            sh -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"

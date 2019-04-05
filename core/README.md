@@ -22,6 +22,7 @@ cd arch
 * make `sudo apt install make`
 * libc-dev `sudo apt install libc-dev`
 * wget `sudo apt install wget`
+* golang 1.10+
 
 ```bash
 raco pkg install --auto rash
