@@ -8,17 +8,16 @@ cd arch
 ### 編譯依賴
 
 * GNU coreutils, BASH, GNU tar, ...
-* NodeJS NPM `sudo apt install nodejs` https://nodejs.org/
-* yarn `npm i -g yarn`
-* racket `sudo apt install racket` https://www.racket-lang.org/
-* python `sudo apt install python python3 python-pip python3-pip`
-* git `sudo apt install git`
-* jre jdk `/usr/lib/jvm/default-java/jre/lib/rt.jar`
-* clang `sudo apt install clang`
-* clang-format `sudo apt install clang-format`
-* make `sudo apt install make`
-* wget `sudo apt install wget`
-* golang 1.10+
+* NodeJS NPM | `sudo apt install nodejs` `sudo pacman -S nodejs` https://nodejs.org/
+* yarn | `npm i -g yarn`
+* racket | `sudo apt install racket` https://www.racket-lang.org/
+* python | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python2-pip python python-pip`
+* git | `sudo apt install git` `sudo pacman -S git`
+* jre, jdk, `/usr/lib/jvm/default-java/jre/lib/rt.jar` | `sudo pacman -S jdk10-openjdk`
+* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang`
+* GNU make | `sudo apt install make` `sudo pacman -S make`
+* wget | `sudo apt install wget` `sudo pacman -S wget`
+* golang 1.10+ | `sudo pacman -S go`
 
 ```bash
 raco pkg install --auto rash
