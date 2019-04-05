@@ -172,7 +172,7 @@
          in-dir "go" {
            mkdir -p deps
            (define GOPATH "$PWD/deps")
-           sh -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"
+           bash -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"
            go get github.com/yuin/gopher-lua
            (define lang.go
                (++

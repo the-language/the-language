@@ -7,6 +7,7 @@ cd arch
 
 ### 編譯依賴
 
+* maven `sudo apt install maven`
 * NodeJS NPM `sudo apt install nodejs` https://nodejs.org/
 * yarn `npm i -g yarn`
 * racket `sudo apt install racket` https://www.racket-lang.org/
