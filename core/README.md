@@ -7,6 +7,7 @@ cd arch
 
 ### 編譯依賴
 
+* GNU coreutils, BASH, GNU tar, ...
 * NodeJS NPM `sudo apt install nodejs` https://nodejs.org/
 * yarn `npm i -g yarn`
 * racket `sudo apt install racket` https://www.racket-lang.org/
