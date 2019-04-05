@@ -7,8 +7,6 @@ cd arch
 
 ### 依賴
 
-* Maven `sudo apt install maven`
-* GHC+Cabal `sudo apt install ghc cabal-install` 因為某個地區的網絡的某些狀況，不採用Stack
 * NodeJS NPM `sudo apt install nodejs` https://nodejs.org/
 * yarn `npm i -g yarn`
 * racket `sudo apt install racket` https://www.racket-lang.org/
