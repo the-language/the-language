@@ -17,7 +17,6 @@ cd arch
 * clang `sudo apt install clang`
 * clang-format `sudo apt install clang-format`
 * make `sudo apt install make`
-* libc-dev `sudo apt install libc-dev`
 * wget `sudo apt install wget`
 * golang 1.10+
 
