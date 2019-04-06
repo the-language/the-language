@@ -22,8 +22,8 @@ cd arch
 ```bash
 raco pkg install --auto rash
 raco pkg install --auto make
-pip3 install js2py
-pip2 install js2py
+pip3 install js2py --user
+pip2 install js2py --user
 ```
 
 ## 運行依賴
