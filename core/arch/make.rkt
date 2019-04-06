@@ -94,6 +94,7 @@
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
              yarn
+             |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
              touch lang.lua
              rm lang.lua
              npx tstl -p tsconfig.json
@@ -102,7 +103,7 @@
                  haskell-generatedby
                  haskell-copyright
                  (match (string->lines raw)
-                    [(list "--[[ Generated with https://github.com/Perryvw/TypescriptToLua ]]"
+                    [(list "--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]"
                     "-- Lua Library inline imports"
                     "__TS__ArrayPush = function(arr, ...)"
                     "    local items = ({...});"

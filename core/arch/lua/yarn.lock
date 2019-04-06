@@ -2,11 +2,17 @@
 # yarn lockfile v1
 
 
-typescript-to-lua@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.15.2.tgz#5e3bfa3c260ffeaa36096d7126b909d5022e16e0"
-  integrity sha512-b8SIau6WXwDOIfydf4QTlOu23MTgs3RH7EVzqTj9cpMkrXW4q0N6WTvXYZ9Lv2uXELfRES5MVATlFL+5gQnrbw==
+source-map@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
+  integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
+
+typescript-to-lua@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.17.0.tgz#3f067ffc2914308c15140be2178f60196d08ad06"
+  integrity sha512-aERhnPkSwMq2krTh+n48A8TfXKqOl7pGJOnDV99jrLdVzyli1HxOq3rwYtRHUQYNWEMzB5Ynpndn+jUlDfhJhQ==
   dependencies:
+    source-map "^0.7.3"
     typescript "^3.3.1"
 
 typescript@^3.3.1:
