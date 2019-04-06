@@ -13,7 +13,7 @@ cd arch
 * racket | `sudo apt install racket` https://www.racket-lang.org/
 * python | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python2-pip python python-pip`
 * git | `sudo apt install git` `sudo pacman -S git`
-* jre, jdk8, `/usr/lib/jvm/default-java/jre/lib/rt.jar` | `sudo pacman -S jdk8-openjdk`
+* jre, jdk8 | `sudo pacman -S jdk8-openjdk`
 * clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang`
 * GNU make | `sudo apt install make` `sudo pacman -S make`
 * wget | `sudo apt install wget` `sudo pacman -S wget`
