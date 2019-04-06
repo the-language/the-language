@@ -86,7 +86,7 @@
                 (apply ++ (map (lambda (x) (++ "exports."x"='something';\n")) exports))
                 ))
             |> id google-closure-exports &>! lang.externs.js
-            npx google-closure-compiler -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js ../ecmascript/lang.raw.js --externs lang.externs.js -O ADVANCED &>! lang.js
+            java -jar ./node_modules/google-closure-compiler-java/compiler.jar -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js ../ecmascript/lang.raw.js --externs lang.externs.js -O ADVANCED &>! lang.js
             cp lang.js ../ecmascript
             |> id exports.list &>! ../ecmascript/exports.list
             touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現

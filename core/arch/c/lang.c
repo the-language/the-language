@@ -5092,8 +5092,7 @@ static inline int lcf1_real_apply(lua_State *L) {
    *         return new_error(system_symbol,
    * new_list(function_builtin_use_systemName,
    * new_list(apply_function_builtin_systemName, new_list(f,
-   * jsArray_to_list(xs)))));
-   *     end */
+   * jsArray_to_list(xs))))); end */
   lua_pushvalue(L, lc241);
   lua_pushcclosure(L, lcf1_make_error_v, 1);
   lua_replace(L, 4);
@@ -6028,8 +6027,7 @@ static inline int lcf1_new_lambda(lua_State *L) {
    *         if error_v == false then
    *             return new_error(system_symbol,
    * new_list(form_builtin_use_systemName, new_list(env2val(env),
-   * lambda_form_builtin_systemName, jsArray_to_list({args_pat, body}))));
-   *         else
+   * lambda_form_builtin_systemName, jsArray_to_list({args_pat, body})))); else
    *             return error_v;
    *         end
    *     end */
@@ -6044,8 +6042,7 @@ static inline int lcf1_new_lambda(lua_State *L) {
 
   /* make_quote = function(x)
    *         return new_list(form_builtin_use_systemName,
-   * quote_form_builtin_systemName, x);
-   *     end */
+   * quote_form_builtin_systemName, x); end */
   lua_pushvalue(L, lc329);
   lua_pushcclosure(L, lcf1_make_quote, 1);
   lua_replace(L, 7);
@@ -6464,13 +6461,7 @@ static inline int lcf1_jsbool_equal_p(lua_State *L) {
 
   /* end_2 = function(x, y, f1, f2)
    *         if jsbool_equal_p(f1(x), f1(y)) and jsbool_equal_p(f2(x), f2(y))
-   * then
-   *             lang_set_do(x, y);
-   *             return true;
-   *         else
-   *             return false;
-   *         end
-   *     end */
+   * then lang_set_do(x, y); return true; else return false; end end */
   lua_pushvalue(L, lua_upvalueindex(1));
   lua_pushcclosure(L, lcf1_end_2, 1);
   lua_replace(L, 3);
@@ -8102,8 +8093,7 @@ static inline int lcf591(lua_State *L) {
 
   /* H_if = function(b, x, y)
    *         return builtin_func_apply(if_function_builtin_systemName, {b, x,
-   * y});
-   *     end */
+   * y}); end */
   lua_pushvalue(L, lc559);
   lua_pushcclosure(L, lcf1_H_if, 1);
   lc_setupvalue(L, lc559, 0, 134);
@@ -8143,8 +8133,7 @@ static inline int lcf591(lua_State *L) {
    *         return
    * H_and(builtin_func_apply(equal_p_function_builtin_systemName, {f1(x),
    * f1(y)}), builtin_func_apply(equal_p_function_builtin_systemName, {f2(x),
-   * f2(y)}));
-   *     end */
+   * f2(y)})); end */
   lua_pushvalue(L, lc561);
   lua_pushcclosure(L, lcf2_end_2, 1);
   lua_replace(L, 6);
@@ -8792,9 +8781,7 @@ static inline int lcf1_jsbool_no_force_equal_p(lua_State *L) {
 
   /* end_2 = function(x, y, f1, f2)
    *         if jsbool_no_force_equal_p(f1(x), f1(y)) and
-   * jsbool_no_force_equal_p(f2(x), f2(y)) then
-   *             lang_set_do(x, y);
-   *             return true;
+   * jsbool_no_force_equal_p(f2(x), f2(y)) then lang_set_do(x, y); return true;
    *         else
    *             return false;
    *         end
@@ -10615,11 +10602,8 @@ static inline int lcf1_make_read_two(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end */
   lua_pushvalue(L, lc780);
   lua_pushcclosure(L, lcf799, 1);
   return 1;
@@ -10841,12 +10825,8 @@ static inline int lcf1_make_read_three(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end */
   lua_pushvalue(L, lc800);
   lua_pushcclosure(L, lcf822, 1);
   return 1;
@@ -11325,15 +11305,8 @@ static inline int lcf1_simple_parse(lua_State *L) {
    *             return false;
    *         end
    *         local not_xs = {"(", ")", "!", "#", ".", "$", "%", "^", "@", "~",
-   * "/", "-", ">", "_", ":", "?", "[", "]", "&"};
-   *         do
-   *             local i = 0;
-   *             while i < (#not_xs) do
-   *                 if x == not_xs[i + 1] then
-   *                     return false;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * "/", "-", ">", "_", ":", "?", "[", "]", "&"}; do local i = 0; while i <
+   * (#not_xs) do if x == not_xs[i + 1] then return false; end i = i + 1; end
    *         end
    *         return true;
    *     end */
@@ -11345,19 +11318,9 @@ static inline int lcf1_simple_parse(lua_State *L) {
   /* val = function()
    *         space();
    *         local fs = {list, symbol, data, readerror, readeval, readfuncapply,
-   * readformbuiltin, readapply};
-   *         do
-   *             local i = 0;
-   *             while i < (#fs) do
-   *                 local x = fs[i + 1]();
-   *                 if x ~= false then
-   *                     return x;
-   *                 end
-   *                 i = i + 1;
-   *             end
-   *         end
-   *         return parse_error();
-   *     end */
+   * readformbuiltin, readapply}; do local i = 0; while i < (#fs) do local x =
+   * fs[i + 1](); if x ~= false then return x; end i = i + 1; end end return
+   * parse_error(); end */
   lua_pushvalue(L, lc671);
   lua_pushcclosure(L, lcf1_val, 1);
   lc_setupvalue(L, lc671, 0, 138);
@@ -11396,12 +11359,8 @@ static inline int lcf1_simple_parse(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end;
-   *     end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end; end */
   lua_pushvalue(L, lc671);
   lua_pushcclosure(L, lcf1_make_read_two, 1);
   lua_replace(L, 3);
@@ -11434,13 +11393,8 @@ static inline int lcf1_simple_parse(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end;
-   *     end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end; end */
   lua_pushvalue(L, lc671);
   lua_pushcclosure(L, lcf1_make_read_three, 1);
   lua_replace(L, 4);
@@ -13433,13 +13387,8 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
    *             local fs = (strict and {list, symbol,
    * readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply,
    * readformbuiltin, readapply}) or {list, readsysname_no_pack, data,
-   * readerror, readeval, readfuncapply, readformbuiltin, readapply};
-   *             do
-   *                 local i = 0;
-   *                 while i < (#fs) do
-   *                     local x = fs[i + 1]();
-   *                     if x ~= false then
-   *                         return x;
+   * readerror, readeval, readfuncapply, readformbuiltin, readapply}; do local i
+   * = 0; while i < (#fs) do local x = fs[i + 1](); if x ~= false then return x;
    *                     end
    *                     i = i + 1;
    *                 end
@@ -13459,24 +13408,16 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
    *             if head == "." then
    *                 local y = readsysname_no_pack_inner_must();
    *                 return new_list(typeAnnotation_symbol,
-   * new_list(function_symbol, new_list(x), something_symbol), y);
-   *             elseif head == ":" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol, y, x);
-   *             elseif head == "~" then
-   *                 return new_list(isOrNot_symbol, x);
-   *             elseif head == "@" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol,
+   * new_list(function_symbol, new_list(x), something_symbol), y); elseif head
+   * == ":" then local y = readsysname_no_pack_inner_must(); return
+   * new_list(typeAnnotation_symbol, y, x); elseif head == "~" then return
+   * new_list(isOrNot_symbol, x); elseif head == "@" then local y =
+   * readsysname_no_pack_inner_must(); return new_list(typeAnnotation_symbol,
    * new_list(function_symbol, new_construction(x, something_symbol),
-   * something_symbol), y);
-   *             elseif head == "?" then
-   *                 return new_list(typeAnnotation_symbol, function_symbol,
-   * new_list(isOrNot_symbol, x));
-   *             elseif head == "/" then
-   *                 local ys = {x};
-   *                 while true do
-   *                     local y = readsysname_no_pack_inner_must(true);
+   * something_symbol), y); elseif head == "?" then return
+   * new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol,
+   * x)); elseif head == "/" then local ys = {x}; while true do local y =
+   * readsysname_no_pack_inner_must(true);
    *                     __TS__ArrayPush(ys, y);
    *                     if eof() then
    *                         break;
@@ -14099,11 +14040,8 @@ static inline int lcf2_make_read_two(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end */
   lua_pushvalue(L, lc1059);
   lua_pushcclosure(L, lcf1078, 1);
   return 1;
@@ -14325,12 +14263,8 @@ static inline int lcf2_make_read_three(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end */
   lua_pushvalue(L, lc1079);
   lua_pushcclosure(L, lcf1101, 1);
   return 1;
@@ -14815,15 +14749,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             return false;
    *         end
    *         local not_xs = {"(", ")", "!", "#", ".", "$", "%", "^", "@", "~",
-   * "/", "-", ">", "_", ":", "?", "[", "]", "&"};
-   *         do
-   *             local i = 0;
-   *             while i < (#not_xs) do
-   *                 if x == not_xs[i + 1] then
-   *                     return false;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * "/", "-", ">", "_", ":", "?", "[", "]", "&"}; do local i = 0; while i <
+   * (#not_xs) do if x == not_xs[i + 1] then return false; end i = i + 1; end
    *         end
    *         return true;
    *     end */
@@ -14835,16 +14762,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
   /* val = function()
    *         space();
    *         local fs = {list, readsysname, data, readerror, readeval,
-   * readfuncapply, readformbuiltin, readapply};
-   *         do
-   *             local i = 0;
-   *             while i < (#fs) do
-   *                 local x = fs[i + 1]();
-   *                 if x ~= false then
-   *                     return x;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * readfuncapply, readformbuiltin, readapply}; do local i = 0; while i < (#fs)
+   * do local x = fs[i + 1](); if x ~= false then return x; end i = i + 1; end
    *         end
    *         return parse_error();
    *     end */
@@ -14897,13 +14816,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             local fs = (strict and {list, symbol,
    * readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply,
    * readformbuiltin, readapply}) or {list, readsysname_no_pack, data,
-   * readerror, readeval, readfuncapply, readformbuiltin, readapply};
-   *             do
-   *                 local i = 0;
-   *                 while i < (#fs) do
-   *                     local x = fs[i + 1]();
-   *                     if x ~= false then
-   *                         return x;
+   * readerror, readeval, readfuncapply, readformbuiltin, readapply}; do local i
+   * = 0; while i < (#fs) do local x = fs[i + 1](); if x ~= false then return x;
    *                     end
    *                     i = i + 1;
    *                 end
@@ -14918,24 +14832,16 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             if head == "." then
    *                 local y = readsysname_no_pack_inner_must();
    *                 return new_list(typeAnnotation_symbol,
-   * new_list(function_symbol, new_list(x), something_symbol), y);
-   *             elseif head == ":" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol, y, x);
-   *             elseif head == "~" then
-   *                 return new_list(isOrNot_symbol, x);
-   *             elseif head == "@" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol,
+   * new_list(function_symbol, new_list(x), something_symbol), y); elseif head
+   * == ":" then local y = readsysname_no_pack_inner_must(); return
+   * new_list(typeAnnotation_symbol, y, x); elseif head == "~" then return
+   * new_list(isOrNot_symbol, x); elseif head == "@" then local y =
+   * readsysname_no_pack_inner_must(); return new_list(typeAnnotation_symbol,
    * new_list(function_symbol, new_construction(x, something_symbol),
-   * something_symbol), y);
-   *             elseif head == "?" then
-   *                 return new_list(typeAnnotation_symbol, function_symbol,
-   * new_list(isOrNot_symbol, x));
-   *             elseif head == "/" then
-   *                 local ys = {x};
-   *                 while true do
-   *                     local y = readsysname_no_pack_inner_must(true);
+   * something_symbol), y); elseif head == "?" then return
+   * new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol,
+   * x)); elseif head == "/" then local ys = {x}; while true do local y =
+   * readsysname_no_pack_inner_must(true);
    *                     __TS__ArrayPush(ys, y);
    *                     if eof() then
    *                         break;
@@ -14976,12 +14882,9 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 local x = readsysname_no_pack_inner_must();
    *                 return new_list(typeAnnotation_symbol,
    * new_list(form_symbol, new_list(function_symbol, something_symbol, x)),
-   * theThing_symbol);
-   *             elseif c0 == ">" then
-   *                 local x = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol,
-   * new_list(function_symbol, something_symbol, x), theThing_symbol);
-   *             else
+   * theThing_symbol); elseif c0 == ">" then local x =
+   * readsysname_no_pack_inner_must(); return new_list(typeAnnotation_symbol,
+   * new_list(function_symbol, something_symbol, x), theThing_symbol); else
    *                 put(c0);
    *             end
    *             local x = readsysname_no_pack_inner_must();
@@ -15060,12 +14963,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end;
-   *     end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end; end */
   lua_pushvalue(L, lc849);
   lua_pushcclosure(L, lcf2_make_read_two, 1);
   lua_replace(L, 3);
@@ -15098,13 +14997,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end;
-   *     end */
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end; end */
   lua_pushvalue(L, lc849);
   lua_pushcclosure(L, lcf2_make_read_three, 1);
   lua_replace(L, 4);
@@ -16109,94 +16003,58 @@ static inline int lcf1_complex_print(lua_State *L) {
    *         end;
    *         local maybe_xs = maybe_list_to_jsArray(x);
    *         if ((maybe_xs ~= false) and ((#maybe_xs) == 3)) and
-   * jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
-   *             local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1]);
-   *             if ((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 3)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], function_symbol) then
-   *                 local var_2_1 = maybe_lst_2[1 + 1];
-   *                 local maybe_lst_3 = maybe_list_to_jsArray(var_2_1);
-   *                 if ((maybe_lst_3 ~= false) and ((#maybe_lst_3) == 1)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-   *                     return inner_bracket((print_sys_name(maybe_lst_3[0 +
-   * 1], "inner") .. ".") .. print_sys_name(maybe_xs[2 + 1], "inner"));
-   *                 elseif (construction_p(var_2_1) and
+   * jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then local
+   * maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if ((maybe_lst_2 ~=
+   * false) and ((#maybe_lst_2) == 3)) and jsbool_no_force_equal_p(maybe_lst_2[0
+   * + 1], function_symbol) then local var_2_1 = maybe_lst_2[1 + 1]; local
+   * maybe_lst_3 = maybe_list_to_jsArray(var_2_1); if ((maybe_lst_3 ~= false)
+   * and ((#maybe_lst_3) == 1)) and jsbool_no_force_equal_p(maybe_lst_2[2 + 1],
+   * something_symbol) then return inner_bracket((print_sys_name(maybe_lst_3[0 +
+   * 1], "inner") .. ".") .. print_sys_name(maybe_xs[2 + 1], "inner")); elseif
+   * (construction_p(var_2_1) and
    * jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-   *                     return
+   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then return
    * inner_bracket((print_sys_name(construction_head(var_2_1), "inner") .. "@")
-   * .. print_sys_name(maybe_xs[2 + 1], "inner"));
-   *                 elseif jsbool_no_force_equal_p(var_2_1, something_symbol)
-   * and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then
-   *                     return inner_bracket(":>" ..
-   * print_sys_name(maybe_lst_2[2 + 1], "inner"));
-   *                 end
-   *             end
+   * .. print_sys_name(maybe_xs[2 + 1], "inner")); elseif
+   * jsbool_no_force_equal_p(var_2_1, something_symbol) and
+   * jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then return
+   * inner_bracket(":>" .. print_sys_name(maybe_lst_2[2 + 1], "inner")); end end
    *             local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2 + 1]);
    *             if ((jsbool_no_force_equal_p(maybe_xs[1 + 1], function_symbol)
    * and (maybe_lst_44 ~= false)) and ((#maybe_lst_44) == 2)) and
-   * jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then
-   *                 return inner_bracket(print_sys_name(maybe_lst_44[1 + 1],
-   * "inner") .. "?");
-   *             end
-   *             if (((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 2)) and
+   * jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then return
+   * inner_bracket(print_sys_name(maybe_lst_44[1 + 1], "inner") .. "?"); end if
+   * (((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 2)) and
    * jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then
-   *                 local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 +
-   * 1]);
-   *                 if (((maybe_lst_88 ~= false) and ((#maybe_lst_88) == 3))
-   * and jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then
-   *                     return inner_bracket(":&>" ..
-   * print_sys_name(maybe_lst_88[2 + 1], "inner"));
-   *                 end
+   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then local
+   * maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 + 1]); if
+   * (((maybe_lst_88 ~= false) and ((#maybe_lst_88) == 3)) and
+   * jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol)) and
+   * jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then return
+   * inner_bracket(":&>" .. print_sys_name(maybe_lst_88[2 + 1], "inner")); end
    *             end
    *             local hd = (jsbool_no_force_equal_p(maybe_xs[2 + 1],
    * something_symbol) and "_") or ((jsbool_no_force_equal_p(maybe_xs[2 + 1],
    * theThing_symbol) and "") or print_sys_name(maybe_xs[2 + 1], "inner"));
    *             return inner_bracket((hd .. ":") .. print_sys_name(maybe_xs[1 +
-   * 1], "inner"));
-   *         elseif (maybe_xs ~= false) and ((#maybe_xs) == 2) then
-   *             if jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then
-   *                 local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 +
-   * 1]);
-   *                 if ((maybe_lst_288 ~= false) and ((#maybe_lst_288) == 2))
-   * and jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then
-   *                     return inner_bracket("&+" ..
-   * print_sys_name(maybe_lst_288[1 + 1], "inner"));
-   *                 end
+   * 1], "inner")); elseif (maybe_xs ~= false) and ((#maybe_xs) == 2) then if
+   * jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then local
+   * maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if ((maybe_lst_288
+   * ~= false) and ((#maybe_lst_288) == 2)) and
+   * jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then return
+   * inner_bracket("&+" .. print_sys_name(maybe_lst_288[1 + 1], "inner")); end
    *                 return inner_bracket("&" .. print_sys_name(maybe_xs[1 + 1],
-   * "inner"));
-   *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol)
-   * then
-   *                 return inner_bracket(print_sys_name(maybe_xs[1 + 1],
-   * "inner") .. "~");
+   * "inner")); elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol)
+   * then return inner_bracket(print_sys_name(maybe_xs[1 + 1], "inner") .. "~");
    *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol)
-   * then
-   *                 return inner_bracket("+" .. print_sys_name(maybe_xs[1 + 1],
-   * "inner"));
+   * then return inner_bracket("+" .. print_sys_name(maybe_xs[1 + 1], "inner"));
    *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol)
-   * then
-   *                 local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 +
-   * 1]);
-   *                 if (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) > 1)
-   * then
-   *                     local tmp = print_sys_name(maybe_lst_8934[0 + 1],
-   * "inner");
-   *                     do
-   *                         local i = 1;
-   *                         while i < (#maybe_lst_8934) do
-   *                             tmp = tmp .. ("/" ..
-   * print_sys_name(maybe_lst_8934[i + 1], "inner"));
-   *                             i = i + 1;
-   *                         end
-   *                     end
-   *                     return inner_bracket(tmp);
-   *                 end
-   *             end
-   *         end
-   *         if where == "inner" then
-   *             return simple_print(x);
-   *         elseif where == "top" then
+   * then local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if
+   * (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) > 1) then local tmp =
+   * print_sys_name(maybe_lst_8934[0 + 1], "inner"); do local i = 1; while i <
+   * (#maybe_lst_8934) do tmp = tmp .. ("/" .. print_sys_name(maybe_lst_8934[i +
+   * 1], "inner")); i = i + 1; end end return inner_bracket(tmp); end end end if
+   * where == "inner" then return simple_print(x); elseif where == "top" then
    *             return simple_print(systemName_make(x));
    *         end
    *         return ERROR();
@@ -16692,11 +16550,8 @@ static inline int lcf_main(lua_State *L) {
    * --    You should have received a copy of the GNU Affero General Public
    * License
    * --    along with this program.  If not, see
-   * <https://www.gnu.org/licenses/>.
-   * local __TS__ArrayPush = function(arr, item)
-   *     arr[#arr+1] = item
-   *     return #arr
-   * end */
+   * <https://www.gnu.org/licenses/>. local __TS__ArrayPush = function(arr,
+   * item) arr[#arr+1] = item return #arr end */
   lc_newclosuretable(L, lua_upvalueindex(1));
   enum { lc1 = 1 };
   assert((lua_gettop(L) == (lc1 + lc_nextra)));
@@ -17216,8 +17071,7 @@ static inline int lcf_main(lua_State *L) {
 
   /* any_delay_just_p = function(x)
    *     return (((just_p(x) or delay_evaluate_p(x)) or delay_builtin_form_p(x))
-   * or delay_builtin_func_p(x)) or delay_apply_p(x);
-   * end */
+   * or delay_builtin_func_p(x)) or delay_apply_p(x); end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_any_delay_just_p, 1);
   lc_setupvalue(L, (lc4 + lc_nextra), 0, 19);
@@ -17306,38 +17160,22 @@ static inline int lcf_main(lua_State *L) {
    *                     ASSERT((#xs) == 1);
    *                     ASSERT(ref_novalue_replace[1 + 1] == false);
    *                     local inner = force_all(xs[0 + 1], make_history(),
-   * ref_novalue_replace);
-   *                     if ref_novalue_replace[1 + 1] then
-   *                         return do_rewrite_force_all(builtin_func_apply(f,
-   * {inner}));
-   *                     else
-   *                         return ERROR();
+   * ref_novalue_replace); if ref_novalue_replace[1 + 1] then return
+   * do_rewrite_force_all(builtin_func_apply(f, {inner})); else return ERROR();
    *                     end
    *                 end
    *                 if jsbool_equal_p(f, equal_p_function_builtin_systemName)
-   * then
-   *                     return replace_this_with_stopped();
-   *                 elseif jsbool_equal_p(f, apply_function_builtin_systemName)
-   * then
-   *                     return replace_this_with_stopped();
+   * then return replace_this_with_stopped(); elseif jsbool_equal_p(f,
+   * apply_function_builtin_systemName) then return replace_this_with_stopped();
    *                 elseif jsbool_equal_p(f,
-   * evaluate_function_builtin_systemName) then
-   *                     return replace_this_with_stopped();
-   *                 elseif jsbool_equal_p(f, if_function_builtin_systemName)
-   * then
-   *                     ASSERT((#xs) == 3);
+   * evaluate_function_builtin_systemName) then return
+   * replace_this_with_stopped(); elseif jsbool_equal_p(f,
+   * if_function_builtin_systemName) then ASSERT((#xs) == 3);
    *                     ASSERT(ref_novalue_replace[1 + 1] == false);
    *                     local tf = force_all(xs[0 + 1], make_history(),
-   * ref_novalue_replace);
-   *                     if ref_novalue_replace[1 + 1] then
-   *                         return
+   * ref_novalue_replace); if ref_novalue_replace[1 + 1] then return
    * do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName,
-   * {tf, xs[1 + 1], xs[2 + 1]}));
-   *                     else
-   *                         return ERROR();
-   *                     end
-   *                 end
-   *                 return ERROR();
+   * {tf, xs[1 + 1], xs[2 + 1]})); else return ERROR(); end end return ERROR();
    *             elseif delay_builtin_form_p(x) then
    *                 return replace_this_with_stopped();
    *             elseif delay_apply_p(x) then
@@ -17364,10 +17202,9 @@ static inline int lcf_main(lua_State *L) {
    *         ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x));
    *     elseif delay_builtin_form_p(x) then
    *         ret = real_builtin_form_apply(delay_builtin_form_env(x),
-   * delay_builtin_form_f(x), delay_builtin_form_xs(x));
-   *     elseif delay_builtin_func_p(x) then
-   *         ret = real_builtin_func_apply(delay_builtin_func_f(x),
-   * delay_builtin_func_xs(x));
+   * delay_builtin_form_f(x), delay_builtin_form_xs(x)); elseif
+   * delay_builtin_func_p(x) then ret =
+   * real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
    *     elseif delay_apply_p(x) then
    *         ret = real_apply(delay_apply_f(x), delay_apply_xs(x));
    *     else
@@ -17455,12 +17292,8 @@ static inline int lcf_main(lua_State *L) {
    *         local i = 0;
    *         while i < (#env) do
    *             ret = new_construction(new_list(env[(i + 0) + 1], env[(i + 1) +
-   * 1]), ret);
-   *             i = i + 2;
-   *         end
-   *     end
-   *     return new_data(mapping_symbol, new_list(ret));
-   * end */
+   * 1]), ret); i = i + 2; end end return new_data(mapping_symbol,
+   * new_list(ret)); end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_env2val, 1);
   lc_setupvalue(L, (lc4 + lc_nextra), 0, 12);
@@ -17487,13 +17320,8 @@ static inline int lcf_main(lua_State *L) {
    *     local error_v = new_error(system_symbol,
    * new_list(function_builtin_use_systemName,
    * new_list(evaluate_function_builtin_systemName, new_list(env2val(env),
-   * x))));
-   *     if construction_p(x) then
-   *         local xs = {};
-   *         local rest = x;
-   *         while not null_p(rest) do
-   *             if any_delay_just_p(rest) then
-   *                 return evaluate(env, x);
+   * x)))); if construction_p(x) then local xs = {}; local rest = x; while not
+   * null_p(rest) do if any_delay_just_p(rest) then return evaluate(env, x);
    *             elseif construction_p(rest) then
    *                 __TS__ArrayPush(xs, construction_head(rest));
    *                 rest = force1(construction_tail(rest));
@@ -17558,21 +17386,9 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             return apply(f_x, args);
    *         elseif jsbool_equal_p(xs[0 + 1], function_builtin_use_systemName)
-   * then
-   *             if (#xs) == 1 then
-   *                 return error_v;
-   *             end
-   *             local f = xs[1 + 1];
-   *             local args = {};
-   *             do
-   *                 local i = 2;
-   *                 while i < (#xs) do
-   *                     args[(i - 2) + 1] = evaluate(env, xs[i + 1]);
-   *                     i = i + 1;
-   *                 end
-   *             end
-   *             return builtin_func_apply(f, args);
-   *         else
+   * then if (#xs) == 1 then return error_v; end local f = xs[1 + 1]; local args
+   * = {}; do local i = 2; while i < (#xs) do args[(i - 2) + 1] = evaluate(env,
+   * xs[i + 1]); i = i + 1; end end return builtin_func_apply(f, args); else
    *             local f = evaluate(env, xs[0 + 1]);
    *             local args = {};
    *             do
@@ -17612,10 +17428,7 @@ static inline int lcf_main(lua_State *L) {
    *         return new_error(system_symbol,
    * new_list(function_builtin_use_systemName,
    * new_list(apply_function_builtin_systemName, new_list(f,
-   * jsArray_to_list(xs)))));
-   *     end;
-   *     f = force1(f);
-   *     if any_delay_just_p(f) then
+   * jsArray_to_list(xs))))); end; f = force1(f); if any_delay_just_p(f) then
    *         return apply(f, xs);
    *     end
    *     if not data_p(f) then
@@ -17623,38 +17436,17 @@ static inline int lcf_main(lua_State *L) {
    *     end
    *     local f_type = force_all(data_name(f));
    *     if not (symbol_p(f_type) and symbol_equal_p(f_type, function_symbol))
-   * then
-   *         return make_error_v();
-   *     end
-   *     local f_list = force_all(data_list(f));
-   *     if not construction_p(f_list) then
-   *         return make_error_v();
-   *     end
-   *     local args_pat = force_all_rec(construction_head(f_list));
-   *     local f_list_cdr = force_all(construction_tail(f_list));
-   *     if not (construction_p(f_list_cdr) and
-   * null_p(force_all(construction_tail(f_list_cdr)))) then
-   *         return make_error_v();
-   *     end
-   *     local f_code = construction_head(f_list_cdr);
-   *     local env = env_null_v;
-   *     local xs_i = 0;
-   *     while not null_p(args_pat) do
-   *         if name_p(args_pat) then
-   *             local x = null_v;
-   *             do
-   *                 local i = (#xs) - 1;
-   *                 while i >= xs_i do
-   *                     x = new_construction(xs[i + 1], x);
-   *                     i = i - 1;
-   *                 end
-   *             end
-   *             env = env_set(env, args_pat, x);
-   *             xs_i = #xs;
-   *             args_pat = null_v;
-   *         elseif construction_p(args_pat) then
-   *             if xs_i < (#xs) then
-   *                 local x = xs[xs_i + 1];
+   * then return make_error_v(); end local f_list = force_all(data_list(f)); if
+   * not construction_p(f_list) then return make_error_v(); end local args_pat =
+   * force_all_rec(construction_head(f_list)); local f_list_cdr =
+   * force_all(construction_tail(f_list)); if not (construction_p(f_list_cdr)
+   * and null_p(force_all(construction_tail(f_list_cdr)))) then return
+   * make_error_v(); end local f_code = construction_head(f_list_cdr); local env
+   * = env_null_v; local xs_i = 0; while not null_p(args_pat) do if
+   * name_p(args_pat) then local x = null_v; do local i = (#xs) - 1; while i >=
+   * xs_i do x = new_construction(xs[i + 1], x); i = i - 1; end end env =
+   * env_set(env, args_pat, x); xs_i = #xs; args_pat = null_v; elseif
+   * construction_p(args_pat) then if xs_i < (#xs) then local x = xs[xs_i + 1];
    *                 xs_i = xs_i + 1;
    *                 env = env_set(env, construction_head(args_pat), x);
    *                 args_pat = construction_tail(args_pat);
@@ -17678,15 +17470,10 @@ static inline int lcf_main(lua_State *L) {
   /* real_builtin_func_apply = function(f, xs)
    *     local error_v = new_error(system_symbol,
    * new_list(function_builtin_use_systemName, new_list(f,
-   * jsArray_to_list(xs))));
-   *     do
-   *         local i = 0;
-   *         while i < (#real_builtin_func_apply_s) do
-   *             if jsbool_equal_p(f, real_builtin_func_apply_s[i + 1][0 + 1])
-   * then
-   *                 local actually_length = real_builtin_func_apply_s[i + 1][1
-   * + 1];
-   *                 if (#xs) ~= actually_length then
+   * jsArray_to_list(xs)))); do local i = 0; while i <
+   * (#real_builtin_func_apply_s) do if jsbool_equal_p(f,
+   * real_builtin_func_apply_s[i + 1][0 + 1]) then local actually_length =
+   * real_builtin_func_apply_s[i + 1][1 + 1]; if (#xs) ~= actually_length then
    *                     return error_v;
    *                 end
    *                 local f = real_builtin_func_apply_s[i + 1][2 + 1];
@@ -17712,14 +17499,9 @@ static inline int lcf_main(lua_State *L) {
   /* real_builtin_form_apply = function(env, f, xs)
    *     local error_v = new_error(system_symbol,
    * new_list(form_builtin_use_systemName, new_list(env2val(env), f,
-   * jsArray_to_list(xs))));
-   *     if jsbool_equal_p(f, quote_form_builtin_systemName) then
-   *         if (#xs) ~= 1 then
-   *             return error_v;
-   *         end
-   *         return xs[0 + 1];
-   *     elseif jsbool_equal_p(f, lambda_form_builtin_systemName) then
-   *         if (#xs) ~= 2 then
+   * jsArray_to_list(xs)))); if jsbool_equal_p(f, quote_form_builtin_systemName)
+   * then if (#xs) ~= 1 then return error_v; end return xs[0 + 1]; elseif
+   * jsbool_equal_p(f, lambda_form_builtin_systemName) then if (#xs) ~= 2 then
    *             return error_v;
    *         end
    *         return new_lambda(env, xs[0 + 1], xs[1 + 1], error_v);
@@ -17740,17 +17522,14 @@ static inline int lcf_main(lua_State *L) {
    *         if error_v == false then
    *             return new_error(system_symbol,
    * new_list(form_builtin_use_systemName, new_list(env2val(env),
-   * lambda_form_builtin_systemName, jsArray_to_list({args_pat, body}))));
-   *         else
+   * lambda_form_builtin_systemName, jsArray_to_list({args_pat, body})))); else
    *             return error_v;
    *         end
    *     end;
    *     local make_quote;
    *     make_quote = function(x)
    *         return new_list(form_builtin_use_systemName,
-   * quote_form_builtin_systemName, x);
-   *     end;
-   *     args_pat = force_all_rec(args_pat);
+   * quote_form_builtin_systemName, x); end; args_pat = force_all_rec(args_pat);
    *     local args_pat_vars = {};
    *     local args_pat_is_dot = false;
    *     local args_pat_iter = args_pat;
@@ -17761,27 +17540,12 @@ static inline int lcf_main(lua_State *L) {
    *             args_pat_iter = null_v;
    *         elseif construction_p(args_pat_iter) then
    *             __TS__ArrayPush(args_pat_vars,
-   * construction_head(args_pat_iter));
-   *             args_pat_iter = construction_tail(args_pat_iter);
-   *         else
-   *             return make_error_v();
-   *         end
-   *     end
-   *     local args_pat_vars_val = args_pat;
-   *     if args_pat_is_dot then
-   *         args_pat_vars_val = jsArray_to_list(args_pat_vars);
-   *     end
-   *     local env_vars = {};
-   *     env_foreach(env, function(k, v)
-   *         do
-   *             local i = 0;
-   *             while i < (#args_pat_vars) do
-   *                 if jsbool_equal_p(args_pat_vars[i + 1], k) then
-   *                     return;
-   *                 end
-   *                 i = i + 1;
-   *             end
-   *         end
+   * construction_head(args_pat_iter)); args_pat_iter =
+   * construction_tail(args_pat_iter); else return make_error_v(); end end local
+   * args_pat_vars_val = args_pat; if args_pat_is_dot then args_pat_vars_val =
+   * jsArray_to_list(args_pat_vars); end local env_vars = {}; env_foreach(env,
+   * function(k, v) do local i = 0; while i < (#args_pat_vars) do if
+   * jsbool_equal_p(args_pat_vars[i + 1], k) then return; end i = i + 1; end end
    *         __TS__ArrayPush(env_vars, k);
    *     end);
    *     local new_args_pat = args_pat_vars_val;
@@ -17797,14 +17561,10 @@ static inline int lcf_main(lua_State *L) {
    *         local i = (#env_vars) - 1;
    *         while i >= 0 do
    *             new_args = new_construction(make_quote(must_env_get(env,
-   * env_vars[i + 1])), new_args);
-   *             i = i - 1;
-   *         end
-   *     end
-   *     return new_data(function_symbol, new_list(args_pat,
+   * env_vars[i + 1])), new_args); i = i - 1; end end return
+   * new_data(function_symbol, new_list(args_pat,
    * new_construction(make_quote(new_data(function_symbol,
-   * new_list(new_args_pat, body))), new_args)));
-   * end */
+   * new_list(new_args_pat, body))), new_args))); end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_new_lambda, 1);
   lc_setupvalue(L, (lc4 + lc_nextra), 0, 4);
@@ -17822,29 +17582,11 @@ static inline int lcf_main(lua_State *L) {
    *     local end_2;
    *     end_2 = function(x, y, f1, f2)
    *         if jsbool_equal_p(f1(x), f1(y)) and jsbool_equal_p(f2(x), f2(y))
-   * then
-   *             lang_set_do(x, y);
-   *             return true;
-   *         else
-   *             return false;
-   *         end
-   *     end;
-   *     if null_p(x) then
-   *         if not null_p(y) then
-   *             return false;
-   *         end
-   *         lang_set_do(x, null_v);
-   *         lang_set_do(y, null_v);
-   *         return true;
-   *     elseif symbol_p(x) then
-   *         if not symbol_p(y) then
-   *             return false;
-   *         end
-   *         return symbol_equal_p(x, y);
-   *     elseif construction_p(x) then
-   *         if not construction_p(y) then
-   *             return false;
-   *         end
+   * then lang_set_do(x, y); return true; else return false; end end; if
+   * null_p(x) then if not null_p(y) then return false; end lang_set_do(x,
+   * null_v); lang_set_do(y, null_v); return true; elseif symbol_p(x) then if
+   * not symbol_p(y) then return false; end return symbol_equal_p(x, y); elseif
+   * construction_p(x) then if not construction_p(y) then return false; end
    *         return end_2(x, y, construction_head, construction_tail);
    *     elseif error_p(x) then
    *         if not error_p(y) then
@@ -17886,27 +17628,20 @@ static inline int lcf_main(lua_State *L) {
    *         return temp;
    *     elseif data_p(x) then
    *         return "#" .. simple_print(new_construction(data_name(x),
-   * data_list(x)));
-   *     elseif error_p(x) then
-   *         return "!" .. simple_print(new_construction(error_name(x),
-   * error_list(x)));
-   *     elseif symbol_p(x) then
-   *         return un_symbol(x);
-   *     elseif delay_evaluate_p(x) then
+   * data_list(x))); elseif error_p(x) then return "!" ..
+   * simple_print(new_construction(error_name(x), error_list(x))); elseif
+   * symbol_p(x) then return un_symbol(x); elseif delay_evaluate_p(x) then
    *         return ((("$(" .. simple_print(env2val(delay_evaluate_env(x)))) ..
-   * " ") .. simple_print(delay_evaluate_x(x))) .. ")";
-   *     elseif delay_builtin_func_p(x) then
-   *         return ((("%(" .. simple_print(delay_builtin_func_f(x))) .. " ") ..
-   * simple_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")";
-   *     elseif delay_builtin_form_p(x) then
-   *         return ((((("@(" ..
+   * " ") .. simple_print(delay_evaluate_x(x))) .. ")"; elseif
+   * delay_builtin_func_p(x) then return ((("%(" ..
+   * simple_print(delay_builtin_func_f(x))) .. " ") ..
+   * simple_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"; elseif
+   * delay_builtin_form_p(x) then return ((((("@(" ..
    * simple_print(env2val(delay_builtin_form_env(x)))) .. " ") ..
    * simple_print(delay_builtin_form_f(x))) .. " ") ..
-   * simple_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")";
-   *     elseif delay_apply_p(x) then
-   *         return ((("^(" .. simple_print(delay_apply_f(x))) .. " ") ..
-   * simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")";
-   *     end
+   * simple_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"; elseif
+   * delay_apply_p(x) then return ((("^(" .. simple_print(delay_apply_f(x))) ..
+   * " ") .. simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"; end
    *     return ERROR();
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
@@ -18618,8 +18353,7 @@ static inline int lcf_main(lua_State *L) {
   /* make_builtin_f_p_sym_f = function(t_sym)
    *     return systemName_make(new_list(typeAnnotation_symbol, function_symbol,
    * new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym,
-   * something_symbol))));
-   * end */
+   * something_symbol)))); end */
   lua_pushvalue(L, (lc458 + lc_nextra));
   lua_pushcclosure(L, lcf1_make_builtin_f_p_sym_f, 1);
   lua_replace(L, (35 + lc_nextra));
@@ -19383,23 +19117,12 @@ static inline int lcf_main(lua_State *L) {
    * construction_p, construction_head),
    * make_builtin_get_func(construction_tail_function_builtin_systemName,
    * construction_p, construction_tail), {equal_p_function_builtin_systemName,
-   * 2, function(x, y, error_v)
-   *     if x == y then
-   *         return true_v;
-   *     end
-   *     x = force1(x);
+   * 2, function(x, y, error_v) if x == y then return true_v; end x = force1(x);
    *     y = force1(y);
    *     if any_delay_just_p(x) or any_delay_just_p(y) then
    *         return builtin_func_apply(equal_p_function_builtin_systemName, {x,
-   * y});
-   *     end
-   *     if x == y then
-   *         return true_v;
-   *     end
-   *     local H_if;
-   *     H_if = function(b, x, y)
-   *         return builtin_func_apply(if_function_builtin_systemName, {b, x,
-   * y});
+   * y}); end if x == y then return true_v; end local H_if; H_if = function(b,
+   * x, y) return builtin_func_apply(if_function_builtin_systemName, {b, x, y});
    *     end;
    *     local H_and;
    *     H_and = function(x, y)
@@ -19411,12 +19134,7 @@ static inline int lcf_main(lua_State *L) {
    *         return
    * H_and(builtin_func_apply(equal_p_function_builtin_systemName, {f1(x),
    * f1(y)}), builtin_func_apply(equal_p_function_builtin_systemName, {f2(x),
-   * f2(y)}));
-   *     end;
-   *     if null_p(x) then
-   *         if not null_p(x) then
-   *             return false_v;
-   *         end
+   * f2(y)})); end; if null_p(x) then if not null_p(x) then return false_v; end
    *         return true_v;
    *     elseif symbol_p(x) then
    *         if not symbol_p(y) then
@@ -19458,12 +19176,9 @@ static inline int lcf_main(lua_State *L) {
    *     end
    *     return evaluate(maybeenv, x);
    * end}, make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
-   * {list_chooseOne_function_builtin_systemName, 1, function(xs, error_v)
-   *     xs = force1(xs);
-   *     if any_delay_just_p(xs) then
-   *         return
-   * builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs});
-   *     end
+   * {list_chooseOne_function_builtin_systemName, 1, function(xs, error_v) xs =
+   * force1(xs); if any_delay_just_p(xs) then return
+   * builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs}); end
    *     if not construction_p(xs) then
    *         return error_v;
    *     end
@@ -19472,23 +19187,10 @@ static inline int lcf_main(lua_State *L) {
    *     b = force1(b);
    *     if any_delay_just_p(b) then
    *         return builtin_func_apply(if_function_builtin_systemName, {b, x,
-   * y});
-   *     end
-   *     if not data_p(b) then
-   *         return error_v;
-   *     end
-   *     local nam = force_all(data_name(b));
-   *     if not symbol_p(nam) then
-   *         return error_v;
-   *     end
-   *     if symbol_equal_p(nam, true_symbol) then
-   *         return x;
-   *     end
-   *     if symbol_equal_p(nam, false_symbol) then
-   *         return y;
-   *     end
-   *     return error_v;
-   * end}} */
+   * y}); end if not data_p(b) then return error_v; end local nam =
+   * force_all(data_name(b)); if not symbol_p(nam) then return error_v; end if
+   * symbol_equal_p(nam, true_symbol) then return x; end if symbol_equal_p(nam,
+   * false_symbol) then return y; end return error_v; end}} */
   lua_createtable(L, 19, 0);
   lua_pushvalue(L, (45 + lc_nextra));
   lc_getupvalue(L, (lc499 + lc_nextra), 17, 41);
@@ -19650,9 +19352,7 @@ static inline int lcf_main(lua_State *L) {
    *     local end_2;
    *     end_2 = function(x, y, f1, f2)
    *         if jsbool_no_force_equal_p(f1(x), f1(y)) and
-   * jsbool_no_force_equal_p(f2(x), f2(y)) then
-   *             lang_set_do(x, y);
-   *             return true;
+   * jsbool_no_force_equal_p(f2(x), f2(y)) then lang_set_do(x, y); return true;
    *         else
    *             return false;
    *         end
@@ -19737,16 +19437,9 @@ static inline int lcf_main(lua_State *L) {
   /* simple_parse = function(x)
    *     local state_const, state, eof, get, put, parse_error, a_space_p, space,
    * symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin,
-   * readapply, a_symbol_p, val;
-   *     eof = function()
-   *         return (#state_const) == state;
-   *     end;
-   *     get = function()
-   *         ASSERT(not eof());
-   *         local ret = state_const:sub(state + 1, state + 1);
-   *         state = state + 1;
-   *         return ret;
-   *     end;
+   * readapply, a_symbol_p, val; eof = function() return (#state_const) ==
+   * state; end; get = function() ASSERT(not eof()); local ret =
+   * state_const:sub(state + 1, state + 1); state = state + 1; return ret; end;
    *     put = function(x)
    *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x);
    *         state = state - 1;
@@ -19905,37 +19598,17 @@ static inline int lcf_main(lua_State *L) {
    *             return false;
    *         end
    *         local not_xs = {"(", ")", "!", "#", ".", "$", "%", "^", "@", "~",
-   * "/", "-", ">", "_", ":", "?", "[", "]", "&"};
-   *         do
-   *             local i = 0;
-   *             while i < (#not_xs) do
-   *                 if x == not_xs[i + 1] then
-   *                     return false;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * "/", "-", ">", "_", ":", "?", "[", "]", "&"}; do local i = 0; while i <
+   * (#not_xs) do if x == not_xs[i + 1] then return false; end i = i + 1; end
    *         end
    *         return true;
    *     end;
    *     val = function()
    *         space();
    *         local fs = {list, symbol, data, readerror, readeval, readfuncapply,
-   * readformbuiltin, readapply};
-   *         do
-   *             local i = 0;
-   *             while i < (#fs) do
-   *                 local x = fs[i + 1]();
-   *                 if x ~= false then
-   *                     return x;
-   *                 end
-   *                 i = i + 1;
-   *             end
-   *         end
-   *         return parse_error();
-   *     end;
-   *     state_const = x;
-   *     state = 0;
-   *     local make_read_two;
+   * readformbuiltin, readapply}; do local i = 0; while i < (#fs) do local x =
+   * fs[i + 1](); if x ~= false then return x; end i = i + 1; end end return
+   * parse_error(); end; state_const = x; state = 0; local make_read_two;
    *     make_read_two = function(prefix, k)
    *         return function()
    *             if eof() then
@@ -19955,24 +19628,10 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end;
-   *     end;
-   *     local make_read_three;
-   *     make_read_three = function(prefix, k)
-   *         return function()
-   *             if eof() then
-   *                 return false;
-   *             end
-   *             local c = get();
-   *             if c ~= prefix then
-   *                 put(c);
-   *                 return false;
-   *             end
-   *             local xs = list();
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end; end; local make_read_three; make_read_three =
+   * function(prefix, k) return function() if eof() then return false; end local
+   * c = get(); if c ~= prefix then put(c); return false; end local xs = list();
    *             if xs == false then
    *                 return parse_error();
    *             end
@@ -19985,26 +19644,12 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end;
-   *     end;
-   *     readeval = make_read_two("$", function(e, x)
-   *         local env = val2env(e);
-   *         if env == false then
-   *             return parse_error();
-   *         end
-   *         return evaluate(env, x);
-   *     end);
-   *     readfuncapply = make_read_two("%", function(f, xs)
-   *         local jsxs = list_to_jsArray(xs, function(xs)
-   *             return xs;
-   *         end, function(xs, y)
-   *             return parse_error();
-   *         end);
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end; end; readeval =
+   * make_read_two("$", function(e, x) local env = val2env(e); if env == false
+   * then return parse_error(); end return evaluate(env, x); end); readfuncapply
+   * = make_read_two("%", function(f, xs) local jsxs = list_to_jsArray(xs,
+   * function(xs) return xs; end, function(xs, y) return parse_error(); end);
    *         return builtin_func_apply(f, jsxs);
    *     end);
    *     readformbuiltin = make_read_three("@", function(e, f, xs)
@@ -20049,16 +19694,9 @@ static inline int lcf_main(lua_State *L) {
    *     local state_const, state, eof, get, put, parse_error, a_space_p, space,
    * symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin,
    * readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
-   * readsysname_no_pack, readsysname;
-   *     eof = function()
-   *         return (#state_const) == state;
-   *     end;
-   *     get = function()
-   *         ASSERT(not eof());
-   *         local ret = state_const:sub(state + 1, state + 1);
-   *         state = state + 1;
-   *         return ret;
-   *     end;
+   * readsysname_no_pack, readsysname; eof = function() return (#state_const) ==
+   * state; end; get = function() ASSERT(not eof()); local ret =
+   * state_const:sub(state + 1, state + 1); state = state + 1; return ret; end;
    *     put = function(x)
    *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x);
    *         state = state - 1;
@@ -20217,31 +19855,16 @@ static inline int lcf_main(lua_State *L) {
    *             return false;
    *         end
    *         local not_xs = {"(", ")", "!", "#", ".", "$", "%", "^", "@", "~",
-   * "/", "-", ">", "_", ":", "?", "[", "]", "&"};
-   *         do
-   *             local i = 0;
-   *             while i < (#not_xs) do
-   *                 if x == not_xs[i + 1] then
-   *                     return false;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * "/", "-", ">", "_", ":", "?", "[", "]", "&"}; do local i = 0; while i <
+   * (#not_xs) do if x == not_xs[i + 1] then return false; end i = i + 1; end
    *         end
    *         return true;
    *     end;
    *     val = function()
    *         space();
    *         local fs = {list, readsysname, data, readerror, readeval,
-   * readfuncapply, readformbuiltin, readapply};
-   *         do
-   *             local i = 0;
-   *             while i < (#fs) do
-   *                 local x = fs[i + 1]();
-   *                 if x ~= false then
-   *                     return x;
-   *                 end
-   *                 i = i + 1;
-   *             end
+   * readfuncapply, readformbuiltin, readapply}; do local i = 0; while i < (#fs)
+   * do local x = fs[i + 1](); if x ~= false then return x; end i = i + 1; end
    *         end
    *         return parse_error();
    *     end;
@@ -20274,13 +19897,8 @@ static inline int lcf_main(lua_State *L) {
    *             local fs = (strict and {list, symbol,
    * readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply,
    * readformbuiltin, readapply}) or {list, readsysname_no_pack, data,
-   * readerror, readeval, readfuncapply, readformbuiltin, readapply};
-   *             do
-   *                 local i = 0;
-   *                 while i < (#fs) do
-   *                     local x = fs[i + 1]();
-   *                     if x ~= false then
-   *                         return x;
+   * readerror, readeval, readfuncapply, readformbuiltin, readapply}; do local i
+   * = 0; while i < (#fs) do local x = fs[i + 1](); if x ~= false then return x;
    *                     end
    *                     i = i + 1;
    *                 end
@@ -20295,24 +19913,16 @@ static inline int lcf_main(lua_State *L) {
    *             if head == "." then
    *                 local y = readsysname_no_pack_inner_must();
    *                 return new_list(typeAnnotation_symbol,
-   * new_list(function_symbol, new_list(x), something_symbol), y);
-   *             elseif head == ":" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol, y, x);
-   *             elseif head == "~" then
-   *                 return new_list(isOrNot_symbol, x);
-   *             elseif head == "@" then
-   *                 local y = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol,
+   * new_list(function_symbol, new_list(x), something_symbol), y); elseif head
+   * == ":" then local y = readsysname_no_pack_inner_must(); return
+   * new_list(typeAnnotation_symbol, y, x); elseif head == "~" then return
+   * new_list(isOrNot_symbol, x); elseif head == "@" then local y =
+   * readsysname_no_pack_inner_must(); return new_list(typeAnnotation_symbol,
    * new_list(function_symbol, new_construction(x, something_symbol),
-   * something_symbol), y);
-   *             elseif head == "?" then
-   *                 return new_list(typeAnnotation_symbol, function_symbol,
-   * new_list(isOrNot_symbol, x));
-   *             elseif head == "/" then
-   *                 local ys = {x};
-   *                 while true do
-   *                     local y = readsysname_no_pack_inner_must(true);
+   * something_symbol), y); elseif head == "?" then return
+   * new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol,
+   * x)); elseif head == "/" then local ys = {x}; while true do local y =
+   * readsysname_no_pack_inner_must(true);
    *                     __TS__ArrayPush(ys, y);
    *                     if eof() then
    *                         break;
@@ -20353,12 +19963,9 @@ static inline int lcf_main(lua_State *L) {
    *                 local x = readsysname_no_pack_inner_must();
    *                 return new_list(typeAnnotation_symbol,
    * new_list(form_symbol, new_list(function_symbol, something_symbol, x)),
-   * theThing_symbol);
-   *             elseif c0 == ">" then
-   *                 local x = readsysname_no_pack_inner_must();
-   *                 return new_list(typeAnnotation_symbol,
-   * new_list(function_symbol, something_symbol, x), theThing_symbol);
-   *             else
+   * theThing_symbol); elseif c0 == ">" then local x =
+   * readsysname_no_pack_inner_must(); return new_list(typeAnnotation_symbol,
+   * new_list(function_symbol, something_symbol, x), theThing_symbol); else
    *                 put(c0);
    *             end
    *             local x = readsysname_no_pack_inner_must();
@@ -20416,24 +20023,10 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             local x = construction_tail(xs);
    *             if not (construction_p(x) and null_p(construction_tail(x)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x));
-   *         end;
-   *     end;
-   *     local make_read_three;
-   *     make_read_three = function(prefix, k)
-   *         return function()
-   *             if eof() then
-   *                 return false;
-   *             end
-   *             local c = get();
-   *             if c ~= prefix then
-   *                 put(c);
-   *                 return false;
-   *             end
-   *             local xs = list();
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x)); end; end; local make_read_three; make_read_three =
+   * function(prefix, k) return function() if eof() then return false; end local
+   * c = get(); if c ~= prefix then put(c); return false; end local xs = list();
    *             if xs == false then
    *                 return parse_error();
    *             end
@@ -20446,26 +20039,12 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             local x_d = construction_tail(x);
    *             if not (construction_p(x_d) and null_p(construction_tail(x_d)))
-   * then
-   *                 return parse_error();
-   *             end
-   *             return k(construction_head(xs), construction_head(x),
-   * construction_head(x_d));
-   *         end;
-   *     end;
-   *     readeval = make_read_two("$", function(e, x)
-   *         local env = val2env(e);
-   *         if env == false then
-   *             return parse_error();
-   *         end
-   *         return evaluate(env, x);
-   *     end);
-   *     readfuncapply = make_read_two("%", function(f, xs)
-   *         local jsxs = list_to_jsArray(xs, function(xs)
-   *             return xs;
-   *         end, function(xs, y)
-   *             return parse_error();
-   *         end);
+   * then return parse_error(); end return k(construction_head(xs),
+   * construction_head(x), construction_head(x_d)); end; end; readeval =
+   * make_read_two("$", function(e, x) local env = val2env(e); if env == false
+   * then return parse_error(); end return evaluate(env, x); end); readfuncapply
+   * = make_read_two("%", function(f, xs) local jsxs = list_to_jsArray(xs,
+   * function(xs) return xs; end, function(xs, y) return parse_error(); end);
    *         return builtin_func_apply(f, jsxs);
    *     end);
    *     readformbuiltin = make_read_three("@", function(e, f, xs)
@@ -20527,94 +20106,58 @@ static inline int lcf_main(lua_State *L) {
    *         end;
    *         local maybe_xs = maybe_list_to_jsArray(x);
    *         if ((maybe_xs ~= false) and ((#maybe_xs) == 3)) and
-   * jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
-   *             local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1]);
-   *             if ((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 3)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], function_symbol) then
-   *                 local var_2_1 = maybe_lst_2[1 + 1];
-   *                 local maybe_lst_3 = maybe_list_to_jsArray(var_2_1);
-   *                 if ((maybe_lst_3 ~= false) and ((#maybe_lst_3) == 1)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-   *                     return inner_bracket((print_sys_name(maybe_lst_3[0 +
-   * 1], "inner") .. ".") .. print_sys_name(maybe_xs[2 + 1], "inner"));
-   *                 elseif (construction_p(var_2_1) and
+   * jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then local
+   * maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if ((maybe_lst_2 ~=
+   * false) and ((#maybe_lst_2) == 3)) and jsbool_no_force_equal_p(maybe_lst_2[0
+   * + 1], function_symbol) then local var_2_1 = maybe_lst_2[1 + 1]; local
+   * maybe_lst_3 = maybe_list_to_jsArray(var_2_1); if ((maybe_lst_3 ~= false)
+   * and ((#maybe_lst_3) == 1)) and jsbool_no_force_equal_p(maybe_lst_2[2 + 1],
+   * something_symbol) then return inner_bracket((print_sys_name(maybe_lst_3[0 +
+   * 1], "inner") .. ".") .. print_sys_name(maybe_xs[2 + 1], "inner")); elseif
+   * (construction_p(var_2_1) and
    * jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-   *                     return
+   * jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then return
    * inner_bracket((print_sys_name(construction_head(var_2_1), "inner") .. "@")
-   * .. print_sys_name(maybe_xs[2 + 1], "inner"));
-   *                 elseif jsbool_no_force_equal_p(var_2_1, something_symbol)
-   * and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then
-   *                     return inner_bracket(":>" ..
-   * print_sys_name(maybe_lst_2[2 + 1], "inner"));
-   *                 end
-   *             end
+   * .. print_sys_name(maybe_xs[2 + 1], "inner")); elseif
+   * jsbool_no_force_equal_p(var_2_1, something_symbol) and
+   * jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then return
+   * inner_bracket(":>" .. print_sys_name(maybe_lst_2[2 + 1], "inner")); end end
    *             local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2 + 1]);
    *             if ((jsbool_no_force_equal_p(maybe_xs[1 + 1], function_symbol)
    * and (maybe_lst_44 ~= false)) and ((#maybe_lst_44) == 2)) and
-   * jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then
-   *                 return inner_bracket(print_sys_name(maybe_lst_44[1 + 1],
-   * "inner") .. "?");
-   *             end
-   *             if (((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 2)) and
+   * jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then return
+   * inner_bracket(print_sys_name(maybe_lst_44[1 + 1], "inner") .. "?"); end if
+   * (((maybe_lst_2 ~= false) and ((#maybe_lst_2) == 2)) and
    * jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then
-   *                 local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 +
-   * 1]);
-   *                 if (((maybe_lst_88 ~= false) and ((#maybe_lst_88) == 3))
-   * and jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol)) and
-   * jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then
-   *                     return inner_bracket(":&>" ..
-   * print_sys_name(maybe_lst_88[2 + 1], "inner"));
-   *                 end
+   * jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then local
+   * maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 + 1]); if
+   * (((maybe_lst_88 ~= false) and ((#maybe_lst_88) == 3)) and
+   * jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol)) and
+   * jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then return
+   * inner_bracket(":&>" .. print_sys_name(maybe_lst_88[2 + 1], "inner")); end
    *             end
    *             local hd = (jsbool_no_force_equal_p(maybe_xs[2 + 1],
    * something_symbol) and "_") or ((jsbool_no_force_equal_p(maybe_xs[2 + 1],
    * theThing_symbol) and "") or print_sys_name(maybe_xs[2 + 1], "inner"));
    *             return inner_bracket((hd .. ":") .. print_sys_name(maybe_xs[1 +
-   * 1], "inner"));
-   *         elseif (maybe_xs ~= false) and ((#maybe_xs) == 2) then
-   *             if jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then
-   *                 local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 +
-   * 1]);
-   *                 if ((maybe_lst_288 ~= false) and ((#maybe_lst_288) == 2))
-   * and jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then
-   *                     return inner_bracket("&+" ..
-   * print_sys_name(maybe_lst_288[1 + 1], "inner"));
-   *                 end
+   * 1], "inner")); elseif (maybe_xs ~= false) and ((#maybe_xs) == 2) then if
+   * jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then local
+   * maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if ((maybe_lst_288
+   * ~= false) and ((#maybe_lst_288) == 2)) and
+   * jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then return
+   * inner_bracket("&+" .. print_sys_name(maybe_lst_288[1 + 1], "inner")); end
    *                 return inner_bracket("&" .. print_sys_name(maybe_xs[1 + 1],
-   * "inner"));
-   *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol)
-   * then
-   *                 return inner_bracket(print_sys_name(maybe_xs[1 + 1],
-   * "inner") .. "~");
+   * "inner")); elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol)
+   * then return inner_bracket(print_sys_name(maybe_xs[1 + 1], "inner") .. "~");
    *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol)
-   * then
-   *                 return inner_bracket("+" .. print_sys_name(maybe_xs[1 + 1],
-   * "inner"));
+   * then return inner_bracket("+" .. print_sys_name(maybe_xs[1 + 1], "inner"));
    *             elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol)
-   * then
-   *                 local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 +
-   * 1]);
-   *                 if (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) > 1)
-   * then
-   *                     local tmp = print_sys_name(maybe_lst_8934[0 + 1],
-   * "inner");
-   *                     do
-   *                         local i = 1;
-   *                         while i < (#maybe_lst_8934) do
-   *                             tmp = tmp .. ("/" ..
-   * print_sys_name(maybe_lst_8934[i + 1], "inner"));
-   *                             i = i + 1;
-   *                         end
-   *                     end
-   *                     return inner_bracket(tmp);
-   *                 end
-   *             end
-   *         end
-   *         if where == "inner" then
-   *             return simple_print(x);
-   *         elseif where == "top" then
+   * then local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1]); if
+   * (maybe_lst_8934 ~= false) and ((#maybe_lst_8934) > 1) then local tmp =
+   * print_sys_name(maybe_lst_8934[0 + 1], "inner"); do local i = 1; while i <
+   * (#maybe_lst_8934) do tmp = tmp .. ("/" .. print_sys_name(maybe_lst_8934[i +
+   * 1], "inner")); i = i + 1; end end return inner_bracket(tmp); end end end if
+   * where == "inner" then return simple_print(x); elseif where == "top" then
    *             return simple_print(systemName_make(x));
    *         end
    *         return ERROR();
@@ -20644,30 +20187,24 @@ static inline int lcf_main(lua_State *L) {
    *         local maybe_xs = maybe_list_to_jsArray(list);
    *         if (((maybe_xs ~= false) and ((#maybe_xs) == 2)) and
    * jsbool_no_force_equal_p(name, name_symbol)) and
-   * jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
-   *             return print_sys_name(maybe_xs[1 + 1], "top");
-   *         end
-   *         return "#" .. complex_print(new_construction(name, list));
-   *     elseif error_p(x) then
-   *         return "!" .. complex_print(new_construction(error_name(x),
-   * error_list(x)));
+   * jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then return
+   * print_sys_name(maybe_xs[1 + 1], "top"); end return "#" ..
+   * complex_print(new_construction(name, list)); elseif error_p(x) then return
+   * "!" .. complex_print(new_construction(error_name(x), error_list(x)));
    *     elseif symbol_p(x) then
    *         return un_symbol(x);
    *     elseif delay_evaluate_p(x) then
    *         return ((("$(" .. complex_print(env2val(delay_evaluate_env(x)))) ..
-   * " ") .. complex_print(delay_evaluate_x(x))) .. ")";
-   *     elseif delay_builtin_func_p(x) then
-   *         return ((("%(" .. complex_print(delay_builtin_func_f(x))) .. " ")
-   * .. complex_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")";
-   *     elseif delay_builtin_form_p(x) then
-   *         return ((((("@(" ..
+   * " ") .. complex_print(delay_evaluate_x(x))) .. ")"; elseif
+   * delay_builtin_func_p(x) then return ((("%(" ..
+   * complex_print(delay_builtin_func_f(x))) .. " ") ..
+   * complex_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"; elseif
+   * delay_builtin_form_p(x) then return ((((("@(" ..
    * complex_print(env2val(delay_builtin_form_env(x)))) .. " ") ..
    * complex_print(delay_builtin_form_f(x))) .. " ") ..
-   * complex_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")";
-   *     elseif delay_apply_p(x) then
-   *         return ((("^(" .. complex_print(delay_apply_f(x))) .. " ") ..
-   * complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")";
-   *     end
+   * complex_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"; elseif
+   * delay_apply_p(x) then return ((("^(" .. complex_print(delay_apply_f(x))) ..
+   * " ") .. complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"; end
    *     return ERROR();
    * end */
   lua_pushvalue(L, (lc1128 + lc_nextra));
