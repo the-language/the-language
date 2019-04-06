@@ -8,8 +8,8 @@ cd arch
 ### 編譯依賴
 
 * GNU coreutils, BASH, GNU tar, ...
-* NodeJS NPM | `sudo apt install nodejs` `sudo pacman -S nodejs` https://nodejs.org/
-* yarn | `npm i -g yarn`
+* NodeJS NPM | `sudo apt install nodejs npm` `sudo pacman -S nodejs npm` https://nodejs.org/
+* yarn | `npm i -g yarn` `sudo pacman -S yarn`
 * racket | `sudo apt install racket` https://www.racket-lang.org/
 * python | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python2-pip python python-pip`
 * git | `sudo apt install git` `sudo pacman -S git`
