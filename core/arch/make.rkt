@@ -142,7 +142,7 @@
                  "var exports={};"
                  #{cat ../ecmascript/lang.js}))
              |> id raw-js &>! lang.js
-             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python
+             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python2
              (define exports (ecmascript/exports.list-parse))
              (define exports-py (++
                  "exports = var.to_python().exports\n"
