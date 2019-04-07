@@ -14,7 +14,7 @@ cd arch
 * python | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python2-pip python python-pip` `sudo apk add python2 python3`
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git`
 * jre, jdk8 | `sudo pacman -S jdk8-openjdk` `sudo apk add openjdk8`
-* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang`
+* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make`
 * wget | `sudo apt install wget` `sudo pacman -S wget` `sudo apk add wget`
 * golang 1.10+ | `sudo pacman -S go` `sudo apk add go`
