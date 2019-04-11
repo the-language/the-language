@@ -9,7 +9,7 @@ var = Scope( JS_BUILTINS )
 set_global_object(var)
 
 # Code follows:
-var.registers(['Ka', 'cb', 'Gb', 'Ia', 'Aa', 'X', 'Ca', 'q', 'ra', 'fb', 'da', 'Xa', 'jb', 'S', 'ta', 'ea', 'O', 'Eb', 'l', 'Fa', 'Ga', '$a', 'pb', 'Qa', 'E', 'ob', 'H', 'Sa', 'va', 'sb', 'aa', 'xb', 'bb', 'La', 'kb', 'xa', 'C', 'ia', 'fa', 'P', 'oa', 'vb', 'ha', 'ba', 'J', 'qb', 'A', 'lb', 'Ba', 'Ja', 'Ea', 'zb', 'z', 'Wa', 'Ua', 'Bb', 'ya', 'ua', 'Cb', 'qa', 'Va', 'za', 'F', 'W', 'B', 'na', 'Ta', 'Ya', 'R', 'Fb', 'Za', 'L', 'Hb', 'Ma', 'Q', 'Pa', 'db', 'pa', 'U', 'tb', 'exports', 'ub', 'T', 'hb', 'Ra', 'K', 'ja', 'eb', 'Ab', 'sa', 'wb', 'Oa', 'ab', 'N', 'wa', 'yb', 'la', 'rb', 'Ib', 'gb', 'x', 'ka', 'mb', 'nb', 'Da'])
+var.registers(['wb', 'Ua', 'Cb', 'tb', 'ba', 'xa', 'F', 'ta', 'Va', 'O', 'Eb', 'aa', 'l', 'T', 'Ba', 'Fb', 'ab', 'db', 'H', 'vb', 'za', 'Q', 'rb', 'Da', 'Ab', 'la', 'S', 'va', 'ra', 'Pa', 'mb', 'ka', 'Ga', 'Ea', 'Wa', 'Oa', 'q', 'Ia', 'Qa', 'exports', 'Ja', 'Sa', 'fa', 'ia', 'yb', 'X', 'z', 'J', 'bb', 'ha', 'La', 'N', 'hb', 'zb', 'kb', 'Gb', 'ya', 'sb', 'Ra', 'ja', 'Ta', 'Bb', 'W', 'ob', 'Ib', 'ua', 'Ma', 'Fa', 'ea', 'Xa', 'E', 'qa', 'P', 'wa', 'sa', 'fb', 'da', 'qb', 'lb', 'K', 'ub', 'cb', 'Za', 'jb', 'oa', 'Ca', 'B', 'A', 'Aa', 'C', 'eb', 'x', 'Hb', 'gb', 'xb', 'Ya', 'na', 'nb', 'Ka', 'pa', '$a', 'L', 'R', 'U', 'pb'])
 @Js
 def PyJsHoisted_l_(this, arguments, var=var):
     var = Scope({'this':this, 'arguments':arguments}, var)
@@ -28,7 +28,7 @@ var.put('q', PyJsHoisted_q_)
 @Js
 def PyJsHoisted_aa_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(1.0), var.get('a'), var.get('b')])
 PyJsHoisted_aa_.func_name = 'aa'
 var.put('aa', PyJsHoisted_aa_)
@@ -63,7 +63,7 @@ var.put('A', PyJsHoisted_A_)
 @Js
 def PyJsHoisted_ea_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(3.0), var.get('a'), var.get('b')])
 PyJsHoisted_ea_.func_name = 'ea'
 var.put('ea', PyJsHoisted_ea_)
@@ -91,7 +91,7 @@ var.put('ha', PyJsHoisted_ha_)
 @Js
 def PyJsHoisted_ia_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(4.0), var.get('a'), var.get('b')])
 PyJsHoisted_ia_.func_name = 'ia'
 var.put('ia', PyJsHoisted_ia_)
@@ -119,21 +119,21 @@ var.put('ka', PyJsHoisted_ka_)
 @Js
 def PyJsHoisted_E_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     (PyJsStrictNeq(var.get('a'),var.get('b')) and PyJsComma(PyJsComma(PyJsComma(var.get('a').put('0', Js(5.0)),var.get('a').put('1', var.get('b'))),var.get('a').put('2', Js(1.0).neg())),var.get('a').put('3', Js(1.0).neg())))
 PyJsHoisted_E_.func_name = 'E'
 var.put('E', PyJsHoisted_E_)
 @Js
 def PyJsHoisted_la_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(7.0), var.get('a'), var.get('b')])
 PyJsHoisted_la_.func_name = 'la'
 var.put('la', PyJsHoisted_la_)
 @Js
 def PyJsHoisted_na_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     var.put('a', var.get('F')(var.get('a')))
     if var.get('B')(var.get('a')):
         var.put('b', var.get('a').get('1'))
@@ -164,7 +164,7 @@ var.put('Ma', PyJsHoisted_Ma_)
 @Js
 def PyJsHoisted_Oa_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return var.get('P')(var.get('O')(var.get('N'), var.get('O')(var.get('J'), var.get('O')(var.get('a')), var.get('L')), var.get('b')))
 PyJsHoisted_Oa_.func_name = 'Oa'
 var.put('Oa', PyJsHoisted_Oa_)
@@ -178,14 +178,14 @@ var.put('Pa', PyJsHoisted_Pa_)
 @Js
 def PyJsHoisted_qb_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return (Js(0.0).neg() if PyJsStrictEq(var.get('a'),var.get('b')) else (PyJsComma(var.get('E')(var.get('a'), var.get('b')),Js(0.0).neg()) if PyJsStrictEq(var.get('a').get('1'),var.get('b').get('1')) else Js(1.0).neg()))
 PyJsHoisted_qb_.func_name = 'qb'
 var.put('qb', PyJsHoisted_qb_)
 @Js
 def PyJsHoisted_Q_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     #for JS loop
     var.put('b', var.get('z'))
     var.put('c', (var.get('a').get('length')-Js(1.0)))
@@ -200,7 +200,7 @@ var.put('Q', PyJsHoisted_Q_)
 @Js
 def PyJsHoisted_rb_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'd', 'c', 'b'])
+    var.registers(['d', 'b', 'c', 'a'])
     #for JS loop
     var.put('d', Js([]))
     while var.get('x')(var.get('a')):
@@ -231,7 +231,7 @@ var.put('sb', PyJsHoisted_sb_)
 @Js
 def PyJsHoisted_O_(this, arguments, var=var):
     var = Scope({'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     #for JS loop
     var.put('a', Js([]))
     var.put('b', Js(0.0))
@@ -246,7 +246,7 @@ var.put('O', PyJsHoisted_O_)
 @Js
 def PyJsHoisted_tb_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     #for JS loop
     var.put('b', Js([]))
     while PyJsStrictEq(Js(5.0),var.get('a').get('0')):
@@ -272,11 +272,11 @@ var.put('R', PyJsHoisted_R_)
 @Js
 def PyJsHoisted_F_(a, b, c, d, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'd':d, 'this':this, 'arguments':arguments}, var)
-    var.registers(['ca', 'b', 'd', 'M', 'm', 'a', 'u', 'V', 'n', 'p', 'e', 'Y', 'h', 'c'])
+    var.registers(['d', 'n', 'c', 'u', 'a', 'M', 'ca', 'V', 'b', 'm', 'p', 'h', 'e', 'Y'])
     @Js
     def PyJsHoisted_e_(G, this, arguments, var=var):
         var = Scope({'G':G, 'this':this, 'arguments':arguments}, var)
-        var.registers(['I', 'G'])
+        var.registers(['G', 'I'])
         var.get('E')(var.get('u'), var.get('G'))
         #for JS loop
         var.put('I', Js(0.0))
@@ -371,7 +371,7 @@ var.put('F', PyJsHoisted_F_)
 @Js
 def PyJsHoisted_U_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['d', 'b', 'a', 'e', 'c'])
+    var.registers(['d', 'a', 'b', 'c', 'e'])
     var.put('a', var.get('tb')(var.get('a')))
     (PyJsStrictNeq(Js(5.0),var.get('a').get('0')) or var.get('l')())
     if PyJsStrictEq(Js(6.0),var.get('a').get('0')):
@@ -416,7 +416,7 @@ var.put('U', PyJsHoisted_U_)
 @Js
 def PyJsHoisted_Ab_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['d', 'b', 'a', 'e', 'c'])
+    var.registers(['d', 'a', 'b', 'c', 'e'])
     #for JS loop
     var.put('d', Js([]))
     var.put('e', Js(0.0))
@@ -445,7 +445,7 @@ var.put('Ab', PyJsHoisted_Ab_)
 @Js
 def PyJsHoisted_Bb_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'd', 'c', 'b'])
+    var.registers(['d', 'b', 'c', 'a'])
     #for JS loop
     var.put('d', Js(0.0))
     while (var.get('d')<var.get('a').get('length')):
@@ -460,7 +460,7 @@ var.put('Bb', PyJsHoisted_Bb_)
 @Js
 def PyJsHoisted_Cb_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     #for JS loop
     var.put('c', Js(0.0))
     while (var.get('c')<var.get('a').get('length')):
@@ -475,7 +475,7 @@ var.put('Cb', PyJsHoisted_Cb_)
 @Js
 def PyJsHoisted_vb_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     #for JS loop
     var.put('b', var.get('z'))
     var.put('c', Js(0.0))
@@ -490,7 +490,7 @@ var.put('vb', PyJsHoisted_vb_)
 @Js
 def PyJsHoisted_Eb_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     #for JS loop
     var.put('c', Js(0.0))
     while (var.get('c')<var.get('a').get('length')):
@@ -503,7 +503,7 @@ var.put('Eb', PyJsHoisted_Eb_)
 @Js
 def PyJsHoisted_Fb_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['d', 'b', 'm', 'a', 'e', 'c'])
+    var.registers(['d', 'a', 'b', 'm', 'c', 'e'])
     var.put('a', var.get('F')(var.get('a')))
     if var.get('B')(var.get('a')).neg():
         return Js(1.0).neg()
@@ -549,7 +549,7 @@ var.put('Fb', PyJsHoisted_Fb_)
 @Js
 def PyJsHoisted_ub_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['d', 'b', 'm', 'a', 'e', 'h', 'c'])
+    var.registers(['d', 'a', 'b', 'm', 'c', 'h', 'e'])
     var.put('c', var.get('U')(var.get('b')))
     if var.get('R')(var.get('c')):
         return Js([Js(6.0), var.get('a'), var.get('c')])
@@ -639,7 +639,7 @@ var.put('ub', PyJsHoisted_ub_)
 @Js
 def PyJsHoisted_Gb_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     @Js
     def PyJs_anonymous_11_(c, this, arguments, var=var):
         var = Scope({'c':c, 'this':this, 'arguments':arguments}, var)
@@ -653,7 +653,7 @@ var.put('Gb', PyJsHoisted_Gb_)
 @Js
 def PyJsHoisted_Hb_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     @Js
     def PyJs_anonymous_12_(d, e, this, arguments, var=var):
         var = Scope({'d':d, 'e':e, 'this':this, 'arguments':arguments}, var)
@@ -667,7 +667,7 @@ var.put('Hb', PyJsHoisted_Hb_)
 @Js
 def PyJsHoisted_yb_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['d', 'b', 'm', 'a', 'n', 'p', 'e', 'h', 'c'])
+    var.registers(['d', 'n', 'a', 'p', 'b', 'm', 'c', 'h', 'e'])
     @Js
     def PyJsHoisted_c_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
@@ -723,7 +723,7 @@ var.put('yb', PyJsHoisted_yb_)
 @Js
 def PyJsHoisted_wb_(a, b, c, d, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'd':d, 'this':this, 'arguments':arguments}, var)
-    var.registers(['b', 'd', 'm', 'a', 'p', 'e', 'h', 'c'])
+    var.registers(['d', 'c', 'a', 'b', 'm', 'p', 'h', 'e'])
     (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get('d')) and var.put('d', Js(1.0).neg()))
     var.put('b', var.get('na')(var.get('b')))
     #for JS loop
@@ -745,7 +745,7 @@ def PyJsHoisted_wb_(a, b, c, d, this, arguments, var=var):
     @Js
     def PyJs_anonymous_19_(n, this, arguments, var=var):
         var = Scope({'n':n, 'this':this, 'arguments':arguments}, var)
-        var.registers(['u', 'n'])
+        var.registers(['n', 'u'])
         #for JS loop
         var.put('u', Js(0.0))
         while (var.get('u')<var.get('e').get('length')):
@@ -778,11 +778,11 @@ var.put('wb', PyJsHoisted_wb_)
 @Js
 def PyJsHoisted_T_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     @Js
     def PyJsHoisted_c_(d, e, m, h, this, arguments, var=var):
         var = Scope({'d':d, 'e':e, 'm':m, 'h':h, 'this':this, 'arguments':arguments}, var)
-        var.registers(['d', 'e', 'h', 'm'])
+        var.registers(['d', 'm', 'h', 'e'])
         return (PyJsComma(var.get('E')(var.get('d'), var.get('e')),Js(0.0).neg()) if (var.get('T')(var.get('m')(var.get('d')), var.get('m')(var.get('e'))) and var.get('T')(var.get('h')(var.get('d')), var.get('h')(var.get('e')))) else Js(1.0).neg())
     PyJsHoisted_c_.func_name = 'c'
     var.put('c', PyJsHoisted_c_)
@@ -807,11 +807,11 @@ var.put('T', PyJsHoisted_T_)
 @Js
 def PyJsHoisted_W_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     @Js
     def PyJsHoisted_c_(d, e, m, h, this, arguments, var=var):
         var = Scope({'d':d, 'e':e, 'm':m, 'h':h, 'this':this, 'arguments':arguments}, var)
-        var.registers(['d', 'e', 'h', 'm'])
+        var.registers(['d', 'm', 'h', 'e'])
         return (PyJsComma(var.get('E')(var.get('d'), var.get('e')),Js(0.0).neg()) if (var.get('W')(var.get('m')(var.get('d')), var.get('m')(var.get('e'))) and var.get('W')(var.get('h')(var.get('d')), var.get('h')(var.get('e')))) else Js(1.0).neg())
     PyJsHoisted_c_.func_name = 'c'
     var.put('c', PyJsHoisted_c_)
@@ -836,7 +836,7 @@ var.put('W', PyJsHoisted_W_)
 @Js
 def PyJsHoisted_S_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     var.put('a', var.get('tb')(var.get('a')))
     pass
     if var.get('A')(var.get('a')):
@@ -859,7 +859,7 @@ var.put('S', PyJsHoisted_S_)
 @Js
 def PyJsHoisted_Ib_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['ca', 'G', 'd', 'b', 'Na', 'M', 'Ha', 'm', 'a', 'u', 'V', 'n', 'ib', 'p', 'ma', 'I', 'e', 'Y', 'h', 'c'])
+    var.registers(['d', 'n', 'u', 'ib', 'Ha', 'a', 'ma', 'G', 'M', 'ca', 'p', 'V', 'b', 'm', 'c', 'h', 'I', 'e', 'Na', 'Y'])
     @Js
     def PyJsHoisted_b_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
@@ -921,7 +921,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_p_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 'v'])
+        var.registers(['v', 'k'])
         if var.get('b')():
             return Js(1.0).neg()
         var.put('k', var.get('c')())
@@ -940,7 +940,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_n_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'D', 'v'])
+        var.registers(['v', 't', 'k', 'D'])
         @Js
         def PyJsHoisted_k_(f, this, arguments, var=var):
             var = Scope({'f':f, 'this':this, 'arguments':arguments}, var)
@@ -1022,7 +1022,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_V_(k, v, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 'v'])
+        var.registers(['v', 'k'])
         @Js
         def PyJs_anonymous_25_(this, arguments, var=var):
             var = Scope({'this':this, 'arguments':arguments}, var)
@@ -1044,7 +1044,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_ca_(k, this, arguments, var=var):
         var = Scope({'k':k, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         if var.get('m')(var.get('k')):
             return Js(1.0).neg()
         #for JS loop
@@ -1062,7 +1062,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_Y_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         var.get('h')()
         #for JS loop
         var.put('k', Js([var.get('n'), var.get('p'), var.get('u'), var.get('M'), var.get('Na'), var.get('ib'), var.get('Ha'), var.get('ma')]))
@@ -1095,7 +1095,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_26_(k, v, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         var.put('t', var.get('Fb')(var.get('k')))
         return (var.get('e')() if PyJsStrictEq(Js(1.0).neg(),var.get('t')) else Js([Js(6.0), var.get('t'), var.get('v')]))
     PyJs_anonymous_26_._set_name('anonymous')
@@ -1103,7 +1103,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_27_(k, v, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         @Js
         def PyJs_anonymous_28_(D, this, arguments, var=var):
             var = Scope({'D':D, 'this':this, 'arguments':arguments}, var)
@@ -1123,7 +1123,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_30_(k, v, t, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 't':t, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         @Js
         def PyJs_anonymous_31_(D, this, arguments, var=var):
             var = Scope({'D':D, 'this':this, 'arguments':arguments}, var)
@@ -1143,11 +1143,11 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_33_(k, v, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 'v'])
+        var.registers(['v', 'k'])
         @Js
         def PyJs_anonymous_34_(this, arguments, var=var):
             var = Scope({'this':this, 'arguments':arguments}, var)
-            var.registers(['D', 't', 'f'])
+            var.registers(['f', 'D', 't'])
             if var.get('b')():
                 return Js(1.0).neg()
             var.put('t', var.get('c')())
@@ -1168,7 +1168,7 @@ def PyJsHoisted_Ib_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_35_(k, v, this, arguments, var=var):
         var = Scope({'k':k, 'v':v, 'this':this, 'arguments':arguments}, var)
-        var.registers(['k', 't', 'v'])
+        var.registers(['v', 't', 'k'])
         @Js
         def PyJs_anonymous_36_(D, this, arguments, var=var):
             var = Scope({'D':D, 'this':this, 'arguments':arguments}, var)
@@ -1191,11 +1191,11 @@ var.put('Ib', PyJsHoisted_Ib_)
 @Js
 def PyJsHoisted_X_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'd', 'b', 'c'])
+    var.registers(['b', 'c', 'd', 'a'])
     @Js
     def PyJsHoisted_b_(e, m, this, arguments, var=var):
         var = Scope({'e':e, 'm':m, 'this':this, 'arguments':arguments}, var)
-        var.registers(['M', 'm', 'u', 'n', 'p', 'e', 'h'])
+        var.registers(['n', 'u', 'M', 'm', 'p', 'h', 'e'])
         @Js
         def PyJsHoisted_h_(V, this, arguments, var=var):
             var = Scope({'V':V, 'this':this, 'arguments':arguments}, var)
@@ -1321,7 +1321,7 @@ pass
 @Js
 def PyJs_anonymous_3_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(6.0), var.get('a'), var.get('b')])
 PyJs_anonymous_3_._set_name('anonymous')
 var.get('exports').put('evaluate', PyJs_anonymous_3_)
@@ -1329,7 +1329,7 @@ pass
 @Js
 def PyJs_anonymous_4_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     return Js([Js(9.0), var.get('a'), var.get('b')])
 PyJs_anonymous_4_._set_name('anonymous')
 var.get('exports').put('apply', PyJs_anonymous_4_)
@@ -1481,11 +1481,11 @@ pass
 @Js
 def PyJs_anonymous_13_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     @Js
     def PyJsHoisted_c_(d, e, m, h, this, arguments, var=var):
         var = Scope({'d':d, 'e':e, 'm':m, 'h':h, 'this':this, 'arguments':arguments}, var)
-        var.registers(['d', 'e', 'h', 'm'])
+        var.registers(['d', 'm', 'h', 'e'])
         var.put('m', var.get('la')(var.get('db'), Js([var.get('m')(var.get('d')), var.get('m')(var.get('e'))])))
         var.put('d', var.get('la')(var.get('db'), Js([var.get('h')(var.get('d')), var.get('h')(var.get('e'))])))
         return var.get('la')(var.get('hb'), Js([var.get('m'), var.get('d'), var.get('ob')]))
@@ -1508,7 +1508,7 @@ PyJs_anonymous_13_._set_name('anonymous')
 @Js
 def PyJs_anonymous_15_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'd', 'c', 'b'])
+    var.registers(['d', 'b', 'c', 'a'])
     var.put('d', Js([]))
     #for JS loop
     var.put('b', var.get('F')(var.get('b')))
@@ -1520,21 +1520,21 @@ PyJs_anonymous_15_._set_name('anonymous')
 @Js
 def PyJs_anonymous_16_(a, b, c, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b', 'c'])
+    var.registers(['b', 'c', 'a'])
     var.put('a', var.get('Fb')(var.get('a')))
     return (var.get('c') if PyJsStrictEq(Js(1.0).neg(),var.get('a')) else Js([Js(6.0), var.get('a'), var.get('b')]))
 PyJs_anonymous_16_._set_name('anonymous')
 @Js
 def PyJs_anonymous_17_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'b'])
+    var.registers(['b', 'a'])
     var.put('a', var.get('U')(var.get('a')))
     return (var.get('la')(var.get('gb'), Js([var.get('a')])) if var.get('R')(var.get('a')) else (var.get('a').get('1') if var.get('x')(var.get('a')) else var.get('b')))
 PyJs_anonymous_17_._set_name('anonymous')
 @Js
 def PyJs_anonymous_18_(a, b, c, d, this, arguments, var=var):
     var = Scope({'a':a, 'b':b, 'c':c, 'd':d, 'this':this, 'arguments':arguments}, var)
-    var.registers(['a', 'd', 'b', 'c'])
+    var.registers(['b', 'c', 'd', 'a'])
     var.put('a', var.get('U')(var.get('a')))
     if var.get('R')(var.get('a')):
         return var.get('la')(var.get('hb'), Js([var.get('a'), var.get('b'), var.get('c')]))
@@ -1563,7 +1563,7 @@ var.get('exports').put('simple_parse', var.get('Ib'))
 @Js
 def PyJs_anonymous_38_(a, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'arguments':arguments}, var)
-    var.registers(['ib', 'I', 'G', 't', 'm', 'a', 'D', 'ca', 'e', 'k', 'd', 'v', 'M', 'Ha', 'u', 'n', 'ma', 'Y', 'c', 'b', 'Na', 'V', 'p', 'h'])
+    var.registers(['Ha', 'Na', 'b', 'c', 'h', 'u', 'ma', 'G', 'Y', 'D', 'ca', 'V', 'ib', 'm', 'd', 'n', 'a', 't', 'M', 'v', 'k', 'p', 'I', 'e'])
     @Js
     def PyJsHoisted_b_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
@@ -1644,7 +1644,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_n_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['w', 'g', 'f', 'r'])
+        var.registers(['f', 'r', 'g', 'w'])
         @Js
         def PyJsHoisted_f_(y, this, arguments, var=var):
             var = Scope({'y':y, 'this':this, 'arguments':arguments}, var)
@@ -1748,7 +1748,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_ca_(f, this, arguments, var=var):
         var = Scope({'f':f, 'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         if var.get('m')(var.get('f')):
             return Js(1.0).neg()
         #for JS loop
@@ -1766,7 +1766,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_Y_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         var.get('h')()
         #for JS loop
         var.put('f', Js([var.get('n'), var.get('ib'), var.get('u'), var.get('M'), var.get('k'), var.get('v'), var.get('t'), var.get('D')]))
@@ -1799,11 +1799,11 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_Na_(this, arguments, var=var):
         var = Scope({'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         @Js
         def PyJsHoisted_f_(w, this, arguments, var=var):
             var = Scope({'w':w, 'this':this, 'arguments':arguments}, var)
-            var.registers(['w', 'y', 'Db', 'Z'])
+            var.registers(['w', 'Z', 'Db', 'y'])
             @Js
             def PyJsHoisted_y_(this, arguments, var=var):
                 var = Scope({'this':this, 'arguments':arguments}, var)
@@ -1928,7 +1928,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_40_(f, r, this, arguments, var=var):
         var = Scope({'f':f, 'r':r, 'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         var.put('g', var.get('Fb')(var.get('f')))
         return (var.get('e')() if PyJsStrictEq(Js(1.0).neg(),var.get('g')) else Js([Js(6.0), var.get('g'), var.get('r')]))
     PyJs_anonymous_40_._set_name('anonymous')
@@ -1936,7 +1936,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_41_(f, r, this, arguments, var=var):
         var = Scope({'f':f, 'r':r, 'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         @Js
         def PyJs_anonymous_42_(w, this, arguments, var=var):
             var = Scope({'w':w, 'this':this, 'arguments':arguments}, var)
@@ -1956,7 +1956,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_44_(f, r, g, this, arguments, var=var):
         var = Scope({'f':f, 'r':r, 'g':g, 'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         @Js
         def PyJs_anonymous_45_(w, this, arguments, var=var):
             var = Scope({'w':w, 'this':this, 'arguments':arguments}, var)
@@ -1980,7 +1980,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
         @Js
         def PyJs_anonymous_48_(this, arguments, var=var):
             var = Scope({'this':this, 'arguments':arguments}, var)
-            var.registers(['w', 'y', 'g'])
+            var.registers(['w', 'g', 'y'])
             if var.get('b')():
                 return Js(1.0).neg()
             var.put('g', var.get('c')())
@@ -2001,7 +2001,7 @@ def PyJs_anonymous_38_(a, this, arguments, var=var):
     @Js
     def PyJs_anonymous_49_(f, r, this, arguments, var=var):
         var = Scope({'f':f, 'r':r, 'this':this, 'arguments':arguments}, var)
-        var.registers(['g', 'f', 'r'])
+        var.registers(['f', 'r', 'g'])
         @Js
         def PyJs_anonymous_50_(w, this, arguments, var=var):
             var = Scope({'w':w, 'this':this, 'arguments':arguments}, var)
