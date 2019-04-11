@@ -13,7 +13,7 @@ cd arch
 * racket | `sudo apt install racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip3 | `sudo apt install python python3 python3-pip` `sudo pacman -S python2 python python-pip` `sudo apk add python2 python3`
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git`
-* jre, jdk8 | `sudo pacman -S jdk8-openjdk` `sudo apk add openjdk8`
+* jre, jdk8 | `sudo pacman -S jdk8-openjdk` `sudo apk add openjdk8` [Alpine : Add /usr/lib/jvm/java-1.8-openjdk/bin/ to $PATH]
 * clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make`
 * wget | `sudo apt install wget` `sudo pacman -S wget` `sudo apk add wget`
