@@ -11,7 +11,7 @@ cd arch
 * NodeJS NPM | `sudo apt install nodejs npm` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/
 * yarn | `npm i -g yarn` `sudo pacman -S yarn`
 * racket | `sudo apt install racket` `sudo pacman -S racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
-* python2,3 pip3 2to3 | `sudo apt install python python3 python3-pip` `sudo pacman -S python2 python python-pip` `sudo apk add python2 python3`
+* python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip`
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git`
 * jre, jdk8 | `sudo pacman -S jdk8-openjdk` `sudo apk add openjdk8` [Alpine : Add /usr/lib/jvm/java-1.8-openjdk/bin/ to $PATH]
 * clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
@@ -23,6 +23,7 @@ cd arch
 raco pkg install --auto rash
 raco pkg install --auto make
 pip3 install js2py --user
+pip2 install js2py --user
 ```
 
 ## 運行依賴
