@@ -26,7 +26,7 @@ const fs = require('fs')
 for(const file of fs.readdirSync('.')) {
     fs.readFile(file, 'utf8', (err, data) => {
         if (err) throw err;
-        fs.writeFile(file, L.simple_print(L.complex_parse(data)) + '\n', (err) => {
+        fs.writeFile(file, L.simple_print(L.force_all_rec(L.evaluate(L.env_null_v, L.complex_parse(data)))) + '\n', (err) => {
             if (err) throw err;
         })
     })
