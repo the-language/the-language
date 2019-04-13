@@ -68,6 +68,11 @@
           "$(#(映表 ((h g))) h)"
           "^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ,@(map
+        (match-lambda [(list in out) `(check-equal? (complex-print (force-all-rec (complex-parse ,in))) ,out)])
+        '(("$(#(映表 ((h g))) h)" "g")
+          ("%([_:連]? (^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))))" "#(陰)")
+          ))
+     ,@(map
        (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
        '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ))
