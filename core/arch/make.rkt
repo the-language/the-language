@@ -56,6 +56,7 @@
              "ecmascript/lang.raw.js"
              "lua/lang.lua"
              "ecmascript6/lang.js"
+             "python2/lang.py"
              "python3/lang.py"
              "php/lang.php"
              "java/src"
@@ -136,13 +137,19 @@
              (define raw #{cat lang.js})
              |> ++ c-generatedby raw &>! lang.js
      }})
-     ("python3/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
+     ("python3/lang.py" ("python2/lang.py") {
          in-dir "python3" {
+             rm -fr lang.py
+             cp ../python2/lang.py ./
+             2to3 -f all -f buffer -f idioms -f set_literal -f ws_comma --no-diffs --nobackups -w lang.py
+     }})
+     ("python2/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
+         in-dir "python2" {
              (define raw-js (++
                  "var exports={};"
                  #{cat ../ecmascript/lang.js}))
              |> id raw-js &>! lang.js
-             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python3
+             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python2
              (define exports (ecmascript/exports.list-parse))
              (define exports-py (++
                  "exports = var.to_python().exports\n"
