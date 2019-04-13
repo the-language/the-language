@@ -1,7 +1,7 @@
 ## 編譯
 
 ```bash
-cd arch
+cd pure
 ./make
 ```
 
