@@ -59,6 +59,15 @@
 (define test-main
   `(begin
      ,@(map
+        (λ (x) `(check-equal? (simple-print (simple-parse ,x)) ,x))
+        '("(A B)"
+          "!(#(A B) . C)"
+          "((A) . #(B C C))"
+          "(k 0 9 8 . o)"
+          "(() ((((())))) . k)"
+          "$(#(映表 ((h g))) h)"
+          "^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
+     ,@(map
        (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
        '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ))
