@@ -1,1 +1,1 @@
-../python2/requirements.txt
+js2py>=0.60
