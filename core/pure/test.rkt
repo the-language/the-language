@@ -21,7 +21,7 @@
 
 (define (assert-value p? x)
   (match x
-      [(? p?) x]))
+    [(? p?) x]))
 
 (define (safe-string/single-quote? x)
   (and (string? x) (andmap (λ (c) (and (char? c) (not (equal? c #\')))) (string->list x))))
@@ -113,11 +113,15 @@
           ("$(#(映表 ()) (&+化滅 等同? (&+式形 引用:式形 (((&+式形 引用:式形 A) B))) (&+式形 引用:式形 (((&+式形 引用:式形 A) C)))))" "#(陰)")
           ))
      ,@(map
-       (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
-       '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
+        (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
+        '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ))
 
-(displayln "-- JS --")
-(js-run (js-test-compile test-main))
-(displayln "-- PY3 --")
-(py3-run (py3-test-compile test-main))
+(void (and
+ (begin
+   (displayln "-- JS --")
+   (js-run (js-test-compile test-main)))
+ (begin
+   (displayln "-- PY3 --")
+   (py3-run (py3-test-compile test-main)))))
+ 
