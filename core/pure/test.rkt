@@ -40,7 +40,6 @@
 
 (define (lisp-id->js-id x)
   (apply-++ (map (λ (c) (assert-value char? c) (if (equal? c #\-) "_" (string c))) (string->list (symbol->string x)))))
-
 (define (js-expr-compile x)
   (match x
     [(? string?) (with-output-to-string (λ () (write x)))]
@@ -55,6 +54,22 @@
     [(list 'begin xs ...)
      (apply ++ (map js-test-compile xs))]))
 (define (js-run x) (system (string-append "node -e 'const L=require(\"./ecmascript/lang.js\");"(assert-safe-string/single-quote x)"'")))
+
+(define lisp-id->py3-id lisp-id->js-id)
+(define (py3-expr-compile x)
+  (match x
+    [(? string?) (with-output-to-string (λ () (write x)))]
+    [(? number?) (number->string x)]
+    [(list (? string? f) xs ...) (++ "L."f"("(apply-++ (add-between (map (λ (x) (py3-expr-compile x)) xs) ","))")")]
+    [(list (? symbol? f) xs ...) (py3-expr-compile (cons (lisp-id->py3-id f) xs))]
+    ))
+(define (py3-test-compile code)
+  (match code
+    [(list 'check-equal? v1 v2)
+     (++ "print(\""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\")\nassert("(py3-expr-compile v1)" == "(py3-expr-compile v2)")\n")]
+    [(list 'begin xs ...)
+     (apply ++ (map py3-test-compile xs))]))
+(define (py3-run x) (system (string-append "echo 'import python3.lang as L\n"(assert-safe-string/single-quote x)"' | python3")))
 
 (define test-main
   `(begin
@@ -76,4 +91,8 @@
        (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
        '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ))
+
+(displayln "-- JS --")
 (js-run (js-test-compile test-main))
+(displayln "-- PY3 --")
+(py3-run (py3-test-compile test-main))
