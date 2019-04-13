@@ -18,31 +18,35 @@
 #lang racket
 (require rackunit)
 
+
+(define (assert-value p? x)
+  (match x
+      [(? p?) x]))
+
 (define (safe-string/single-quote? x)
   (and (string? x) (andmap (λ (c) (and (char? c) (not (equal? c #\')))) (string->list x))))
-(define (assert-safe-string/single-quote x)
-  (match x
-    [(? safe-string/single-quote?) x]))
+(define (assert-safe-string/single-quote x) (assert-value safe-string/single-quote? x))
 (define (make-safe-string/single-quote x)
-  (apply string-append (map (λ (c) (if (equal? c #\') "\\'" (string c))) (string->list x))))
+  (apply-++ (map (λ (c) (if (equal? c #\') "\\'" (string c))) (string->list x))))
 
 (define (safe-string/double-quote? x)
   (and (string? x) (andmap (λ (c) (and (char? c) (not (equal? c #\")))) (string->list x))))
-(define (assert-safe-string/double-quote x)
-  (match x
-    [(? safe-string/double-quote?) x]))
+(define (assert-safe-string/double-quote x) (assert-value safe-string/double-quote? x))
 (define (make-safe-string/double-quote x)
-  (apply string-append (map (λ (c) (if (equal? c #\") "\\\"" (string c))) (string->list x))))
+  (apply-++ (map (λ (c) (if (equal? c #\") "\\\"" (string c))) (string->list x))))
 
 (define ++ string-append)
 (define (apply-++ x) (apply ++ x))
+
+(define (lisp-id->js-id x)
+  (apply-++ (map (λ (c) (assert-value char? c) (if (equal? c #\-) "_" (string c))) (string->list (symbol->string x)))))
 
 (define (js-expr-compile x)
   (match x
     [(? string?) (with-output-to-string (λ () (write x)))]
     [(? number?) (number->string x)]
     [(list (? string? f) xs ...) (++ "L."f"("(apply-++ (add-between (map (λ (x) (js-expr-compile x)) xs) ","))")")]
-    [(list (? symbol? f) xs ...) (js-expr-compile (cons (symbol->string f) xs))]
+    [(list (? symbol? f) xs ...) (js-expr-compile (cons (lisp-id->js-id f) xs))]
     ))
 (define (js-test-compile code)
   (match code
@@ -55,7 +59,7 @@
 (define test-main
   `(begin
      ,@(map
-       (λ (x) `(check-equal? (simple_print (complex_parse ,x)) ,x))
+       (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
        '("^(#(化滅 (甲) (甲 甲)) (#(化滅 (甲) (甲 甲))))"))
      ))
 (js-run (js-test-compile test-main))
