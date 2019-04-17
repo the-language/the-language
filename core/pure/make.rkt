@@ -323,60 +323,6 @@
              (define exports-value (list->set '(
                  null_v
                  env_null_v
-                 inputOutput_symbol
-                 system_symbol
-                 name_symbol
-                 function_symbol
-                 form_symbol
-                 equal_symbol
-                 evaluate_sym
-                 theThing_symbol
-                 something_symbol
-                 mapping_symbol
-                 if_symbol
-                 typeAnnotation_symbol
-                 isOrNot_symbol
-                 sub_symbol
-                 true_symbol
-                 false_symbol
-                 quote_symbol
-                 apply_symbol
-                 null_symbol
-                 construction_symbol
-                 data_symbol
-                 error_symbol
-                 symbol_symbol
-                 list_symbol
-                 head_symbol
-                 tail_symbol
-                 thing_symbol
-                 theWorldStopped_symbol
-                 effect_symbol
-                 sequentialWordFormation_symbol
-                 new_data_function_builtin_systemName
-                 data_name_function_builtin_systemName
-                 data_list_function_builtin_systemName
-                 data_p_function_builtin_systemName
-                 new_error_function_builtin_systemName
-                 error_name_function_builtin_systemName
-                 error_list_function_builtin_systemName
-                 error_p_function_builtin_systemName
-                 new_construction_function_builtin_systemName
-                 construction_p_function_builtin_systemName
-                 construction_head_function_builtin_systemName
-                 construction_tail_function_builtin_systemName
-                 symbol_p_function_builtin_systemName
-                 null_p_function_builtin_systemName
-                 equal_p_function_builtin_systemName
-                 apply_function_builtin_systemName
-                 evaluate_function_builtin_systemName
-                 list_chooseOne_function_builtin_systemName
-                 if_function_builtin_systemName
-                 quote_form_builtin_systemName
-                 lambda_form_builtin_systemName
-                 function_builtin_use_systemName
-                 form_builtin_use_systemName
-                 form_use_systemName
                  )))
              (define exports (ecmascript/exports.list-parse))
              (define raw-js (++ "var exports={};\n" #{cat ../ecmascript/lang.raw.js}))

@@ -258,41 +258,9 @@ const head_symbol = new_symbol("首")
 const tail_symbol = new_symbol("尾")
 const thing_symbol = new_symbol("物")
 const theWorldStopped_symbol = new_symbol("宇宙亡矣")
-const effect_symbol = new_symbol("效應")
-const sequentialWordFormation_symbol = new_symbol('為符名連')
-const inputOutput_symbol = new_symbol("出入改滅")
-export {
-    system_symbol,
-    name_symbol,
-    function_symbol,
-    form_symbol,
-    equal_symbol,
-    evaluate_sym,
-    theThing_symbol,
-    something_symbol,
-    mapping_symbol,
-    if_symbol,
-    typeAnnotation_symbol,
-    isOrNot_symbol,
-    sub_symbol,
-    true_symbol,
-    false_symbol,
-    quote_symbol,
-    apply_symbol,
-    null_symbol,
-    construction_symbol,
-    data_symbol,
-    error_symbol,
-    symbol_symbol,
-    list_symbol,
-    head_symbol,
-    tail_symbol,
-    thing_symbol,
-    theWorldStopped_symbol,
-    effect_symbol,
-    sequentialWordFormation_symbol,
-    inputOutput_symbol
-}
+//unused//const effect_symbol = new_symbol("效應")
+//unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
+//unused//const inputOutput_symbol = new_symbol("出入改滅")
 
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
@@ -339,32 +307,6 @@ const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_s
 const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
 const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
 const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
-export {
-    new_data_function_builtin_systemName,
-    data_name_function_builtin_systemName,
-    data_list_function_builtin_systemName,
-    data_p_function_builtin_systemName,
-    new_error_function_builtin_systemName,
-    error_name_function_builtin_systemName,
-    error_list_function_builtin_systemName,
-    error_p_function_builtin_systemName,
-    new_construction_function_builtin_systemName,
-    construction_p_function_builtin_systemName,
-    construction_head_function_builtin_systemName,
-    construction_tail_function_builtin_systemName,
-    symbol_p_function_builtin_systemName,
-    null_p_function_builtin_systemName,
-    equal_p_function_builtin_systemName,
-    apply_function_builtin_systemName,
-    evaluate_function_builtin_systemName,
-    list_chooseOne_function_builtin_systemName,
-    if_function_builtin_systemName,
-    quote_form_builtin_systemName,
-    lambda_form_builtin_systemName,
-    function_builtin_use_systemName,
-    form_builtin_use_systemName,
-    form_use_systemName
-}
 
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
