@@ -71,8 +71,7 @@
      (apply ++ (map py3-test-compile xs))]))
 (define (py3-run x) (system (string-append "echo 'import python3.lang as L\n"(assert-safe-string/single-quote x)"' | python3")))
 
-(define (lisp-id->lua-id x)
-  (apply-++ (map (λ (c) (assert-value char? c) (if (equal? c #\-) "_" (string c))) (string->list (symbol->string x)))))
+(define lisp-id->lua-id lisp-id->js-id)
 (define (lua-expr-compile x)
   (match x
     [(? string?) (with-output-to-string (λ () (write x)))]
@@ -87,6 +86,22 @@
     [(list 'begin xs ...)
      (apply ++ (map lua-test-compile xs))]))
 (define (lua-run x) (system (string-append "./c/lua-5.1.5/src/lua -e 'local L=require(\"./lua/lang\")\n"(assert-safe-string/single-quote x)"'")))
+
+(define lisp-id->php-id lisp-id->js-id)
+(define (php-expr-compile x)
+  (match x
+    [(? string?) (with-output-to-string (λ () (write x)))]
+    [(? number?) (number->string x)]
+    [(list (? string? f) xs ...) (++ f"("(apply-++ (add-between (map (λ (x) (php-expr-compile x)) xs) ","))")")]
+    [(list (? symbol? f) xs ...) (php-expr-compile (cons (lisp-id->php-id f) xs))]
+    ))
+(define (php-test-compile code)
+  (match code
+    [(list 'check-equal? v1 v2)
+     (++ "echo \""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\\n\";\nif("(php-expr-compile v1)" != "(php-expr-compile v2)") {\nthrow new Exception(\"failed\");\n}\n")]
+    [(list 'begin xs ...)
+     (apply ++ (map php-test-compile xs))]))
+(define (php-run x) (system (string-append "php -r 'require \"./php/lang.php\";\n"(assert-safe-string/single-quote x)"'")))
 
 (define test-main
   `(begin
