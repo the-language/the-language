@@ -9,7 +9,7 @@ var = Scope( JS_BUILTINS )
 set_global_object(var)
 
 # Code follows:
-var.registers([u'Ra', u'lb', u'Ba', u'Wa', u'cb', u'tb', u'ta', u'exports', u'D', u'ya', u'H', u'db', u'L', u'Oa', u'da', u'P', u'T', u'X', u'l', u'qa', u'Va', u'qb', u'Ga', u'x', u'gb', u'ea', u'za', u'eb', u'Pa', u'ba', u'wa', u'ra', u'rb', u'Ha', u'Ma', u'wb', u'G', u'K', u'O', u'S', u'W', u'Ua', u'ja', u'jb', u'Qa', u'Ea', u'Za', u'oa', u'xb', u'Na', u'xa', u'$a', u'pb', u'Fa', u'pa', u'Ka', u'B', u'F', u'J', u'N', u'R', u'hb', u'ha', u'ma', u'mb', u'Xa', u'z', u'ua', u'ub', u'aa', u'va', u'vb', u'ab', u'La', u'ia', u'ib', u'Ta', u'q', u'Ya', u'na', u'nb', u'Da', u'A', u'Q', u'fa', u'fb', u'U', u'Aa', u'kb', u'ka', u'bb', u'Ia', u'sb', u'sa'])
+var.registers([u'Ra', u'lb', u'Ba', u'Wa', u'cb', u'tb', u'ta', u'exports', u'D', u'ya', u'H', u'db', u'L', u'Oa', u'da', u'P', u'T', u'X', u'l', u'qa', u'qb', u'Ga', u'x', u'gb', u'ea', u'za', u'eb', u'Pa', u'ba', u'wa', u'ra', u'rb', u'Ha', u'Ma', u'wb', u'G', u'K', u'O', u'S', u'W', u'Ua', u'ja', u'jb', u'Qa', u'Ea', u'Za', u'oa', u'kb', u'xb', u'Na', u'xa', u'$a', u'pb', u'Fa', u'pa', u'Ka', u'B', u'F', u'J', u'N', u'R', u'hb', u'ha', u'ma', u'mb', u'Xa', u'z', u'ua', u'ub', u'aa', u'va', u'vb', u'ab', u'La', u'ia', u'ib', u'Ta', u'q', u'Ya', u'na', u'nb', u'Da', u'A', u'Q', u'fa', u'fb', u'U', u'Aa', u'Va', u'ka', u'bb', u'Ia', u'sb', u'sa'])
 @Js
 def PyJsHoisted_aa_(a, b, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)

@@ -9,7 +9,7 @@ var = Scope( JS_BUILTINS )
 set_global_object(var)
 
 # Code follows:
-var.registers(['Ra', 'lb', 'Ba', 'Wa', 'cb', 'tb', 'ta', 'exports', 'D', 'ya', 'H', 'db', 'L', 'Oa', 'da', 'P', 'T', 'X', 'l', 'qa', 'Va', 'qb', 'Ga', 'x', 'gb', 'ea', 'za', 'eb', 'Pa', 'ba', 'wa', 'ra', 'rb', 'Ha', 'Ma', 'wb', 'G', 'K', 'O', 'S', 'W', 'Ua', 'ja', 'jb', 'Qa', 'Ea', 'Za', 'oa', 'xb', 'Na', 'xa', '$a', 'pb', 'Fa', 'pa', 'Ka', 'B', 'F', 'J', 'N', 'R', 'hb', 'ha', 'ma', 'mb', 'Xa', 'z', 'ua', 'ub', 'aa', 'va', 'vb', 'ab', 'La', 'ia', 'ib', 'Ta', 'q', 'Ya', 'na', 'nb', 'Da', 'A', 'Q', 'fa', 'fb', 'U', 'Aa', 'kb', 'ka', 'bb', 'Ia', 'sb', 'sa'])
+var.registers(['Ra', 'lb', 'Ba', 'Wa', 'cb', 'tb', 'ta', 'exports', 'D', 'ya', 'H', 'db', 'L', 'Oa', 'da', 'P', 'T', 'X', 'l', 'qa', 'qb', 'Ga', 'x', 'gb', 'ea', 'za', 'eb', 'Pa', 'ba', 'wa', 'ra', 'rb', 'Ha', 'Ma', 'wb', 'G', 'K', 'O', 'S', 'W', 'Ua', 'ja', 'jb', 'Qa', 'Ea', 'Za', 'oa', 'kb', 'xb', 'Na', 'xa', '$a', 'pb', 'Fa', 'pa', 'Ka', 'B', 'F', 'J', 'N', 'R', 'hb', 'ha', 'ma', 'mb', 'Xa', 'z', 'ua', 'ub', 'aa', 'va', 'vb', 'ab', 'La', 'ia', 'ib', 'Ta', 'q', 'Ya', 'na', 'nb', 'Da', 'A', 'Q', 'fa', 'fb', 'U', 'Aa', 'Va', 'ka', 'bb', 'Ia', 'sb', 'sa'])
 @Js
 def PyJsHoisted_aa_(a, b, this, arguments, var=var):
     var = Scope({'a':a, 'this':this, 'b':b, 'arguments':arguments}, var)
