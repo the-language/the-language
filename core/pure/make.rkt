@@ -80,10 +80,13 @@
                 )]
         [x x])
 )
-(make ((".done.racket.code.generator" ("typescript/lang.ts") {
-    |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! typescript/lang.ts
-    touch .done.racket.code.generator
-})))
+in-dir "typescript" {
+    (make ((".done.racket.code.generator" ("lang.ts") {
+        |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.ts.tmp
+        mv lang.ts.tmp lang.ts
+        touch .done.racket.code.generator
+    })))
+}
 
 
 
@@ -271,12 +274,17 @@
                  "const PackageCopyRight = PackageName + ` ` + PackageVersion + ` Copyright (C) 2018-2019 ` + PackageAuthors\n"))
            |> id package.go &>! src/lang/package.go
      }})
-     ("c/lang.h" () (void))
-     ("c/lang.c" ("lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/patch/linit.c" "c/patch/lualib.h" "c/testmain.c") {
+     ("c/lua-5.1.5" () {in-dir "c" {
+         |> id "wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd .." | sh
+     }})
+     ("c/lua-5.1.5/src/lua" ("c/lua-5.1.5") (void))
+     ("c/lua2c" () {
        in-dir "c" {
-             |> id "[ -d lua-5.1.5 ] || (wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd ..)" | sh
-             |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh
-
+           git clone --depth 1 https://github.com/davidm/lua2c.git
+     }})
+     ("c/lang.h" () (void))
+     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/patch/linit.c" "c/patch/lualib.h" "c/testmain.c") {
+       in-dir "c" {
              (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
 
              |> id raw &>! lang.lua2c.out.c
@@ -304,7 +312,7 @@
              |> id single &>! lang.c
              touch lang.h
 
-             clang -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
+             clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
      }})
      ("php/lang.php" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
          ;; TODO
