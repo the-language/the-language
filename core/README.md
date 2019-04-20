@@ -4,6 +4,12 @@
 cd pure
 ./make
 ```
+## 測試
+```bash
+cd pure
+racket test.rkt
+./do_testmain.sh
+```
 
 ### 編譯依賴
 
