@@ -20,7 +20,7 @@ jar cf lang.jar *
 cd -
 
 rm -fr src
-python2 ./Krakatau/decompile.py -path "$(echo /usr/lib/jvm/*/jre/lib/rt.jar | awk '{print $1}');./luaj/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
+python2 -OO ./Krakatau/decompile.py -path "$(echo /usr/lib/jvm/*/jre/lib/rt.jar | awk '{print $1}');./luaj/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
 for f in ./src/lang/*.java ;do
   cp "$f" "$f".1
   echo 'package lang;' > "$f"
