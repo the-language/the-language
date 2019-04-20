@@ -55,7 +55,7 @@ public final class Lang {
     // LoadState.install(globals);
     // LuaC.install(globals);
     exports = (LuaTable)((LuaValue)(new lang_luaj()))
-                  .call(LuaValue.valueOf("lang_luaj"), globals);
+                  .call();
     complex_parse = exports.get("complex_parse");
     complex_print = exports.get("complex_print");
     simple_parse = exports.get("simple_parse");

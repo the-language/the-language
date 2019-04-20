@@ -58,7 +58,7 @@
              "ecmascript6/lang.js"
              "python2/lang.py"
              "python3/lang.py"
-             "php/lang.php"
+             ;;"php/lang.php";;正在修復
              "java/src"
              "c/lang.h"
              "c/lang.c"
