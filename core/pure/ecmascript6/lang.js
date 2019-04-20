@@ -435,16 +435,16 @@ function force1(raw) {
     let ret;
     ASSERT(!just_p(x));
     if (delay_evaluate_p(x)) {
-        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x));
+        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw);
     }
     else if (delay_builtin_form_p(x)) {
-        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x));
+        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x), raw);
     }
     else if (delay_builtin_func_p(x)) {
-        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x));
+        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x), raw);
     }
     else if (delay_apply_p(x)) {
-        ret = real_apply(delay_apply_f(x), delay_apply_xs(x));
+        ret = real_apply(delay_apply_f(x), delay_apply_xs(x), raw);
     }
     else {
         ret = x;
@@ -561,10 +561,10 @@ function val2env(x) {
 }
 export { env_null_v, env_set, env_get, env2val, env_foreach, val2env };
 // 相對獨立的部分。變量之環境 }}}
-function real_evaluate(env, raw) {
+function real_evaluate(env, raw, selfvalraw) {
     const x = force1(raw);
     if (any_delay_just_p(x)) {
-        return evaluate(env, x);
+        return selfvalraw;
     }
     const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))));
     if (construction_p(x)) {
@@ -572,7 +572,7 @@ function real_evaluate(env, raw) {
         let rest = x;
         while (!null_p(rest)) {
             if (any_delay_just_p(rest)) {
-                return evaluate(env, x);
+                return selfvalraw;
             }
             else if (construction_p(rest)) {
                 xs.push(construction_head(rest)); // WIP delay未正確處理(影響較小)
@@ -605,7 +605,7 @@ function real_evaluate(env, raw) {
             }
             const f_type = force1(data_name(f));
             if (any_delay_just_p(f_type)) {
-                return evaluate(env, x);
+                return selfvalraw;
             }
             if (!symbol_p(f_type)) {
                 return error_v;
@@ -615,7 +615,7 @@ function real_evaluate(env, raw) {
             }
             const f_list = force1(data_list(f));
             if (any_delay_just_p(f_list)) {
-                return evaluate(env, x);
+                return selfvalraw;
             }
             if (!construction_p(f_list)) {
                 return error_v;
@@ -623,7 +623,7 @@ function real_evaluate(env, raw) {
             const f_x = construction_head(f_list);
             const f_list_cdr = force1(construction_tail(f_list));
             if (any_delay_just_p(f_list_cdr)) {
-                return evaluate(env, x);
+                return selfvalraw;
             }
             if (!null_p(f_list_cdr)) {
                 return error_v;
@@ -821,14 +821,14 @@ const real_builtin_func_apply_s = [
             return error_v;
         }],
 ];
-function real_apply(f, xs) {
+function real_apply(f, xs, selfvalraw) {
     // WIP delay未正確處理(影響較小)
     function make_error_v() {
         return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))));
     }
     f = force1(f);
     if (any_delay_just_p(f)) {
-        return apply(f, xs);
+        return selfvalraw;
     }
     if (!data_p(f)) {
         return make_error_v();
@@ -879,7 +879,7 @@ function real_apply(f, xs) {
     }
     return evaluate(env, f_code);
 }
-function real_builtin_func_apply(f, xs) {
+function real_builtin_func_apply(f, xs, selfvalraw) {
     const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
     for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
         // WIP delay未正確處理(影響較小)
@@ -904,7 +904,7 @@ function real_builtin_func_apply(f, xs) {
     }
     return error_v;
 }
-function real_builtin_form_apply(env, f, xs) {
+function real_builtin_form_apply(env, f, xs, selfvalraw) {
     const error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
     if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {

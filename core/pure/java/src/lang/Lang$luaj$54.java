@@ -26,7 +26,7 @@ public class Lang$luaj$54 extends org.luaj.vm2.lib.VarArgFunction {
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         org.luaj.vm2.LuaValue a1 = a.arg(2);
-        a.subargs(3);
+        a.subargs(4);
         org.luaj.vm2.LuaValue a2 = this.u0;
         org.luaj.vm2.LuaValue a3 = this.u1[0];
         org.luaj.vm2.LuaValue a4 = this.u2;

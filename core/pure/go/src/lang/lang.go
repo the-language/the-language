@@ -403,13 +403,13 @@ function force1(raw)
     local ret
     ASSERT(not just_p(x))
     if delay_evaluate_p(x) then
-        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x))
+        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw)
     elseif delay_builtin_form_p(x) then
-        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x))
+        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x), raw)
     elseif delay_builtin_func_p(x) then
-        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x))
+        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x), raw)
     elseif delay_apply_p(x) then
-        ret = real_apply(delay_apply_f(x), delay_apply_xs(x))
+        ret = real_apply(delay_apply_f(x), delay_apply_xs(x), raw)
     else
         ret = x
     end
@@ -489,10 +489,10 @@ function env_foreach(env, f)
         end
     end
 end
-function real_evaluate(env, raw)
+function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
     if any_delay_just_p(x) then
-        return evaluate(env, x)
+        return selfvalraw
     end
     local error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))))
     if construction_p(x) then
@@ -500,7 +500,7 @@ function real_evaluate(env, raw)
         local rest = x
         while not null_p(rest) do
             if any_delay_just_p(rest) then
-                return evaluate(env, x)
+                return selfvalraw
             elseif construction_p(rest) then
                 __TS__ArrayPush(xs, construction_head(rest))
                 rest = force1(construction_tail(rest))
@@ -532,7 +532,7 @@ function real_evaluate(env, raw)
             end
             local f_type = force1(data_name(f))
             if any_delay_just_p(f_type) then
-                return evaluate(env, x)
+                return selfvalraw
             end
             if not symbol_p(f_type) then
                 return error_v
@@ -542,7 +542,7 @@ function real_evaluate(env, raw)
             end
             local f_list = force1(data_list(f))
             if any_delay_just_p(f_list) then
-                return evaluate(env, x)
+                return selfvalraw
             end
             if not construction_p(f_list) then
                 return error_v
@@ -550,7 +550,7 @@ function real_evaluate(env, raw)
             local f_x = construction_head(f_list)
             local f_list_cdr = force1(construction_tail(f_list))
             if any_delay_just_p(f_list_cdr) then
-                return evaluate(env, x)
+                return selfvalraw
             end
             if not null_p(f_list_cdr) then
                 return error_v
@@ -602,13 +602,13 @@ end
 function name_p(x)
     return symbol_p(x) or data_p(x)
 end
-function real_apply(f, xs)
+function real_apply(f, xs, selfvalraw)
     local function make_error_v()
         return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))))
     end
     f = force1(f)
     if any_delay_just_p(f) then
-        return apply(f, xs)
+        return selfvalraw
     end
     if not data_p(f) then
         return make_error_v()
@@ -660,7 +660,7 @@ function real_apply(f, xs)
     end
     return evaluate(env, f_code)
 end
-function real_builtin_func_apply(f, xs)
+function real_builtin_func_apply(f, xs, selfvalraw)
     local error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))))
     do
         local i = 0
@@ -685,7 +685,7 @@ function real_builtin_func_apply(f, xs)
     end
     return error_v
 end
-function real_builtin_form_apply(env, f, xs)
+function real_builtin_form_apply(env, f, xs, selfvalraw)
     local error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs))))
     if jsbool_equal_p(f, quote_form_builtin_systemName) then
         if #xs ~= 1 then

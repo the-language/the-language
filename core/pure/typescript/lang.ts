@@ -494,14 +494,14 @@ function force1(raw: LangVal): LangVal {
     let ret: LangVal
     ASSERT(!just_p(x))
     if (delay_evaluate_p(x)) {
-        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x))
+        ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw)
     }
     else if (delay_builtin_form_p(x)) {
-        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x))
+        ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x), raw)
     } else if (delay_builtin_func_p(x)) {
-        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x))
+        ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x), raw)
     } else if (delay_apply_p(x)) {
-        ret = real_apply(delay_apply_f(x), delay_apply_xs(x))
+        ret = real_apply(delay_apply_f(x), delay_apply_xs(x), raw)
     } else {
         ret = x
     }
@@ -638,10 +638,10 @@ export {
 
 // 相對獨立的部分。變量之環境 }}}
 
-function real_evaluate(env: Env, raw: LangVal): LangVal {
+function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     const x = force1(raw)
     if (any_delay_just_p(x)) {
-        return evaluate(env, x)
+        return selfvalraw
     }
     const error_v = new_error(system_symbol,
         new_list(
@@ -654,7 +654,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
         let rest: LangVal = x
         while (!null_p(rest)) {
             if (any_delay_just_p(rest)) {
-                return evaluate(env, x)
+                return selfvalraw
             } else if (construction_p(rest)) {
                 xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
                 rest = force1(construction_tail(rest))
@@ -684,7 +684,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
             }
             const f_type = force1(data_name(f))
             if (any_delay_just_p(f_type)) {
-                return evaluate(env, x)
+                return selfvalraw
             }
             if (!symbol_p(f_type)) {
                 return error_v
@@ -694,7 +694,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
             }
             const f_list = force1(data_list(f))
             if (any_delay_just_p(f_list)) {
-                return evaluate(env, x)
+                return selfvalraw
             }
             if (!construction_p(f_list)) {
                 return error_v
@@ -702,7 +702,7 @@ function real_evaluate(env: Env, raw: LangVal): LangVal {
             const f_x = construction_head(f_list)
             const f_list_cdr = force1(construction_tail(f_list))
             if (any_delay_just_p(f_list_cdr)) {
-                return evaluate(env, x)
+                return selfvalraw
             }
             if (!null_p(f_list_cdr)) {
                 return error_v
@@ -901,7 +901,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         return error_v
     }],
 ]
-function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
+function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     // WIP delay未正確處理(影響較小)
     function make_error_v() {
         return new_error(system_symbol,
@@ -913,7 +913,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     }
     f = force1(f)
     if (any_delay_just_p(f)) {
-        return apply(f, xs)
+        return selfvalraw
     }
     if (!data_p(f)) {
         return make_error_v()
@@ -963,7 +963,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     return evaluate(env, f_code)
 }
 
-function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
+function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     const error_v = new_error(system_symbol,
         new_list(function_builtin_use_systemName,
             new_list(f, jsArray_to_list(xs))))
@@ -989,7 +989,7 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>): LangVal {
     return error_v
 }
 
-function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>): LangVal {
+function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     const error_v = new_error(system_symbol,
         new_list(form_builtin_use_systemName,
             new_list(env2val(env), f, jsArray_to_list(xs)))) // WIP delay未正確處理(影響較小)
