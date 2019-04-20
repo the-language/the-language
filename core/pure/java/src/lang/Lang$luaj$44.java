@@ -96,13 +96,11 @@ public class Lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
         a12.u6 = a3;
         org.luaj.vm2.LuaTable a13 = org.luaj.vm2.LuaValue.tableOf(0, 0);
         a0[0] = a1;
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$44$2 a14 = new Lang$luaj$44$2();
+        Lang$luaj$44$replace_this_with_stopped a14 = new Lang$luaj$44$replace_this_with_stopped();
         a14.u0 = a5;
         a14.u1 = a12;
         a14.u2 = this.u4;
-        org.luaj.vm2.LuaValue dummy0 = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$44$3 a15 = new Lang$luaj$44$3();
+        Lang$luaj$44$make_history a15 = new Lang$luaj$44$make_history();
         a15.u0 = this.u5;
         a15.u1 = a13;
         a15.u2 = a3;

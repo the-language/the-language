@@ -7,10 +7,10 @@ source-map@^0.7.3:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
-typescript-to-lua@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.17.0.tgz#3f067ffc2914308c15140be2178f60196d08ad06"
-  integrity sha512-aERhnPkSwMq2krTh+n48A8TfXKqOl7pGJOnDV99jrLdVzyli1HxOq3rwYtRHUQYNWEMzB5Ynpndn+jUlDfhJhQ==
+typescript-to-lua@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.18.0.tgz#f528ccb5455a0ad73ab2237dd8bd5093b21526de"
+  integrity sha512-kl5ZqbthFFfOcd/vR0mmp2n/Ahw4fbv5/yFGuEPD4Eb7DYMvQHnMtRHO9OaE2P9YBXdUhtcysR17NobDo/apSQ==
   dependencies:
     source-map "^0.7.3"
     typescript "^3.3.1"

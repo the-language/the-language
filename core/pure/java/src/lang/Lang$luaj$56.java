@@ -48,8 +48,7 @@ public class Lang$luaj$56 extends org.luaj.vm2.lib.VarArgFunction {
         if (a5[0].eq_b(org.luaj.vm2.LuaValue.NIL)) {
             a5[0] = org.luaj.vm2.LuaValue.FALSE;
         }
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$56$0 a6 = new Lang$luaj$56$0();
+        Lang$luaj$56$make_error_v a6 = new Lang$luaj$56$make_error_v();
         a6.u0 = a5;
         a6.u1 = this.u0;
         a6.u2 = this.u1;
@@ -61,8 +60,7 @@ public class Lang$luaj$56 extends org.luaj.vm2.lib.VarArgFunction {
         a6.u8 = this.u6;
         a6.u9 = a2;
         a6.u10 = a3;
-        org.luaj.vm2.LuaValue dummy0 = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$56$1 a7 = new Lang$luaj$56$1();
+        Lang$luaj$56$make_quote a7 = new Lang$luaj$56$make_quote();
         a7.u0 = this.u2;
         a7.u1 = this.u3;
         a7.u2 = this.u7;
