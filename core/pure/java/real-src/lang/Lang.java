@@ -54,8 +54,9 @@ public final class Lang {
     // globals.load(new CoroutineLib());
     // LoadState.install(globals);
     // LuaC.install(globals);
-    exports = (LuaTable)((LuaValue)(new lang_luaj()))
-                  .call();
+    LuaValue lang_luaj = (LuaValue)(new lang_luaj());
+    lang_luaj.initupvalue1(globals);
+    exports = (LuaTable)(lang_luaj).call();
     complex_parse = exports.get("complex_parse");
     complex_print = exports.get("complex_print");
     simple_parse = exports.get("simple_parse");
