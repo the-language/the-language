@@ -99,21 +99,6 @@ extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val) {
   memcpy(ret, rawret, len + 1);
   return ret;
 }
-extern lang_value *lang_simple_parse_orNULL(lang_state *L, const char *str) {
-  assert(lua_gettop(L->L) == 0);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
-  lua_getfield(L->L, -1, "simple_parse");
-  lua_remove(L->L, -2);
-  lua_pushstring(L->L, str);
-  lua_call(L->L, 1, 1);
-  lang_value *ret = lang_value_from_lua_orNULL(L);
-  if (NULL == ret) {
-    lua_settop(L->L, 0);
-    return NULL;
-  }
-  assert(lua_gettop(L->L) == 0);
-  return ret;
-}
 extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val) {
   assert(lua_gettop(L->L) == 0);
   lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);

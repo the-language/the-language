@@ -37,7 +37,6 @@ public final class Lang {
   private static LuaTable exports;
   private static LuaValue complex_parse;
   private static LuaValue complex_print;
-  private static LuaValue simple_parse;
   private static LuaValue simple_print;
   private static LuaValue force1;
   private static LuaValue force_all;
@@ -59,7 +58,6 @@ public final class Lang {
     exports = (LuaTable)(lang_luaj).call();
     complex_parse = exports.get("complex_parse");
     complex_print = exports.get("complex_print");
-    simple_parse = exports.get("simple_parse");
     simple_print = exports.get("simple_print");
     force1 = exports.get("force1");
     force_all = exports.get("force_all");
@@ -70,9 +68,6 @@ public final class Lang {
   }
   public static String complex_print(LangValue value) throws Exception {
     return ((LuaString)complex_print.call(value.luavalue)).tojstring();
-  }
-  public static LangValue simple_parse(String source) throws Exception {
-    return new LangValue(simple_parse.call(LuaString.valueOf(source)));
   }
   public static String simple_print(LangValue value) throws Exception {
     return ((LuaString)simple_print.call(value.luavalue)).tojstring();

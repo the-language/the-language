@@ -106,7 +106,7 @@
 (define test-main
   `(begin
      ,@(map
-        (λ (x) `(check-equal? (simple-print (simple-parse ,x)) ,x))
+        (λ (x) `(check-equal? (simple-print (complex-parse ,x)) ,x))
         '("(A B)"
           "!(#(A B) . C)"
           "((A) . #(B C C))"
@@ -161,7 +161,7 @@
           ("$(#(映表 ()) (#(符名 太始初核 (式形 式形)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(式形 #(化滅 (E) E)))))" "#(映表 ())")
           ("$(#(映表 ()) (#(符名 太始初核 (式形 (太始初核 化滅))) #(符名 太始初核 (一類何物 化滅 解算)) (#(符名 太始初核 (式形 (太始初核 式形))) #(符名 太始初核 (一類何物 式形 引用)) #(映表 ())) ()))" "()")))
      ,@(map
-        (match-lambda [(list in out) `(begin (check-equal? (simple-print (complex-parse ,in)) ,out) (check-equal? (complex-print (simple-parse ,out)) ,in))])
+        (match-lambda [(list in out) `(begin (check-equal? (simple-print (complex-parse ,in)) ,out) (check-equal? (complex-print (complex-parse ,out)) ,in))])
         '(("構.符名" "#(符名 太始初核 (一類何物 (化滅 (構) 省略一物) 符名))")
           ("&式形" "#(符名 太始初核 (式形 式形))")
           ("解算:化滅" "#(符名 太始初核 (一類何物 化滅 解算))")
@@ -193,4 +193,3 @@
  (begin
    (displayln "-- PY3 --")
    (py3-run (py3-test-compile test-main)))))
- 

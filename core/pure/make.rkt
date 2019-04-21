@@ -349,7 +349,6 @@ in-dir "typescript" {
                  val2env
                  simple_print
                  simple_print_force_all_rec
-                 simple_parse
                  complex_parse
                  complex_print
                  )))

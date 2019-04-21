@@ -60,7 +60,7 @@ function un_symbol(x) {
 }
 exports.un_symbol = un_symbol;
 function new_construction(x, y) {
-    return [construction_t, x, y]; // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
+    return [construction_t, x, y]; // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
 }
 exports.new_construction = new_construction;
 function construction_p(x) {
@@ -1135,7 +1135,7 @@ function jsbool_no_force_equal_p(x, y) {
     }
     return ERROR();
 }
-// {{{ 相對獨立的部分。simple parser/printer
+// {{{ 相對獨立的部分。simple printer
 function simple_print(x) {
     // [[[ 大量重複代碼 simple_print <-> complex_print
     x = un_just_all(x);
@@ -1192,8 +1192,9 @@ function simple_print_force_all_rec(x) {
     return simple_print(force_all_rec(x));
 }
 exports.simple_print_force_all_rec = simple_print_force_all_rec;
-function simple_parse(x) {
-    // [[[ 大量重複代碼 simple_parse <-> complex_parse
+// 相對獨立的部分。simple printer }}}
+// {{{ 相對獨立的部分。complex parser/complex printer
+function complex_parse(x) {
     var state_const = x;
     var state = 0;
     function eof() {
@@ -1292,7 +1293,7 @@ function simple_parse(x) {
                 return ERROR();
             }
             // x[2]是construction_tail
-            x[2] = lst; // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
+            x[2] = lst; // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
         }
         function last_add(x) {
             set_last(new_construction(x, HOLE));
@@ -1453,7 +1454,7 @@ function simple_parse(x) {
     }
     function val() {
         space();
-        var fs = [list, symbol, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+        var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
         for (var i = 0; i < fs.length; i++) {
             var x_2 = fs[i]();
             if (x_2 !== false) {
@@ -1462,282 +1463,7 @@ function simple_parse(x) {
         }
         return parse_error();
     }
-    return val(); // 大量重複代碼 simple_parse <-> complex_parse ]]]
-}
-exports.simple_parse = simple_parse;
-// 相對獨立的部分。simple parser/printer }}}
-// {{{ 相對獨立的部分。complex parser/complex printer
-function complex_parse(x) {
-    // [[[ 大量重複代碼 simple_parse <-> complex_parse
-    var state_const = x;
-    var state = 0;
-    function eof() {
-        return state_const.length === state;
-    }
-    function get() {
-        ASSERT(!eof());
-        var ret = state_const[state];
-        state++;
-        return ret;
-    }
-    function put(x) {
-        ASSERT(state_const[state - 1] === x);
-        state--;
-    }
-    function parse_error(x) {
-        if (x === void 0) { x = ""; }
-        throw "TheLanguage parse ERROR!" + x;
-    }
-    function a_space_p(x) {
-        return x === " " || x === "\n" || x === "\t" || x === "\r";
-    }
-    function space() {
-        if (eof()) {
-            return false;
-        }
-        var x = get();
-        if (!a_space_p(x)) {
-            put(x);
-            return false;
-        }
-        while (a_space_p(x) && !eof()) {
-            x = get();
-        }
-        if (!a_space_p(x)) {
-            put(x);
-        }
-        return true;
-    }
-    function symbol() {
-        if (eof()) {
-            return false;
-        }
-        var x = get();
-        var ret = "";
-        if (!a_symbol_p(x)) {
-            put(x);
-            return false;
-        }
-        while (a_symbol_p(x) && !eof()) {
-            ret += x;
-            x = get();
-        }
-        if (a_symbol_p(x)) {
-            ret += x;
-        }
-        else {
-            put(x);
-        }
-        if (!(ret in symbols_set)) {
-            parse_error("Not Symbol" + ret);
-        }
-        return new_symbol(ret);
-    }
-    function list() {
-        if (eof()) {
-            return false;
-        }
-        var x = get();
-        if (x !== "(") {
-            put(x);
-            return false;
-        }
-        var HOLE = new_symbol('!!@@READ||HOLE@@!!');
-        var ret = HOLE;
-        function set_last(lst) {
-            if (ret === HOLE) {
-                ret = lst;
-                return;
-            }
-            var x = ret;
-            while (true) {
-                if (!construction_p(x)) {
-                    return ERROR();
-                }
-                var d = construction_tail(x);
-                if (d === HOLE) {
-                    break;
-                }
-                x = construction_tail(x);
-            }
-            if (!construction_p(x)) {
-                return ERROR();
-            }
-            if (construction_tail(x) !== HOLE) {
-                return ERROR();
-            }
-            // x[2]是construction_tail
-            x[2] = lst; // 實現底層依賴[編號 0] simple_parse, complex_parse <-> 內建數據結構
-        }
-        function last_add(x) {
-            set_last(new_construction(x, HOLE));
-        }
-        while (true) {
-            space();
-            if (eof()) {
-                return parse_error();
-            }
-            x = get();
-            if (x === ")") {
-                set_last(null_v);
-                return ret;
-            }
-            if (x === ".") {
-                space();
-                var e_2 = val();
-                set_last(e_2);
-                space();
-                if (eof()) {
-                    return parse_error();
-                }
-                x = get();
-                if (x !== ")") {
-                    return parse_error();
-                }
-                return ret;
-            }
-            put(x);
-            var e = val();
-            last_add(e);
-        }
-    }
-    function data() {
-        if (eof()) {
-            return false;
-        }
-        var x = get();
-        if (x !== "#") {
-            put(x);
-            return false;
-        }
-        var xs = list();
-        if (xs === false) {
-            return parse_error();
-        }
-        if (!construction_p(xs)) {
-            return parse_error();
-        }
-        return new_data(construction_head(xs), construction_tail(xs));
-    }
-    function readerror() {
-        if (eof()) {
-            return false;
-        }
-        var x = get();
-        if (x !== "!") {
-            put(x);
-            return false;
-        }
-        var xs = list();
-        if (xs === false) {
-            return parse_error();
-        }
-        if (!construction_p(xs)) {
-            return parse_error();
-        }
-        return new_error(construction_head(xs), construction_tail(xs));
-    }
-    function make_read_two(prefix, k) {
-        return function () {
-            if (eof()) {
-                return false;
-            }
-            var c = get();
-            if (c !== prefix) {
-                put(c);
-                return false;
-            }
-            var xs = list();
-            if (xs === false) {
-                return parse_error();
-            }
-            if (!construction_p(xs)) {
-                return parse_error();
-            }
-            var x = construction_tail(xs);
-            if (!(construction_p(x) && null_p(construction_tail(x)))) {
-                return parse_error();
-            }
-            return k(construction_head(xs), construction_head(x));
-        };
-    }
-    function make_read_three(prefix, k) {
-        return function () {
-            if (eof()) {
-                return false;
-            }
-            var c = get();
-            if (c !== prefix) {
-                put(c);
-                return false;
-            }
-            var xs = list();
-            if (xs === false) {
-                return parse_error();
-            }
-            if (!construction_p(xs)) {
-                return parse_error();
-            }
-            var x = construction_tail(xs);
-            if (!construction_p(x)) {
-                return parse_error();
-            }
-            var x_d = construction_tail(x);
-            if (!(construction_p(x_d) && null_p(construction_tail(x_d)))) {
-                return parse_error();
-            }
-            return k(construction_head(xs), construction_head(x), construction_head(x_d));
-        };
-    }
-    var readeval = make_read_two("$", function (e, x) {
-        var env = val2env(e);
-        if (env === false) {
-            return parse_error();
-        }
-        return evaluate(env, x);
-    });
-    var readfuncapply = make_read_two("%", function (f, xs) {
-        var jsxs = list_to_jsArray(xs, function (xs) { return xs; }, function (xs, y) { return parse_error(); });
-        return builtin_func_apply(f, jsxs);
-    });
-    var readformbuiltin = make_read_three("@", function (e, f, xs) {
-        var jsxs = list_to_jsArray(xs, function (xs) { return xs; }, function (xs, y) { return parse_error(); });
-        var env = val2env(e);
-        if (env === false) {
-            return parse_error();
-        }
-        return builtin_form_apply(env, f, jsxs);
-    });
-    var readapply = make_read_two("^", function (f, xs) {
-        var jsxs = list_to_jsArray(xs, function (xs) { return xs; }, function (xs, y) { return parse_error(); });
-        return apply(f, jsxs);
-    });
-    function a_symbol_p(x) {
-        if (a_space_p(x)) {
-            return false;
-        }
-        var not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@",
-            '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
-        ];
-        for (var i = 0; i < not_xs.length; i++) {
-            if (x === not_xs[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-    function val() {
-        space();
-        var fs = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
-        for (var i = 0; i < fs.length; i++) {
-            var x_3 = fs[i]();
-            if (x_3 !== false) {
-                return x_3;
-            }
-        }
-        return parse_error();
-    }
-    return val(); // 大量重複代碼 simple_parse <-> complex_parse ]]]
+    return val();
     function un_maybe(x) {
         if (x === false) {
             return parse_error();
@@ -1760,54 +1486,54 @@ function complex_parse(x) {
             un_maybe(not_eof());
             var c0 = get();
             if (c0 === '+') {
-                var x_4 = readsysname_no_pack_inner_must();
-                return new_list(form_symbol, new_list(system_symbol, x_4));
+                var x_3 = readsysname_no_pack_inner_must();
+                return new_list(form_symbol, new_list(system_symbol, x_3));
             }
             else {
                 put(c0);
             }
-            var x_5 = readsysname_no_pack_inner_must();
-            return new_list(form_symbol, x_5);
+            var x_4 = readsysname_no_pack_inner_must();
+            return new_list(form_symbol, x_4);
         }
         else if (head === ':') {
             un_maybe(not_eof());
             var c0 = get();
             if (c0 === '&') {
                 assert_get('>');
-                var x_6 = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x_6)), theThing_symbol);
+                var x_5 = readsysname_no_pack_inner_must();
+                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x_5)), theThing_symbol);
             }
             else if (c0 === '>') {
-                var x_7 = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_7), theThing_symbol);
+                var x_6 = readsysname_no_pack_inner_must();
+                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_6), theThing_symbol);
             }
             else {
                 put(c0);
             }
-            var x_8 = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, x_8, theThing_symbol);
+            var x_7 = readsysname_no_pack_inner_must();
+            return new_list(typeAnnotation_symbol, x_7, theThing_symbol);
         }
         else if (head === '+') {
-            var x_9 = readsysname_no_pack_inner_must();
-            return new_list(system_symbol, x_9);
+            var x_8 = readsysname_no_pack_inner_must();
+            return new_list(system_symbol, x_8);
         }
         else if (head === '[') {
-            var x_10 = readsysname_no_pack_inner_must();
+            var x_9 = readsysname_no_pack_inner_must();
             assert_get(']');
-            return may_xfx_xf(x_10);
+            return may_xfx_xf(x_9);
         }
         else if (head === '_') {
             assert_get(':');
-            var x_11 = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, x_11, something_symbol);
+            var x_10 = readsysname_no_pack_inner_must();
+            return new_list(typeAnnotation_symbol, x_10, something_symbol);
         }
         else {
             put(head);
-            var x_12 = symbol();
-            if (x_12 === false) {
+            var x_11 = symbol();
+            if (x_11 === false) {
                 return false;
             }
-            return may_xfx_xf(x_12);
+            return may_xfx_xf(x_11);
         }
         return ERROR();
         function readsysname_no_pack_inner_must(strict) {
@@ -1824,9 +1550,9 @@ function complex_parse(x) {
                 [list, readsysname_no_pack, data,
                     readerror, readeval, readfuncapply, readformbuiltin, readapply];
             for (var i = 0; i < fs.length; i++) {
-                var x_13 = fs[i]();
-                if (x_13 !== false) {
-                    return x_13;
+                var x_12 = fs[i]();
+                if (x_12 !== false) {
+                    return x_12;
                 }
             }
             return parse_error();
@@ -1985,7 +1711,7 @@ function complex_print(val) {
         return ERROR();
     }
     // [[[ 大量重複代碼 simple_print <-> complex_print
-    var x = simple_parse(simple_print(val)); // 去除所有just
+    var x = complex_parse(simple_print(val)); // 去除所有just
     var temp = "";
     var prefix = "";
     if (null_p(x)) {
