@@ -21,7 +21,7 @@ local __TS__ArrayPush = function(arr, item)
     return #arr
 end
 local ____exports = {}
-local ERROR, ASSERT, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
+local ERROR, ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
 function ERROR()
     error("TheLanguage PANIC")
 end
@@ -31,7 +31,7 @@ function ASSERT(x)
     end
 end
 function symbol_p(x)
-    return x[0 + 1] == 0
+    return x[0 + 1] == symbol_t
 end
 function un_symbol(x)
     return x[1 + 1]
@@ -823,7 +823,7 @@ function simple_print(x)
     end
     return ERROR()
 end
-local symbol_t = 0
+symbol_t = 0
 construction_t = 1
 null_t = 2
 data_t = 3
@@ -887,6 +887,106 @@ local head_symbol = new_symbol("首")
 local tail_symbol = new_symbol("尾")
 local thing_symbol = new_symbol("物")
 local theWorldStopped_symbol = new_symbol("宇宙亡矣")
+local symbols_set = {
+    ["丙"] = true,
+    ["乙"] = true,
+    ["省略一物"] = true,
+    ["解算"] = true,
+    ["若"] = true,
+    ["是非"] = true,
+    ["引用"] = true,
+    ["化滅"] = true,
+    ["等同"] = true,
+    ["甲"] = true,
+    ["應用"] = true,
+    A = true,
+    l = true,
+    ["映表"] = true,
+    v = true,
+    ["6"] = true,
+    E = true,
+    N = true,
+    U = true,
+    Q = true,
+    x = true,
+    ["5"] = true,
+    D = true,
+    ["1"] = true,
+    a = true,
+    ["0"] = true,
+    ["陰"] = true,
+    ["符名"] = true,
+    e = true,
+    t = true,
+    ["4"] = true,
+    ["物"] = true,
+    P = true,
+    y = true,
+    V = true,
+    F = true,
+    d = true,
+    ["列"] = true,
+    ["詞素"] = true,
+    ["空"] = true,
+    ["丁"] = true,
+    ["太始初核"] = true,
+    ["為符名連"] = true,
+    ["特定其物"] = true,
+    ["效應"] = true,
+    ["首"] = true,
+    ["連"] = true,
+    ["自"] = true,
+    ["參形"] = true,
+    h = true,
+    g = true,
+    R = true,
+    r = true,
+    c = true,
+    J = true,
+    ["2"] = true,
+    ["陽"] = true,
+    i = true,
+    X = true,
+    ["8"] = true,
+    ["其子"] = true,
+    f = true,
+    O = true,
+    u = true,
+    T = true,
+    ["一類何物"] = true,
+    q = true,
+    m = true,
+    b = true,
+    K = true,
+    p = true,
+    ["出入改滅"] = true,
+    Y = true,
+    H = true,
+    n = true,
+    G = true,
+    W = true,
+    ["誤"] = true,
+    L = true,
+    j = true,
+    ["9"] = true,
+    C = true,
+    o = true,
+    w = true,
+    ["7"] = true,
+    I = true,
+    M = true,
+    s = true,
+    ["3"] = true,
+    z = true,
+    Z = true,
+    S = true,
+    k = true,
+    B = true,
+    ["式形"] = true,
+    ["構"] = true,
+    ["尾"] = true,
+    ["宇宙亡矣"] = true,
+}
 the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 local function systemName_make(x)
     return new_data(name_symbol, new_list(system_symbol, x))
@@ -1283,8 +1383,11 @@ local function simple_parse(x)
         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
         state = state - 1
     end
-    function parse_error()
-        error("TheLanguage parse ERROR!")
+    function parse_error(x)
+        if x == nil then
+            x = ""
+        end
+        error("TheLanguage parse ERROR!" .. tostring(x))
     end
     function a_space_p(x)
         return x == " " or x == "\n" or x == "\t" or x == "\r"
@@ -1324,6 +1427,9 @@ local function simple_parse(x)
             ret = tostring(ret) .. tostring(x)
         else
             put(x)
+        end
+        if not (symbols_set[ret] ~= nil) then
+            parse_error("Not Symbol" .. tostring(ret))
         end
         return new_symbol(ret)
     end
@@ -1585,8 +1691,11 @@ local function complex_parse(x)
         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
         state = state - 1
     end
-    function parse_error()
-        error("TheLanguage parse ERROR!")
+    function parse_error(x)
+        if x == nil then
+            x = ""
+        end
+        error("TheLanguage parse ERROR!" .. tostring(x))
     end
     function a_space_p(x)
         return x == " " or x == "\n" or x == "\t" or x == "\r"
@@ -1626,6 +1735,9 @@ local function complex_parse(x)
             ret = tostring(ret) .. tostring(x)
         else
             put(x)
+        end
+        if not (symbols_set[ret] ~= nil) then
+            parse_error("Not Symbol" .. tostring(ret))
         end
         return new_symbol(ret)
     end

@@ -9,7 +9,7 @@ var = Scope( JS_BUILTINS )
 set_global_object(var)
 
 # Code follows:
-var.registers([u'Ra', u'lb', u'Ba', u'Wa', u'cb', u'tb', u'ta', u'exports', u'D', u'ya', u'H', u'db', u'L', u'Oa', u'da', u'P', u'T', u'X', u'qa', u'qb', u'Ga', u'x', u'gb', u'ea', u'za', u'eb', u'Pa', u'ba', u'wa', u'ra', u'rb', u'Ha', u'Ma', u'wb', u'G', u'K', u'O', u'S', u'W', u'Ua', u'ja', u'jb', u'Qa', u'k', u'Ea', u'Za', u'oa', u'kb', u'xb', u'Na', u'xa', u'$a', u'pb', u'Fa', u'pa', u'Ka', u'B', u'F', u'J', u'N', u'R', u'hb', u'ha', u'ma', u'mb', u'Xa', u'z', u'ua', u'ub', u'aa', u'va', u'vb', u'ab', u'La', u'ia', u'ib', u'Ta', u'q', u'Ya', u'na', u'nb', u'Da', u'A', u'Q', u'fa', u'fb', u'U', u'Aa', u'Va', u'ka', u'bb', u'Ia', u'sb', u'sa'])
+var.registers([u'Ra', u'lb', u'Ba', u'Wa', u'cb', u'tb', u'ta', u'exports', u'D', u'ya', u'H', u'yb', u'db', u'L', u'Oa', u'da', u'P', u'T', u'X', u'qa', u'qb', u'Ga', u'x', u'gb', u'ea', u'za', u'eb', u'Pa', u'ba', u'wa', u'ra', u'rb', u'Ha', u'Ma', u'wb', u'G', u'K', u'O', u'S', u'W', u'Ua', u'ja', u'jb', u'Qa', u'k', u'Ea', u'Za', u'oa', u'kb', u'xb', u'Na', u'xa', u'$a', u'Fa', u'pa', u'Ka', u'B', u'F', u'J', u'N', u'R', u'hb', u'ha', u'ma', u'mb', u'Xa', u'z', u'ua', u'ub', u'aa', u'va', u'vb', u'ab', u'La', u'ob', u'ia', u'ib', u'Ta', u'q', u'Ya', u'na', u'nb', u'Da', u'A', u'Q', u'fa', u'fb', u'U', u'Aa', u'Va', u'ka', u'bb', u'Ia', u'sb', u'sa'])
 @Js
 def PyJsHoisted_aa_(a, b, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
@@ -18,349 +18,63 @@ def PyJsHoisted_aa_(a, b, this, arguments, var=var):
 PyJsHoisted_aa_.func_name = u'aa'
 var.put(u'aa', PyJsHoisted_aa_)
 @Js
-def PyJsHoisted_vb_(a, b, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'b'])
-    @Js
-    def PyJs_anonymous_13_(c, this, arguments, var=var):
-        var = Scope({u'this':this, u'c':c, u'arguments':arguments}, var)
-        var.registers([u'c'])
-        var.put(u'c', var.get(u'U')(var.get(u'c')))
-        return (var.get(u'ma')(var.get(u'a'), Js([var.get(u'c')])) if var.get(u'R')(var.get(u'c')) else (var.get(u'eb') if var.get(u'b')(var.get(u'c')) else var.get(u'db')))
-    PyJs_anonymous_13_._set_name(u'anonymous')
-    return Js([var.get(u'a'), Js(1.0), PyJs_anonymous_13_])
+def PyJsHoisted_vb_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'e', u'd', u'l'])
+    var.put(u'a', var.get(u'G')(var.get(u'a')))
+    if var.get(u'B')(var.get(u'a')).neg():
+        return Js(1.0).neg()
+    var.put(u'b', var.get(u'G')(var.get(u'a').get(u'1')))
+    if (var.get(u'q')(var.get(u'b')).neg() or var.get(u'gb')(var.get(u'b'), var.get(u'qa')).neg()):
+        return Js(1.0).neg()
+    var.put(u'b', var.get(u'G')(var.get(u'a').get(u'2')))
+    if (var.get(u'x')(var.get(u'b')).neg() or var.get(u'A')(var.get(u'G')(var.get(u'b').get(u'2'))).neg()):
+        return Js(1.0).neg()
+    var.put(u'a', Js([]))
+    #for JS loop
+    var.put(u'b', var.get(u'G')(var.get(u'b').get(u'1')))
+    while var.get(u'A')(var.get(u'b')).neg():
+        if var.get(u'x')(var.get(u'b')).neg():
+            return Js(1.0).neg()
+        var.put(u'c', var.get(u'G')(var.get(u'b').get(u'1')))
+        var.put(u'b', var.get(u'G')(var.get(u'b').get(u'2')))
+        if var.get(u'x')(var.get(u'c')).neg():
+            return Js(1.0).neg()
+        var.put(u'd', var.get(u'c').get(u'1'))
+        var.put(u'c', var.get(u'G')(var.get(u'c').get(u'2')))
+        if var.get(u'x')(var.get(u'c')).neg():
+            return Js(1.0).neg()
+        var.put(u'e', var.get(u'c').get(u'1'))
+        if var.get(u'A')(var.get(u'G')(var.get(u'c').get(u'2'))).neg():
+            return Js(1.0).neg()
+        var.put(u'c', Js(0.0).neg())
+        #for JS loop
+        var.put(u'l', Js(0.0))
+        while (var.get(u'l')<var.get(u'a').get(u'length')):
+            try:
+                if var.get(u'T')(var.get(u'a').get((var.get(u'l')+Js(0.0))), var.get(u'd')):
+                    var.get(u'a').put((var.get(u'l')+Js(1.0)), var.get(u'e'))
+                    var.put(u'c', Js(1.0).neg())
+                    break
+            finally:
+                    var.put(u'l', Js(2.0), u'+')
+        (var.get(u'c') and PyJsComma(var.get(u'a').callprop(u'push', var.get(u'd')),var.get(u'a').callprop(u'push', var.get(u'e'))))
+    
+    return var.get(u'a')
 PyJsHoisted_vb_.func_name = u'vb'
 var.put(u'vb', PyJsHoisted_vb_)
 @Js
-def PyJsHoisted_xb_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd', u'Ca', u'I', u'M', u'ca', u'la', u'm', u'l', u'n', u'p', u'u', u'V', u'Y', u'E', u'Sa', u'Ja'])
+def PyJsHoisted_xb_(a, b, c, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
     @Js
-    def PyJsHoisted_c_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        (var.get(u'b')().neg() or var.get(u'k')())
-        var.put(u'h', var.get(u'E').get(var.get(u'I')))
-        (var.put(u'I',Js(var.get(u'I').to_number())+Js(1))-Js(1))
-        return var.get(u'h')
-    PyJsHoisted_c_.func_name = u'c'
-    var.put(u'c', PyJsHoisted_c_)
-    @Js
-    def PyJsHoisted_b_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([])
-        return PyJsStrictEq(var.get(u'E').get(u'length'),var.get(u'I'))
-    PyJsHoisted_b_.func_name = u'b'
-    var.put(u'b', PyJsHoisted_b_)
-    @Js
-    def PyJsHoisted_e_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([])
-        PyJsTempException = JsToPyException(Js(u'TheLanguage parse ERROR!'))
-        raise PyJsTempException
-    PyJsHoisted_e_.func_name = u'e'
-    var.put(u'e', PyJsHoisted_e_)
-    @Js
-    def PyJsHoisted_d_(h, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        (PyJsStrictEq(var.get(u'E').get((var.get(u'I')-Js(1.0))),var.get(u'h')) or var.get(u'k')())
-        (var.put(u'I',Js(var.get(u'I').to_number())-Js(1))+Js(1))
-    PyJsHoisted_d_.func_name = u'd'
-    var.put(u'd', PyJsHoisted_d_)
-    @Js
-    def PyJsHoisted_M_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        if var.get(u'b')():
-            return Js(1.0).neg()
-        var.put(u'h', var.get(u'c')())
-        if PyJsStrictNeq(Js(u'!'),var.get(u'h')):
-            return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
-        var.put(u'h', var.get(u'n')())
-        return (Js([Js(4.0), var.get(u'h').get(u'1'), var.get(u'h').get(u'2')]) if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'h')) and var.get(u'x')(var.get(u'h'))) else var.get(u'e')())
-    PyJsHoisted_M_.func_name = u'M'
-    var.put(u'M', PyJsHoisted_M_)
-    @Js
-    def PyJsHoisted_ca_(h, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments}, var)
-        var.registers([u'h', u't', u'v'])
-        if var.get(u'l')(var.get(u'h')):
-            return Js(1.0).neg()
-        #for JS loop
-        var.put(u'v', Js(u'()!#.$%^@~/->_:?[]&').callprop(u'split', Js(u'')))
-        var.put(u't', Js(0.0))
-        while (var.get(u't')<var.get(u'v').get(u'length')):
-            try:
-                if PyJsStrictEq(var.get(u'h'),var.get(u'v').get(var.get(u't'))):
-                    return Js(1.0).neg()
-            finally:
-                    (var.put(u't',Js(var.get(u't').to_number())+Js(1))-Js(1))
-        return Js(0.0).neg()
-    PyJsHoisted_ca_.func_name = u'ca'
-    var.put(u'ca', PyJsHoisted_ca_)
-    @Js
-    def PyJsHoisted_m_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        if var.get(u'b')():
-            return Js(1.0).neg()
-        var.put(u'h', var.get(u'c')())
-        if var.get(u'l')(var.get(u'h')).neg():
-            return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
-        #for JS loop
-        
-        while (var.get(u'l')(var.get(u'h')) and var.get(u'b')().neg()):
-            var.put(u'h', var.get(u'c')())
-        
-        (var.get(u'l')(var.get(u'h')) or var.get(u'd')(var.get(u'h')))
-        return Js(0.0).neg()
-    PyJsHoisted_m_.func_name = u'm'
-    var.put(u'm', PyJsHoisted_m_)
-    @Js
-    def PyJsHoisted_l_(h, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        return (((PyJsStrictEq(Js(u' '),var.get(u'h')) or PyJsStrictEq(Js(u'\n'),var.get(u'h'))) or PyJsStrictEq(Js(u'\t'),var.get(u'h'))) or PyJsStrictEq(Js(u'\r'),var.get(u'h')))
-    PyJsHoisted_l_.func_name = u'l'
-    var.put(u'l', PyJsHoisted_l_)
-    @Js
-    def PyJsHoisted_n_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h', u'C', u't', u'v'])
-        @Js
-        def PyJsHoisted_h_(f, this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments, u'f':f}, var)
-            var.registers([u'r', u'f'])
-            if PyJsStrictEq(var.get(u'C'),var.get(u't')):
-                var.put(u'C', var.get(u'f'))
-            else:
-                #for JS loop
-                var.put(u'r', var.get(u'C'))
-                while 1:
-                    if var.get(u'x')(var.get(u'r')).neg():
-                        return var.get(u'k')()
-                    if PyJsStrictEq(var.get(u'r').get(u'2'),var.get(u't')):
-                        break
-                    var.put(u'r', var.get(u'r').get(u'2'))
-                
-                if (var.get(u'x')(var.get(u'r')).neg() or PyJsStrictNeq(var.get(u'r').get(u'2'),var.get(u't'))):
-                    return var.get(u'k')()
-                var.get(u'r').put(u'2', var.get(u'f'))
-        PyJsHoisted_h_.func_name = u'h'
-        var.put(u'h', PyJsHoisted_h_)
-        pass
-        if var.get(u'b')():
-            return Js(1.0).neg()
-        var.put(u'v', var.get(u'c')())
-        if PyJsStrictNeq(Js(u'('),var.get(u'v')):
-            return PyJsComma(var.get(u'd')(var.get(u'v')),Js(1.0).neg())
-        #for JS loop
-        var.put(u't', Js([Js(0.0), Js(u'!!@@READ||HOLE@@!!')]))
-        var.put(u'C', var.get(u't'))
-        while 1:
-            var.get(u'm')()
-            if var.get(u'b')():
-                return var.get(u'e')()
-            var.put(u'v', var.get(u'c')())
-            if PyJsStrictEq(Js(u')'),var.get(u'v')):
-                return PyJsComma(var.get(u'h')(var.get(u'z')),var.get(u'C'))
-            if PyJsStrictEq(Js(u'.'),var.get(u'v')):
-                var.get(u'm')()
-                var.put(u'v', var.get(u'Y')())
-                var.get(u'h')(var.get(u'v'))
-                var.get(u'm')()
-                if var.get(u'b')():
-                    return var.get(u'e')()
-                var.put(u'v', var.get(u'c')())
-                return (var.get(u'e')() if PyJsStrictNeq(Js(u')'),var.get(u'v')) else var.get(u'C'))
-            var.get(u'd')(var.get(u'v'))
-            var.put(u'v', var.get(u'Y')())
-            var.get(u'h')(Js([Js(1.0), var.get(u'v'), var.get(u't')]))
-        
-    PyJsHoisted_n_.func_name = u'n'
-    var.put(u'n', PyJsHoisted_n_)
-    @Js
-    def PyJsHoisted_p_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h', u'v'])
-        if var.get(u'b')():
-            return Js(1.0).neg()
-        var.put(u'h', var.get(u'c')())
-        var.put(u'v', Js(u''))
-        if var.get(u'ca')(var.get(u'h')).neg():
-            return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
-        #for JS loop
-        
-        while (var.get(u'ca')(var.get(u'h')) and var.get(u'b')().neg()):
-            PyJsComma(var.put(u'v', var.get(u'h'), u'+'),var.put(u'h', var.get(u'c')()))
-        
-        (var.put(u'v', var.get(u'h'), u'+') if var.get(u'ca')(var.get(u'h')) else var.get(u'd')(var.get(u'h')))
-        return Js([Js(0.0), var.get(u'v')])
-    PyJsHoisted_p_.func_name = u'p'
-    var.put(u'p', PyJsHoisted_p_)
-    @Js
-    def PyJsHoisted_u_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h'])
-        if var.get(u'b')():
-            return Js(1.0).neg()
-        var.put(u'h', var.get(u'c')())
-        if PyJsStrictNeq(Js(u'#'),var.get(u'h')):
-            return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
-        var.put(u'h', var.get(u'n')())
-        return (Js([Js(3.0), var.get(u'h').get(u'1'), var.get(u'h').get(u'2')]) if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'h')) and var.get(u'x')(var.get(u'h'))) else var.get(u'e')())
-    PyJsHoisted_u_.func_name = u'u'
-    var.put(u'u', PyJsHoisted_u_)
-    @Js
-    def PyJsHoisted_V_(h, v, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u'v'])
-        @Js
-        def PyJs_anonymous_28_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([u'C', u't'])
-            if var.get(u'b')():
-                return Js(1.0).neg()
-            var.put(u't', var.get(u'c')())
-            if PyJsStrictNeq(var.get(u't'),var.get(u'h')):
-                return PyJsComma(var.get(u'd')(var.get(u't')),Js(1.0).neg())
-            var.put(u't', var.get(u'n')())
-            if (PyJsStrictEq(Js(1.0).neg(),var.get(u't')) or var.get(u'x')(var.get(u't')).neg()):
-                return var.get(u'e')()
-            var.put(u'C', var.get(u't').get(u'2'))
-            return (var.get(u'v')(var.get(u't').get(u'1'), var.get(u'C').get(u'1')) if (var.get(u'x')(var.get(u'C')) and var.get(u'A')(var.get(u'C').get(u'2'))) else var.get(u'e')())
-        PyJs_anonymous_28_._set_name(u'anonymous')
-        return PyJs_anonymous_28_
-    PyJsHoisted_V_.func_name = u'V'
-    var.put(u'V', PyJsHoisted_V_)
-    @Js
-    def PyJsHoisted_Y_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'h', u't', u'v'])
-        var.get(u'm')()
-        #for JS loop
-        var.put(u'h', Js([var.get(u'n'), var.get(u'p'), var.get(u'u'), var.get(u'M'), var.get(u'Ja'), var.get(u'Sa'), var.get(u'Ca'), var.get(u'la')]))
-        var.put(u'v', Js(0.0))
-        while (var.get(u'v')<var.get(u'h').get(u'length')):
-            try:
-                var.put(u't', var.get(u'h').callprop(var.get(u'v')))
-                if PyJsStrictNeq(Js(1.0).neg(),var.get(u't')):
-                    return var.get(u't')
-            finally:
-                    (var.put(u'v',Js(var.get(u'v').to_number())+Js(1))-Js(1))
-        return var.get(u'e')()
-    PyJsHoisted_Y_.func_name = u'Y'
-    var.put(u'Y', PyJsHoisted_Y_)
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    pass
-    var.put(u'E', var.get(u'a'))
-    var.put(u'I', Js(0.0))
-    @Js
-    def PyJs_anonymous_29_(h, v, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u't', u'v'])
-        var.put(u't', var.get(u'ub')(var.get(u'h')))
-        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u't')) else Js([Js(6.0), var.get(u't'), var.get(u'v')]))
-    PyJs_anonymous_29_._set_name(u'anonymous')
-    var.put(u'Ja', var.get(u'V')(Js(u'$'), PyJs_anonymous_29_))
-    @Js
-    def PyJs_anonymous_30_(h, v, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u't', u'v'])
-        @Js
-        def PyJs_anonymous_31_(C, this, arguments, var=var):
-            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
-            var.registers([u'C'])
-            return var.get(u'C')
-        PyJs_anonymous_31_._set_name(u'anonymous')
-        @Js
-        def PyJs_anonymous_32_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([])
-            return var.get(u'e')()
-        PyJs_anonymous_32_._set_name(u'anonymous')
-        var.put(u't', var.get(u'gb')(var.get(u'v'), PyJs_anonymous_31_, PyJs_anonymous_32_))
-        return Js([Js(7.0), var.get(u'h'), var.get(u't')])
-    PyJs_anonymous_30_._set_name(u'anonymous')
-    var.put(u'Sa', var.get(u'V')(Js(u'%'), PyJs_anonymous_30_))
-    @Js
-    def PyJs_anonymous_33_(h, v, t, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u't':t, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u't', u'v'])
-        @Js
-        def PyJs_anonymous_34_(C, this, arguments, var=var):
-            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
-            var.registers([u'C'])
-            return var.get(u'C')
-        PyJs_anonymous_34_._set_name(u'anonymous')
-        @Js
-        def PyJs_anonymous_35_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([])
-            return var.get(u'e')()
-        PyJs_anonymous_35_._set_name(u'anonymous')
-        var.put(u't', var.get(u'gb')(var.get(u't'), PyJs_anonymous_34_, PyJs_anonymous_35_))
-        var.put(u'h', var.get(u'ub')(var.get(u'h')))
-        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'h')) else Js([Js(8.0), var.get(u'h'), var.get(u'v'), var.get(u't')]))
-    PyJs_anonymous_33_._set_name(u'anonymous')
-    @Js
-    def PyJs_anonymous_36_(h, v, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u'v'])
-        @Js
-        def PyJs_anonymous_37_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([u'C', u't', u'f'])
-            if var.get(u'b')():
-                return Js(1.0).neg()
-            var.put(u't', var.get(u'c')())
-            if PyJsStrictNeq(var.get(u't'),var.get(u'h')):
-                return PyJsComma(var.get(u'd')(var.get(u't')),Js(1.0).neg())
-            var.put(u't', var.get(u'n')())
-            if (PyJsStrictEq(Js(1.0).neg(),var.get(u't')) or var.get(u'x')(var.get(u't')).neg()):
-                return var.get(u'e')()
-            var.put(u'C', var.get(u't').get(u'2'))
-            if var.get(u'x')(var.get(u'C')).neg():
-                return var.get(u'e')()
-            var.put(u'f', var.get(u'C').get(u'2'))
-            return (var.get(u'v')(var.get(u't').get(u'1'), var.get(u'C').get(u'1'), var.get(u'f').get(u'1')) if (var.get(u'x')(var.get(u'f')) and var.get(u'A')(var.get(u'f').get(u'2'))) else var.get(u'e')())
-        PyJs_anonymous_37_._set_name(u'anonymous')
-        return PyJs_anonymous_37_
-    PyJs_anonymous_36_._set_name(u'anonymous')
-    var.put(u'Ca', PyJs_anonymous_36_(Js(u'@'), PyJs_anonymous_33_))
-    @Js
-    def PyJs_anonymous_38_(h, v, this, arguments, var=var):
-        var = Scope({u'this':this, u'h':h, u'arguments':arguments, u'v':v}, var)
-        var.registers([u'h', u't', u'v'])
-        @Js
-        def PyJs_anonymous_39_(C, this, arguments, var=var):
-            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
-            var.registers([u'C'])
-            return var.get(u'C')
-        PyJs_anonymous_39_._set_name(u'anonymous')
-        @Js
-        def PyJs_anonymous_40_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([])
-            return var.get(u'e')()
-        PyJs_anonymous_40_._set_name(u'anonymous')
-        var.put(u't', var.get(u'gb')(var.get(u'v'), PyJs_anonymous_39_, PyJs_anonymous_40_))
-        return Js([Js(9.0), var.get(u'h'), var.get(u't')])
-    PyJs_anonymous_38_._set_name(u'anonymous')
-    var.put(u'la', var.get(u'V')(Js(u'^'), PyJs_anonymous_38_))
-    return var.get(u'Y')()
+    def PyJs_anonymous_15_(d, e, this, arguments, var=var):
+        var = Scope({u'this':this, u'e':e, u'd':d, u'arguments':arguments}, var)
+        var.registers([u'e', u'd'])
+        var.put(u'd', var.get(u'U')(var.get(u'd')))
+        return (var.get(u'ma')(var.get(u'a'), Js([var.get(u'd')])) if var.get(u'R')(var.get(u'd')) else (var.get(u'c')(var.get(u'd')) if var.get(u'b')(var.get(u'd')) else var.get(u'e')))
+    PyJs_anonymous_15_._set_name(u'anonymous')
+    return Js([var.get(u'a'), Js(1.0), PyJs_anonymous_15_])
 PyJsHoisted_xb_.func_name = u'xb'
 var.put(u'xb', PyJsHoisted_xb_)
 @Js
@@ -371,15 +85,10 @@ def PyJsHoisted_ea_(a, b, this, arguments, var=var):
 PyJsHoisted_ea_.func_name = u'ea'
 var.put(u'ea', PyJsHoisted_ea_)
 @Js
-def PyJsHoisted_gb_(a, b, c, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'd'])
-    #for JS loop
-    var.put(u'd', Js([]))
-    while var.get(u'x')(var.get(u'a')):
-        PyJsComma(var.get(u'd').callprop(u'push', var.get(u'a').get(u'1')),var.put(u'a', var.get(u'a').get(u'2')))
-    
-    return (var.get(u'b')(var.get(u'd')) if var.get(u'A')(var.get(u'a')) else var.get(u'c')(var.get(u'd'), var.get(u'a')))
+def PyJsHoisted_gb_(a, b, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'b'])
+    return (Js(0.0).neg() if PyJsStrictEq(var.get(u'a'),var.get(u'b')) else (PyJsComma(var.get(u'F')(var.get(u'a'), var.get(u'b')),Js(0.0).neg()) if PyJsStrictEq(var.get(u'a').get(u'1'),var.get(u'b').get(u'1')) else Js(1.0).neg()))
 PyJsHoisted_gb_.func_name = u'gb'
 var.put(u'gb', PyJsHoisted_gb_)
 @Js
@@ -392,20 +101,20 @@ var.put(u'ia', PyJsHoisted_ia_)
 @Js
 def PyJsHoisted_ib_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
-    #for JS loop
-    var.put(u'b', Js([]))
-    while PyJsStrictEq(Js(5.0),var.get(u'a').get(u'0')):
-        PyJsComma(var.get(u'b').callprop(u'push', var.get(u'a')),var.put(u'a', var.get(u'a').get(u'1')))
-    
-    #for JS loop
-    var.put(u'c', Js(0.0))
-    while (var.get(u'c')<var.get(u'b').get(u'length')):
-        try:
-            var.get(u'F')(var.get(u'b').get(var.get(u'c')), var.get(u'a'))
-        finally:
-                (var.put(u'c',Js(var.get(u'c').to_number())+Js(1))-Js(1))
-    return var.get(u'a')
+    var.registers([u'a'])
+    @Js
+    def PyJs_anonymous_7_(b, this, arguments, var=var):
+        var = Scope({u'this':this, u'b':b, u'arguments':arguments}, var)
+        var.registers([u'b'])
+        return var.get(u'b')
+    PyJs_anonymous_7_._set_name(u'anonymous')
+    @Js
+    def PyJs_anonymous_8_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([])
+        return Js(1.0).neg()
+    PyJs_anonymous_8_._set_name(u'anonymous')
+    return var.get(u'hb')(var.get(u'a'), PyJs_anonymous_7_, PyJs_anonymous_8_)
 PyJsHoisted_ib_.func_name = u'ib'
 var.put(u'ib', PyJsHoisted_ib_)
 @Js
@@ -416,65 +125,25 @@ def PyJsHoisted_D_(a, this, arguments, var=var):
 PyJsHoisted_D_.func_name = u'D'
 var.put(u'D', PyJsHoisted_D_)
 @Js
-def PyJsHoisted_lb_(a, b, c, d, this, arguments, var=var):
-    var = Scope({u'a':a, u'c':c, u'b':b, u'd':d, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd', u'm', u'l', u'p'])
-    (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'd')) and var.put(u'd', Js(1.0).neg()))
-    var.put(u'b', var.get(u'na')(var.get(u'b')))
+def PyJsHoisted_lb_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
     #for JS loop
-    var.put(u'e', Js([]))
-    var.put(u'l', Js(1.0).neg())
-    var.put(u'm', var.get(u'b'))
-    while var.get(u'A')(var.get(u'm')).neg():
-        if (var.get(u'q')(var.get(u'm')) or var.get(u'B')(var.get(u'm'))):
-            PyJsComma(PyJsComma(var.get(u'e').callprop(u'push', var.get(u'm')),var.put(u'l', Js(0.0).neg())),var.put(u'm', var.get(u'z')))
-        else:
-            if var.get(u'x')(var.get(u'm')):
-                PyJsComma(var.get(u'e').callprop(u'push', var.get(u'm').get(u'1')),var.put(u'm', var.get(u'm').get(u'2')))
-            else:
-                return (var.get(u'ia')(var.get(u'H'), var.get(u'O')(var.get(u'bb'), var.get(u'O')(var.get(u'kb')(var.get(u'a')), var.get(u'$a'), var.get(u'Q')(Js([var.get(u'b'), var.get(u'c')]))))) if PyJsStrictEq(Js(1.0).neg(),var.get(u'd')) else var.get(u'd'))
-    
-    var.put(u'd', var.get(u'b'))
-    (var.get(u'l') and var.put(u'd', var.get(u'Q')(var.get(u'e'))))
-    var.put(u'p', Js([]))
-    @Js
-    def PyJs_anonymous_21_(n, this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments, u'n':n}, var)
-        var.registers([u'u', u'n'])
-        #for JS loop
-        var.put(u'u', Js(0.0))
-        while (var.get(u'u')<var.get(u'e').get(u'length')):
-            try:
-                if var.get(u'T')(var.get(u'e').get(var.get(u'u')), var.get(u'n')):
-                    return var.get('undefined')
-            finally:
-                    (var.put(u'u',Js(var.get(u'u').to_number())+Js(1))-Js(1))
-        var.get(u'p').callprop(u'push', var.get(u'n'))
-    PyJs_anonymous_21_._set_name(u'anonymous')
-    var.get(u'tb')(var.get(u'a'), PyJs_anonymous_21_)
-    var.put(u'l', var.get(u'd'))
-    #for JS loop
-    var.put(u'm', (var.get(u'p').get(u'length')-Js(1.0)))
-    while (Js(0.0)<=var.get(u'm')):
+    var.put(u'b', var.get(u'z'))
+    var.put(u'c', Js(0.0))
+    while (var.get(u'c')<var.get(u'a').get(u'length')):
         try:
-            var.put(u'l', Js([Js(1.0), var.get(u'p').get(var.get(u'm')), var.get(u'l')]))
+            var.put(u'b', Js([Js(1.0), var.get(u'O')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'a').get((var.get(u'c')+Js(1.0)))), var.get(u'b')]))
         finally:
-                (var.put(u'm',Js(var.get(u'm').to_number())-Js(1))+Js(1))
-    #for JS loop
-    var.put(u'm', (var.get(u'p').get(u'length')-Js(1.0)))
-    while (Js(0.0)<=var.get(u'm')):
-        try:
-            var.put(u'd', var.get(u'aa')(var.get(u'O')(var.get(u'bb'), var.get(u'Za'), var.get(u'sb')(var.get(u'a'), var.get(u'p').get(var.get(u'm')))), var.get(u'd')))
-        finally:
-                (var.put(u'm',Js(var.get(u'm').to_number())-Js(1))+Js(1))
-    return Js([Js(3.0), var.get(u'J'), var.get(u'O')(var.get(u'b'), Js([Js(1.0), var.get(u'O')(var.get(u'bb'), var.get(u'Za'), Js([Js(3.0), var.get(u'J'), var.get(u'O')(var.get(u'l'), var.get(u'c'))])), var.get(u'd')]))])
+                var.put(u'c', Js(2.0), u'+')
+    return Js([Js(3.0), var.get(u'qa'), var.get(u'O')(var.get(u'b'))])
 PyJsHoisted_lb_.func_name = u'lb'
 var.put(u'lb', PyJsHoisted_lb_)
 @Js
-def PyJsHoisted_Ba_(a, b, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'b'])
-    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'O')(var.get(u'a')), var.get(u'L')), var.get(u'b')))
+def PyJsHoisted_Ba_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a'])
+    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'a')), var.get(u'pa')))
 PyJsHoisted_Ba_.func_name = u'Ba'
 var.put(u'Ba', PyJsHoisted_Ba_)
 @Js
@@ -495,81 +164,39 @@ def PyJsHoisted_na_(a, this, arguments, var=var):
 PyJsHoisted_na_.func_name = u'na'
 var.put(u'na', PyJsHoisted_na_)
 @Js
-def PyJsHoisted_nb_(a, b, c, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd', u'm', u'l', u'n', u'p'])
-    @Js
-    def PyJsHoisted_d_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([])
-        return Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'ab'), var.get(u'O')(var.get(u'Va'), var.get(u'O')(var.get(u'a'), var.get(u'Q')(var.get(u'b')))))])
-    PyJsHoisted_d_.func_name = u'd'
-    var.put(u'd', PyJsHoisted_d_)
-    pass
-    var.put(u'a', var.get(u'U')(var.get(u'a')))
-    if var.get(u'R')(var.get(u'a')):
-        return var.get(u'c')
-    if var.get(u'B')(var.get(u'a')).neg():
-        return var.get(u'd')()
-    var.put(u'c', var.get(u'G')(var.get(u'a').get(u'1')))
-    if (var.get(u'q')(var.get(u'c')).neg() or var.get(u'fb')(var.get(u'c'), var.get(u'J')).neg()):
-        return var.get(u'd')()
-    var.put(u'e', var.get(u'G')(var.get(u'a').get(u'2')))
-    if var.get(u'x')(var.get(u'e')).neg():
-        return var.get(u'd')()
-    var.put(u'c', var.get(u'na')(var.get(u'e').get(u'1')))
-    var.put(u'e', var.get(u'G')(var.get(u'e').get(u'2')))
-    if (var.get(u'x')(var.get(u'e')).neg() or var.get(u'A')(var.get(u'G')(var.get(u'e').get(u'2'))).neg()):
-        return var.get(u'd')()
-    var.put(u'e', var.get(u'e').get(u'1'))
-    #for JS loop
-    var.put(u'l', var.get(u'pb'))
-    var.put(u'm', Js(0.0))
-    while var.get(u'A')(var.get(u'c')).neg():
-        if (var.get(u'q')(var.get(u'c')) or var.get(u'B')(var.get(u'c'))):
-            #for JS loop
-            var.put(u'p', var.get(u'z'))
-            var.put(u'n', (var.get(u'b').get(u'length')-Js(1.0)))
-            while (var.get(u'n')>=var.get(u'm')):
-                try:
-                    var.put(u'p', Js([Js(1.0), var.get(u'b').get(var.get(u'n')), var.get(u'p')]))
-                finally:
-                        (var.put(u'n',Js(var.get(u'n').to_number())-Js(1))+Js(1))
-            var.put(u'l', var.get(u'qb')(var.get(u'l'), var.get(u'c'), var.get(u'p')))
-            var.put(u'm', var.get(u'b').get(u'length'))
-            var.put(u'c', var.get(u'z'))
-        else:
-            if var.get(u'x')(var.get(u'c')):
-                if (var.get(u'm')<var.get(u'b').get(u'length')):
-                    PyJsComma(PyJsComma(PyJsComma(var.put(u'p', var.get(u'b').get(var.get(u'm'))),(var.put(u'm',Js(var.get(u'm').to_number())+Js(1))-Js(1))),var.put(u'l', var.get(u'qb')(var.get(u'l'), var.get(u'c').get(u'1'), var.get(u'p')))),var.put(u'c', var.get(u'c').get(u'2')))
-                else:
-                    return var.get(u'd')()
-            else:
-                return var.get(u'd')()
-    
-    return (var.get(u'd')() if PyJsStrictNeq(var.get(u'b').get(u'length'),var.get(u'm')) else Js([Js(6.0), var.get(u'l'), var.get(u'e')]))
-PyJsHoisted_nb_.func_name = u'nb'
-var.put(u'nb', PyJsHoisted_nb_)
-@Js
-def PyJsHoisted_Da_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a'])
-    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), var.get(u'O')(var.get(u'ra'), var.get(u'O')(var.get(u'N'), var.get(u'a'), var.get(u'L')))))
+def PyJsHoisted_Da_(a, b, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'b'])
+    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'O')(var.get(u'a')), var.get(u'L')), var.get(u'b')))
 PyJsHoisted_Da_.func_name = u'Da'
 var.put(u'Da', PyJsHoisted_Da_)
 @Js
 def PyJsHoisted_rb_(a, b, c, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'd'])
+    var.registers([u'a', u'c', u'b', u'e', u'd'])
     #for JS loop
-    var.put(u'd', Js(0.0))
-    while (var.get(u'd')<var.get(u'a').get(u'length')):
+    var.put(u'd', Js([]))
+    var.put(u'e', Js(0.0))
+    while (var.get(u'e')<var.get(u'a').get(u'length')):
         try:
-            if var.get(u'T')(var.get(u'a').get((var.get(u'd')+Js(0.0))), var.get(u'b')):
-                return var.get(u'a').get((var.get(u'd')+Js(1.0)))
+            if var.get(u'T')(var.get(u'a').get((var.get(u'e')+Js(0.0))), var.get(u'b')):
+                var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'b'))
+                var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'c'))
+                #for JS loop
+                var.put(u'e', Js(2.0), u'+')
+                while (var.get(u'e')<var.get(u'a').get(u'length')):
+                    try:
+                        PyJsComma(var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'a').get((var.get(u'e')+Js(0.0)))),var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'a').get((var.get(u'e')+Js(1.0)))))
+                    finally:
+                            var.put(u'e', Js(2.0), u'+')
+                return var.get(u'd')
+            var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'a').get((var.get(u'e')+Js(0.0))))
+            var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'a').get((var.get(u'e')+Js(1.0))))
         finally:
-                var.put(u'd', Js(2.0), u'+')
-    return var.get(u'c')
+                var.put(u'e', Js(2.0), u'+')
+    var.get(u'd').put((var.get(u'a').get(u'length')+Js(0.0)), var.get(u'b'))
+    var.get(u'd').put((var.get(u'a').get(u'length')+Js(1.0)), var.get(u'c'))
+    return var.get(u'd')
 PyJsHoisted_rb_.func_name = u'rb'
 var.put(u'rb', PyJsHoisted_rb_)
 @Js
@@ -580,9 +207,11 @@ def PyJsHoisted_tb_(a, b, this, arguments, var=var):
     var.put(u'c', Js(0.0))
     while (var.get(u'c')<var.get(u'a').get(u'length')):
         try:
-            var.get(u'b')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'a').get((var.get(u'c')+Js(1.0))))
+            if var.get(u'T')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'b')):
+                return var.get(u'a').get((var.get(u'c')+Js(1.0)))
         finally:
                 var.put(u'c', Js(2.0), u'+')
+    return var.get(u'k')()
 PyJsHoisted_tb_.func_name = u'tb'
 var.put(u'tb', PyJsHoisted_tb_)
 @Js
@@ -593,15 +222,15 @@ def PyJsHoisted_A_(a, this, arguments, var=var):
 PyJsHoisted_A_.func_name = u'A'
 var.put(u'A', PyJsHoisted_A_)
 @Js
-def PyJsHoisted_wb_(a, b, c, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
+def PyJsHoisted_wb_(a, b, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'b'])
     @Js
-    def PyJs_anonymous_14_(d, e, this, arguments, var=var):
-        var = Scope({u'this':this, u'e':e, u'd':d, u'arguments':arguments}, var)
-        var.registers([u'e', u'd'])
-        var.put(u'd', var.get(u'U')(var.get(u'd')))
-        return (var.get(u'ma')(var.get(u'a'), Js([var.get(u'd')])) if var.get(u'R')(var.get(u'd')) else (var.get(u'c')(var.get(u'd')) if var.get(u'b')(var.get(u'd')) else var.get(u'e')))
+    def PyJs_anonymous_14_(c, this, arguments, var=var):
+        var = Scope({u'this':this, u'c':c, u'arguments':arguments}, var)
+        var.registers([u'c'])
+        var.put(u'c', var.get(u'U')(var.get(u'c')))
+        return (var.get(u'ma')(var.get(u'a'), Js([var.get(u'c')])) if var.get(u'R')(var.get(u'c')) else (var.get(u'fb') if var.get(u'b')(var.get(u'c')) else var.get(u'eb')))
     PyJs_anonymous_14_._set_name(u'anonymous')
     return Js([var.get(u'a'), Js(1.0), PyJs_anonymous_14_])
 PyJsHoisted_wb_.func_name = u'wb'
@@ -623,20 +252,20 @@ var.put(u'ba', PyJsHoisted_ba_)
 @Js
 def PyJsHoisted_G_(a, b, c, d, this, arguments, var=var):
     var = Scope({u'a':a, u'c':c, u'b':b, u'd':d, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd', u'M', u'ca', u'm', u'l', u'n', u'p', u'u', u'V', u'Y'])
+    var.registers([u'a', u'c', u'b', u'e', u'd', u'M', u'ca', u'V', u'm', u'l', u'n', u'p', u'v', u'Y'])
     @Js
     def PyJsHoisted_m_(E, this, arguments, var=var):
         var = Scope({u'this':this, u'E':E, u'arguments':arguments}, var)
         var.registers([u'E'])
         var.get(u'e')(var.get(u'E'))
-        return (PyJsComma(var.get(u'd').callprop(u'push', var.get(u'u')),var.get(u'G')(var.get(u'E'), var.get(u'b'), Js([Js(1.0).neg(), Js(1.0).neg()]), var.get(u'd'))) if var.get(u'R')(var.get(u'E')) else var.get(u'E'))
+        return (PyJsComma(var.get(u'd').callprop(u'push', var.get(u'v')),var.get(u'G')(var.get(u'E'), var.get(u'b'), Js([Js(1.0).neg(), Js(1.0).neg()]), var.get(u'd'))) if var.get(u'R')(var.get(u'E')) else var.get(u'E'))
     PyJsHoisted_m_.func_name = u'm'
     var.put(u'm', PyJsHoisted_m_)
     @Js
     def PyJsHoisted_e_(E, this, arguments, var=var):
         var = Scope({u'this':this, u'E':E, u'arguments':arguments}, var)
         var.registers([u'I', u'E'])
-        var.get(u'F')(var.get(u'u'), var.get(u'E'))
+        var.get(u'F')(var.get(u'v'), var.get(u'E'))
         #for JS loop
         var.put(u'I', Js(0.0))
         while (var.get(u'I')<var.get(u'd').get(u'length')):
@@ -652,15 +281,15 @@ def PyJsHoisted_G_(a, b, c, d, this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
         var.registers([])
         var.get(u'c').put(u'1', Js(0.0).neg())
-        return var.get(u'm')(var.get(u'za'))
+        return var.get(u'm')(var.get(u'Aa'))
     PyJsHoisted_l_.func_name = u'l'
     var.put(u'l', PyJsHoisted_l_)
     @Js
     def PyJsHoisted_p_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
         var.registers([u'I', u'E'])
-        PyJs_Object_8_ = Js({})
-        var.put(u'E', PyJs_Object_8_)
+        PyJs_Object_9_ = Js({})
+        var.put(u'E', PyJs_Object_9_)
         for PyJsTemp in var.get(u'n'):
             var.put(u'I', PyJsTemp)
             var.get(u'E').put(var.get(u'I'), Js(0.0).neg())
@@ -674,27 +303,27 @@ def PyJsHoisted_G_(a, b, c, d, this, arguments, var=var):
     pass
     pass
     pass
-    PyJs_Object_9_ = Js({})
-    (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'b')) and var.put(u'b', PyJs_Object_9_))
+    PyJs_Object_10_ = Js({})
+    (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'b')) and var.put(u'b', PyJs_Object_10_))
     (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'c')) and var.put(u'c', Js([Js(1.0).neg(), Js(1.0).neg()])))
     (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'd')) and var.put(u'd', Js([])))
     #for JS loop
-    PyJs_Object_10_ = Js({})
-    var.put(u'n', PyJs_Object_10_)
-    var.put(u'u', var.get(u'a'))
-    while var.get(u'R')(var.get(u'u')):
-        var.put(u'a', var.get(u'S')(var.get(u'u')))
+    PyJs_Object_11_ = Js({})
+    var.put(u'n', PyJs_Object_11_)
+    var.put(u'v', var.get(u'a'))
+    while var.get(u'R')(var.get(u'v')):
+        var.put(u'a', var.get(u'S')(var.get(u'v')))
         if PyJsStrictEq(Js(0.0).neg(),var.get(u'b').get(var.get(u'a'))):
             return var.get(u'l')()
         if PyJsStrictEq(Js(0.0).neg(),var.get(u'n').get(var.get(u'a'))):
             var.get(u'c').put(u'0', Js(0.0).neg())
-            if PyJsStrictEq(Js(6.0),var.get(u'u').get(u'0')):
+            if PyJsStrictEq(Js(6.0),var.get(u'v').get(u'0')):
                 return var.get(u'l')()
-            if PyJsStrictEq(Js(7.0),var.get(u'u').get(u'0')):
-                var.put(u'a', var.get(u'u').get(u'1'))
+            if PyJsStrictEq(Js(7.0),var.get(u'v').get(u'0')):
+                var.put(u'a', var.get(u'v').get(u'1'))
                 #for JS loop
-                var.put(u'M', var.get(u'u').get(u'2'))
-                var.put(u'V', Js([var.get(u'Fa'), var.get(u'Ga'), var.get(u'Ha'), var.get(u'Ka'), var.get(u'La'), var.get(u'Ma'), var.get(u'Oa'), var.get(u'Pa'), var.get(u'Qa'), var.get(u'Ra'), var.get(u'Ta')]))
+                var.put(u'M', var.get(u'v').get(u'2'))
+                var.put(u'V', Js([var.get(u'Ga'), var.get(u'Ha'), var.get(u'Ia'), var.get(u'La'), var.get(u'Ma'), var.get(u'Na'), var.get(u'Pa'), var.get(u'Qa'), var.get(u'Ra'), var.get(u'Ta'), var.get(u'Ua')]))
                 var.put(u'ca', Js(1.0).neg())
                 var.put(u'Y', Js(0.0))
                 while (var.get(u'Y')<var.get(u'V').get(u'length')):
@@ -704,19 +333,19 @@ def PyJsHoisted_G_(a, b, c, d, this, arguments, var=var):
                             (var.put(u'Y',Js(var.get(u'Y').to_number())+Js(1))-Js(1))
                 if var.get(u'ca'):
                     return PyJsComma(PyJsComma(PyJsComma((PyJsStrictEq(Js(1.0),var.get(u'M').get(u'length')) or var.get(u'k')()),(PyJsStrictEq(Js(1.0).neg(),var.get(u'c').get(u'1')) or var.get(u'k')())),var.put(u'M', var.get(u'G')(var.get(u'M').get(u'0'), var.get(u'p')(), var.get(u'c')))),(var.get(u'm')(var.get(u'ma')(var.get(u'a'), Js([var.get(u'M')]))) if var.get(u'c').get(u'1') else var.get(u'k')()))
-                if ((var.get(u'T')(var.get(u'a'), var.get(u'Ua')) or var.get(u'T')(var.get(u'a'), var.get(u'Va'))) or var.get(u'T')(var.get(u'a'), var.get(u'Wa'))):
+                if ((var.get(u'T')(var.get(u'a'), var.get(u'Va')) or var.get(u'T')(var.get(u'a'), var.get(u'Wa'))) or var.get(u'T')(var.get(u'a'), var.get(u'Xa'))):
                     return var.get(u'l')()
-                if (var.get(u'T')(var.get(u'a'), var.get(u'Ya')) and PyJsComma(PyJsComma(PyJsComma((PyJsStrictEq(Js(3.0),var.get(u'M').get(u'length')) or var.get(u'k')()),(PyJsStrictEq(Js(1.0).neg(),var.get(u'c').get(u'1')) or var.get(u'k')())),var.put(u'a', var.get(u'G')(var.get(u'M').get(u'0'), var.get(u'p')(), var.get(u'c')))),var.get(u'c').get(u'1'))):
-                    return var.get(u'm')(var.get(u'ma')(var.get(u'Ya'), Js([var.get(u'a'), var.get(u'M').get(u'1'), var.get(u'M').get(u'2')])))
+                if (var.get(u'T')(var.get(u'a'), var.get(u'Za')) and PyJsComma(PyJsComma(PyJsComma((PyJsStrictEq(Js(3.0),var.get(u'M').get(u'length')) or var.get(u'k')()),(PyJsStrictEq(Js(1.0).neg(),var.get(u'c').get(u'1')) or var.get(u'k')())),var.put(u'a', var.get(u'G')(var.get(u'M').get(u'0'), var.get(u'p')(), var.get(u'c')))),var.get(u'c').get(u'1'))):
+                    return var.get(u'm')(var.get(u'ma')(var.get(u'Za'), Js([var.get(u'a'), var.get(u'M').get(u'1'), var.get(u'M').get(u'2')])))
             else:
-                if (PyJsStrictEq(Js(8.0),var.get(u'u').get(u'0')) or PyJsStrictEq(Js(9.0),var.get(u'u').get(u'0'))):
+                if (PyJsStrictEq(Js(8.0),var.get(u'v').get(u'0')) or PyJsStrictEq(Js(9.0),var.get(u'v').get(u'0'))):
                     return var.get(u'l')()
             return var.get(u'k')()
         var.get(u'n').put(var.get(u'a'), Js(0.0).neg())
-        var.get(u'd').callprop(u'push', var.get(u'u'))
-        var.put(u'u', var.get(u'U')(var.get(u'u')))
+        var.get(u'd').callprop(u'push', var.get(u'v'))
+        var.put(u'v', var.get(u'U')(var.get(u'v')))
     
-    return var.get(u'e')(var.get(u'u'))
+    return var.get(u'e')(var.get(u'v'))
 PyJsHoisted_G_.func_name = u'G'
 var.put(u'G', PyJsHoisted_G_)
 @Js
@@ -726,6 +355,340 @@ def PyJsHoisted_F_(a, b, this, arguments, var=var):
     (PyJsStrictNeq(var.get(u'a'),var.get(u'b')) and PyJsComma(PyJsComma(PyJsComma(var.get(u'a').put(u'0', Js(5.0)),var.get(u'a').put(u'1', var.get(u'b'))),var.get(u'a').put(u'2', Js(1.0).neg())),var.get(u'a').put(u'3', Js(1.0).neg())))
 PyJsHoisted_F_.func_name = u'F'
 var.put(u'F', PyJsHoisted_F_)
+@Js
+def PyJsHoisted_yb_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'e', u'd', u'Ca', u'I', u'M', u'ca', u'V', u'm', u'l', u'n', u'p', u'la', u'v', u'Y', u'E', u'Sa', u'Ja'])
+    @Js
+    def PyJsHoisted_c_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'g'])
+        (var.get(u'b')().neg() or var.get(u'k')())
+        var.put(u'g', var.get(u'E').get(var.get(u'I')))
+        (var.put(u'I',Js(var.get(u'I').to_number())+Js(1))-Js(1))
+        return var.get(u'g')
+    PyJsHoisted_c_.func_name = u'c'
+    var.put(u'c', PyJsHoisted_c_)
+    @Js
+    def PyJsHoisted_b_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([])
+        return PyJsStrictEq(var.get(u'E').get(u'length'),var.get(u'I'))
+    PyJsHoisted_b_.func_name = u'b'
+    var.put(u'b', PyJsHoisted_b_)
+    @Js
+    def PyJsHoisted_e_(g, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'g'])
+        (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'g')) and var.put(u'g', Js(u'')))
+        PyJsTempException = JsToPyException((Js(u'TheLanguage parse ERROR!')+var.get(u'g')))
+        raise PyJsTempException
+    PyJsHoisted_e_.func_name = u'e'
+    var.put(u'e', PyJsHoisted_e_)
+    @Js
+    def PyJsHoisted_d_(g, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'g'])
+        (PyJsStrictEq(var.get(u'E').get((var.get(u'I')-Js(1.0))),var.get(u'g')) or var.get(u'k')())
+        (var.put(u'I',Js(var.get(u'I').to_number())-Js(1))+Js(1))
+    PyJsHoisted_d_.func_name = u'd'
+    var.put(u'd', PyJsHoisted_d_)
+    @Js
+    def PyJsHoisted_M_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'g'])
+        if var.get(u'b')():
+            return Js(1.0).neg()
+        var.put(u'g', var.get(u'c')())
+        if PyJsStrictNeq(Js(u'!'),var.get(u'g')):
+            return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
+        var.put(u'g', var.get(u'n')())
+        return (Js([Js(4.0), var.get(u'g').get(u'1'), var.get(u'g').get(u'2')]) if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'g')) and var.get(u'x')(var.get(u'g'))) else var.get(u'e')())
+    PyJsHoisted_M_.func_name = u'M'
+    var.put(u'M', PyJsHoisted_M_)
+    @Js
+    def PyJsHoisted_ca_(g, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u't', u'g'])
+        if var.get(u'l')(var.get(u'g')):
+            return Js(1.0).neg()
+        #for JS loop
+        var.put(u'u', Js(u'()!#.$%^@~/->_:?[]&').callprop(u'split', Js(u'')))
+        var.put(u't', Js(0.0))
+        while (var.get(u't')<var.get(u'u').get(u'length')):
+            try:
+                if PyJsStrictEq(var.get(u'g'),var.get(u'u').get(var.get(u't'))):
+                    return Js(1.0).neg()
+            finally:
+                    (var.put(u't',Js(var.get(u't').to_number())+Js(1))-Js(1))
+        return Js(0.0).neg()
+    PyJsHoisted_ca_.func_name = u'ca'
+    var.put(u'ca', PyJsHoisted_ca_)
+    @Js
+    def PyJsHoisted_V_(g, u, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u'g'])
+        @Js
+        def PyJs_anonymous_29_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([u'C', u't'])
+            if var.get(u'b')():
+                return Js(1.0).neg()
+            var.put(u't', var.get(u'c')())
+            if PyJsStrictNeq(var.get(u't'),var.get(u'g')):
+                return PyJsComma(var.get(u'd')(var.get(u't')),Js(1.0).neg())
+            var.put(u't', var.get(u'n')())
+            if (PyJsStrictEq(Js(1.0).neg(),var.get(u't')) or var.get(u'x')(var.get(u't')).neg()):
+                return var.get(u'e')()
+            var.put(u'C', var.get(u't').get(u'2'))
+            return (var.get(u'u')(var.get(u't').get(u'1'), var.get(u'C').get(u'1')) if (var.get(u'x')(var.get(u'C')) and var.get(u'A')(var.get(u'C').get(u'2'))) else var.get(u'e')())
+        PyJs_anonymous_29_._set_name(u'anonymous')
+        return PyJs_anonymous_29_
+    PyJsHoisted_V_.func_name = u'V'
+    var.put(u'V', PyJsHoisted_V_)
+    @Js
+    def PyJsHoisted_m_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'g'])
+        if var.get(u'b')():
+            return Js(1.0).neg()
+        var.put(u'g', var.get(u'c')())
+        if var.get(u'l')(var.get(u'g')).neg():
+            return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
+        #for JS loop
+        
+        while (var.get(u'l')(var.get(u'g')) and var.get(u'b')().neg()):
+            var.put(u'g', var.get(u'c')())
+        
+        (var.get(u'l')(var.get(u'g')) or var.get(u'd')(var.get(u'g')))
+        return Js(0.0).neg()
+    PyJsHoisted_m_.func_name = u'm'
+    var.put(u'm', PyJsHoisted_m_)
+    @Js
+    def PyJsHoisted_l_(g, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'g'])
+        return (((PyJsStrictEq(Js(u' '),var.get(u'g')) or PyJsStrictEq(Js(u'\n'),var.get(u'g'))) or PyJsStrictEq(Js(u'\t'),var.get(u'g'))) or PyJsStrictEq(Js(u'\r'),var.get(u'g')))
+    PyJsHoisted_l_.func_name = u'l'
+    var.put(u'l', PyJsHoisted_l_)
+    @Js
+    def PyJsHoisted_n_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'C', u'u', u't', u'g'])
+        @Js
+        def PyJsHoisted_g_(f, this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments, u'f':f}, var)
+            var.registers([u'r', u'f'])
+            if PyJsStrictEq(var.get(u'C'),var.get(u't')):
+                var.put(u'C', var.get(u'f'))
+            else:
+                #for JS loop
+                var.put(u'r', var.get(u'C'))
+                while 1:
+                    if var.get(u'x')(var.get(u'r')).neg():
+                        return var.get(u'k')()
+                    if PyJsStrictEq(var.get(u'r').get(u'2'),var.get(u't')):
+                        break
+                    var.put(u'r', var.get(u'r').get(u'2'))
+                
+                if (var.get(u'x')(var.get(u'r')).neg() or PyJsStrictNeq(var.get(u'r').get(u'2'),var.get(u't'))):
+                    return var.get(u'k')()
+                var.get(u'r').put(u'2', var.get(u'f'))
+        PyJsHoisted_g_.func_name = u'g'
+        var.put(u'g', PyJsHoisted_g_)
+        pass
+        if var.get(u'b')():
+            return Js(1.0).neg()
+        var.put(u'u', var.get(u'c')())
+        if PyJsStrictNeq(Js(u'('),var.get(u'u')):
+            return PyJsComma(var.get(u'd')(var.get(u'u')),Js(1.0).neg())
+        #for JS loop
+        var.put(u't', Js([Js(0.0), Js(u'!!@@READ||HOLE@@!!')]))
+        var.put(u'C', var.get(u't'))
+        while 1:
+            var.get(u'm')()
+            if var.get(u'b')():
+                return var.get(u'e')()
+            var.put(u'u', var.get(u'c')())
+            if PyJsStrictEq(Js(u')'),var.get(u'u')):
+                return PyJsComma(var.get(u'g')(var.get(u'z')),var.get(u'C'))
+            if PyJsStrictEq(Js(u'.'),var.get(u'u')):
+                var.get(u'm')()
+                var.put(u'u', var.get(u'Y')())
+                var.get(u'g')(var.get(u'u'))
+                var.get(u'm')()
+                if var.get(u'b')():
+                    return var.get(u'e')()
+                var.put(u'u', var.get(u'c')())
+                return (var.get(u'e')() if PyJsStrictNeq(Js(u')'),var.get(u'u')) else var.get(u'C'))
+            var.get(u'd')(var.get(u'u'))
+            var.put(u'u', var.get(u'Y')())
+            var.get(u'g')(Js([Js(1.0), var.get(u'u'), var.get(u't')]))
+        
+    PyJsHoisted_n_.func_name = u'n'
+    var.put(u'n', PyJsHoisted_n_)
+    @Js
+    def PyJsHoisted_p_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'u', u'g'])
+        if var.get(u'b')():
+            return Js(1.0).neg()
+        var.put(u'g', var.get(u'c')())
+        var.put(u'u', Js(u''))
+        if var.get(u'ca')(var.get(u'g')).neg():
+            return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
+        #for JS loop
+        
+        while (var.get(u'ca')(var.get(u'g')) and var.get(u'b')().neg()):
+            PyJsComma(var.put(u'u', var.get(u'g'), u'+'),var.put(u'g', var.get(u'c')()))
+        
+        (var.put(u'u', var.get(u'g'), u'+') if var.get(u'ca')(var.get(u'g')) else var.get(u'd')(var.get(u'g')))
+        (var.get(u'za').contains(var.get(u'u')) or var.get(u'e')((Js(u'Not Symbol')+var.get(u'u'))))
+        return Js([Js(0.0), var.get(u'u')])
+    PyJsHoisted_p_.func_name = u'p'
+    var.put(u'p', PyJsHoisted_p_)
+    @Js
+    def PyJsHoisted_v_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'g'])
+        if var.get(u'b')():
+            return Js(1.0).neg()
+        var.put(u'g', var.get(u'c')())
+        if PyJsStrictNeq(Js(u'#'),var.get(u'g')):
+            return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
+        var.put(u'g', var.get(u'n')())
+        return (Js([Js(3.0), var.get(u'g').get(u'1'), var.get(u'g').get(u'2')]) if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'g')) and var.get(u'x')(var.get(u'g'))) else var.get(u'e')())
+    PyJsHoisted_v_.func_name = u'v'
+    var.put(u'v', PyJsHoisted_v_)
+    @Js
+    def PyJsHoisted_Y_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([u'u', u't', u'g'])
+        var.get(u'm')()
+        #for JS loop
+        var.put(u'g', Js([var.get(u'n'), var.get(u'p'), var.get(u'v'), var.get(u'M'), var.get(u'Ja'), var.get(u'Sa'), var.get(u'Ca'), var.get(u'la')]))
+        var.put(u'u', Js(0.0))
+        while (var.get(u'u')<var.get(u'g').get(u'length')):
+            try:
+                var.put(u't', var.get(u'g').callprop(var.get(u'u')))
+                if PyJsStrictNeq(Js(1.0).neg(),var.get(u't')):
+                    return var.get(u't')
+            finally:
+                    (var.put(u'u',Js(var.get(u'u').to_number())+Js(1))-Js(1))
+        return var.get(u'e')()
+    PyJsHoisted_Y_.func_name = u'Y'
+    var.put(u'Y', PyJsHoisted_Y_)
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    pass
+    var.put(u'E', var.get(u'a'))
+    var.put(u'I', Js(0.0))
+    @Js
+    def PyJs_anonymous_30_(g, u, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u't', u'g'])
+        var.put(u't', var.get(u'vb')(var.get(u'g')))
+        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u't')) else Js([Js(6.0), var.get(u't'), var.get(u'u')]))
+    PyJs_anonymous_30_._set_name(u'anonymous')
+    var.put(u'Ja', var.get(u'V')(Js(u'$'), PyJs_anonymous_30_))
+    @Js
+    def PyJs_anonymous_31_(g, u, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u't', u'g'])
+        @Js
+        def PyJs_anonymous_32_(C, this, arguments, var=var):
+            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
+            var.registers([u'C'])
+            return var.get(u'C')
+        PyJs_anonymous_32_._set_name(u'anonymous')
+        @Js
+        def PyJs_anonymous_33_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([])
+            return var.get(u'e')()
+        PyJs_anonymous_33_._set_name(u'anonymous')
+        var.put(u't', var.get(u'hb')(var.get(u'u'), PyJs_anonymous_32_, PyJs_anonymous_33_))
+        return Js([Js(7.0), var.get(u'g'), var.get(u't')])
+    PyJs_anonymous_31_._set_name(u'anonymous')
+    var.put(u'Sa', var.get(u'V')(Js(u'%'), PyJs_anonymous_31_))
+    @Js
+    def PyJs_anonymous_34_(g, u, t, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u't':t, u'g':g, u'arguments':arguments}, var)
+        var.registers([u'u', u't', u'g'])
+        @Js
+        def PyJs_anonymous_35_(C, this, arguments, var=var):
+            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
+            var.registers([u'C'])
+            return var.get(u'C')
+        PyJs_anonymous_35_._set_name(u'anonymous')
+        @Js
+        def PyJs_anonymous_36_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([])
+            return var.get(u'e')()
+        PyJs_anonymous_36_._set_name(u'anonymous')
+        var.put(u't', var.get(u'hb')(var.get(u't'), PyJs_anonymous_35_, PyJs_anonymous_36_))
+        var.put(u'g', var.get(u'vb')(var.get(u'g')))
+        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'g')) else Js([Js(8.0), var.get(u'g'), var.get(u'u'), var.get(u't')]))
+    PyJs_anonymous_34_._set_name(u'anonymous')
+    @Js
+    def PyJs_anonymous_37_(g, u, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u'g'])
+        @Js
+        def PyJs_anonymous_38_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([u'C', u't', u'f'])
+            if var.get(u'b')():
+                return Js(1.0).neg()
+            var.put(u't', var.get(u'c')())
+            if PyJsStrictNeq(var.get(u't'),var.get(u'g')):
+                return PyJsComma(var.get(u'd')(var.get(u't')),Js(1.0).neg())
+            var.put(u't', var.get(u'n')())
+            if (PyJsStrictEq(Js(1.0).neg(),var.get(u't')) or var.get(u'x')(var.get(u't')).neg()):
+                return var.get(u'e')()
+            var.put(u'C', var.get(u't').get(u'2'))
+            if var.get(u'x')(var.get(u'C')).neg():
+                return var.get(u'e')()
+            var.put(u'f', var.get(u'C').get(u'2'))
+            return (var.get(u'u')(var.get(u't').get(u'1'), var.get(u'C').get(u'1'), var.get(u'f').get(u'1')) if (var.get(u'x')(var.get(u'f')) and var.get(u'A')(var.get(u'f').get(u'2'))) else var.get(u'e')())
+        PyJs_anonymous_38_._set_name(u'anonymous')
+        return PyJs_anonymous_38_
+    PyJs_anonymous_37_._set_name(u'anonymous')
+    var.put(u'Ca', PyJs_anonymous_37_(Js(u'@'), PyJs_anonymous_34_))
+    @Js
+    def PyJs_anonymous_39_(g, u, this, arguments, var=var):
+        var = Scope({u'this':this, u'u':u, u'arguments':arguments, u'g':g}, var)
+        var.registers([u'u', u't', u'g'])
+        @Js
+        def PyJs_anonymous_40_(C, this, arguments, var=var):
+            var = Scope({u'this':this, u'C':C, u'arguments':arguments}, var)
+            var.registers([u'C'])
+            return var.get(u'C')
+        PyJs_anonymous_40_._set_name(u'anonymous')
+        @Js
+        def PyJs_anonymous_41_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([])
+            return var.get(u'e')()
+        PyJs_anonymous_41_._set_name(u'anonymous')
+        var.put(u't', var.get(u'hb')(var.get(u'u'), PyJs_anonymous_40_, PyJs_anonymous_41_))
+        return Js([Js(9.0), var.get(u'g'), var.get(u't')])
+    PyJs_anonymous_39_._set_name(u'anonymous')
+    var.put(u'la', var.get(u'V')(Js(u'^'), PyJs_anonymous_39_))
+    return var.get(u'Y')()
+PyJsHoisted_yb_.func_name = u'yb'
+var.put(u'yb', PyJsHoisted_yb_)
 @Js
 def PyJsHoisted_O_(this, arguments, var=var):
     var = Scope({u'this':this, u'arguments':arguments}, var)
@@ -771,12 +734,28 @@ def PyJsHoisted_P_(a, this, arguments, var=var):
 PyJsHoisted_P_.func_name = u'P'
 var.put(u'P', PyJsHoisted_P_)
 @Js
-def PyJsHoisted_fb_(a, b, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'b'])
-    return (Js(0.0).neg() if PyJsStrictEq(var.get(u'a'),var.get(u'b')) else (PyJsComma(var.get(u'F')(var.get(u'a'), var.get(u'b')),Js(0.0).neg()) if PyJsStrictEq(var.get(u'a').get(u'1'),var.get(u'b').get(u'1')) else Js(1.0).neg()))
-PyJsHoisted_fb_.func_name = u'fb'
-var.put(u'fb', PyJsHoisted_fb_)
+def PyJsHoisted_S_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
+    var.put(u'a', var.get(u'jb')(var.get(u'a')))
+    pass
+    if var.get(u'A')(var.get(u'a')):
+        return Js(u'()')
+    if var.get(u'x')(var.get(u'a')):
+        var.put(u'c', Js(u'('))
+        #for JS loop
+        var.put(u'b', Js(u''))
+        while var.get(u'x')(var.get(u'a')):
+            PyJsComma(PyJsComma(var.put(u'c', (var.get(u'b')+var.get(u'S')(var.get(u'a').get(u'1'))), u'+'),var.put(u'b', Js(u' '))),var.put(u'a', var.get(u'jb')(var.get(u'a').get(u'2'))))
+        
+        return var.put(u'c', ((var.get(u'c')+Js(u')')) if var.get(u'A')(var.get(u'a')) else (var.get(u'c')+((Js(u' . ')+var.get(u'S')(var.get(u'a')))+Js(u')')))))
+    def PyJs_LONG_27_(var=var):
+        def PyJs_LONG_26_(var=var):
+            return (((((((Js(u'@(')+var.get(u'S')(var.get(u'lb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'S')(var.get(u'a').get(u'2')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'3'))))+Js(u')')) if PyJsStrictEq(Js(8.0),var.get(u'a').get(u'0')) else (((((Js(u'^(')+var.get(u'S')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(9.0),var.get(u'a').get(u'0')) else var.get(u'k')()))
+        return (var.get(u'a').get(u'1') if var.get(u'q')(var.get(u'a')) else (((((Js(u'$(')+var.get(u'S')(var.get(u'lb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'S')(var.get(u'a').get(u'2')))+Js(u')')) if PyJsStrictEq(Js(6.0),var.get(u'a').get(u'0')) else (((((Js(u'%(')+var.get(u'S')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(7.0),var.get(u'a').get(u'0')) else PyJs_LONG_26_())))
+    return ((Js(u'#')+var.get(u'S')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'B')(var.get(u'a')) else ((Js(u'!')+var.get(u'S')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_27_()))
+PyJsHoisted_S_.func_name = u'S'
+var.put(u'S', PyJsHoisted_S_)
 @Js
 def PyJsHoisted_R_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
@@ -788,38 +767,38 @@ var.put(u'R', PyJsHoisted_R_)
 def PyJsHoisted_U_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
     var.registers([u'a', u'c', u'b', u'e', u'd'])
-    var.put(u'b', var.get(u'ib')(var.get(u'a')))
+    var.put(u'b', var.get(u'jb')(var.get(u'a')))
     (PyJsStrictNeq(Js(5.0),var.get(u'b').get(u'0')) or var.get(u'k')())
     if PyJsStrictEq(Js(6.0),var.get(u'b').get(u'0')):
-        var.put(u'a', var.get(u'jb')(var.get(u'b').get(u'1'), var.get(u'b').get(u'2'), var.get(u'a')))
+        var.put(u'a', var.get(u'kb')(var.get(u'b').get(u'1'), var.get(u'b').get(u'2'), var.get(u'a')))
     else:
         if PyJsStrictEq(Js(8.0),var.get(u'b').get(u'0')):
             var.put(u'a', var.get(u'b').get(u'1'))
             var.put(u'c', var.get(u'b').get(u'2'))
             var.put(u'd', var.get(u'b').get(u'3'))
-            var.put(u'e', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'bb'), var.get(u'O')(var.get(u'kb')(var.get(u'a')), var.get(u'c'), var.get(u'Q')(var.get(u'd'))))]))
-            def PyJs_LONG_11_(var=var):
-                return var.put(u'a', ((var.get(u'e') if PyJsStrictNeq(Js(1.0),var.get(u'd').get(u'length')) else var.get(u'd').get(u'0')) if var.get(u'T')(var.get(u'c'), var.get(u'Za')) else ((var.get(u'e') if PyJsStrictNeq(Js(2.0),var.get(u'd').get(u'length')) else var.get(u'lb')(var.get(u'a'), var.get(u'd').get(u'0'), var.get(u'd').get(u'1'), var.get(u'e'))) if var.get(u'T')(var.get(u'c'), var.get(u'$a')) else var.get(u'e'))))
-            PyJs_LONG_11_()
+            var.put(u'e', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'cb'), var.get(u'O')(var.get(u'lb')(var.get(u'a')), var.get(u'c'), var.get(u'Q')(var.get(u'd'))))]))
+            def PyJs_LONG_12_(var=var):
+                return var.put(u'a', ((var.get(u'e') if PyJsStrictNeq(Js(1.0),var.get(u'd').get(u'length')) else var.get(u'd').get(u'0')) if var.get(u'T')(var.get(u'c'), var.get(u'$a')) else ((var.get(u'e') if PyJsStrictNeq(Js(2.0),var.get(u'd').get(u'length')) else var.get(u'mb')(var.get(u'a'), var.get(u'd').get(u'0'), var.get(u'd').get(u'1'), var.get(u'e'))) if var.get(u'T')(var.get(u'c'), var.get(u'ab')) else var.get(u'e'))))
+            PyJs_LONG_12_()
         else:
             if PyJsStrictEq(Js(7.0),var.get(u'b').get(u'0')):
                 class JS_BREAK_LABEL_61(Exception): pass
                 try:
                     var.put(u'e', var.get(u'b').get(u'1'))
                     var.put(u'a', var.get(u'b').get(u'2'))
-                    var.put(u'c', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'ab'), var.get(u'O')(var.get(u'e'), var.get(u'Q')(var.get(u'a'))))]))
+                    var.put(u'c', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'bb'), var.get(u'O')(var.get(u'e'), var.get(u'Q')(var.get(u'a'))))]))
                     #for JS loop
                     var.put(u'd', Js(0.0))
-                    while (var.get(u'd')<var.get(u'mb').get(u'length')):
+                    while (var.get(u'd')<var.get(u'nb').get(u'length')):
                         try:
-                            if var.get(u'T')(var.get(u'e'), var.get(u'mb').get(var.get(u'd')).get(u'0')):
-                                var.put(u'e', var.get(u'mb').get(var.get(u'd')).get(u'1'))
+                            if var.get(u'T')(var.get(u'e'), var.get(u'nb').get(var.get(u'd')).get(u'0')):
+                                var.put(u'e', var.get(u'nb').get(var.get(u'd')).get(u'1'))
                                 if PyJsStrictNeq(var.get(u'a').get(u'length'),var.get(u'e')):
                                     break
-                                var.put(u'd', var.get(u'mb').get(var.get(u'd')).get(u'2'))
-                                def PyJs_LONG_12_(var=var):
+                                var.put(u'd', var.get(u'nb').get(var.get(u'd')).get(u'2'))
+                                def PyJs_LONG_13_(var=var):
                                     return var.put(u'a', (var.get(u'd')(var.get(u'a').get(u'0'), var.get(u'c')) if PyJsStrictEq(Js(1.0),var.get(u'e')) else (var.get(u'd')(var.get(u'a').get(u'0'), var.get(u'a').get(u'1'), var.get(u'c')) if PyJsStrictEq(Js(2.0),var.get(u'e')) else (var.get(u'd')(var.get(u'a').get(u'0'), var.get(u'a').get(u'1'), var.get(u'a').get(u'2'), var.get(u'c')) if PyJsStrictEq(Js(3.0),var.get(u'e')) else var.get(u'k')()))))
-                                PyJs_LONG_12_()
+                                PyJs_LONG_13_()
                                 raise JS_BREAK_LABEL_61("Breaked")
                         finally:
                                 (var.put(u'd',Js(var.get(u'd').to_number())+Js(1))-Js(1))
@@ -827,8 +806,8 @@ def PyJsHoisted_U_(a, this, arguments, var=var):
                 except JS_BREAK_LABEL_61:
                     pass
             else:
-                var.put(u'a', (var.get(u'nb')(var.get(u'b').get(u'1'), var.get(u'b').get(u'2'), var.get(u'a')) if PyJsStrictEq(Js(9.0),var.get(u'b').get(u'0')) else var.get(u'b')))
-    var.put(u'a', var.get(u'ib')(var.get(u'a')))
+                var.put(u'a', (var.get(u'ob')(var.get(u'b').get(u'1'), var.get(u'b').get(u'2'), var.get(u'a')) if PyJsStrictEq(Js(9.0),var.get(u'b').get(u'0')) else var.get(u'b')))
+    var.put(u'a', var.get(u'jb')(var.get(u'a')))
     var.get(u'F')(var.get(u'b'), var.get(u'a'))
     return var.get(u'a')
 PyJsHoisted_U_.func_name = u'U'
@@ -857,9 +836,9 @@ def PyJsHoisted_T_(a, b, this, arguments, var=var):
         var.get(u'F')(var.get(u'a'), var.get(u'z'))
         var.get(u'F')(var.get(u'b'), var.get(u'z'))
         return Js(0.0).neg()
-    def PyJs_LONG_22_(var=var):
+    def PyJs_LONG_23_(var=var):
         return ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ba'), var.get(u'da')) if var.get(u'x')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'x')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ja'), var.get(u'ka')) if var.get(u'D')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'D')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'fa'), var.get(u'ha')) if var.get(u'B')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'B')(var.get(u'a')) else var.get(u'k')())))
-    return ((var.get(u'fb')(var.get(u'a'), var.get(u'b')) if var.get(u'q')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'q')(var.get(u'a')) else PyJs_LONG_22_())
+    return ((var.get(u'gb')(var.get(u'a'), var.get(u'b')) if var.get(u'q')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'q')(var.get(u'a')) else PyJs_LONG_23_())
 PyJsHoisted_T_.func_name = u'T'
 var.put(u'T', PyJsHoisted_T_)
 @Js
@@ -876,8 +855,8 @@ def PyJsHoisted_W_(a, b, this, arguments, var=var):
     pass
     if PyJsStrictEq(var.get(u'a'),var.get(u'b')):
         return Js(0.0).neg()
-    var.put(u'a', var.get(u'ib')(var.get(u'a')))
-    var.put(u'b', var.get(u'ib')(var.get(u'b')))
+    var.put(u'a', var.get(u'jb')(var.get(u'a')))
+    var.put(u'b', var.get(u'jb')(var.get(u'b')))
     if PyJsStrictEq(var.get(u'a'),var.get(u'b')):
         return Js(0.0).neg()
     if var.get(u'A')(var.get(u'a')):
@@ -886,45 +865,38 @@ def PyJsHoisted_W_(a, b, this, arguments, var=var):
         var.get(u'F')(var.get(u'a'), var.get(u'z'))
         var.get(u'F')(var.get(u'b'), var.get(u'z'))
         return Js(0.0).neg()
-    def PyJs_LONG_24_(var=var):
-        def PyJs_LONG_23_(var=var):
+    def PyJs_LONG_25_(var=var):
+        def PyJs_LONG_24_(var=var):
             return ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'fa'), var.get(u'ha')) if var.get(u'B')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'B')(var.get(u'a')) else (Js(1.0).neg() if (((PyJsStrictEq(Js(6.0),var.get(u'a').get(u'0')) or PyJsStrictEq(Js(7.0),var.get(u'a').get(u'0'))) or PyJsStrictEq(Js(8.0),var.get(u'a').get(u'0'))) or PyJsStrictEq(Js(9.0),var.get(u'a').get(u'0'))) else var.get(u'k')()))
-        return ((var.get(u'fb')(var.get(u'a'), var.get(u'b')) if var.get(u'q')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'q')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ba'), var.get(u'da')) if var.get(u'x')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'x')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ja'), var.get(u'ka')) if var.get(u'D')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_23_())))
-    return PyJs_LONG_24_()
+        return ((var.get(u'gb')(var.get(u'a'), var.get(u'b')) if var.get(u'q')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'q')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ba'), var.get(u'da')) if var.get(u'x')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'x')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ja'), var.get(u'ka')) if var.get(u'D')(var.get(u'b')) else Js(1.0).neg()) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_24_())))
+    return PyJs_LONG_25_()
 PyJsHoisted_W_.func_name = u'W'
 var.put(u'W', PyJsHoisted_W_)
 @Js
-def PyJsHoisted_sb_(a, b, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
+def PyJsHoisted_sb_(a, b, c, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'd'])
     #for JS loop
-    var.put(u'c', Js(0.0))
-    while (var.get(u'c')<var.get(u'a').get(u'length')):
+    var.put(u'd', Js(0.0))
+    while (var.get(u'd')<var.get(u'a').get(u'length')):
         try:
-            if var.get(u'T')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'b')):
-                return var.get(u'a').get((var.get(u'c')+Js(1.0)))
+            if var.get(u'T')(var.get(u'a').get((var.get(u'd')+Js(0.0))), var.get(u'b')):
+                return var.get(u'a').get((var.get(u'd')+Js(1.0)))
         finally:
-                var.put(u'c', Js(2.0), u'+')
-    return var.get(u'k')()
+                var.put(u'd', Js(2.0), u'+')
+    return var.get(u'c')
 PyJsHoisted_sb_.func_name = u'sb'
 var.put(u'sb', PyJsHoisted_sb_)
 @Js
-def PyJsHoisted_hb_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a'])
-    @Js
-    def PyJs_anonymous_6_(b, this, arguments, var=var):
-        var = Scope({u'this':this, u'b':b, u'arguments':arguments}, var)
-        var.registers([u'b'])
-        return var.get(u'b')
-    PyJs_anonymous_6_._set_name(u'anonymous')
-    @Js
-    def PyJs_anonymous_7_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([])
-        return Js(1.0).neg()
-    PyJs_anonymous_7_._set_name(u'anonymous')
-    return var.get(u'gb')(var.get(u'a'), PyJs_anonymous_6_, PyJs_anonymous_7_)
+def PyJsHoisted_hb_(a, b, c, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'd'])
+    #for JS loop
+    var.put(u'd', Js([]))
+    while var.get(u'x')(var.get(u'a')):
+        PyJsComma(var.get(u'd').callprop(u'push', var.get(u'a').get(u'1')),var.put(u'a', var.get(u'a').get(u'2')))
+    
+    return (var.get(u'b')(var.get(u'd')) if var.get(u'A')(var.get(u'a')) else var.get(u'c')(var.get(u'd'), var.get(u'a')))
 PyJsHoisted_hb_.func_name = u'hb'
 var.put(u'hb', PyJsHoisted_hb_)
 @Js
@@ -934,7 +906,7 @@ def PyJsHoisted_X_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_b_(e, l, this, arguments, var=var):
         var = Scope({u'this':this, u'e':e, u'l':l, u'arguments':arguments}, var)
-        var.registers([u'e', u'm', u'M', u'l', u'n', u'p', u'u'])
+        var.registers([u'e', u'm', u'M', u'l', u'n', u'p', u'v'])
         @Js
         def PyJsHoisted_m_(V, this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments, u'V':V}, var)
@@ -945,49 +917,49 @@ def PyJsHoisted_X_(a, this, arguments, var=var):
         pass
         if var.get(u'q')(var.get(u'e')):
             return var.get(u'e').get(u'1')
-        var.put(u'p', var.get(u'hb')(var.get(u'e')))
+        var.put(u'p', var.get(u'ib')(var.get(u'e')))
         if ((PyJsStrictNeq(Js(1.0).neg(),var.get(u'p')) and PyJsStrictEq(Js(3.0),var.get(u'p').get(u'length'))) and var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'N'))):
-            var.put(u'n', var.get(u'hb')(var.get(u'p').get(u'1')))
+            var.put(u'n', var.get(u'ib')(var.get(u'p').get(u'1')))
             if ((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(3.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'J'))):
-                var.put(u'u', var.get(u'n').get(u'1'))
-                var.put(u'M', var.get(u'hb')(var.get(u'u')))
+                var.put(u'v', var.get(u'n').get(u'1'))
+                var.put(u'M', var.get(u'ib')(var.get(u'v')))
                 if ((PyJsStrictNeq(Js(1.0).neg(),var.get(u'M')) and PyJsStrictEq(Js(1.0),var.get(u'M').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'2'), var.get(u'L'))):
                     return var.get(u'm')(((var.get(u'b')(var.get(u'M').get(u'0'), Js(u'inner'))+Js(u'.'))+var.get(u'b')(var.get(u'p').get(u'2'), Js(u'inner'))))
-                if ((var.get(u'x')(var.get(u'u')) and var.get(u'W')(var.get(u'u').get(u'2'), var.get(u'L'))) and var.get(u'W')(var.get(u'n').get(u'2'), var.get(u'L'))):
-                    return var.get(u'm')(((var.get(u'b')(var.get(u'u').get(u'1'), Js(u'inner'))+Js(u'@'))+var.get(u'b')(var.get(u'p').get(u'2'), Js(u'inner'))))
-                if (var.get(u'W')(var.get(u'u'), var.get(u'L')) and var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'pa'))):
+                if ((var.get(u'x')(var.get(u'v')) and var.get(u'W')(var.get(u'v').get(u'2'), var.get(u'L'))) and var.get(u'W')(var.get(u'n').get(u'2'), var.get(u'L'))):
+                    return var.get(u'm')(((var.get(u'b')(var.get(u'v').get(u'1'), Js(u'inner'))+Js(u'@'))+var.get(u'b')(var.get(u'p').get(u'2'), Js(u'inner'))))
+                if (var.get(u'W')(var.get(u'v'), var.get(u'L')) and var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'pa'))):
                     return var.get(u'm')((Js(u':>')+var.get(u'b')(var.get(u'n').get(u'2'), Js(u'inner'))))
-            var.put(u'u', var.get(u'hb')(var.get(u'p').get(u'2')))
-            if (((var.get(u'W')(var.get(u'p').get(u'1'), var.get(u'J')) and PyJsStrictNeq(Js(1.0).neg(),var.get(u'u'))) and PyJsStrictEq(Js(2.0),var.get(u'u').get(u'length'))) and var.get(u'W')(var.get(u'u').get(u'0'), var.get(u'ra'))):
-                return var.get(u'm')((var.get(u'b')(var.get(u'u').get(u'1'), Js(u'inner'))+Js(u'?')))
-            def PyJs_LONG_55_(var=var):
-                return ((((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(2.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'pa'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'K'))) and PyJsComma(var.put(u'n', var.get(u'hb')(var.get(u'n').get(u'1'))),(((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(3.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'J'))) and var.get(u'W')(var.get(u'n').get(u'1'), var.get(u'L')))))
-            if PyJs_LONG_55_():
+            var.put(u'v', var.get(u'ib')(var.get(u'p').get(u'2')))
+            if (((var.get(u'W')(var.get(u'p').get(u'1'), var.get(u'J')) and PyJsStrictNeq(Js(1.0).neg(),var.get(u'v'))) and PyJsStrictEq(Js(2.0),var.get(u'v').get(u'length'))) and var.get(u'W')(var.get(u'v').get(u'0'), var.get(u'ra'))):
+                return var.get(u'm')((var.get(u'b')(var.get(u'v').get(u'1'), Js(u'inner'))+Js(u'?')))
+            def PyJs_LONG_56_(var=var):
+                return ((((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(2.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'pa'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'K'))) and PyJsComma(var.put(u'n', var.get(u'ib')(var.get(u'n').get(u'1'))),(((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(3.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'J'))) and var.get(u'W')(var.get(u'n').get(u'1'), var.get(u'L')))))
+            if PyJs_LONG_56_():
                 return var.get(u'm')((Js(u':&>')+var.get(u'b')(var.get(u'n').get(u'2'), Js(u'inner'))))
             var.put(u'n', (Js(u'_') if var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'L')) else (Js(u'') if var.get(u'W')(var.get(u'p').get(u'2'), var.get(u'pa')) else var.get(u'b')(var.get(u'p').get(u'2'), Js(u'inner')))))
             return var.get(u'm')(((var.get(u'n')+Js(u':'))+var.get(u'b')(var.get(u'p').get(u'1'), Js(u'inner'))))
         if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'p')) and PyJsStrictEq(Js(2.0),var.get(u'p').get(u'length'))):
             if var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'K')):
-                return PyJsComma(var.put(u'n', var.get(u'hb')(var.get(u'p').get(u'1'))),(var.get(u'm')((Js(u'&+')+var.get(u'b')(var.get(u'n').get(u'1'), Js(u'inner')))) if ((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(2.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'H'))) else var.get(u'm')((Js(u'&')+var.get(u'b')(var.get(u'p').get(u'1'), Js(u'inner'))))))
+                return PyJsComma(var.put(u'n', var.get(u'ib')(var.get(u'p').get(u'1'))),(var.get(u'm')((Js(u'&+')+var.get(u'b')(var.get(u'n').get(u'1'), Js(u'inner')))) if ((PyJsStrictNeq(Js(1.0).neg(),var.get(u'n')) and PyJsStrictEq(Js(2.0),var.get(u'n').get(u'length'))) and var.get(u'W')(var.get(u'n').get(u'0'), var.get(u'H'))) else var.get(u'm')((Js(u'&')+var.get(u'b')(var.get(u'p').get(u'1'), Js(u'inner'))))))
             if var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'ra')):
                 return var.get(u'm')((var.get(u'b')(var.get(u'p').get(u'1'), Js(u'inner'))+Js(u'~')))
             if var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'H')):
                 return var.get(u'm')((Js(u'+')+var.get(u'b')(var.get(u'p').get(u'1'), Js(u'inner'))))
-            if (var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'sa')) and PyJsComma(var.put(u'p', var.get(u'hb')(var.get(u'p').get(u'1'))),(PyJsStrictNeq(Js(1.0).neg(),var.get(u'p')) and (Js(1.0)<var.get(u'p').get(u'length'))))):
+            if (var.get(u'W')(var.get(u'p').get(u'0'), var.get(u'sa')) and PyJsComma(var.put(u'p', var.get(u'ib')(var.get(u'p').get(u'1'))),(PyJsStrictNeq(Js(1.0).neg(),var.get(u'p')) and (Js(1.0)<var.get(u'p').get(u'length'))))):
                 var.put(u'n', var.get(u'b')(var.get(u'p').get(u'0'), Js(u'inner')))
                 #for JS loop
-                var.put(u'u', Js(1.0))
-                while (var.get(u'u')<var.get(u'p').get(u'length')):
+                var.put(u'v', Js(1.0))
+                while (var.get(u'v')<var.get(u'p').get(u'length')):
                     try:
-                        var.put(u'n', (Js(u'/')+var.get(u'b')(var.get(u'p').get(var.get(u'u')), Js(u'inner'))), u'+')
+                        var.put(u'n', (Js(u'/')+var.get(u'b')(var.get(u'p').get(var.get(u'v')), Js(u'inner'))), u'+')
                     finally:
-                            (var.put(u'u',Js(var.get(u'u').to_number())+Js(1))-Js(1))
+                            (var.put(u'v',Js(var.get(u'v').to_number())+Js(1))-Js(1))
                 return var.get(u'm')(var.get(u'n'))
         return (var.get(u'S')(var.get(u'e')) if PyJsStrictEq(Js(u'inner'),var.get(u'l')) else (var.get(u'S')(var.get(u'P')(var.get(u'e'))) if PyJsStrictEq(Js(u'top'),var.get(u'l')) else var.get(u'k')()))
     PyJsHoisted_b_.func_name = u'b'
     var.put(u'b', PyJsHoisted_b_)
     pass
-    var.put(u'a', var.get(u'xb')(var.get(u'S')(var.get(u'a'))))
+    var.put(u'a', var.get(u'yb')(var.get(u'S')(var.get(u'a'))))
     var.put(u'c', Js(u''))
     var.put(u'd', Js(u''))
     if var.get(u'A')(var.get(u'a')):
@@ -1000,13 +972,13 @@ def PyJsHoisted_X_(a, this, arguments, var=var):
             PyJsComma(PyJsComma(var.put(u'c', (var.get(u'd')+var.get(u'X')(var.get(u'a').get(u'1'))), u'+'),var.put(u'd', Js(u' '))),var.put(u'a', var.get(u'a').get(u'2')))
         
         return var.put(u'c', ((var.get(u'c')+Js(u')')) if var.get(u'A')(var.get(u'a')) else (var.get(u'c')+((Js(u' . ')+var.get(u'X')(var.get(u'a')))+Js(u')')))))
-    def PyJs_LONG_56_(var=var):
-        return PyJsComma(PyJsComma(PyJsComma(var.put(u'c', var.get(u'a').get(u'1')),var.put(u'a', var.get(u'a').get(u'2'))),var.put(u'd', var.get(u'hb')(var.get(u'a')))),(var.get(u'b')(var.get(u'd').get(u'1'), Js(u'top')) if (((PyJsStrictNeq(Js(1.0).neg(),var.get(u'd')) and PyJsStrictEq(Js(2.0),var.get(u'd').get(u'length'))) and var.get(u'W')(var.get(u'c'), var.get(u'oa'))) and var.get(u'W')(var.get(u'd').get(u'0'), var.get(u'H'))) else (Js(u'#')+var.get(u'X')(Js([Js(1.0), var.get(u'c'), var.get(u'a')])))))
-    def PyJs_LONG_58_(var=var):
-        def PyJs_LONG_57_(var=var):
-            return (((((((Js(u'@(')+var.get(u'X')(var.get(u'kb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'X')(var.get(u'a').get(u'2')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'3'))))+Js(u')')) if PyJsStrictEq(Js(8.0),var.get(u'a').get(u'0')) else (((((Js(u'^(')+var.get(u'X')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(9.0),var.get(u'a').get(u'0')) else var.get(u'k')()))
-        return (var.get(u'a').get(u'1') if var.get(u'q')(var.get(u'a')) else (((((Js(u'$(')+var.get(u'X')(var.get(u'kb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'X')(var.get(u'a').get(u'2')))+Js(u')')) if PyJsStrictEq(Js(6.0),var.get(u'a').get(u'0')) else (((((Js(u'%(')+var.get(u'X')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(7.0),var.get(u'a').get(u'0')) else PyJs_LONG_57_())))
-    return (PyJs_LONG_56_() if var.get(u'B')(var.get(u'a')) else ((Js(u'!')+var.get(u'X')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_58_()))
+    def PyJs_LONG_57_(var=var):
+        return PyJsComma(PyJsComma(PyJsComma(var.put(u'c', var.get(u'a').get(u'1')),var.put(u'a', var.get(u'a').get(u'2'))),var.put(u'd', var.get(u'ib')(var.get(u'a')))),(var.get(u'b')(var.get(u'd').get(u'1'), Js(u'top')) if (((PyJsStrictNeq(Js(1.0).neg(),var.get(u'd')) and PyJsStrictEq(Js(2.0),var.get(u'd').get(u'length'))) and var.get(u'W')(var.get(u'c'), var.get(u'oa'))) and var.get(u'W')(var.get(u'd').get(u'0'), var.get(u'H'))) else (Js(u'#')+var.get(u'X')(Js([Js(1.0), var.get(u'c'), var.get(u'a')])))))
+    def PyJs_LONG_59_(var=var):
+        def PyJs_LONG_58_(var=var):
+            return (((((((Js(u'@(')+var.get(u'X')(var.get(u'lb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'X')(var.get(u'a').get(u'2')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'3'))))+Js(u')')) if PyJsStrictEq(Js(8.0),var.get(u'a').get(u'0')) else (((((Js(u'^(')+var.get(u'X')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(9.0),var.get(u'a').get(u'0')) else var.get(u'k')()))
+        return (var.get(u'a').get(u'1') if var.get(u'q')(var.get(u'a')) else (((((Js(u'$(')+var.get(u'X')(var.get(u'lb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'X')(var.get(u'a').get(u'2')))+Js(u')')) if PyJsStrictEq(Js(6.0),var.get(u'a').get(u'0')) else (((((Js(u'%(')+var.get(u'X')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'X')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(7.0),var.get(u'a').get(u'0')) else PyJs_LONG_58_())))
+    return (PyJs_LONG_57_() if var.get(u'B')(var.get(u'a')) else ((Js(u'!')+var.get(u'X')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_59_()))
 PyJsHoisted_X_.func_name = u'X'
 var.put(u'X', PyJsHoisted_X_)
 @Js
@@ -1024,13 +996,32 @@ def PyJsHoisted_ja_(a, this, arguments, var=var):
 PyJsHoisted_ja_.func_name = u'ja'
 var.put(u'ja', PyJsHoisted_ja_)
 @Js
-def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
+def PyJsHoisted_jb_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
+    #for JS loop
+    var.put(u'b', Js([]))
+    while PyJsStrictEq(Js(5.0),var.get(u'a').get(u'0')):
+        PyJsComma(var.get(u'b').callprop(u'push', var.get(u'a')),var.put(u'a', var.get(u'a').get(u'1')))
+    
+    #for JS loop
+    var.put(u'c', Js(0.0))
+    while (var.get(u'c')<var.get(u'b').get(u'length')):
+        try:
+            var.get(u'F')(var.get(u'b').get(var.get(u'c')), var.get(u'a'))
+        finally:
+                (var.put(u'c',Js(var.get(u'c').to_number())+Js(1))-Js(1))
+    return var.get(u'a')
+PyJsHoisted_jb_.func_name = u'jb'
+var.put(u'jb', PyJsHoisted_jb_)
+@Js
+def PyJsHoisted_kb_(a, b, c, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
     var.registers([u'a', u'c', u'b', u'e', u'd', u'l'])
     var.put(u'd', var.get(u'U')(var.get(u'b')))
     if var.get(u'R')(var.get(u'd')):
         return var.get(u'c')
-    var.put(u'e', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'ab'), var.get(u'O')(var.get(u'Wa'), var.get(u'O')(var.get(u'kb')(var.get(u'a')), var.get(u'd'))))]))
+    var.put(u'e', Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'bb'), var.get(u'O')(var.get(u'Xa'), var.get(u'O')(var.get(u'lb')(var.get(u'a')), var.get(u'd'))))]))
     if var.get(u'x')(var.get(u'd')):
         #for JS loop
         var.put(u'b', Js([]))
@@ -1042,7 +1033,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
             else:
                 return var.get(u'e')
         
-        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'bb')):
+        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'cb')):
             if PyJsStrictEq(Js(1.0),var.get(u'b').get(u'length')):
                 return var.get(u'e')
             var.put(u'd', var.get(u'b').get(u'1'))
@@ -1055,7 +1046,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
                 finally:
                         (var.put(u'e',Js(var.get(u'e').to_number())+Js(1))-Js(1))
             return Js([Js(8.0), var.get(u'a'), var.get(u'd'), var.get(u'c')])
-        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'cb')):
+        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'db')):
             if PyJsStrictEq(Js(1.0),var.get(u'b').get(u'length')):
                 return var.get(u'e')
             var.put(u'd', var.get(u'G')(Js([Js(6.0), var.get(u'a'), var.get(u'b').get(u'1')])))
@@ -1064,7 +1055,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
             var.put(u'l', var.get(u'U')(var.get(u'd').get(u'1')))
             if var.get(u'R')(var.get(u'l')):
                 return var.get(u'c')
-            if (var.get(u'q')(var.get(u'l')).neg() or var.get(u'fb')(var.get(u'l'), var.get(u'K')).neg()):
+            if (var.get(u'q')(var.get(u'l')).neg() or var.get(u'gb')(var.get(u'l'), var.get(u'K')).neg()):
                 return var.get(u'e')
             var.put(u'l', var.get(u'U')(var.get(u'd').get(u'2')))
             if var.get(u'R')(var.get(u'l')):
@@ -1077,7 +1068,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
                 return var.get(u'c')
             if var.get(u'A')(var.get(u'l')).neg():
                 return var.get(u'e')
-            var.put(u'c', Js([var.get(u'kb')(var.get(u'a'))]))
+            var.put(u'c', Js([var.get(u'lb')(var.get(u'a'))]))
             #for JS loop
             var.put(u'e', Js(2.0))
             while (var.get(u'e')<var.get(u'b').get(u'length')):
@@ -1086,7 +1077,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
                 finally:
                         (var.put(u'e',Js(var.get(u'e').to_number())+Js(1))-Js(1))
             return Js([Js(9.0), var.get(u'd'), var.get(u'c')])
-        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'ab')):
+        if var.get(u'T')(var.get(u'b').get(u'0'), var.get(u'bb')):
             if PyJsStrictEq(Js(1.0),var.get(u'b').get(u'length')):
                 return var.get(u'e')
             var.put(u'd', var.get(u'b').get(u'1'))
@@ -1109,29 +1100,7 @@ def PyJsHoisted_jb_(a, b, c, this, arguments, var=var):
             finally:
                     (var.put(u'e',Js(var.get(u'e').to_number())+Js(1))-Js(1))
         return Js([Js(9.0), var.get(u'd'), var.get(u'c')])
-    return (var.get(u'd') if var.get(u'A')(var.get(u'd')) else (var.get(u'rb')(var.get(u'a'), var.get(u'd'), var.get(u'e')) if (var.get(u'q')(var.get(u'd')) or var.get(u'B')(var.get(u'd'))) else (var.get(u'e') if var.get(u'D')(var.get(u'd')) else var.get(u'k')())))
-PyJsHoisted_jb_.func_name = u'jb'
-var.put(u'jb', PyJsHoisted_jb_)
-@Js
-def PyJsHoisted_Aa_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a'])
-    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'a')), var.get(u'pa')))
-PyJsHoisted_Aa_.func_name = u'Aa'
-var.put(u'Aa', PyJsHoisted_Aa_)
-@Js
-def PyJsHoisted_kb_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
-    #for JS loop
-    var.put(u'b', var.get(u'z'))
-    var.put(u'c', Js(0.0))
-    while (var.get(u'c')<var.get(u'a').get(u'length')):
-        try:
-            var.put(u'b', Js([Js(1.0), var.get(u'O')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'a').get((var.get(u'c')+Js(1.0)))), var.get(u'b')]))
-        finally:
-                var.put(u'c', Js(2.0), u'+')
-    return Js([Js(3.0), var.get(u'qa'), var.get(u'O')(var.get(u'b'))])
+    return (var.get(u'd') if var.get(u'A')(var.get(u'd')) else (var.get(u'sb')(var.get(u'a'), var.get(u'd'), var.get(u'e')) if (var.get(u'q')(var.get(u'd')) or var.get(u'B')(var.get(u'd'))) else (var.get(u'e') if var.get(u'D')(var.get(u'd')) else var.get(u'k')())))
 PyJsHoisted_kb_.func_name = u'kb'
 var.put(u'kb', PyJsHoisted_kb_)
 @Js
@@ -1164,28 +1133,123 @@ def PyJsHoisted_k_(this, arguments, var=var):
 PyJsHoisted_k_.func_name = u'k'
 var.put(u'k', PyJsHoisted_k_)
 @Js
-def PyJsHoisted_S_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
-    var.put(u'a', var.get(u'ib')(var.get(u'a')))
-    pass
-    if var.get(u'A')(var.get(u'a')):
-        return Js(u'()')
-    if var.get(u'x')(var.get(u'a')):
-        var.put(u'c', Js(u'('))
+def PyJsHoisted_mb_(a, b, c, d, this, arguments, var=var):
+    var = Scope({u'a':a, u'c':c, u'b':b, u'd':d, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'e', u'd', u'm', u'l', u'p'])
+    (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'd')) and var.put(u'd', Js(1.0).neg()))
+    var.put(u'b', var.get(u'na')(var.get(u'b')))
+    #for JS loop
+    var.put(u'e', Js([]))
+    var.put(u'l', Js(1.0).neg())
+    var.put(u'm', var.get(u'b'))
+    while var.get(u'A')(var.get(u'm')).neg():
+        if (var.get(u'q')(var.get(u'm')) or var.get(u'B')(var.get(u'm'))):
+            PyJsComma(PyJsComma(var.get(u'e').callprop(u'push', var.get(u'm')),var.put(u'l', Js(0.0).neg())),var.put(u'm', var.get(u'z')))
+        else:
+            if var.get(u'x')(var.get(u'm')):
+                PyJsComma(var.get(u'e').callprop(u'push', var.get(u'm').get(u'1')),var.put(u'm', var.get(u'm').get(u'2')))
+            else:
+                return (var.get(u'ia')(var.get(u'H'), var.get(u'O')(var.get(u'cb'), var.get(u'O')(var.get(u'lb')(var.get(u'a')), var.get(u'ab'), var.get(u'Q')(Js([var.get(u'b'), var.get(u'c')]))))) if PyJsStrictEq(Js(1.0).neg(),var.get(u'd')) else var.get(u'd'))
+    
+    var.put(u'd', var.get(u'b'))
+    (var.get(u'l') and var.put(u'd', var.get(u'Q')(var.get(u'e'))))
+    var.put(u'p', Js([]))
+    @Js
+    def PyJs_anonymous_22_(n, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'n':n}, var)
+        var.registers([u'n', u'v'])
         #for JS loop
-        var.put(u'b', Js(u''))
-        while var.get(u'x')(var.get(u'a')):
-            PyJsComma(PyJsComma(var.put(u'c', (var.get(u'b')+var.get(u'S')(var.get(u'a').get(u'1'))), u'+'),var.put(u'b', Js(u' '))),var.put(u'a', var.get(u'ib')(var.get(u'a').get(u'2'))))
-        
-        return var.put(u'c', ((var.get(u'c')+Js(u')')) if var.get(u'A')(var.get(u'a')) else (var.get(u'c')+((Js(u' . ')+var.get(u'S')(var.get(u'a')))+Js(u')')))))
-    def PyJs_LONG_26_(var=var):
-        def PyJs_LONG_25_(var=var):
-            return (((((((Js(u'@(')+var.get(u'S')(var.get(u'kb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'S')(var.get(u'a').get(u'2')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'3'))))+Js(u')')) if PyJsStrictEq(Js(8.0),var.get(u'a').get(u'0')) else (((((Js(u'^(')+var.get(u'S')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(9.0),var.get(u'a').get(u'0')) else var.get(u'k')()))
-        return (var.get(u'a').get(u'1') if var.get(u'q')(var.get(u'a')) else (((((Js(u'$(')+var.get(u'S')(var.get(u'kb')(var.get(u'a').get(u'1'))))+Js(u' '))+var.get(u'S')(var.get(u'a').get(u'2')))+Js(u')')) if PyJsStrictEq(Js(6.0),var.get(u'a').get(u'0')) else (((((Js(u'%(')+var.get(u'S')(var.get(u'a').get(u'1')))+Js(u' '))+var.get(u'S')(var.get(u'Q')(var.get(u'a').get(u'2'))))+Js(u')')) if PyJsStrictEq(Js(7.0),var.get(u'a').get(u'0')) else PyJs_LONG_25_())))
-    return ((Js(u'#')+var.get(u'S')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'B')(var.get(u'a')) else ((Js(u'!')+var.get(u'S')(Js([Js(1.0), var.get(u'a').get(u'1'), var.get(u'a').get(u'2')]))) if var.get(u'D')(var.get(u'a')) else PyJs_LONG_26_()))
-PyJsHoisted_S_.func_name = u'S'
-var.put(u'S', PyJsHoisted_S_)
+        var.put(u'v', Js(0.0))
+        while (var.get(u'v')<var.get(u'e').get(u'length')):
+            try:
+                if var.get(u'T')(var.get(u'e').get(var.get(u'v')), var.get(u'n')):
+                    return var.get('undefined')
+            finally:
+                    (var.put(u'v',Js(var.get(u'v').to_number())+Js(1))-Js(1))
+        var.get(u'p').callprop(u'push', var.get(u'n'))
+    PyJs_anonymous_22_._set_name(u'anonymous')
+    var.get(u'ub')(var.get(u'a'), PyJs_anonymous_22_)
+    var.put(u'l', var.get(u'd'))
+    #for JS loop
+    var.put(u'm', (var.get(u'p').get(u'length')-Js(1.0)))
+    while (Js(0.0)<=var.get(u'm')):
+        try:
+            var.put(u'l', Js([Js(1.0), var.get(u'p').get(var.get(u'm')), var.get(u'l')]))
+        finally:
+                (var.put(u'm',Js(var.get(u'm').to_number())-Js(1))+Js(1))
+    #for JS loop
+    var.put(u'm', (var.get(u'p').get(u'length')-Js(1.0)))
+    while (Js(0.0)<=var.get(u'm')):
+        try:
+            var.put(u'd', var.get(u'aa')(var.get(u'O')(var.get(u'cb'), var.get(u'$a'), var.get(u'tb')(var.get(u'a'), var.get(u'p').get(var.get(u'm')))), var.get(u'd')))
+        finally:
+                (var.put(u'm',Js(var.get(u'm').to_number())-Js(1))+Js(1))
+    return Js([Js(3.0), var.get(u'J'), var.get(u'O')(var.get(u'b'), Js([Js(1.0), var.get(u'O')(var.get(u'cb'), var.get(u'$a'), Js([Js(3.0), var.get(u'J'), var.get(u'O')(var.get(u'l'), var.get(u'c'))])), var.get(u'd')]))])
+PyJsHoisted_mb_.func_name = u'mb'
+var.put(u'mb', PyJsHoisted_mb_)
+@Js
+def PyJsHoisted_Ea_(a, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
+    var.registers([u'a'])
+    return var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), var.get(u'O')(var.get(u'ra'), var.get(u'O')(var.get(u'N'), var.get(u'a'), var.get(u'L')))))
+PyJsHoisted_Ea_.func_name = u'Ea'
+var.put(u'Ea', PyJsHoisted_Ea_)
+@Js
+def PyJsHoisted_ob_(a, b, c, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b', u'e', u'd', u'm', u'l', u'n', u'p'])
+    @Js
+    def PyJsHoisted_d_(this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments}, var)
+        var.registers([])
+        return Js([Js(4.0), var.get(u'H'), var.get(u'O')(var.get(u'bb'), var.get(u'O')(var.get(u'Wa'), var.get(u'O')(var.get(u'a'), var.get(u'Q')(var.get(u'b')))))])
+    PyJsHoisted_d_.func_name = u'd'
+    var.put(u'd', PyJsHoisted_d_)
+    pass
+    var.put(u'a', var.get(u'U')(var.get(u'a')))
+    if var.get(u'R')(var.get(u'a')):
+        return var.get(u'c')
+    if var.get(u'B')(var.get(u'a')).neg():
+        return var.get(u'd')()
+    var.put(u'c', var.get(u'G')(var.get(u'a').get(u'1')))
+    if (var.get(u'q')(var.get(u'c')).neg() or var.get(u'gb')(var.get(u'c'), var.get(u'J')).neg()):
+        return var.get(u'd')()
+    var.put(u'e', var.get(u'G')(var.get(u'a').get(u'2')))
+    if var.get(u'x')(var.get(u'e')).neg():
+        return var.get(u'd')()
+    var.put(u'c', var.get(u'na')(var.get(u'e').get(u'1')))
+    var.put(u'e', var.get(u'G')(var.get(u'e').get(u'2')))
+    if (var.get(u'x')(var.get(u'e')).neg() or var.get(u'A')(var.get(u'G')(var.get(u'e').get(u'2'))).neg()):
+        return var.get(u'd')()
+    var.put(u'e', var.get(u'e').get(u'1'))
+    #for JS loop
+    var.put(u'l', var.get(u'qb'))
+    var.put(u'm', Js(0.0))
+    while var.get(u'A')(var.get(u'c')).neg():
+        if (var.get(u'q')(var.get(u'c')) or var.get(u'B')(var.get(u'c'))):
+            #for JS loop
+            var.put(u'p', var.get(u'z'))
+            var.put(u'n', (var.get(u'b').get(u'length')-Js(1.0)))
+            while (var.get(u'n')>=var.get(u'm')):
+                try:
+                    var.put(u'p', Js([Js(1.0), var.get(u'b').get(var.get(u'n')), var.get(u'p')]))
+                finally:
+                        (var.put(u'n',Js(var.get(u'n').to_number())-Js(1))+Js(1))
+            var.put(u'l', var.get(u'rb')(var.get(u'l'), var.get(u'c'), var.get(u'p')))
+            var.put(u'm', var.get(u'b').get(u'length'))
+            var.put(u'c', var.get(u'z'))
+        else:
+            if var.get(u'x')(var.get(u'c')):
+                if (var.get(u'm')<var.get(u'b').get(u'length')):
+                    PyJsComma(PyJsComma(PyJsComma(var.put(u'p', var.get(u'b').get(var.get(u'm'))),(var.put(u'm',Js(var.get(u'm').to_number())+Js(1))-Js(1))),var.put(u'l', var.get(u'rb')(var.get(u'l'), var.get(u'c').get(u'1'), var.get(u'p')))),var.put(u'c', var.get(u'c').get(u'2')))
+                else:
+                    return var.get(u'd')()
+            else:
+                return var.get(u'd')()
+    
+    return (var.get(u'd')() if PyJsStrictNeq(var.get(u'b').get(u'length'),var.get(u'm')) else Js([Js(6.0), var.get(u'l'), var.get(u'e')]))
+PyJsHoisted_ob_.func_name = u'ob'
+var.put(u'ob', PyJsHoisted_ob_)
 @Js
 def PyJsHoisted_q_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
@@ -1194,35 +1258,6 @@ def PyJsHoisted_q_(a, this, arguments, var=var):
 PyJsHoisted_q_.func_name = u'q'
 var.put(u'q', PyJsHoisted_q_)
 @Js
-def PyJsHoisted_qb_(a, b, c, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd'])
-    #for JS loop
-    var.put(u'd', Js([]))
-    var.put(u'e', Js(0.0))
-    while (var.get(u'e')<var.get(u'a').get(u'length')):
-        try:
-            if var.get(u'T')(var.get(u'a').get((var.get(u'e')+Js(0.0))), var.get(u'b')):
-                var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'b'))
-                var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'c'))
-                #for JS loop
-                var.put(u'e', Js(2.0), u'+')
-                while (var.get(u'e')<var.get(u'a').get(u'length')):
-                    try:
-                        PyJsComma(var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'a').get((var.get(u'e')+Js(0.0)))),var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'a').get((var.get(u'e')+Js(1.0)))))
-                    finally:
-                            var.put(u'e', Js(2.0), u'+')
-                return var.get(u'd')
-            var.get(u'd').put((var.get(u'e')+Js(0.0)), var.get(u'a').get((var.get(u'e')+Js(0.0))))
-            var.get(u'd').put((var.get(u'e')+Js(1.0)), var.get(u'a').get((var.get(u'e')+Js(1.0))))
-        finally:
-                var.put(u'e', Js(2.0), u'+')
-    var.get(u'd').put((var.get(u'a').get(u'length')+Js(0.0)), var.get(u'b'))
-    var.get(u'd').put((var.get(u'a').get(u'length')+Js(1.0)), var.get(u'c'))
-    return var.get(u'd')
-PyJsHoisted_qb_.func_name = u'qb'
-var.put(u'qb', PyJsHoisted_qb_)
-@Js
 def PyJsHoisted_x_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
     var.registers([u'a'])
@@ -1230,49 +1265,16 @@ def PyJsHoisted_x_(a, this, arguments, var=var):
 PyJsHoisted_x_.func_name = u'x'
 var.put(u'x', PyJsHoisted_x_)
 @Js
-def PyJsHoisted_ub_(a, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b', u'e', u'd', u'l'])
-    var.put(u'a', var.get(u'G')(var.get(u'a')))
-    if var.get(u'B')(var.get(u'a')).neg():
-        return Js(1.0).neg()
-    var.put(u'b', var.get(u'G')(var.get(u'a').get(u'1')))
-    if (var.get(u'q')(var.get(u'b')).neg() or var.get(u'fb')(var.get(u'b'), var.get(u'qa')).neg()):
-        return Js(1.0).neg()
-    var.put(u'b', var.get(u'G')(var.get(u'a').get(u'2')))
-    if (var.get(u'x')(var.get(u'b')).neg() or var.get(u'A')(var.get(u'G')(var.get(u'b').get(u'2'))).neg()):
-        return Js(1.0).neg()
-    var.put(u'a', Js([]))
+def PyJsHoisted_ub_(a, b, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
     #for JS loop
-    var.put(u'b', var.get(u'G')(var.get(u'b').get(u'1')))
-    while var.get(u'A')(var.get(u'b')).neg():
-        if var.get(u'x')(var.get(u'b')).neg():
-            return Js(1.0).neg()
-        var.put(u'c', var.get(u'G')(var.get(u'b').get(u'1')))
-        var.put(u'b', var.get(u'G')(var.get(u'b').get(u'2')))
-        if var.get(u'x')(var.get(u'c')).neg():
-            return Js(1.0).neg()
-        var.put(u'd', var.get(u'c').get(u'1'))
-        var.put(u'c', var.get(u'G')(var.get(u'c').get(u'2')))
-        if var.get(u'x')(var.get(u'c')).neg():
-            return Js(1.0).neg()
-        var.put(u'e', var.get(u'c').get(u'1'))
-        if var.get(u'A')(var.get(u'G')(var.get(u'c').get(u'2'))).neg():
-            return Js(1.0).neg()
-        var.put(u'c', Js(0.0).neg())
-        #for JS loop
-        var.put(u'l', Js(0.0))
-        while (var.get(u'l')<var.get(u'a').get(u'length')):
-            try:
-                if var.get(u'T')(var.get(u'a').get((var.get(u'l')+Js(0.0))), var.get(u'd')):
-                    var.get(u'a').put((var.get(u'l')+Js(1.0)), var.get(u'e'))
-                    var.put(u'c', Js(1.0).neg())
-                    break
-            finally:
-                    var.put(u'l', Js(2.0), u'+')
-        (var.get(u'c') and PyJsComma(var.get(u'a').callprop(u'push', var.get(u'd')),var.get(u'a').callprop(u'push', var.get(u'e'))))
-    
-    return var.get(u'a')
+    var.put(u'c', Js(0.0))
+    while (var.get(u'c')<var.get(u'a').get(u'length')):
+        try:
+            var.get(u'b')(var.get(u'a').get((var.get(u'c')+Js(0.0))), var.get(u'a').get((var.get(u'c')+Js(1.0))))
+        finally:
+                var.put(u'c', Js(2.0), u'+')
 PyJsHoisted_ub_.func_name = u'ub'
 var.put(u'ub', PyJsHoisted_ub_)
 PyJs_Object_0_ = Js({})
@@ -1356,43 +1358,45 @@ var.put(u'va', Js([Js(0.0), Js(u'\u9023')]))
 var.put(u'wa', Js([Js(0.0), Js(u'\u69cb')]))
 var.put(u'xa', Js([Js(0.0), Js(u'\u8aa4')]))
 var.put(u'ya', Js([Js(0.0), Js(u'\u5217')]))
-var.put(u'za', Js([Js(4.0), var.get(u'H'), var.get(u'O')(Js([Js(0.0), Js(u'\u5b87\u5b99\u4ea1\u77e3')]), var.get(u'L'))]))
+PyJs_Object_6_ = Js({u'\u4e19':Js(0.0).neg(),u'\u4e59':Js(0.0).neg(),u'\u7701\u7565\u4e00\u7269':Js(0.0).neg(),u'\u89e3\u7b97':Js(0.0).neg(),u'\u82e5':Js(0.0).neg(),u'\u662f\u975e':Js(0.0).neg(),u'\u5f15\u7528':Js(0.0).neg(),u'\u5316\u6ec5':Js(0.0).neg(),u'\u7b49\u540c':Js(0.0).neg(),u'\u7532':Js(0.0).neg(),u'\u61c9\u7528':Js(0.0).neg(),u'A':Js(0.0).neg(),u'l':Js(0.0).neg(),u'\u6620\u8868':Js(0.0).neg(),u'v':Js(0.0).neg(),u'6':Js(0.0).neg(),u'E':Js(0.0).neg(),u'N':Js(0.0).neg(),u'U':Js(0.0).neg(),u'Q':Js(0.0).neg(),u'x':Js(0.0).neg(),u'5':Js(0.0).neg(),u'D':Js(0.0).neg(),u'1':Js(0.0).neg(),u'a':Js(0.0).neg(),u'0':Js(0.0).neg(),u'\u9670':Js(0.0).neg(),u'\u7b26\u540d':Js(0.0).neg(),u'e':Js(0.0).neg(),u't':Js(0.0).neg(),u'4':Js(0.0).neg(),u'\u7269':Js(0.0).neg(),u'P':Js(0.0).neg(),u'y':Js(0.0).neg(),u'V':Js(0.0).neg(),u'F':Js(0.0).neg(),u'd':Js(0.0).neg(),u'\u5217':Js(0.0).neg(),u'\u8a5e\u7d20':Js(0.0).neg(),u'\u7a7a':Js(0.0).neg(),u'\u4e01':Js(0.0).neg(),u'\u592a\u59cb\u521d\u6838':Js(0.0).neg(),u'\u70ba\u7b26\u540d\u9023':Js(0.0).neg(),u'\u7279\u5b9a\u5176\u7269':Js(0.0).neg(),u'\u6548\u61c9':Js(0.0).neg(),u'\u9996':Js(0.0).neg(),u'\u9023':Js(0.0).neg(),u'\u81ea':Js(0.0).neg(),u'\u53c3\u5f62':Js(0.0).neg(),u'h':Js(0.0).neg(),u'g':Js(0.0).neg(),u'R':Js(0.0).neg(),u'r':Js(0.0).neg(),u'c':Js(0.0).neg(),u'J':Js(0.0).neg(),u'2':Js(0.0).neg(),u'\u967d':Js(0.0).neg(),u'i':Js(0.0).neg(),u'X':Js(0.0).neg(),u'8':Js(0.0).neg(),u'\u5176\u5b50':Js(0.0).neg(),u'f':Js(0.0).neg(),u'O':Js(0.0).neg(),u'u':Js(0.0).neg(),u'T':Js(0.0).neg(),u'\u4e00\u985e\u4f55\u7269':Js(0.0).neg(),u'q':Js(0.0).neg(),u'm':Js(0.0).neg(),u'b':Js(0.0).neg(),u'K':Js(0.0).neg(),u'p':Js(0.0).neg(),u'\u51fa\u5165\u6539\u6ec5':Js(0.0).neg(),u'Y':Js(0.0).neg(),u'H':Js(0.0).neg(),u'n':Js(0.0).neg(),u'G':Js(0.0).neg(),u'W':Js(0.0).neg(),u'\u8aa4':Js(0.0).neg(),u'L':Js(0.0).neg(),u'j':Js(0.0).neg(),u'9':Js(0.0).neg(),u'C':Js(0.0).neg(),u'o':Js(0.0).neg(),u'w':Js(0.0).neg(),u'7':Js(0.0).neg(),u'I':Js(0.0).neg(),u'M':Js(0.0).neg(),u's':Js(0.0).neg(),u'3':Js(0.0).neg(),u'z':Js(0.0).neg(),u'Z':Js(0.0).neg(),u'S':Js(0.0).neg(),u'k':Js(0.0).neg(),u'B':Js(0.0).neg(),u'\u5f0f\u5f62':Js(0.0).neg(),u'\u69cb':Js(0.0).neg(),u'\u5c3e':Js(0.0).neg(),u'\u5b87\u5b99\u4ea1\u77e3':Js(0.0).neg()})
+var.put(u'za', PyJs_Object_6_)
+var.put(u'Aa', Js([Js(4.0), var.get(u'H'), var.get(u'O')(Js([Js(0.0), Js(u'\u5b87\u5b99\u4ea1\u77e3')]), var.get(u'L'))]))
 pass
 pass
 pass
 pass
-var.put(u'Ea', var.get(u'Aa')(var.get(u'wa')))
-var.put(u'Fa', var.get(u'Ba')(var.get(u'wa'), var.get(u'oa')))
-var.put(u'Ga', var.get(u'Ba')(var.get(u'wa'), var.get(u'ya')))
-var.put(u'Ha', var.get(u'Da')(var.get(u'wa')))
-var.put(u'Ia', var.get(u'Aa')(var.get(u'xa')))
-var.put(u'Ka', var.get(u'Ba')(var.get(u'xa'), var.get(u'oa')))
-var.put(u'La', var.get(u'Ba')(var.get(u'xa'), var.get(u'ya')))
-var.put(u'Ma', var.get(u'Da')(var.get(u'xa')))
-var.put(u'Na', var.get(u'Aa')(var.get(u'va')))
-var.put(u'Oa', var.get(u'Da')(var.get(u'va')))
-var.put(u'Pa', var.get(u'Ba')(var.get(u'va'), Js([Js(0.0), Js(u'\u9996')])))
-var.put(u'Qa', var.get(u'Ba')(var.get(u'va'), Js([Js(0.0), Js(u'\u5c3e')])))
-var.put(u'Ra', var.get(u'Da')(Js([Js(0.0), Js(u'\u8a5e\u7d20')])))
-var.put(u'Ta', var.get(u'Da')(Js([Js(0.0), Js(u'\u7a7a')])))
-var.put(u'Ua', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), var.get(u'O')(var.get(u'ra'), Js([Js(0.0), Js(u'\u7b49\u540c')])))))
-var.put(u'Va', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), Js([Js(1.0), var.get(u'J'), var.get(u'L')]), var.get(u'L')), Js([Js(0.0), Js(u'\u61c9\u7528')]))))
-var.put(u'Wa', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), Js([Js(0.0), Js(u'\u89e3\u7b97')]))))
-var.put(u'Xa', var.get(u'Ba')(var.get(u'ya'), var.get(u'O')(var.get(u'N'), Js([Js(0.0), Js(u'\u7269')]), var.get(u'L'))))
-var.put(u'Ya', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), Js([Js(0.0), Js(u'\u82e5')]))))
-var.put(u'Za', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'K'), Js([Js(0.0), Js(u'\u5f15\u7528')]))))
-var.put(u'$a', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'J'))), var.get(u'pa'))))
-var.put(u'ab', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'J')))))
-var.put(u'bb', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'K')))))
-var.put(u'cb', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'K'))))
-var.put(u'db', Js([Js(3.0), var.get(u'ua'), var.get(u'O')()]))
-var.put(u'eb', Js([Js(3.0), var.get(u'ta'), var.get(u'O')()]))
+var.put(u'Fa', var.get(u'Ba')(var.get(u'wa')))
+var.put(u'Ga', var.get(u'Da')(var.get(u'wa'), var.get(u'oa')))
+var.put(u'Ha', var.get(u'Da')(var.get(u'wa'), var.get(u'ya')))
+var.put(u'Ia', var.get(u'Ea')(var.get(u'wa')))
+var.put(u'Ka', var.get(u'Ba')(var.get(u'xa')))
+var.put(u'La', var.get(u'Da')(var.get(u'xa'), var.get(u'oa')))
+var.put(u'Ma', var.get(u'Da')(var.get(u'xa'), var.get(u'ya')))
+var.put(u'Na', var.get(u'Ea')(var.get(u'xa')))
+var.put(u'Oa', var.get(u'Ba')(var.get(u'va')))
+var.put(u'Pa', var.get(u'Ea')(var.get(u'va')))
+var.put(u'Qa', var.get(u'Da')(var.get(u'va'), Js([Js(0.0), Js(u'\u9996')])))
+var.put(u'Ra', var.get(u'Da')(var.get(u'va'), Js([Js(0.0), Js(u'\u5c3e')])))
+var.put(u'Ta', var.get(u'Ea')(Js([Js(0.0), Js(u'\u8a5e\u7d20')])))
+var.put(u'Ua', var.get(u'Ea')(Js([Js(0.0), Js(u'\u7a7a')])))
+var.put(u'Va', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), var.get(u'O')(var.get(u'ra'), Js([Js(0.0), Js(u'\u7b49\u540c')])))))
+var.put(u'Wa', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), Js([Js(1.0), var.get(u'J'), var.get(u'L')]), var.get(u'L')), Js([Js(0.0), Js(u'\u61c9\u7528')]))))
+var.put(u'Xa', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), Js([Js(0.0), Js(u'\u89e3\u7b97')]))))
+var.put(u'Ya', var.get(u'Da')(var.get(u'ya'), var.get(u'O')(var.get(u'N'), Js([Js(0.0), Js(u'\u7269')]), var.get(u'L'))))
+var.put(u'Za', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'J'), Js([Js(0.0), Js(u'\u82e5')]))))
+var.put(u'$a', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'K'), Js([Js(0.0), Js(u'\u5f15\u7528')]))))
+var.put(u'ab', var.get(u'P')(var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'J'))), var.get(u'pa'))))
+var.put(u'bb', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'J')))))
+var.put(u'cb', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'K')))))
+var.put(u'db', var.get(u'P')(var.get(u'O')(var.get(u'K'), var.get(u'K'))))
+var.put(u'eb', Js([Js(3.0), var.get(u'ua'), var.get(u'O')()]))
+var.put(u'fb', Js([Js(3.0), var.get(u'ta'), var.get(u'O')()]))
 pass
 pass
 var.get(u'exports').put(u'jsArray_to_list', var.get(u'Q'))
 pass
 pass
-var.get(u'exports').put(u'maybe_list_to_jsArray', var.get(u'hb'))
+var.get(u'exports').put(u'maybe_list_to_jsArray', var.get(u'ib'))
 pass
 var.get(u'exports').put(u'new_list', var.get(u'O'))
 pass
@@ -1402,51 +1406,51 @@ pass
 var.get(u'exports').put(u'force_all', var.get(u'G'))
 pass
 var.get(u'exports').put(u'force1', var.get(u'U'))
-var.put(u'pb', Js([]))
-var.get(u'exports').put(u'env_null_v', var.get(u'pb'))
+var.put(u'qb', Js([]))
+var.get(u'exports').put(u'env_null_v', var.get(u'qb'))
 pass
-var.get(u'exports').put(u'env_set', var.get(u'qb'))
+var.get(u'exports').put(u'env_set', var.get(u'rb'))
 pass
-var.get(u'exports').put(u'env_get', var.get(u'rb'))
+var.get(u'exports').put(u'env_get', var.get(u'sb'))
 pass
 pass
-var.get(u'exports').put(u'env2val', var.get(u'kb'))
+var.get(u'exports').put(u'env2val', var.get(u'lb'))
 pass
-var.get(u'exports').put(u'env_foreach', var.get(u'tb'))
+var.get(u'exports').put(u'env_foreach', var.get(u'ub'))
 pass
-var.get(u'exports').put(u'val2env', var.get(u'ub'))
+var.get(u'exports').put(u'val2env', var.get(u'vb'))
 pass
 pass
 pass
 @Js
-def PyJs_anonymous_15_(a, b, this, arguments, var=var):
+def PyJs_anonymous_16_(a, b, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
     var.registers([u'a', u'c', u'b'])
     @Js
     def PyJsHoisted_c_(d, e, l, m, this, arguments, var=var):
         var = Scope({u'e':e, u'd':d, u'this':this, u'm':m, u'l':l, u'arguments':arguments}, var)
         var.registers([u'm', u'e', u'd', u'l'])
-        var.put(u'l', var.get(u'ma')(var.get(u'Ua'), Js([var.get(u'l')(var.get(u'd')), var.get(u'l')(var.get(u'e'))])))
-        var.put(u'd', var.get(u'ma')(var.get(u'Ua'), Js([var.get(u'm')(var.get(u'd')), var.get(u'm')(var.get(u'e'))])))
-        return var.get(u'ma')(var.get(u'Ya'), Js([var.get(u'l'), var.get(u'd'), var.get(u'db')]))
+        var.put(u'l', var.get(u'ma')(var.get(u'Va'), Js([var.get(u'l')(var.get(u'd')), var.get(u'l')(var.get(u'e'))])))
+        var.put(u'd', var.get(u'ma')(var.get(u'Va'), Js([var.get(u'm')(var.get(u'd')), var.get(u'm')(var.get(u'e'))])))
+        return var.get(u'ma')(var.get(u'Za'), Js([var.get(u'l'), var.get(u'd'), var.get(u'eb')]))
     PyJsHoisted_c_.func_name = u'c'
     var.put(u'c', PyJsHoisted_c_)
     pass
     if PyJsStrictEq(var.get(u'a'),var.get(u'b')):
-        return var.get(u'eb')
+        return var.get(u'fb')
     var.put(u'a', var.get(u'U')(var.get(u'a')))
     var.put(u'b', var.get(u'U')(var.get(u'b')))
     if (var.get(u'R')(var.get(u'a')) or var.get(u'R')(var.get(u'b'))):
-        return var.get(u'ma')(var.get(u'Ua'), Js([var.get(u'a'), var.get(u'b')]))
+        return var.get(u'ma')(var.get(u'Va'), Js([var.get(u'a'), var.get(u'b')]))
     if PyJsStrictEq(var.get(u'a'),var.get(u'b')):
-        return var.get(u'eb')
+        return var.get(u'fb')
     (var.get(u'R')(var.get(u'a')).neg() or var.get(u'k')())
-    def PyJs_LONG_16_(var=var):
-        return ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'fa'), var.get(u'ha')) if var.get(u'B')(var.get(u'b')) else var.get(u'db')) if var.get(u'B')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ba'), var.get(u'da')) if var.get(u'x')(var.get(u'b')) else var.get(u'db')) if var.get(u'x')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ja'), var.get(u'ka')) if var.get(u'D')(var.get(u'b')) else var.get(u'db')) if var.get(u'D')(var.get(u'a')) else var.get(u'k')())))
-    return ((var.get(u'eb') if var.get(u'A')(var.get(u'a')) else var.get(u'db')) if var.get(u'A')(var.get(u'a')) else (((var.get(u'eb') if var.get(u'fb')(var.get(u'a'), var.get(u'b')) else var.get(u'db')) if var.get(u'q')(var.get(u'b')) else var.get(u'db')) if var.get(u'q')(var.get(u'a')) else PyJs_LONG_16_()))
-PyJs_anonymous_15_._set_name(u'anonymous')
+    def PyJs_LONG_17_(var=var):
+        return ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'fa'), var.get(u'ha')) if var.get(u'B')(var.get(u'b')) else var.get(u'eb')) if var.get(u'B')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ba'), var.get(u'da')) if var.get(u'x')(var.get(u'b')) else var.get(u'eb')) if var.get(u'x')(var.get(u'a')) else ((var.get(u'c')(var.get(u'a'), var.get(u'b'), var.get(u'ja'), var.get(u'ka')) if var.get(u'D')(var.get(u'b')) else var.get(u'eb')) if var.get(u'D')(var.get(u'a')) else var.get(u'k')())))
+    return ((var.get(u'fb') if var.get(u'A')(var.get(u'a')) else var.get(u'eb')) if var.get(u'A')(var.get(u'a')) else (((var.get(u'fb') if var.get(u'gb')(var.get(u'a'), var.get(u'b')) else var.get(u'eb')) if var.get(u'q')(var.get(u'b')) else var.get(u'eb')) if var.get(u'q')(var.get(u'a')) else PyJs_LONG_17_()))
+PyJs_anonymous_16_._set_name(u'anonymous')
 @Js
-def PyJs_anonymous_17_(a, b, c, this, arguments, var=var):
+def PyJs_anonymous_18_(a, b, c, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
     var.registers([u'a', u'c', u'b', u'd'])
     var.put(u'd', Js([]))
@@ -1456,34 +1460,34 @@ def PyJs_anonymous_17_(a, b, c, this, arguments, var=var):
         PyJsComma(var.get(u'd').callprop(u'push', var.get(u'b').get(u'1')),var.put(u'b', var.get(u'G')(var.get(u'b').get(u'2'))))
     
     return (Js([Js(9.0), var.get(u'a'), var.get(u'd')]) if var.get(u'A')(var.get(u'b')) else var.get(u'c'))
-PyJs_anonymous_17_._set_name(u'anonymous')
-@Js
-def PyJs_anonymous_18_(a, b, c, this, arguments, var=var):
-    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
-    var.registers([u'a', u'c', u'b'])
-    var.put(u'a', var.get(u'ub')(var.get(u'a')))
-    return (var.get(u'c') if PyJsStrictEq(Js(1.0).neg(),var.get(u'a')) else Js([Js(6.0), var.get(u'a'), var.get(u'b')]))
 PyJs_anonymous_18_._set_name(u'anonymous')
 @Js
-def PyJs_anonymous_19_(a, b, this, arguments, var=var):
+def PyJs_anonymous_19_(a, b, c, this, arguments, var=var):
+    var = Scope({u'a':a, u'this':this, u'c':c, u'b':b, u'arguments':arguments}, var)
+    var.registers([u'a', u'c', u'b'])
+    var.put(u'a', var.get(u'vb')(var.get(u'a')))
+    return (var.get(u'c') if PyJsStrictEq(Js(1.0).neg(),var.get(u'a')) else Js([Js(6.0), var.get(u'a'), var.get(u'b')]))
+PyJs_anonymous_19_._set_name(u'anonymous')
+@Js
+def PyJs_anonymous_20_(a, b, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'b':b, u'arguments':arguments}, var)
     var.registers([u'a', u'b'])
     var.put(u'a', var.get(u'U')(var.get(u'a')))
-    return (var.get(u'ma')(var.get(u'Xa'), Js([var.get(u'a')])) if var.get(u'R')(var.get(u'a')) else (var.get(u'a').get(u'1') if var.get(u'x')(var.get(u'a')) else var.get(u'b')))
-PyJs_anonymous_19_._set_name(u'anonymous')
+    return (var.get(u'ma')(var.get(u'Ya'), Js([var.get(u'a')])) if var.get(u'R')(var.get(u'a')) else (var.get(u'a').get(u'1') if var.get(u'x')(var.get(u'a')) else var.get(u'b')))
+PyJs_anonymous_20_._set_name(u'anonymous')
 @Js
-def PyJs_anonymous_20_(a, b, c, d, this, arguments, var=var):
+def PyJs_anonymous_21_(a, b, c, d, this, arguments, var=var):
     var = Scope({u'a':a, u'c':c, u'b':b, u'd':d, u'this':this, u'arguments':arguments}, var)
     var.registers([u'a', u'c', u'b', u'd'])
     var.put(u'a', var.get(u'U')(var.get(u'a')))
     if var.get(u'R')(var.get(u'a')):
-        return var.get(u'ma')(var.get(u'Ya'), Js([var.get(u'a'), var.get(u'b'), var.get(u'c')]))
+        return var.get(u'ma')(var.get(u'Za'), Js([var.get(u'a'), var.get(u'b'), var.get(u'c')]))
     if var.get(u'B')(var.get(u'a')).neg():
         return var.get(u'd')
     var.put(u'a', var.get(u'G')(var.get(u'a').get(u'1')))
-    return ((var.get(u'b') if var.get(u'fb')(var.get(u'a'), var.get(u'ta')) else (var.get(u'c') if var.get(u'fb')(var.get(u'a'), var.get(u'ua')) else var.get(u'd'))) if var.get(u'q')(var.get(u'a')) else var.get(u'd'))
-PyJs_anonymous_20_._set_name(u'anonymous')
-var.put(u'mb', Js([var.get(u'vb')(var.get(u'Ha'), var.get(u'B')), Js([var.get(u'Ea'), Js(2.0), var.get(u'ea')]), var.get(u'wb')(var.get(u'Fa'), var.get(u'B'), var.get(u'fa')), var.get(u'wb')(var.get(u'Ga'), var.get(u'B'), var.get(u'ha')), var.get(u'vb')(var.get(u'Ma'), var.get(u'D')), Js([var.get(u'Ia'), Js(2.0), var.get(u'ia')]), var.get(u'wb')(var.get(u'Ka'), var.get(u'D'), var.get(u'ja')), var.get(u'wb')(var.get(u'La'), var.get(u'D'), var.get(u'ka')), var.get(u'vb')(var.get(u'Ta'), var.get(u'A')), Js([var.get(u'Na'), Js(2.0), var.get(u'aa')]), var.get(u'vb')(var.get(u'Oa'), var.get(u'x')), var.get(u'wb')(var.get(u'Pa'), var.get(u'x'), var.get(u'ba')), var.get(u'wb')(var.get(u'Qa'), var.get(u'x'), var.get(u'da')), Js([var.get(u'Ua'), Js(2.0), PyJs_anonymous_15_]), Js([var.get(u'Va'), Js(2.0), PyJs_anonymous_17_]), Js([var.get(u'Wa'), Js(2.0), PyJs_anonymous_18_]), var.get(u'vb')(var.get(u'Ra'), var.get(u'q')), Js([var.get(u'Xa'), Js(1.0), PyJs_anonymous_19_]), Js([var.get(u'Ya'), Js(3.0), PyJs_anonymous_20_])]))
+    return ((var.get(u'b') if var.get(u'gb')(var.get(u'a'), var.get(u'ta')) else (var.get(u'c') if var.get(u'gb')(var.get(u'a'), var.get(u'ua')) else var.get(u'd'))) if var.get(u'q')(var.get(u'a')) else var.get(u'd'))
+PyJs_anonymous_21_._set_name(u'anonymous')
+var.put(u'nb', Js([var.get(u'wb')(var.get(u'Ia'), var.get(u'B')), Js([var.get(u'Fa'), Js(2.0), var.get(u'ea')]), var.get(u'xb')(var.get(u'Ga'), var.get(u'B'), var.get(u'fa')), var.get(u'xb')(var.get(u'Ha'), var.get(u'B'), var.get(u'ha')), var.get(u'wb')(var.get(u'Na'), var.get(u'D')), Js([var.get(u'Ka'), Js(2.0), var.get(u'ia')]), var.get(u'xb')(var.get(u'La'), var.get(u'D'), var.get(u'ja')), var.get(u'xb')(var.get(u'Ma'), var.get(u'D'), var.get(u'ka')), var.get(u'wb')(var.get(u'Ua'), var.get(u'A')), Js([var.get(u'Oa'), Js(2.0), var.get(u'aa')]), var.get(u'wb')(var.get(u'Pa'), var.get(u'x')), var.get(u'xb')(var.get(u'Qa'), var.get(u'x'), var.get(u'ba')), var.get(u'xb')(var.get(u'Ra'), var.get(u'x'), var.get(u'da')), Js([var.get(u'Va'), Js(2.0), PyJs_anonymous_16_]), Js([var.get(u'Wa'), Js(2.0), PyJs_anonymous_18_]), Js([var.get(u'Xa'), Js(2.0), PyJs_anonymous_19_]), var.get(u'wb')(var.get(u'Ta'), var.get(u'q')), Js([var.get(u'Ya'), Js(1.0), PyJs_anonymous_20_]), Js([var.get(u'Za'), Js(3.0), PyJs_anonymous_21_])]))
 pass
 pass
 pass
@@ -1492,18 +1496,18 @@ pass
 pass
 var.get(u'exports').put(u'simple_print', var.get(u'S'))
 @Js
-def PyJs_anonymous_27_(a, this, arguments, var=var):
+def PyJs_anonymous_28_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
     var.registers([u'a'])
     return var.get(u'S')(var.get(u'na')(var.get(u'a')))
-PyJs_anonymous_27_._set_name(u'anonymous')
-var.get(u'exports').put(u'simple_print_force_all_rec', PyJs_anonymous_27_)
+PyJs_anonymous_28_._set_name(u'anonymous')
+var.get(u'exports').put(u'simple_print_force_all_rec', PyJs_anonymous_28_)
 pass
-var.get(u'exports').put(u'simple_parse', var.get(u'xb'))
+var.get(u'exports').put(u'simple_parse', var.get(u'yb'))
 @Js
-def PyJs_anonymous_41_(a, this, arguments, var=var):
+def PyJs_anonymous_42_(a, this, arguments, var=var):
     var = Scope({u'a':a, u'this':this, u'arguments':arguments}, var)
-    var.registers([u'ca', u'la', u'Ja', u'C', u'E', u'I', u'M', u'V', u'Y', u'Sa', u'a', u'c', u'b', u'e', u'd', u'h', u'Ca', u'm', u'l', u'n', u'p', u'u', u't', u'v'])
+    var.registers([u'ca', u'la', u'Ja', u'C', u'E', u'I', u'M', u'V', u'Y', u'Sa', u'a', u'c', u'b', u'e', u'd', u'g', u'Ca', u'm', u'l', u'n', u'p', u'u', u't', u'v'])
     @Js
     def PyJsHoisted_c_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
@@ -1522,10 +1526,11 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
     PyJsHoisted_b_.func_name = u'b'
     var.put(u'b', PyJsHoisted_b_)
     @Js
-    def PyJsHoisted_e_(this, arguments, var=var):
-        var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([])
-        PyJsTempException = JsToPyException(Js(u'TheLanguage parse ERROR!'))
+    def PyJsHoisted_e_(f, this, arguments, var=var):
+        var = Scope({u'this':this, u'arguments':arguments, u'f':f}, var)
+        var.registers([u'f'])
+        (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'f')) and var.put(u'f', Js(u'')))
+        PyJsTempException = JsToPyException((Js(u'TheLanguage parse ERROR!')+var.get(u'f')))
         raise PyJsTempException
     PyJsHoisted_e_.func_name = u'e'
     var.put(u'e', PyJsHoisted_e_)
@@ -1561,21 +1566,43 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_ca_(f, this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments, u'f':f}, var)
-        var.registers([u'r', u'g', u'f'])
+        var.registers([u'h', u'r', u'f'])
         if var.get(u'l')(var.get(u'f')):
             return Js(1.0).neg()
         #for JS loop
         var.put(u'r', Js(u'()!#.$%^@~/->_:?[]&').callprop(u'split', Js(u'')))
-        var.put(u'g', Js(0.0))
-        while (var.get(u'g')<var.get(u'r').get(u'length')):
+        var.put(u'h', Js(0.0))
+        while (var.get(u'h')<var.get(u'r').get(u'length')):
             try:
-                if PyJsStrictEq(var.get(u'f'),var.get(u'r').get(var.get(u'g'))):
+                if PyJsStrictEq(var.get(u'f'),var.get(u'r').get(var.get(u'h'))):
                     return Js(1.0).neg()
             finally:
-                    (var.put(u'g',Js(var.get(u'g').to_number())+Js(1))-Js(1))
+                    (var.put(u'h',Js(var.get(u'h').to_number())+Js(1))-Js(1))
         return Js(0.0).neg()
     PyJsHoisted_ca_.func_name = u'ca'
     var.put(u'ca', PyJsHoisted_ca_)
+    @Js
+    def PyJsHoisted_V_(f, r, this, arguments, var=var):
+        var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
+        var.registers([u'r', u'f'])
+        @Js
+        def PyJs_anonymous_43_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([u'h', u'w'])
+            if var.get(u'b')():
+                return Js(1.0).neg()
+            var.put(u'h', var.get(u'c')())
+            if PyJsStrictNeq(var.get(u'h'),var.get(u'f')):
+                return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
+            var.put(u'h', var.get(u'n')())
+            if (PyJsStrictEq(Js(1.0).neg(),var.get(u'h')) or var.get(u'x')(var.get(u'h')).neg()):
+                return var.get(u'e')()
+            var.put(u'w', var.get(u'h').get(u'2'))
+            return (var.get(u'r')(var.get(u'h').get(u'1'), var.get(u'w').get(u'1')) if (var.get(u'x')(var.get(u'w')) and var.get(u'A')(var.get(u'w').get(u'2'))) else var.get(u'e')())
+        PyJs_anonymous_43_._set_name(u'anonymous')
+        return PyJs_anonymous_43_
+    PyJsHoisted_V_.func_name = u'V'
+    var.put(u'V', PyJsHoisted_V_)
     @Js
     def PyJsHoisted_m_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
@@ -1604,12 +1631,12 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_n_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'r', u'w', u'g', u'f'])
+        var.registers([u'h', u'r', u'w', u'f'])
         @Js
         def PyJsHoisted_f_(y, this, arguments, var=var):
             var = Scope({u'y':y, u'this':this, u'arguments':arguments}, var)
             var.registers([u'y', u'Z'])
-            if PyJsStrictEq(var.get(u'w'),var.get(u'g')):
+            if PyJsStrictEq(var.get(u'w'),var.get(u'h')):
                 var.put(u'w', var.get(u'y'))
             else:
                 #for JS loop
@@ -1617,11 +1644,11 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
                 while 1:
                     if var.get(u'x')(var.get(u'Z')).neg():
                         return var.get(u'k')()
-                    if PyJsStrictEq(var.get(u'Z').get(u'2'),var.get(u'g')):
+                    if PyJsStrictEq(var.get(u'Z').get(u'2'),var.get(u'h')):
                         break
                     var.put(u'Z', var.get(u'Z').get(u'2'))
                 
-                if (var.get(u'x')(var.get(u'Z')).neg() or PyJsStrictNeq(var.get(u'Z').get(u'2'),var.get(u'g'))):
+                if (var.get(u'x')(var.get(u'Z')).neg() or PyJsStrictNeq(var.get(u'Z').get(u'2'),var.get(u'h'))):
                     return var.get(u'k')()
                 var.get(u'Z').put(u'2', var.get(u'y'))
         PyJsHoisted_f_.func_name = u'f'
@@ -1633,8 +1660,8 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
         if PyJsStrictNeq(Js(u'('),var.get(u'r')):
             return PyJsComma(var.get(u'd')(var.get(u'r')),Js(1.0).neg())
         #for JS loop
-        var.put(u'g', Js([Js(0.0), Js(u'!!@@READ||HOLE@@!!')]))
-        var.put(u'w', var.get(u'g'))
+        var.put(u'h', Js([Js(0.0), Js(u'!!@@READ||HOLE@@!!')]))
+        var.put(u'w', var.get(u'h'))
         while 1:
             var.get(u'm')()
             if var.get(u'b')():
@@ -1653,7 +1680,7 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
                 return (var.get(u'e')() if PyJsStrictNeq(Js(u')'),var.get(u'r')) else var.get(u'w'))
             var.get(u'd')(var.get(u'r'))
             var.put(u'r', var.get(u'Y')())
-            var.get(u'f')(Js([Js(1.0), var.get(u'r'), var.get(u'g')]))
+            var.get(u'f')(Js([Js(1.0), var.get(u'r'), var.get(u'h')]))
         
     PyJsHoisted_n_.func_name = u'n'
     var.put(u'n', PyJsHoisted_n_)
@@ -1673,11 +1700,12 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
             PyJsComma(var.put(u'r', var.get(u'f'), u'+'),var.put(u'f', var.get(u'c')()))
         
         (var.put(u'r', var.get(u'f'), u'+') if var.get(u'ca')(var.get(u'f')) else var.get(u'd')(var.get(u'f')))
+        (var.get(u'za').contains(var.get(u'r')) or var.get(u'e')((Js(u'Not Symbol')+var.get(u'r'))))
         return Js([Js(0.0), var.get(u'r')])
     PyJsHoisted_p_.func_name = u'p'
     var.put(u'p', PyJsHoisted_p_)
     @Js
-    def PyJsHoisted_u_(this, arguments, var=var):
+    def PyJsHoisted_v_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
         var.registers([u'f'])
         if var.get(u'b')():
@@ -1687,43 +1715,21 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
             return PyJsComma(var.get(u'd')(var.get(u'f')),Js(1.0).neg())
         var.put(u'f', var.get(u'n')())
         return (Js([Js(3.0), var.get(u'f').get(u'1'), var.get(u'f').get(u'2')]) if (PyJsStrictNeq(Js(1.0).neg(),var.get(u'f')) and var.get(u'x')(var.get(u'f'))) else var.get(u'e')())
-    PyJsHoisted_u_.func_name = u'u'
-    var.put(u'u', PyJsHoisted_u_)
-    @Js
-    def PyJsHoisted_V_(f, r, this, arguments, var=var):
-        var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
-        var.registers([u'r', u'f'])
-        @Js
-        def PyJs_anonymous_42_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([u'w', u'g'])
-            if var.get(u'b')():
-                return Js(1.0).neg()
-            var.put(u'g', var.get(u'c')())
-            if PyJsStrictNeq(var.get(u'g'),var.get(u'f')):
-                return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
-            var.put(u'g', var.get(u'n')())
-            if (PyJsStrictEq(Js(1.0).neg(),var.get(u'g')) or var.get(u'x')(var.get(u'g')).neg()):
-                return var.get(u'e')()
-            var.put(u'w', var.get(u'g').get(u'2'))
-            return (var.get(u'r')(var.get(u'g').get(u'1'), var.get(u'w').get(u'1')) if (var.get(u'x')(var.get(u'w')) and var.get(u'A')(var.get(u'w').get(u'2'))) else var.get(u'e')())
-        PyJs_anonymous_42_._set_name(u'anonymous')
-        return PyJs_anonymous_42_
-    PyJsHoisted_V_.func_name = u'V'
-    var.put(u'V', PyJsHoisted_V_)
+    PyJsHoisted_v_.func_name = u'v'
+    var.put(u'v', PyJsHoisted_v_)
     @Js
     def PyJsHoisted_Y_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'r', u'g', u'f'])
+        var.registers([u'h', u'r', u'f'])
         var.get(u'm')()
         #for JS loop
-        var.put(u'f', Js([var.get(u'n'), var.get(u'Sa'), var.get(u'u'), var.get(u'M'), var.get(u'h'), var.get(u'v'), var.get(u't'), var.get(u'C')]))
+        var.put(u'f', Js([var.get(u'n'), var.get(u'Sa'), var.get(u'v'), var.get(u'M'), var.get(u'g'), var.get(u'u'), var.get(u't'), var.get(u'C')]))
         var.put(u'r', Js(0.0))
         while (var.get(u'r')<var.get(u'f').get(u'length')):
             try:
-                var.put(u'g', var.get(u'f').callprop(var.get(u'r')))
-                if PyJsStrictNeq(Js(1.0).neg(),var.get(u'g')):
-                    return var.get(u'g')
+                var.put(u'h', var.get(u'f').callprop(var.get(u'r')))
+                if PyJsStrictNeq(Js(1.0).neg(),var.get(u'h')):
+                    return var.get(u'h')
             finally:
                     (var.put(u'r',Js(var.get(u'r').to_number())+Js(1))-Js(1))
         return var.get(u'e')()
@@ -1747,7 +1753,7 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
     @Js
     def PyJsHoisted_Ja_(this, arguments, var=var):
         var = Scope({u'this':this, u'arguments':arguments}, var)
-        var.registers([u'r', u'g', u'f'])
+        var.registers([u'h', u'r', u'f'])
         @Js
         def PyJsHoisted_r_(w, this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
@@ -1786,27 +1792,27 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
         @Js
         def PyJsHoisted_f_(w, this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
-            var.registers([u'y', u'Z', u'ob', u'w'])
+            var.registers([u'y', u'pb', u'Z', u'w'])
             @Js
             def PyJsHoisted_y_(this, arguments, var=var):
                 var = Scope({u'this':this, u'arguments':arguments}, var)
-                var.registers([u'yb'])
+                var.registers([u'zb'])
                 var.get(u'I')(Js(u'['))
-                var.put(u'yb', var.get(u'f')())
+                var.put(u'zb', var.get(u'f')())
                 var.get(u'I')(Js(u']'))
-                return var.get(u'yb')
+                return var.get(u'zb')
             PyJsHoisted_y_.func_name = u'y'
             var.put(u'y', PyJsHoisted_y_)
             pass
             (PyJsStrictEq(PyJsComma(Js(0.0), Js(None)),var.get(u'w')) and var.put(u'w', Js(1.0).neg()))
-            var.put(u'w', (Js([var.get(u'n'), var.get(u'p'), var.get(u'y'), var.get(u'u'), var.get(u'M'), var.get(u'h'), var.get(u'v'), var.get(u't'), var.get(u'C')]) if var.get(u'w') else Js([var.get(u'n'), var.get(u'Ja'), var.get(u'u'), var.get(u'M'), var.get(u'h'), var.get(u'v'), var.get(u't'), var.get(u'C')])))
+            var.put(u'w', (Js([var.get(u'n'), var.get(u'p'), var.get(u'y'), var.get(u'v'), var.get(u'M'), var.get(u'g'), var.get(u'u'), var.get(u't'), var.get(u'C')]) if var.get(u'w') else Js([var.get(u'n'), var.get(u'Ja'), var.get(u'v'), var.get(u'M'), var.get(u'g'), var.get(u'u'), var.get(u't'), var.get(u'C')])))
             #for JS loop
             var.put(u'Z', Js(0.0))
             while (var.get(u'Z')<var.get(u'w').get(u'length')):
                 try:
-                    var.put(u'ob', var.get(u'w').callprop(var.get(u'Z')))
-                    if PyJsStrictNeq(Js(1.0).neg(),var.get(u'ob')):
-                        return var.get(u'ob')
+                    var.put(u'pb', var.get(u'w').callprop(var.get(u'Z')))
+                    if PyJsStrictNeq(Js(1.0).neg(),var.get(u'pb')):
+                        return var.get(u'pb')
                 finally:
                         (var.put(u'Z',Js(var.get(u'Z').to_number())+Js(1))-Js(1))
             return var.get(u'e')()
@@ -1816,34 +1822,34 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
         pass
         if var.get(u'b')():
             return Js(1.0).neg()
-        var.put(u'g', var.get(u'c')())
-        if PyJsStrictEq(Js(u'&'),var.get(u'g')):
+        var.put(u'h', var.get(u'c')())
+        if PyJsStrictEq(Js(u'&'),var.get(u'h')):
             var.get(u'E')(var.get(u'b')().neg())
-            var.put(u'g', var.get(u'c')())
-            if PyJsStrictEq(Js(u'+'),var.get(u'g')):
-                return PyJsComma(var.put(u'g', var.get(u'f')()),var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'g'))))
-            var.get(u'd')(var.get(u'g'))
-            var.put(u'g', var.get(u'f')())
-            return var.get(u'O')(var.get(u'K'), var.get(u'g'))
-        if PyJsStrictEq(Js(u':'),var.get(u'g')):
+            var.put(u'h', var.get(u'c')())
+            if PyJsStrictEq(Js(u'+'),var.get(u'h')):
+                return PyJsComma(var.put(u'h', var.get(u'f')()),var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'H'), var.get(u'h'))))
+            var.get(u'd')(var.get(u'h'))
+            var.put(u'h', var.get(u'f')())
+            return var.get(u'O')(var.get(u'K'), var.get(u'h'))
+        if PyJsStrictEq(Js(u':'),var.get(u'h')):
             var.get(u'E')(var.get(u'b')().neg())
-            var.put(u'g', var.get(u'c')())
-            if PyJsStrictEq(Js(u'&'),var.get(u'g')):
-                return PyJsComma(PyJsComma(var.get(u'I')(Js(u'>')),var.put(u'g', var.get(u'f')())),var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'g'))), var.get(u'pa')))
-            if PyJsStrictEq(Js(u'>'),var.get(u'g')):
-                return PyJsComma(var.put(u'g', var.get(u'f')()),var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'g')), var.get(u'pa')))
-            var.get(u'd')(var.get(u'g'))
-            var.put(u'g', var.get(u'f')())
-            return var.get(u'O')(var.get(u'N'), var.get(u'g'), var.get(u'pa'))
-        if PyJsStrictEq(Js(u'+'),var.get(u'g')):
-            return PyJsComma(var.put(u'g', var.get(u'f')()),var.get(u'O')(var.get(u'H'), var.get(u'g')))
-        if PyJsStrictEq(Js(u'['),var.get(u'g')):
-            return PyJsComma(PyJsComma(var.put(u'g', var.get(u'f')()),var.get(u'I')(Js(u']'))),var.get(u'r')(var.get(u'g')))
-        if PyJsStrictEq(Js(u'_'),var.get(u'g')):
-            return PyJsComma(PyJsComma(var.get(u'I')(Js(u':')),var.put(u'g', var.get(u'f')())),var.get(u'O')(var.get(u'N'), var.get(u'g'), var.get(u'L')))
-        var.get(u'd')(var.get(u'g'))
-        var.put(u'g', var.get(u'p')())
-        return (Js(1.0).neg() if PyJsStrictEq(Js(1.0).neg(),var.get(u'g')) else var.get(u'r')(var.get(u'g')))
+            var.put(u'h', var.get(u'c')())
+            if PyJsStrictEq(Js(u'&'),var.get(u'h')):
+                return PyJsComma(PyJsComma(var.get(u'I')(Js(u'>')),var.put(u'h', var.get(u'f')())),var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'K'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'h'))), var.get(u'pa')))
+            if PyJsStrictEq(Js(u'>'),var.get(u'h')):
+                return PyJsComma(var.put(u'h', var.get(u'f')()),var.get(u'O')(var.get(u'N'), var.get(u'O')(var.get(u'J'), var.get(u'L'), var.get(u'h')), var.get(u'pa')))
+            var.get(u'd')(var.get(u'h'))
+            var.put(u'h', var.get(u'f')())
+            return var.get(u'O')(var.get(u'N'), var.get(u'h'), var.get(u'pa'))
+        if PyJsStrictEq(Js(u'+'),var.get(u'h')):
+            return PyJsComma(var.put(u'h', var.get(u'f')()),var.get(u'O')(var.get(u'H'), var.get(u'h')))
+        if PyJsStrictEq(Js(u'['),var.get(u'h')):
+            return PyJsComma(PyJsComma(var.put(u'h', var.get(u'f')()),var.get(u'I')(Js(u']'))),var.get(u'r')(var.get(u'h')))
+        if PyJsStrictEq(Js(u'_'),var.get(u'h')):
+            return PyJsComma(PyJsComma(var.get(u'I')(Js(u':')),var.put(u'h', var.get(u'f')())),var.get(u'O')(var.get(u'N'), var.get(u'h'), var.get(u'L')))
+        var.get(u'd')(var.get(u'h'))
+        var.put(u'h', var.get(u'p')())
+        return (Js(1.0).neg() if PyJsStrictEq(Js(1.0).neg(),var.get(u'h')) else var.get(u'r')(var.get(u'h')))
     PyJsHoisted_Ja_.func_name = u'Ja'
     var.put(u'Ja', PyJsHoisted_Ja_)
     pass
@@ -1866,101 +1872,101 @@ def PyJs_anonymous_41_(a, this, arguments, var=var):
     var.put(u'Ca', var.get(u'a'))
     var.put(u'la', Js(0.0))
     @Js
-    def PyJs_anonymous_43_(f, r, this, arguments, var=var):
-        var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
-        var.registers([u'r', u'g', u'f'])
-        var.put(u'g', var.get(u'ub')(var.get(u'f')))
-        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'g')) else Js([Js(6.0), var.get(u'g'), var.get(u'r')]))
-    PyJs_anonymous_43_._set_name(u'anonymous')
-    var.put(u'h', var.get(u'V')(Js(u'$'), PyJs_anonymous_43_))
-    @Js
     def PyJs_anonymous_44_(f, r, this, arguments, var=var):
         var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
-        var.registers([u'r', u'g', u'f'])
-        @Js
-        def PyJs_anonymous_45_(w, this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
-            var.registers([u'w'])
-            return var.get(u'w')
-        PyJs_anonymous_45_._set_name(u'anonymous')
-        @Js
-        def PyJs_anonymous_46_(this, arguments, var=var):
-            var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([])
-            return var.get(u'e')()
-        PyJs_anonymous_46_._set_name(u'anonymous')
-        var.put(u'g', var.get(u'gb')(var.get(u'r'), PyJs_anonymous_45_, PyJs_anonymous_46_))
-        return Js([Js(7.0), var.get(u'f'), var.get(u'g')])
+        var.registers([u'h', u'r', u'f'])
+        var.put(u'h', var.get(u'vb')(var.get(u'f')))
+        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'h')) else Js([Js(6.0), var.get(u'h'), var.get(u'r')]))
     PyJs_anonymous_44_._set_name(u'anonymous')
-    var.put(u'v', var.get(u'V')(Js(u'%'), PyJs_anonymous_44_))
+    var.put(u'g', var.get(u'V')(Js(u'$'), PyJs_anonymous_44_))
     @Js
-    def PyJs_anonymous_47_(f, r, g, this, arguments, var=var):
-        var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'g':g, u'f':f}, var)
-        var.registers([u'r', u'g', u'f'])
+    def PyJs_anonymous_45_(f, r, this, arguments, var=var):
+        var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
+        var.registers([u'h', u'r', u'f'])
         @Js
-        def PyJs_anonymous_48_(w, this, arguments, var=var):
+        def PyJs_anonymous_46_(w, this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
             var.registers([u'w'])
             return var.get(u'w')
-        PyJs_anonymous_48_._set_name(u'anonymous')
+        PyJs_anonymous_46_._set_name(u'anonymous')
         @Js
-        def PyJs_anonymous_49_(this, arguments, var=var):
+        def PyJs_anonymous_47_(this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments}, var)
             var.registers([])
             return var.get(u'e')()
-        PyJs_anonymous_49_._set_name(u'anonymous')
-        var.put(u'g', var.get(u'gb')(var.get(u'g'), PyJs_anonymous_48_, PyJs_anonymous_49_))
-        var.put(u'f', var.get(u'ub')(var.get(u'f')))
-        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'f')) else Js([Js(8.0), var.get(u'f'), var.get(u'r'), var.get(u'g')]))
-    PyJs_anonymous_47_._set_name(u'anonymous')
+        PyJs_anonymous_47_._set_name(u'anonymous')
+        var.put(u'h', var.get(u'hb')(var.get(u'r'), PyJs_anonymous_46_, PyJs_anonymous_47_))
+        return Js([Js(7.0), var.get(u'f'), var.get(u'h')])
+    PyJs_anonymous_45_._set_name(u'anonymous')
+    var.put(u'u', var.get(u'V')(Js(u'%'), PyJs_anonymous_45_))
     @Js
-    def PyJs_anonymous_50_(f, r, this, arguments, var=var):
+    def PyJs_anonymous_48_(f, r, h, this, arguments, var=var):
+        var = Scope({u'this':this, u'h':h, u'r':r, u'arguments':arguments, u'f':f}, var)
+        var.registers([u'h', u'r', u'f'])
+        @Js
+        def PyJs_anonymous_49_(w, this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
+            var.registers([u'w'])
+            return var.get(u'w')
+        PyJs_anonymous_49_._set_name(u'anonymous')
+        @Js
+        def PyJs_anonymous_50_(this, arguments, var=var):
+            var = Scope({u'this':this, u'arguments':arguments}, var)
+            var.registers([])
+            return var.get(u'e')()
+        PyJs_anonymous_50_._set_name(u'anonymous')
+        var.put(u'h', var.get(u'hb')(var.get(u'h'), PyJs_anonymous_49_, PyJs_anonymous_50_))
+        var.put(u'f', var.get(u'vb')(var.get(u'f')))
+        return (var.get(u'e')() if PyJsStrictEq(Js(1.0).neg(),var.get(u'f')) else Js([Js(8.0), var.get(u'f'), var.get(u'r'), var.get(u'h')]))
+    PyJs_anonymous_48_._set_name(u'anonymous')
+    @Js
+    def PyJs_anonymous_51_(f, r, this, arguments, var=var):
         var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
         var.registers([u'r', u'f'])
         @Js
-        def PyJs_anonymous_51_(this, arguments, var=var):
+        def PyJs_anonymous_52_(this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments}, var)
-            var.registers([u'y', u'w', u'g'])
+            var.registers([u'y', u'h', u'w'])
             if var.get(u'b')():
                 return Js(1.0).neg()
-            var.put(u'g', var.get(u'c')())
-            if PyJsStrictNeq(var.get(u'g'),var.get(u'f')):
-                return PyJsComma(var.get(u'd')(var.get(u'g')),Js(1.0).neg())
-            var.put(u'g', var.get(u'n')())
-            if (PyJsStrictEq(Js(1.0).neg(),var.get(u'g')) or var.get(u'x')(var.get(u'g')).neg()):
+            var.put(u'h', var.get(u'c')())
+            if PyJsStrictNeq(var.get(u'h'),var.get(u'f')):
+                return PyJsComma(var.get(u'd')(var.get(u'h')),Js(1.0).neg())
+            var.put(u'h', var.get(u'n')())
+            if (PyJsStrictEq(Js(1.0).neg(),var.get(u'h')) or var.get(u'x')(var.get(u'h')).neg()):
                 return var.get(u'e')()
-            var.put(u'w', var.get(u'g').get(u'2'))
+            var.put(u'w', var.get(u'h').get(u'2'))
             if var.get(u'x')(var.get(u'w')).neg():
                 return var.get(u'e')()
             var.put(u'y', var.get(u'w').get(u'2'))
-            return (var.get(u'r')(var.get(u'g').get(u'1'), var.get(u'w').get(u'1'), var.get(u'y').get(u'1')) if (var.get(u'x')(var.get(u'y')) and var.get(u'A')(var.get(u'y').get(u'2'))) else var.get(u'e')())
-        PyJs_anonymous_51_._set_name(u'anonymous')
-        return PyJs_anonymous_51_
-    PyJs_anonymous_50_._set_name(u'anonymous')
-    var.put(u't', PyJs_anonymous_50_(Js(u'@'), PyJs_anonymous_47_))
+            return (var.get(u'r')(var.get(u'h').get(u'1'), var.get(u'w').get(u'1'), var.get(u'y').get(u'1')) if (var.get(u'x')(var.get(u'y')) and var.get(u'A')(var.get(u'y').get(u'2'))) else var.get(u'e')())
+        PyJs_anonymous_52_._set_name(u'anonymous')
+        return PyJs_anonymous_52_
+    PyJs_anonymous_51_._set_name(u'anonymous')
+    var.put(u't', PyJs_anonymous_51_(Js(u'@'), PyJs_anonymous_48_))
     @Js
-    def PyJs_anonymous_52_(f, r, this, arguments, var=var):
+    def PyJs_anonymous_53_(f, r, this, arguments, var=var):
         var = Scope({u'this':this, u'r':r, u'arguments':arguments, u'f':f}, var)
-        var.registers([u'r', u'g', u'f'])
+        var.registers([u'h', u'r', u'f'])
         @Js
-        def PyJs_anonymous_53_(w, this, arguments, var=var):
+        def PyJs_anonymous_54_(w, this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments, u'w':w}, var)
             var.registers([u'w'])
             return var.get(u'w')
-        PyJs_anonymous_53_._set_name(u'anonymous')
+        PyJs_anonymous_54_._set_name(u'anonymous')
         @Js
-        def PyJs_anonymous_54_(this, arguments, var=var):
+        def PyJs_anonymous_55_(this, arguments, var=var):
             var = Scope({u'this':this, u'arguments':arguments}, var)
             var.registers([])
             return var.get(u'e')()
-        PyJs_anonymous_54_._set_name(u'anonymous')
-        var.put(u'g', var.get(u'gb')(var.get(u'r'), PyJs_anonymous_53_, PyJs_anonymous_54_))
-        return Js([Js(9.0), var.get(u'f'), var.get(u'g')])
-    PyJs_anonymous_52_._set_name(u'anonymous')
-    var.put(u'C', var.get(u'V')(Js(u'^'), PyJs_anonymous_52_))
+        PyJs_anonymous_55_._set_name(u'anonymous')
+        var.put(u'h', var.get(u'hb')(var.get(u'r'), PyJs_anonymous_54_, PyJs_anonymous_55_))
+        return Js([Js(9.0), var.get(u'f'), var.get(u'h')])
+    PyJs_anonymous_53_._set_name(u'anonymous')
+    var.put(u'C', var.get(u'V')(Js(u'^'), PyJs_anonymous_53_))
     return var.get(u'Y')()
-PyJs_anonymous_41_._set_name(u'anonymous')
-var.get(u'exports').put(u'complex_parse', PyJs_anonymous_41_)
+PyJs_anonymous_42_._set_name(u'anonymous')
+var.get(u'exports').put(u'complex_parse', PyJs_anonymous_42_)
 pass
 var.get(u'exports').put(u'complex_print', var.get(u'X'))
 pass

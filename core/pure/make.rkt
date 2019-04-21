@@ -54,6 +54,7 @@
 
 
 (define eval-ns (make-base-namespace))
+(eval '(require racket) eval-ns)
 (define (eval-str-sandbox x) (eval (read (open-input-string x)) eval-ns))
 (define raw-lang.ts #{cat typescript/lang.ts})
 (define raw-lang.ts-lines (string->lines raw-lang.ts))
@@ -74,7 +75,7 @@
                 c-lines
                 (list tail-c-line)
                 (list head-g-line)
-                (list (eval-str-sandbox (++ head-c (apply-++ c-lines) tail-c)))
+                (list (eval-str-sandbox (++ "(begin\n" head-c (apply-++ c-lines) tail-c "\n)")))
                 (list tail-g-line)
                 (run-racket-code-generators->lines tail-other-lines)
                 )]
@@ -103,6 +104,7 @@ in-dir "typescript" {
              "c/lang.c"
              "go/src")
             (void))
+     ("typescript/lang.ts" () (void)) ;; 實現在前面
      ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
