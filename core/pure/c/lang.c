@@ -9186,11 +9186,12 @@ static inline int lcf1_get(lua_State *L) {
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 0);
 
-  /* local ret = state_const:sub(state + 1, state + 1) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
+  /* local ret = string.sub(state_const, state + 1, state + 1) */
+  lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
-  lua_insert(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 154);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
@@ -9225,12 +9226,13 @@ static inline int lcf1_put(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x) */
+  /* ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x) */
   lc_getupvalue(L, lua_upvalueindex(1), 20, 95);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
+  lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
-  lua_insert(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 154);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
@@ -11167,7 +11169,7 @@ static inline int lcf1_simple_parse(lua_State *L) {
 
   /* function get()
    *         ASSERT(not eof())
-   *         local ret = state_const:sub(state + 1, state + 1)
+   *         local ret = string.sub(state_const, state + 1, state + 1)
    *         state = state + 1
    *         return ret
    *     end */
@@ -11177,9 +11179,8 @@ static inline int lcf1_simple_parse(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* function put(x)
-   *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
-   *         state = state - 1
-   *     end */
+   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
+   * x) state = state - 1 end */
   lua_pushvalue(L, lc674);
   lua_pushcclosure(L, lcf1_put, 1);
   lc_setupvalue(L, lc674, 0, 151);
@@ -11592,11 +11593,12 @@ static inline int lcf2_get(lua_State *L) {
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 0);
 
-  /* local ret = state_const:sub(state + 1, state + 1) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
+  /* local ret = string.sub(state_const, state + 1, state + 1) */
+  lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
-  lua_insert(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
@@ -11631,12 +11633,13 @@ static inline int lcf2_put(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x) */
+  /* ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x) */
   lc_getupvalue(L, lua_upvalueindex(1), 20, 95);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
+  lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
-  lua_insert(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
@@ -14674,7 +14677,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
 
   /* function get()
    *         ASSERT(not eof())
-   *         local ret = state_const:sub(state + 1, state + 1)
+   *         local ret = string.sub(state_const, state + 1, state + 1)
    *         state = state + 1
    *         return ret
    *     end */
@@ -14684,9 +14687,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* function put(x)
-   *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
-   *         state = state - 1
-   *     end */
+   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
+   * x) state = state - 1 end */
   lua_pushvalue(L, lc852);
   lua_pushcclosure(L, lcf2_put, 1);
   lc_setupvalue(L, lc852, 0, 181);
@@ -19317,34 +19319,17 @@ static inline int lcf_main(lua_State *L) {
    * readapply, a_symbol_p, val function eof() return #state_const == state end
    *     function get()
    *         ASSERT(not eof())
-   *         local ret = state_const:sub(state + 1, state + 1)
+   *         local ret = string.sub(state_const, state + 1, state + 1)
    *         state = state + 1
    *         return ret
    *     end
    *     function put(x)
-   *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
-   *         state = state - 1
-   *     end
-   *     function parse_error()
-   *         error("TheLanguage parse ERROR!")
-   *     end
-   *     function a_space_p(x)
-   *         return x == " " or x == "\n" or x == "\t" or x == "\r"
-   *     end
-   *     function space()
-   *         if eof() then
-   *             return false
-   *         end
-   *         local x = get()
-   *         if not a_space_p(x) then
-   *             put(x)
-   *             return false
-   *         end
-   *         while a_space_p(x) and not eof() do
-   *             x = get()
-   *         end
-   *         if not a_space_p(x) then
-   *             put(x)
+   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
+   * x) state = state - 1 end function parse_error() error("TheLanguage parse
+   * ERROR!") end function a_space_p(x) return x == " " or x == "\n" or x ==
+   * "\t" or x == "\r" end function space() if eof() then return false end local
+   * x = get() if not a_space_p(x) then put(x) return false end while
+   * a_space_p(x) and not eof() do x = get() end if not a_space_p(x) then put(x)
    *         end
    *         return true
    *     end
@@ -19615,31 +19600,15 @@ static inline int lcf_main(lua_State *L) {
    * readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
    * readsysname_no_pack, readsysname function eof() return #state_const ==
    * state end function get() ASSERT(not eof()) local ret =
-   * state_const:sub(state + 1, state + 1) state = state + 1 return ret end
+   * string.sub(state_const, state + 1, state + 1) state = state + 1 return ret
+   *     end
    *     function put(x)
-   *         ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
-   *         state = state - 1
-   *     end
-   *     function parse_error()
-   *         error("TheLanguage parse ERROR!")
-   *     end
-   *     function a_space_p(x)
-   *         return x == " " or x == "\n" or x == "\t" or x == "\r"
-   *     end
-   *     function space()
-   *         if eof() then
-   *             return false
-   *         end
-   *         local x = get()
-   *         if not a_space_p(x) then
-   *             put(x)
-   *             return false
-   *         end
-   *         while a_space_p(x) and not eof() do
-   *             x = get()
-   *         end
-   *         if not a_space_p(x) then
-   *             put(x)
+   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
+   * x) state = state - 1 end function parse_error() error("TheLanguage parse
+   * ERROR!") end function a_space_p(x) return x == " " or x == "\n" or x ==
+   * "\t" or x == "\r" end function space() if eof() then return false end local
+   * x = get() if not a_space_p(x) then put(x) return false end while
+   * a_space_p(x) and not eof() do x = get() end if not a_space_p(x) then put(x)
    *         end
    *         return true
    *     end

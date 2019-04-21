@@ -138,7 +138,7 @@ in-dir "typescript" {
              touch lang.lua
              rm lang.lua
              npx tstl -p tsconfig.json
-             (define raw #{sed (id "s|string.sub(\\([a-zA-Z0-9_]*\\), *|\\1:sub(|g") lang.lua})
+             (define raw #{cat lang.lua})
              (define out (++
                  haskell-generatedby
                  haskell-copyright

@@ -1275,12 +1275,12 @@ local function simple_parse(x)
     end
     function get()
         ASSERT(not eof())
-        local ret = state_const:sub(state + 1, state + 1)
+        local ret = string.sub(state_const, state + 1, state + 1)
         state = state + 1
         return ret
     end
     function put(x)
-        ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
+        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
         state = state - 1
     end
     function parse_error()
@@ -1577,12 +1577,12 @@ local function complex_parse(x)
     end
     function get()
         ASSERT(not eof())
-        local ret = state_const:sub(state + 1, state + 1)
+        local ret = string.sub(state_const, state + 1, state + 1)
         state = state + 1
         return ret
     end
     function put(x)
-        ASSERT(state_const:sub((state - 1) + 1, (state - 1) + 1) == x)
+        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
         state = state - 1
     end
     function parse_error()
