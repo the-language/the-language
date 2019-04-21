@@ -15869,9 +15869,9 @@ static inline int lcf_main(lua_State *L) {
   lc_setupvalue(L, (lc453 + lc_nextra), 4, 45);
   assert(lua_gettop(L) - lc_nextra == 9);
 
-  /* local if_symbol = new_symbol("若") */
+  /* local if_symbol = new_symbol("如若") */
   lc_getupvalue(L, (lc453 + lc_nextra), 3, 113);
-  lua_pushliteral(L, "若");
+  lua_pushliteral(L, "如若");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 10);
 
@@ -15937,27 +15937,27 @@ static inline int lcf_main(lua_State *L) {
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 17);
 
-  /* local null_symbol = new_symbol("空") */
+  /* local null_symbol = new_symbol("間空") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "空");
+  lua_pushliteral(L, "間空");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 18);
 
-  /* local construction_symbol = new_symbol("連") */
+  /* local construction_symbol = new_symbol("連頸") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "連");
+  lua_pushliteral(L, "連頸");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 19);
 
-  /* local data_symbol = new_symbol("構") */
+  /* local data_symbol = new_symbol("構物") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "構");
+  lua_pushliteral(L, "構物");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 20);
 
-  /* local error_symbol = new_symbol("誤") */
+  /* local error_symbol = new_symbol("謬誤") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "誤");
+  lua_pushliteral(L, "謬誤");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 21);
 
@@ -15967,27 +15967,27 @@ static inline int lcf_main(lua_State *L) {
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 22);
 
-  /* local list_symbol = new_symbol("列") */
+  /* local list_symbol = new_symbol("列序") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "列");
+  lua_pushliteral(L, "列序");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 23);
 
-  /* local head_symbol = new_symbol("首") */
+  /* local head_symbol = new_symbol("首始") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "首");
+  lua_pushliteral(L, "首始");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 24);
 
-  /* local tail_symbol = new_symbol("尾") */
+  /* local tail_symbol = new_symbol("尾末") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "尾");
+  lua_pushliteral(L, "尾末");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 25);
 
-  /* local thing_symbol = new_symbol("物") */
+  /* local thing_symbol = new_symbol("之物") */
   lc_getupvalue(L, (lc458 + lc_nextra), 8, 113);
-  lua_pushliteral(L, "物");
+  lua_pushliteral(L, "之物");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 26);
 
@@ -15998,16 +15998,14 @@ static inline int lcf_main(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 27);
 
   /* local symbols_set = {
-   *     ["丙"] = true,
-   *     ["乙"] = true,
    *     ["省略一物"] = true,
    *     ["解算"] = true,
-   *     ["若"] = true,
    *     ["是非"] = true,
+   *     ["序甲"] = true,
    *     ["引用"] = true,
+   *     ["列序"] = true,
    *     ["化滅"] = true,
    *     ["等同"] = true,
-   *     ["甲"] = true,
    *     ["應用"] = true,
    *     A = true,
    *     l = true,
@@ -16025,27 +16023,29 @@ static inline int lcf_main(lua_State *L) {
    *     a = true,
    *     ["0"] = true,
    *     ["陰"] = true,
+   *     ["謬誤"] = true,
    *     ["符名"] = true,
    *     e = true,
    *     t = true,
    *     ["4"] = true,
-   *     ["物"] = true,
    *     P = true,
    *     y = true,
    *     V = true,
    *     F = true,
    *     d = true,
-   *     ["列"] = true,
+   *     ["序丁"] = true,
    *     ["詞素"] = true,
-   *     ["空"] = true,
-   *     ["丁"] = true,
+   *     ["連頸"] = true,
+   *     ["如若"] = true,
+   *     ["間空"] = true,
    *     ["太始初核"] = true,
    *     ["為符名連"] = true,
    *     ["特定其物"] = true,
    *     ["效應"] = true,
-   *     ["首"] = true,
-   *     ["連"] = true,
-   *     ["自"] = true,
+   *     ["尾末"] = true,
+   *     ["序乙"] = true,
+   *     ["吾自"] = true,
+   *     ["構物"] = true,
    *     ["參形"] = true,
    *     h = true,
    *     g = true,
@@ -16075,15 +16075,16 @@ static inline int lcf_main(lua_State *L) {
    *     n = true,
    *     G = true,
    *     W = true,
-   *     ["誤"] = true,
    *     L = true,
    *     j = true,
    *     ["9"] = true,
    *     C = true,
+   *     ["首始"] = true,
    *     o = true,
    *     w = true,
    *     ["7"] = true,
    *     I = true,
+   *     ["之物"] = true,
    *     M = true,
    *     s = true,
    *     ["3"] = true,
@@ -16092,43 +16093,36 @@ static inline int lcf_main(lua_State *L) {
    *     S = true,
    *     k = true,
    *     B = true,
+   *     ["序丙"] = true,
    *     ["式形"] = true,
-   *     ["構"] = true,
-   *     ["尾"] = true,
    *     ["宇宙亡矣"] = true,
    * } */
   lc_newclosuretable(L, (lc458 + lc_nextra));
   enum { lc459 = 28 };
   assert((lua_gettop(L) == (lc459 + lc_nextra)));
   lua_createtable(L, 0, 98);
-  lua_pushliteral(L, "丙");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "乙");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
   lua_pushliteral(L, "省略一物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "解算");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "若");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
   lua_pushliteral(L, "是非");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
+  lua_pushliteral(L, "序甲");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
   lua_pushliteral(L, "引用");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "列序");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "化滅");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "等同");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "甲");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "應用");
@@ -16182,6 +16176,9 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "陰");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
+  lua_pushliteral(L, "謬誤");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
   lua_pushliteral(L, "符名");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
@@ -16192,9 +16189,6 @@ static inline int lcf_main(lua_State *L) {
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "4");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "P");
@@ -16212,16 +16206,19 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "d");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "列");
+  lua_pushliteral(L, "序丁");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "詞素");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "空");
+  lua_pushliteral(L, "連頸");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "丁");
+  lua_pushliteral(L, "如若");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "間空");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "太始初核");
@@ -16236,13 +16233,16 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "效應");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "首");
+  lua_pushliteral(L, "尾末");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "連");
+  lua_pushliteral(L, "序乙");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "自");
+  lua_pushliteral(L, "吾自");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "構物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "參形");
@@ -16332,9 +16332,6 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "W");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "誤");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
   lua_pushliteral(L, "L");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
@@ -16347,6 +16344,9 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "C");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
+  lua_pushliteral(L, "首始");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
   lua_pushliteral(L, "o");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
@@ -16357,6 +16357,9 @@ static inline int lcf_main(lua_State *L) {
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "I");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "之物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "M");
@@ -16383,13 +16386,10 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "B");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
+  lua_pushliteral(L, "序丙");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
   lua_pushliteral(L, "式形");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "構");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "尾");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "宇宙亡矣");
