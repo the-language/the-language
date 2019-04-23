@@ -15998,122 +15998,305 @@ static inline int lcf_main(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 27);
 
   /* local symbols_set = {
-   *     ["省略一物"] = true,
-   *     ["解算"] = true,
-   *     ["是非"] = true,
-   *     ["序甲"] = true,
-   *     ["引用"] = true,
+   *     ["0"] = true,
+   *     ["1"] = true,
+   *     ["2"] = true,
+   *     ["3"] = true,
+   *     ["4"] = true,
+   *     ["5"] = true,
+   *     ["6"] = true,
+   *     ["7"] = true,
+   *     ["8"] = true,
+   *     ["9"] = true,
+   *     A = true,
+   *     B = true,
+   *     C = true,
+   *     D = true,
+   *     E = true,
+   *     F = true,
+   *     G = true,
+   *     H = true,
+   *     I = true,
+   *     J = true,
+   *     K = true,
+   *     L = true,
+   *     M = true,
+   *     N = true,
+   *     O = true,
+   *     P = true,
+   *     Q = true,
+   *     R = true,
+   *     S = true,
+   *     T = true,
+   *     U = true,
+   *     V = true,
+   *     W = true,
+   *     X = true,
+   *     Y = true,
+   *     Z = true,
+   *     a = true,
+   *     b = true,
+   *     c = true,
+   *     d = true,
+   *     e = true,
+   *     f = true,
+   *     g = true,
+   *     h = true,
+   *     i = true,
+   *     j = true,
+   *     k = true,
+   *     l = true,
+   *     m = true,
+   *     n = true,
+   *     o = true,
+   *     p = true,
+   *     q = true,
+   *     r = true,
+   *     s = true,
+   *     t = true,
+   *     u = true,
+   *     v = true,
+   *     w = true,
+   *     x = true,
+   *     y = true,
+   *     z = true,
+   *     ["一類何物"] = true,
+   *     ["之物"] = true,
+   *     ["其子"] = true,
+   *     ["出入改滅"] = true,
    *     ["列序"] = true,
    *     ["化滅"] = true,
-   *     ["等同"] = true,
-   *     ["應用"] = true,
-   *     A = true,
-   *     l = true,
-   *     ["映表"] = true,
-   *     v = true,
-   *     ["6"] = true,
-   *     E = true,
-   *     N = true,
-   *     U = true,
-   *     Q = true,
-   *     x = true,
-   *     ["5"] = true,
-   *     D = true,
-   *     ["1"] = true,
-   *     a = true,
-   *     ["0"] = true,
-   *     ["陰"] = true,
-   *     ["謬誤"] = true,
-   *     ["符名"] = true,
-   *     e = true,
-   *     t = true,
-   *     ["4"] = true,
-   *     P = true,
-   *     y = true,
-   *     V = true,
-   *     F = true,
-   *     d = true,
-   *     ["序丁"] = true,
-   *     ["詞素"] = true,
-   *     ["連頸"] = true,
-   *     ["如若"] = true,
-   *     ["間空"] = true,
+   *     ["參形"] = true,
+   *     ["吾自"] = true,
    *     ["太始初核"] = true,
+   *     ["如若"] = true,
+   *     ["宇宙亡矣"] = true,
+   *     ["尾末"] = true,
+   *     ["序丁"] = true,
+   *     ["序丙"] = true,
+   *     ["序乙"] = true,
+   *     ["序甲"] = true,
+   *     ["式形"] = true,
+   *     ["引用"] = true,
+   *     ["應用"] = true,
+   *     ["效應"] = true,
+   *     ["映表"] = true,
+   *     ["是非"] = true,
+   *     ["構物"] = true,
    *     ["為符名連"] = true,
    *     ["特定其物"] = true,
-   *     ["效應"] = true,
-   *     ["尾末"] = true,
-   *     ["序乙"] = true,
-   *     ["吾自"] = true,
-   *     ["構物"] = true,
-   *     ["參形"] = true,
-   *     h = true,
-   *     g = true,
-   *     R = true,
-   *     r = true,
-   *     c = true,
-   *     J = true,
-   *     ["2"] = true,
+   *     ["省略一物"] = true,
+   *     ["符名"] = true,
+   *     ["等同"] = true,
+   *     ["解算"] = true,
+   *     ["詞素"] = true,
+   *     ["謬誤"] = true,
+   *     ["連頸"] = true,
+   *     ["間空"] = true,
+   *     ["陰"] = true,
    *     ["陽"] = true,
-   *     i = true,
-   *     X = true,
-   *     ["8"] = true,
-   *     ["其子"] = true,
-   *     f = true,
-   *     O = true,
-   *     u = true,
-   *     T = true,
-   *     ["一類何物"] = true,
-   *     q = true,
-   *     m = true,
-   *     b = true,
-   *     K = true,
-   *     p = true,
-   *     ["出入改滅"] = true,
-   *     Y = true,
-   *     H = true,
-   *     n = true,
-   *     G = true,
-   *     W = true,
-   *     L = true,
-   *     j = true,
-   *     ["9"] = true,
-   *     C = true,
    *     ["首始"] = true,
-   *     o = true,
-   *     w = true,
-   *     ["7"] = true,
-   *     I = true,
-   *     ["之物"] = true,
-   *     M = true,
-   *     s = true,
-   *     ["3"] = true,
-   *     z = true,
-   *     Z = true,
-   *     S = true,
-   *     k = true,
-   *     B = true,
-   *     ["序丙"] = true,
-   *     ["式形"] = true,
-   *     ["宇宙亡矣"] = true,
    * } */
   lc_newclosuretable(L, (lc458 + lc_nextra));
   enum { lc459 = 28 };
   assert((lua_gettop(L) == (lc459 + lc_nextra)));
   lua_createtable(L, 0, 98);
-  lua_pushliteral(L, "省略一物");
+  lua_pushliteral(L, "0");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "解算");
+  lua_pushliteral(L, "1");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "是非");
+  lua_pushliteral(L, "2");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "序甲");
+  lua_pushliteral(L, "3");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "引用");
+  lua_pushliteral(L, "4");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "5");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "6");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "7");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "8");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "9");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "A");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "B");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "C");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "D");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "E");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "F");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "G");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "H");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "I");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "J");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "K");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "L");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "M");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "N");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "O");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "P");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Q");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "R");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "S");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "T");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "U");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "V");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "W");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "X");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Y");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Z");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "a");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "b");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "c");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "d");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "e");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "f");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "g");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "h");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "i");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "j");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "k");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "l");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "m");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "n");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "o");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "p");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "q");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "r");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "s");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "t");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "u");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "v");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "w");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "x");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "y");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "z");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "一類何物");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "之物");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "其子");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "出入改滅");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "列序");
@@ -16122,106 +16305,55 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "化滅");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "等同");
+  lua_pushliteral(L, "參形");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "應用");
+  lua_pushliteral(L, "吾自");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "A");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "l");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "映表");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "v");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "6");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "E");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "N");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "U");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Q");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "x");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "5");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "D");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "1");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "a");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "0");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "陰");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "謬誤");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "符名");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "e");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "t");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "4");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "P");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "y");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "V");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "F");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "d");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "序丁");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "詞素");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "連頸");
+  lua_pushliteral(L, "太始初核");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "如若");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "間空");
+  lua_pushliteral(L, "宇宙亡矣");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "太始初核");
+  lua_pushliteral(L, "尾末");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "序丁");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "序丙");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "序乙");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "序甲");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "式形");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "引用");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "應用");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "效應");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "映表");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "是非");
+  lua_pushboolean(L, 1);
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "構物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "為符名連");
@@ -16230,169 +16362,37 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "特定其物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "效應");
+  lua_pushliteral(L, "省略一物");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "尾末");
+  lua_pushliteral(L, "符名");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "序乙");
+  lua_pushliteral(L, "等同");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "吾自");
+  lua_pushliteral(L, "解算");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "構物");
+  lua_pushliteral(L, "詞素");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "參形");
+  lua_pushliteral(L, "謬誤");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "h");
+  lua_pushliteral(L, "連頸");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "g");
+  lua_pushliteral(L, "間空");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "R");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "r");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "c");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "J");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "2");
+  lua_pushliteral(L, "陰");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_pushliteral(L, "陽");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
-  lua_pushliteral(L, "i");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "X");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "8");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "其子");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "f");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "O");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "u");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "T");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "一類何物");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "q");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "m");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "b");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "K");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "p");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "出入改滅");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Y");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "H");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "n");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "G");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "W");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "L");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "j");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "9");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "C");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
   lua_pushliteral(L, "首始");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "o");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "w");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "7");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "I");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "之物");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "M");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "s");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "3");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "z");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Z");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "S");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "k");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "B");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "序丙");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "式形");
-  lua_pushboolean(L, 1);
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "宇宙亡矣");
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
   lua_rawseti(L, (lc459 + lc_nextra), 122);
