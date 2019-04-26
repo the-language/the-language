@@ -96,8 +96,8 @@ in-dir "typescript" {
              "ecmascript/lang.raw.js"
              "lua/lang.lua"
              "ecmascript6/lang.js"
-             "python2/lang.py"
-             "python3/lang.py"
+             ;;"python2/lang.py";;暫停。因爲性能太差。
+             ;;"python3/lang.py";;暫停。因爲性能太差。
              ;;"php/lang.php";;正在修復
              "java/src"
              "c/lang.h"
@@ -177,39 +177,6 @@ in-dir "typescript" {
              npx tsc --build tsconfig.json
              (define raw #{cat lang.js})
              |> ++ c-generatedby raw &>! lang.js
-     }})
-     ("python3/lang.py" ("python2/lang.py") {
-         in-dir "python3" {
-             rm -fr lang.py
-             cp ../python2/lang.py ./
-             2to3 -f all -f buffer -f idioms -f set_literal -f ws_comma --no-diffs --nobackups -w lang.py
-     }})
-     ("python2/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
-         in-dir "python2" {
-             (define raw-js (++
-                 "var exports={};"
-                 #{cat ../ecmascript/lang.js}))
-             |> id raw-js &>! lang.js
-             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python2
-             (define exports (ecmascript/exports.list-parse))
-             (define exports-py (++
-                 "exports = var.to_python().exports\n"
-                 (apply-++ (map (lambda (x) (++ x" = exports."x"\n")) exports))
-                 ))
-             (define all-py (++
-                 "__all__ = ["
-                 (apply-++ (add-between (map (lambda (x) (++ "'"x"'")) exports)", "))
-                 "]\n"
-                 ))
-             (define py-raw (string->lines #{cat lang.py}))
-             (match-define (list py-raw-head py-raw-body ... py-raw-tail) py-raw)
-             (define py (++
-                 bash-generatedby
-                 (match py-raw-head ["__all__ = ['lang']" all-py])
-                 (lines->string py-raw-body)
-                 "\n"
-                 (match py-raw-tail ["lang = var.to_python()" exports-py])))
-             |> id py &>! lang.py
      }})
      ("java/src" ("java/src/lang/Lang.java") (void))
      ("java/src/lang/Lang.java" ("lua/lang.lua" "java/real-src/lang/Lang.java" "java/real-src/lang/LangValue.java") {
@@ -315,6 +282,40 @@ in-dir "typescript" {
              touch lang.h
 
              clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
+     }})
+     ;; 以下爲停止支持的
+     ("python3/lang.py" ("python2/lang.py") {
+         in-dir "python3" {
+             rm -fr lang.py
+             cp ../python2/lang.py ./
+             2to3 -f all -f buffer -f idioms -f set_literal -f ws_comma --no-diffs --nobackups -w lang.py
+     }})
+     ("python2/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
+         in-dir "python2" {
+             (define raw-js (++
+                 "var exports={};"
+                 #{cat ../ecmascript/lang.js}))
+             |> id raw-js &>! lang.js
+             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python2
+             (define exports (ecmascript/exports.list-parse))
+             (define exports-py (++
+                 "exports = var.to_python().exports\n"
+                 (apply-++ (map (lambda (x) (++ x" = exports."x"\n")) exports))
+                 ))
+             (define all-py (++
+                 "__all__ = ["
+                 (apply-++ (add-between (map (lambda (x) (++ "'"x"'")) exports)", "))
+                 "]\n"
+                 ))
+             (define py-raw (string->lines #{cat lang.py}))
+             (match-define (list py-raw-head py-raw-body ... py-raw-tail) py-raw)
+             (define py (++
+                 bash-generatedby
+                 (match py-raw-head ["__all__ = ['lang']" all-py])
+                 (lines->string py-raw-body)
+                 "\n"
+                 (match py-raw-tail ["lang = var.to_python()" exports-py])))
+             |> id py &>! lang.py
      }})
      ("php/lang.php" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
          ;; TODO

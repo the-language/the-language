@@ -190,6 +190,6 @@
  (begin
    (displayln "-- Lua --")
    (lua-run (lua-test-compile test-main)))
- (begin
+ #|(begin ;; 停止支持的
    (displayln "-- PY3 --")
-   (py3-run (py3-test-compile test-main)))))
+   (py3-run (py3-test-compile test-main)))|#))
