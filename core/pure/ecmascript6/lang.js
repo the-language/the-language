@@ -325,8 +325,8 @@ function un_just_all(raw) {
         xs.push(x);
         x = un_just(x);
     }
-    for (let i = 0; i < xs.length; i++) {
-        lang_set_do(xs[i], x);
+    for (const v of xs) {
+        lang_set_do(v, x);
     }
     return x;
 }
@@ -397,9 +397,10 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
                     symbol_p_function_builtin_systemName,
                     null_p_function_builtin_systemName];
                 let is_elim = false;
-                for (let i = 0; i < elim_s.length; i++) {
-                    if (jsbool_equal_p(elim_s[i], f)) {
+                for (const elim_s_v of elim_s) {
+                    if (jsbool_equal_p(elim_s_v, f)) {
                         is_elim = true;
+                        break;
                     }
                 }
                 if (is_elim) {
@@ -609,7 +610,7 @@ function real_evaluate(env, raw, selfvalraw) {
             const f = xs[1];
             let args = [];
             for (let i = 2; i < xs.length; i++) {
-                args[i - 2] = xs[i];
+                args.push(xs[i]);
             }
             return builtin_form_apply(env, f, args);
         }
@@ -649,7 +650,7 @@ function real_evaluate(env, raw, selfvalraw) {
             }
             const args = [env2val(env)];
             for (let i = 2; i < xs.length; i++) {
-                args[i - 1] = xs[i];
+                args.push(xs[i]);
             }
             return apply(f_x, args);
         }
@@ -660,7 +661,7 @@ function real_evaluate(env, raw, selfvalraw) {
             const f = xs[1];
             let args = [];
             for (let i = 2; i < xs.length; i++) {
-                args[i - 2] = evaluate(env, xs[i]);
+                args.push(evaluate(env, xs[i]));
             }
             return builtin_func_apply(f, args);
         }
@@ -668,7 +669,7 @@ function real_evaluate(env, raw, selfvalraw) {
             const f = evaluate(env, xs[0]);
             let args = [];
             for (let i = 1; i < xs.length; i++) {
-                args[i - 1] = evaluate(env, xs[i]);
+                args.push(evaluate(env, xs[i]));
             }
             return apply(f, args);
         }

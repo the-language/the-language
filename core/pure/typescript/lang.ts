@@ -390,8 +390,8 @@ function un_just_all(raw: LangVal): LangVal {
         x = un_just(x)
     }
 
-    for (let i = 0; i < xs.length; i++) {
-        lang_set_do(xs[i], x)
+    for (const v of xs) {
+        lang_set_do(v, x)
     }
 
     return x
@@ -468,9 +468,10 @@ function force_all(
                     symbol_p_function_builtin_systemName,
                     null_p_function_builtin_systemName]
                 let is_elim = false
-                for (let i = 0; i < elim_s.length; i++) {
-                    if (jsbool_equal_p(elim_s[i], f)) {
+                for (const elim_s_v of elim_s) {
+                    if (jsbool_equal_p(elim_s_v, f)) {
                         is_elim = true
+                        break
                     }
                 }
                 if (is_elim) {
@@ -695,7 +696,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
             const f = xs[1]
             let args: Array<LangVal> = []
             for (let i = 2; i < xs.length; i++) {
-                args[i - 2] = xs[i]
+                args.push(xs[i])
             }
             return builtin_form_apply(env, f, args)
         } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
@@ -734,7 +735,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
             }
             const args = [env2val(env)]
             for (let i = 2; i < xs.length; i++) {
-                args[i - 1] = xs[i]
+                args.push(xs[i])
             }
             return apply(f_x, args)
         } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
@@ -744,14 +745,14 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
             const f = xs[1]
             let args: Array<LangVal> = []
             for (let i = 2; i < xs.length; i++) {
-                args[i - 2] = evaluate(env, xs[i])
+                args.push(evaluate(env, xs[i]))
             }
             return builtin_func_apply(f, args)
         } else {
             const f = evaluate(env, xs[0])
             let args: Array<LangVal> = []
             for (let i = 1; i < xs.length; i++) {
-                args[i - 1] = evaluate(env, xs[i])
+                args.push(evaluate(env, xs[i]))
             }
             return apply(f, args)
         }

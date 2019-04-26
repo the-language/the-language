@@ -226,12 +226,9 @@ function un_just_all(raw)
         __TS__ArrayPush(xs, x)
         x = un_just(x)
     end
-    do
-        local i = 0
-        while i < #xs do
-            lang_set_do(xs[i + 1], x)
-            i = i + 1
-        end
+    for ____TS_index = 1, #xs do
+        local v = xs[____TS_index]
+        lang_set_do(v, x)
     end
     return x
 end
@@ -316,13 +313,11 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                     null_p_function_builtin_systemName,
                 }
                 local is_elim = false
-                do
-                    local i = 0
-                    while i < #elim_s do
-                        if jsbool_equal_p(elim_s[i + 1], f) then
-                            is_elim = true
-                        end
-                        i = i + 1
+                for ____TS_index = 1, #elim_s do
+                    local elim_s_v = elim_s[____TS_index]
+                    if jsbool_equal_p(elim_s_v, f) then
+                        is_elim = true
+                        break
                     end
                 end
                 if is_elim then
@@ -488,7 +483,7 @@ function real_evaluate(env, raw, selfvalraw)
             do
                 local i = 2
                 while i < #xs do
-                    args[(i - 2) + 1] = xs[i + 1]
+                    __TS__ArrayPush(args, xs[i + 1])
                     i = i + 1
                 end
             end
@@ -530,7 +525,7 @@ function real_evaluate(env, raw, selfvalraw)
             do
                 local i = 2
                 while i < #xs do
-                    args[(i - 1) + 1] = xs[i + 1]
+                    __TS__ArrayPush(args, xs[i + 1])
                     i = i + 1
                 end
             end
@@ -544,7 +539,7 @@ function real_evaluate(env, raw, selfvalraw)
             do
                 local i = 2
                 while i < #xs do
-                    args[(i - 2) + 1] = evaluate(env, xs[i + 1])
+                    __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
                     i = i + 1
                 end
             end
@@ -555,7 +550,7 @@ function real_evaluate(env, raw, selfvalraw)
             do
                 local i = 1
                 while i < #xs do
-                    args[(i - 1) + 1] = evaluate(env, xs[i + 1])
+                    __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
                     i = i + 1
                 end
             end

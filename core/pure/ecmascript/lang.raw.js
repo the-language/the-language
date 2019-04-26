@@ -343,8 +343,9 @@ function un_just_all(raw) {
         xs.push(x);
         x = un_just(x);
     }
-    for (var i = 0; i < xs.length; i++) {
-        lang_set_do(xs[i], x);
+    for (var _i = 0, xs_1 = xs; _i < xs_1.length; _i++) {
+        var v = xs_1[_i];
+        lang_set_do(v, x);
     }
     return x;
 }
@@ -405,7 +406,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs) {
             }
             else if (delay_builtin_func_p(x)) {
                 var f = delay_builtin_func_f(x); // LangVal/Name
-                var xs_1 = delay_builtin_func_xs(x); // JSList LangVal
+                var xs_2 = delay_builtin_func_xs(x); // JSList LangVal
                 var elim_s = [data_name_function_builtin_systemName,
                     data_list_function_builtin_systemName,
                     data_p_function_builtin_systemName,
@@ -418,15 +419,17 @@ function force_all(raw, parents_history, ref_novalue_replace, xs) {
                     symbol_p_function_builtin_systemName,
                     null_p_function_builtin_systemName];
                 var is_elim = false;
-                for (var i = 0; i < elim_s.length; i++) {
-                    if (jsbool_equal_p(elim_s[i], f)) {
+                for (var _i = 0, elim_s_1 = elim_s; _i < elim_s_1.length; _i++) {
+                    var elim_s_v = elim_s_1[_i];
+                    if (jsbool_equal_p(elim_s_v, f)) {
                         is_elim = true;
+                        break;
                     }
                 }
                 if (is_elim) {
-                    ASSERT(xs_1.length === 1);
+                    ASSERT(xs_2.length === 1);
                     ASSERT(ref_novalue_replace[1] === false);
-                    var inner = force_all(xs_1[0], make_history(), ref_novalue_replace);
+                    var inner = force_all(xs_2[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
                         return do_rewrite_force_all(builtin_func_apply(f, [inner]));
                     }
@@ -444,11 +447,11 @@ function force_all(raw, parents_history, ref_novalue_replace, xs) {
                     return replace_this_with_stopped(); //WIP
                 }
                 else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
-                    ASSERT(xs_1.length === 3);
+                    ASSERT(xs_2.length === 3);
                     ASSERT(ref_novalue_replace[1] === false);
-                    var tf = force_all(xs_1[0], make_history(), ref_novalue_replace);
+                    var tf = force_all(xs_2[0], make_history(), ref_novalue_replace);
                     if (ref_novalue_replace[1]) {
-                        return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs_1[1], xs_1[2]]));
+                        return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs_2[1], xs_2[2]]));
                     }
                     else {
                         return ERROR(); //我覺得沒有這種情況
@@ -636,7 +639,7 @@ function real_evaluate(env, raw, selfvalraw) {
             var f = xs[1];
             var args = [];
             for (var i = 2; i < xs.length; i++) {
-                args[i - 2] = xs[i];
+                args.push(xs[i]);
             }
             return builtin_form_apply(env, f, args);
         }
@@ -676,7 +679,7 @@ function real_evaluate(env, raw, selfvalraw) {
             }
             var args = [env2val(env)];
             for (var i = 2; i < xs.length; i++) {
-                args[i - 1] = xs[i];
+                args.push(xs[i]);
             }
             return apply(f_x, args);
         }
@@ -687,7 +690,7 @@ function real_evaluate(env, raw, selfvalraw) {
             var f = xs[1];
             var args = [];
             for (var i = 2; i < xs.length; i++) {
-                args[i - 2] = evaluate(env, xs[i]);
+                args.push(evaluate(env, xs[i]));
             }
             return builtin_func_apply(f, args);
         }
@@ -695,7 +698,7 @@ function real_evaluate(env, raw, selfvalraw) {
             var f = evaluate(env, xs[0]);
             var args = [];
             for (var i = 1; i < xs.length; i++) {
-                args[i - 1] = evaluate(env, xs[i]);
+                args.push(evaluate(env, xs[i]));
             }
             return apply(f, args);
         }
