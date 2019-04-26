@@ -50,13 +50,13 @@ local __TS__ArrayPush = function(arr, item)
     return #arr
 end
 local ____exports = {}
-local ERROR, ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
-function ERROR()
+local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
+function LANG_ERROR()
     error("TheLanguage PANIC")
 end
-function ASSERT(x)
+function LANG_ASSERT(x)
     if not x then
-        return ERROR()
+        return LANG_ERROR()
     end
 end
 function symbol_p(x)
@@ -350,13 +350,13 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                     end
                 end
                 if is_elim then
-                    ASSERT(#xs == 1)
-                    ASSERT(ref_novalue_replace[1 + 1] == false)
+                    LANG_ASSERT(#xs == 1)
+                    LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
                     local inner = force_all(xs[0 + 1], make_history(), ref_novalue_replace)
                     if ref_novalue_replace[1 + 1] then
                         return do_rewrite_force_all(builtin_func_apply(f, {inner}))
                     else
-                        return ERROR()
+                        return LANG_ERROR()
                     end
                 end
                 if jsbool_equal_p(f, equal_p_function_builtin_systemName) then
@@ -366,8 +366,8 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                 elseif jsbool_equal_p(f, evaluate_function_builtin_systemName) then
                     return replace_this_with_stopped()
                 elseif jsbool_equal_p(f, if_function_builtin_systemName) then
-                    ASSERT(#xs == 3)
-                    ASSERT(ref_novalue_replace[1 + 1] == false)
+                    LANG_ASSERT(#xs == 3)
+                    LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
                     local tf = force_all(xs[0 + 1], make_history(), ref_novalue_replace)
                     if ref_novalue_replace[1 + 1] then
                         return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, {
@@ -376,16 +376,16 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                             xs[2 + 1],
                         }))
                     else
-                        return ERROR()
+                        return LANG_ERROR()
                     end
                 end
-                return ERROR()
+                return LANG_ERROR()
             elseif delay_builtin_form_p(x) then
                 return replace_this_with_stopped()
             elseif delay_apply_p(x) then
                 return replace_this_with_stopped()
             end
-            return ERROR()
+            return LANG_ERROR()
         end
         history[x_id] = true
         __TS__ArrayPush(xs, x)
@@ -396,7 +396,7 @@ end
 function force1(raw)
     local x = un_just_all(raw)
     local ret
-    ASSERT(not just_p(x))
+    LANG_ASSERT(not just_p(x))
     if delay_evaluate_p(x) then
         ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw)
     elseif delay_builtin_form_p(x) then
@@ -462,7 +462,7 @@ function must_env_get(env, key)
             i = i + 2
         end
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 function env2val(env)
     local ret = null_v
@@ -592,7 +592,7 @@ function real_evaluate(env, raw, selfvalraw)
     elseif error_p(x) then
         return error_v
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 function name_p(x)
     return symbol_p(x) or data_p(x)
@@ -673,7 +673,7 @@ function real_builtin_func_apply(f, xs, selfvalraw)
                 elseif actually_length == 3 then
                     return f(xs[0 + 1], xs[1 + 1], xs[2 + 1], error_v)
                 end
-                return ERROR()
+                return LANG_ERROR()
             end
             i = i + 1
         end
@@ -808,7 +808,7 @@ function jsbool_equal_p(x, y)
         end
         return end_2(x, y, data_name, data_list)
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 function simple_print(x)
     x = un_just_all(x)
@@ -845,7 +845,7 @@ function simple_print(x)
     elseif delay_apply_p(x) then
         return "^(" .. tostring(simple_print(delay_apply_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 symbol_t = 0
 construction_t = 1
@@ -858,7 +858,7 @@ delay_builtin_func_t = 7
 delay_builtin_form_t = 8
 delay_apply_t = 9
 local function new_symbol(x)
-    ASSERT(symbols_set[x] ~= nil)
+    LANG_ASSERT(symbols_set[x] ~= nil)
     return {
         symbol_t,
         symbols_set[x],
@@ -1322,7 +1322,7 @@ real_builtin_func_apply_s = {
             local function H_and(x, y)
                 return H_if(x, y, false_v)
             end
-            ASSERT(not any_delay_just_p(x))
+            LANG_ASSERT(not any_delay_just_p(x))
             local function end_2(x, y, f1, f2)
                 return H_and(builtin_func_apply(equal_p_function_builtin_systemName, {
                     f1(x),
@@ -1358,7 +1358,7 @@ real_builtin_func_apply_s = {
                 end
                 return end_2(x, y, error_name, error_list)
             end
-            return ERROR()
+            return LANG_ERROR()
         end,
     },
     {
@@ -1486,7 +1486,7 @@ local function jsbool_no_force_equal_p(x, y)
     elseif delay_apply_p(x) then
         return false
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 local function simple_print_force_all_rec(x)
     return simple_print(force_all_rec(x))
@@ -1494,18 +1494,18 @@ end
 ____exports.simple_print = simple_print
 ____exports.simple_print_force_all_rec = simple_print_force_all_rec
 local function complex_parse(x)
-    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack, readsysname
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack, readsysname
     function eof()
         return #state_const == state
     end
     function get()
-        ASSERT(not eof())
+        LANG_ASSERT(not eof())
         local ret = string.sub(state_const, state + 1, state + 1)
         state = state + 1
         return ret
     end
     function put(x)
-        ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
+        LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
         state = state - 1
     end
     function parse_error(x)
@@ -1558,7 +1558,7 @@ local function complex_parse(x)
         end
         return new_symbol(ret)
     end
-    function list()
+    function readlist()
         if eof() then
             return false
         end
@@ -1577,7 +1577,7 @@ local function complex_parse(x)
             local x = ret
             while true do
                 if not construction_p(x) then
-                    return ERROR()
+                    return LANG_ERROR()
                 end
                 local d = construction_tail(x)
                 if d == HOLE then
@@ -1586,10 +1586,10 @@ local function complex_parse(x)
                 x = construction_tail(x)
             end
             if not construction_p(x) then
-                return ERROR()
+                return LANG_ERROR()
             end
             if construction_tail(x) ~= HOLE then
-                return ERROR()
+                return LANG_ERROR()
             end
             x[2 + 1] = lst
         end
@@ -1634,7 +1634,7 @@ local function complex_parse(x)
             put(x)
             return false
         end
-        local xs = list()
+        local xs = readlist()
         if xs == false then
             return parse_error()
         end
@@ -1652,7 +1652,7 @@ local function complex_parse(x)
             put(x)
             return false
         end
-        local xs = list()
+        local xs = readlist()
         if xs == false then
             return parse_error()
         end
@@ -1700,7 +1700,7 @@ local function complex_parse(x)
     function val()
         space()
         local fs = {
-            list,
+            readlist,
             readsysname,
             data,
             readerror,
@@ -1747,7 +1747,7 @@ local function complex_parse(x)
                 return x
             end
             local fs = strict and {
-                list,
+                readlist,
                 symbol,
                 readsysname_no_pack_bracket,
                 data,
@@ -1757,7 +1757,7 @@ local function complex_parse(x)
                 readformbuiltin,
                 readapply,
             } or {
-                list,
+                readlist,
                 readsysname_no_pack,
                 data,
                 readerror,
@@ -1815,7 +1815,7 @@ local function complex_parse(x)
                 put(head)
                 return x
             end
-            return ERROR()
+            return LANG_ERROR()
         end
         if eof() then
             return false
@@ -1866,7 +1866,7 @@ local function complex_parse(x)
             end
             return may_xfx_xf(x)
         end
-        return ERROR()
+        return LANG_ERROR()
     end
     function readsysname()
         local x = readsysname_no_pack()
@@ -1890,7 +1890,7 @@ local function complex_parse(x)
                 put(c)
                 return false
             end
-            local xs = list()
+            local xs = readlist()
             if xs == false then
                 return parse_error()
             end
@@ -1914,7 +1914,7 @@ local function complex_parse(x)
                 put(c)
                 return false
             end
-            local xs = list()
+            local xs = readlist()
             if xs == false then
                 return parse_error()
             end
@@ -1969,7 +1969,7 @@ local function complex_print(val)
             elseif where == "top" then
                 return x
             end
-            return ERROR()
+            return LANG_ERROR()
         end
         local maybe_xs = maybe_list_to_jsArray(x)
         if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
@@ -2028,7 +2028,7 @@ local function complex_print(val)
         elseif where == "top" then
             return simple_print(systemName_make(x))
         end
-        return ERROR()
+        return LANG_ERROR()
     end
     local x = complex_parse(simple_print(val))
     local temp = ""
@@ -2070,7 +2070,7 @@ local function complex_print(val)
     elseif delay_apply_p(x) then
         return "^(" .. tostring(complex_print(delay_apply_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
     end
-    return ERROR()
+    return LANG_ERROR()
 end
 ____exports.complex_print = complex_print
 return ____exports`); err != nil {panic(err)}

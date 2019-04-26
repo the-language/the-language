@@ -16,12 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
-function ERROR(): never {
+function LANG_ERROR(): never {
     throw "TheLanguage PANIC"
 }
-function ASSERT(x: boolean): void {
+function LANG_ASSERT(x: boolean): void {
     if (!x) {
-        return ERROR()
+        return LANG_ERROR()
     }
 }
 // 用export{}，不用export const .../export function...，否則生成的代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
@@ -88,7 +88,7 @@ export type LangValRec = any // WIP
 
 
 function new_symbol(x: string): LangValSymbol {
-    ASSERT(x in symbols_set)
+    LANG_ASSERT(x in symbols_set)
     return [symbol_t, symbols_set[x]]
 }
 function symbol_p(x: LangVal): x is LangValSymbol {
@@ -475,13 +475,13 @@ function force_all(
                     }
                 }
                 if (is_elim) {
-                    ASSERT(xs.length === 1)
-                    ASSERT(ref_novalue_replace[1] === false)
+                    LANG_ASSERT(xs.length === 1)
+                    LANG_ASSERT(ref_novalue_replace[1] === false)
                     const inner = force_all(xs[0], make_history(), ref_novalue_replace)
                     if (ref_novalue_replace[1]) {
                         return do_rewrite_force_all(builtin_func_apply(f, [inner]))
                     } else {
-                        return ERROR() //我覺得沒有這種情況
+                        return LANG_ERROR() //我覺得沒有這種情況
                     }
                 }
                 if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
@@ -491,22 +491,22 @@ function force_all(
                 } else if (jsbool_equal_p(f, evaluate_function_builtin_systemName)) {
                     return replace_this_with_stopped() //WIP
                 } else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
-                    ASSERT(xs.length === 3)
-                    ASSERT(ref_novalue_replace[1] === false)
+                    LANG_ASSERT(xs.length === 3)
+                    LANG_ASSERT(ref_novalue_replace[1] === false)
                     const tf = force_all(xs[0], make_history(), ref_novalue_replace)
                     if (ref_novalue_replace[1]) {
                         return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]))
                     } else {
-                        return ERROR() //我覺得沒有這種情況
+                        return LANG_ERROR() //我覺得沒有這種情況
                     }
                 }
-                return ERROR() //我覺得沒有這種情況
+                return LANG_ERROR() //我覺得沒有這種情況
             } else if (delay_builtin_form_p(x)) {
                 return replace_this_with_stopped() // 可能未減少應該減少的？
             } else if (delay_apply_p(x)) {
                 return replace_this_with_stopped() // 可能未減少應該減少的？
             }
-            return ERROR()
+            return LANG_ERROR()
         }
         history[x_id] = true
         xs.push(x)
@@ -518,7 +518,7 @@ function force_all(
 function force1(raw: LangVal): LangVal {
     const x: LangVal = un_just_all(raw)
     let ret: LangVal
-    ASSERT(!just_p(x))
+    LANG_ASSERT(!just_p(x))
     if (delay_evaluate_p(x)) {
         ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw)
     }
@@ -581,7 +581,7 @@ function must_env_get(env: Env, key: LangVal): LangVal {
             return env[i + 1]
         }
     }
-    return ERROR()
+    return LANG_ERROR()
 }
 
 function env2val(env: Env): LangVal {
@@ -763,7 +763,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     } else if (error_p(x)) {
         return error_v
     }
-    return ERROR()
+    return LANG_ERROR()
 }
 
 function name_p(x: LangVal): x is LangValName {
@@ -844,7 +844,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         function H_and(x: LangVal, y: LangVal): LangVal {
             return H_if(x, y, false_v)
         }
-        ASSERT(!any_delay_just_p(x))
+        LANG_ASSERT(!any_delay_just_p(x))
         function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): LangVal {
             return H_and(
                 builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
@@ -866,7 +866,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             if (!error_p(y)) { return false_v }
             return end_2(x, y, error_name, error_list)
         }
-        return ERROR()
+        return LANG_ERROR()
     }],
     [apply_function_builtin_systemName, 2, (f: LangVal, xs: LangVal, error_v: LangVal) => {
         // WIP delay未正確處理(影響較小)
@@ -1009,7 +1009,7 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: Lan
             } else if (actually_length === 3) {
                 return (f as (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], xs[2], error_v)
             }
-            return ERROR()
+            return LANG_ERROR()
         }
     }
     return error_v
@@ -1131,7 +1131,7 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
         if (!data_p(y)) { return false }
         return end_2(x, y, data_name, data_list)
     }
-    return ERROR()
+    return LANG_ERROR()
 }
 export { jsbool_equal_p as equal_p }
 
@@ -1178,7 +1178,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     } else if (delay_apply_p(x)) {
         return false //WIP
     }
-    return ERROR()
+    return LANG_ERROR()
 }
 
 // {{{ 相對獨立的部分。simple printer
@@ -1222,7 +1222,7 @@ function simple_print(x: LangVal): string {
     } else if (delay_apply_p(x)) {
         return "^(" + simple_print(delay_apply_f(x)) + " " + simple_print(jsArray_to_list(delay_apply_xs(x))) + ")"
     }
-    return ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
+    return LANG_ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
 function simple_print_force_all_rec(x: LangVal): string {
     return simple_print(force_all_rec(x))
@@ -1239,13 +1239,13 @@ function complex_parse(x: string): LangVal {
         return state_const.length === state
     }
     function get(): string {
-        ASSERT(!eof())
+        LANG_ASSERT(!eof())
         const ret = state_const[state]
         state++
         return ret
     }
     function put(x: string) {
-        ASSERT(state_const[state - 1] === x)
+        LANG_ASSERT(state_const[state - 1] === x)
         state--
     }
     function parse_error(x: string = ""): never {
@@ -1295,7 +1295,7 @@ function complex_parse(x: string): LangVal {
         }
         return new_symbol(ret)
     }
-    function list() {
+    function readlist() {
         if (eof()) {
             return false
         }
@@ -1314,7 +1314,7 @@ function complex_parse(x: string): LangVal {
             let x = ret
             while (true) {
                 if (!construction_p(x)) {
-                    return ERROR()
+                    return LANG_ERROR()
                 }
                 const d = construction_tail(x)
                 if (d === HOLE) {
@@ -1323,10 +1323,10 @@ function complex_parse(x: string): LangVal {
                 x = construction_tail(x)
             }
             if (!construction_p(x)) {
-                return ERROR()
+                return LANG_ERROR()
             }
             if (construction_tail(x) !== HOLE) {
-                return ERROR()
+                return LANG_ERROR()
             }
             // x[2]是construction_tail
             x[2] = lst // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
@@ -1372,7 +1372,7 @@ function complex_parse(x: string): LangVal {
             put(x)
             return false
         }
-        const xs = list()
+        const xs = readlist()
         if (xs === false) {
             return parse_error()
         }
@@ -1390,7 +1390,7 @@ function complex_parse(x: string): LangVal {
             put(x)
             return false
         }
-        const xs = list()
+        const xs = readlist()
         if (xs === false) {
             return parse_error()
         }
@@ -1409,7 +1409,7 @@ function complex_parse(x: string): LangVal {
                 put(c)
                 return false
             }
-            const xs = list()
+            const xs = readlist()
             if (xs === false) {
                 return parse_error()
             }
@@ -1433,7 +1433,7 @@ function complex_parse(x: string): LangVal {
                 put(c)
                 return false
             }
-            const xs = list()
+            const xs = readlist()
             if (xs === false) {
                 return parse_error()
             }
@@ -1490,7 +1490,7 @@ function complex_parse(x: string): LangVal {
     }
     function val(): LangVal {
         space()
-        const fs: Array<() => false | LangVal> = [list, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
+        const fs: Array<() => false | LangVal> = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
         for (let i = 0; i < fs.length; i++) {
             const x: false | LangVal = fs[i]()
             if (x !== false) {
@@ -1570,7 +1570,7 @@ function complex_parse(x: string): LangVal {
             }
             return may_xfx_xf(x)
         }
-        return ERROR()
+        return LANG_ERROR()
         function readsysname_no_pack_inner_must(strict = false): LangVal {
             function readsysname_no_pack_bracket() {
                 assert_get('[')
@@ -1579,9 +1579,9 @@ function complex_parse(x: string): LangVal {
                 return x
             }
             // 重複自val()
-            const fs: Array<() => false | LangVal> = strict ? [list, symbol, readsysname_no_pack_bracket, data,
+            const fs: Array<() => false | LangVal> = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply] :
-                [list, readsysname_no_pack, data,
+                [readlist, readsysname_no_pack, data,
                     readerror, readeval, readfuncapply, readformbuiltin, readapply]
             for (let i = 0; i < fs.length; i++) {
                 const x: false | LangVal = fs[i]()
@@ -1627,9 +1627,9 @@ function complex_parse(x: string): LangVal {
                 put(head)
                 return x
             }
-            return ERROR()
+            return LANG_ERROR()
         }
-        return ERROR()
+        return LANG_ERROR()
     }
     function readsysname() {
         const x = readsysname_no_pack()
@@ -1657,7 +1657,7 @@ function complex_print(val: LangVal): string {
             } else if (where === 'top') {
                 return x
             }
-            return ERROR()
+            return LANG_ERROR()
         }
         const maybe_xs = maybe_list_to_jsArray(x)
         if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
@@ -1728,7 +1728,7 @@ function complex_print(val: LangVal): string {
         } else if (where === 'top') {
             return simple_print(systemName_make(x))
         }
-        return ERROR()
+        return LANG_ERROR()
     }
     // [[[ 大量重複代碼 simple_print <-> complex_print
     let x = complex_parse(simple_print(val)) // 去除所有just
@@ -1776,7 +1776,7 @@ function complex_print(val: LangVal): string {
     } else if (delay_apply_p(x)) {
         return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
     }
-    return ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
+    return LANG_ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
 export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}

@@ -1473,9 +1473,9 @@ static inline int lcf1___TS__ArrayPush(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: ERROR
+/* name: LANG_ERROR
  * function() */
-static inline int lcf1_ERROR(lua_State *L) {
+static inline int lcf1_LANG_ERROR(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -1520,9 +1520,9 @@ static inline void lc_getupvalue(lua_State *L, int tidx, int level, int varid) {
   }
 }
 
-/* name: ASSERT
+/* name: LANG_ASSERT
  * function(x) */
-static inline int lcf1_ASSERT(lua_State *L) {
+static inline int lcf1_LANG_ASSERT(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1533,7 +1533,7 @@ static inline int lcf1_ASSERT(lua_State *L) {
   lua_pop(L, 1);
   if (lc6) {
 
-    /* return ERROR() */
+    /* return LANG_ERROR() */
     const int lc7 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
     lua_call(L, 0, LUA_MULTRET);
@@ -3215,7 +3215,7 @@ static inline int lcf1_force_all(lua_State *L) {
           enum { lc85 = 14 };
           if (lua_toboolean(L, 14)) {
 
-            /* ASSERT(#xs == 1) */
+            /* LANG_ASSERT(#xs == 1) */
             lc_getupvalue(L, lc61, 3, 98);
             const double lc86 = lua_objlen(L, 12);
             lua_pushnumber(L, lc86);
@@ -3226,7 +3226,7 @@ static inline int lcf1_force_all(lua_State *L) {
             lua_call(L, 1, 0);
             assert(lua_gettop(L) == 14);
 
-            /* ASSERT(ref_novalue_replace[1 + 1] == false) */
+            /* LANG_ASSERT(ref_novalue_replace[1 + 1] == false) */
             lc_getupvalue(L, lc61, 3, 98);
             lc_getupvalue(L, lc61, 2, 101);
             lua_pushnumber(L, 2);
@@ -3276,7 +3276,7 @@ static inline int lcf1_force_all(lua_State *L) {
             } else {
 
               /* else
-               * return ERROR() */
+               * return LANG_ERROR() */
               const int lc93 = lua_gettop(L);
               lc_getupvalue(L, lc61, 3, 99);
               lua_call(L, 0, LUA_MULTRET);
@@ -3356,7 +3356,7 @@ static inline int lcf1_force_all(lua_State *L) {
                 lua_pop(L, 1);
                 if (lc104) {
 
-                  /* ASSERT(#xs == 3) */
+                  /* LANG_ASSERT(#xs == 3) */
                   lc_getupvalue(L, lc61, 3, 98);
                   const double lc105 = lua_objlen(L, 12);
                   lua_pushnumber(L, lc105);
@@ -3367,7 +3367,7 @@ static inline int lcf1_force_all(lua_State *L) {
                   lua_call(L, 1, 0);
                   assert(lua_gettop(L) == 14);
 
-                  /* ASSERT(ref_novalue_replace[1 + 1] == false) */
+                  /* LANG_ASSERT(ref_novalue_replace[1 + 1] == false) */
                   lc_getupvalue(L, lc61, 3, 98);
                   lc_getupvalue(L, lc61, 2, 101);
                   lua_pushnumber(L, 2);
@@ -3426,7 +3426,7 @@ static inline int lcf1_force_all(lua_State *L) {
                   } else {
 
                     /* else
-                     * return ERROR() */
+                     * return LANG_ERROR() */
                     const int lc112 = lua_gettop(L);
                     lc_getupvalue(L, lc61, 3, 99);
                     lua_call(L, 0, LUA_MULTRET);
@@ -3445,7 +3445,7 @@ static inline int lcf1_force_all(lua_State *L) {
           lua_settop(L, lc94);
           assert(lua_gettop(L) == 14);
 
-          /* return ERROR() */
+          /* return LANG_ERROR() */
           const int lc113 = lua_gettop(L);
           lc_getupvalue(L, lc61, 3, 99);
           lua_call(L, 0, LUA_MULTRET);
@@ -3495,7 +3495,7 @@ static inline int lcf1_force_all(lua_State *L) {
       lua_settop(L, lc73);
       assert(lua_gettop(L) == 10);
 
-      /* return ERROR() */
+      /* return LANG_ERROR() */
       const int lc120 = lua_gettop(L);
       lc_getupvalue(L, lc61, 3, 99);
       lua_call(L, 0, LUA_MULTRET);
@@ -3560,7 +3560,7 @@ static inline int lcf1_force1(lua_State *L) {
   lua_settop(L, (lua_gettop(L) + 1));
   assert(lua_gettop(L) == 3);
 
-  /* ASSERT(not just_p(x)) */
+  /* LANG_ASSERT(not just_p(x)) */
   lc_getupvalue(L, lua_upvalueindex(1), 0, 98);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 70);
   lua_pushvalue(L, 2);
@@ -4093,7 +4093,7 @@ static inline int lcf1_must_env_get(lua_State *L) {
   lua_pop(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc150 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -4995,7 +4995,7 @@ static inline int lcf1_real_evaluate(lua_State *L) {
   lua_settop(L, lc164);
   assert(lua_gettop(L) == 5);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc237 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -5659,7 +5659,7 @@ static inline int lcf1_real_builtin_func_apply(lua_State *L) {
       lua_settop(L, lc296);
       assert(lua_gettop(L) == 7);
 
-      /* return ERROR() */
+      /* return LANG_ERROR() */
       const int lc308 = lua_gettop(L);
       lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
       lua_call(L, 0, LUA_MULTRET);
@@ -6649,7 +6649,7 @@ static inline int lcf1_jsbool_equal_p(lua_State *L) {
   lua_settop(L, lc375);
   assert(lua_gettop(L) == 3);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc399 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -7106,7 +7106,7 @@ static inline int lcf1_simple_print(lua_State *L) {
   lua_settop(L, lc400);
   assert(lua_gettop(L) == 3);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc455 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -7120,7 +7120,7 @@ static inline int lcf1_new_symbol(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* ASSERT(symbols_set[x] ~= nil) */
+  /* LANG_ASSERT(symbols_set[x] ~= nil) */
   lc_getupvalue(L, lua_upvalueindex(1), 1, 98);
   lc_getupvalue(L, lua_upvalueindex(1), 1, 50);
   lua_pushvalue(L, 1);
@@ -8162,7 +8162,7 @@ static inline int lcf600(lua_State *L) {
   lua_rawseti(L, lc570, 137);
   assert(lua_gettop(L) == 5);
 
-  /* ASSERT(not any_delay_just_p(x)) */
+  /* LANG_ASSERT(not any_delay_just_p(x)) */
   lc_getupvalue(L, lc570, 18, 98);
   lc_getupvalue(L, lc570, 18, 19);
   lua_pushvalue(L, 1);
@@ -8393,7 +8393,7 @@ static inline int lcf600(lua_State *L) {
   lua_settop(L, lc576);
   assert(lua_gettop(L) == 6);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc599 = lua_gettop(L);
   lc_getupvalue(L, lc570, 18, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -9119,7 +9119,7 @@ static inline int lcf1_jsbool_no_force_equal_p(lua_State *L) {
   lua_settop(L, lc644);
   assert(lua_gettop(L) == 3);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc676 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 17, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -9170,7 +9170,7 @@ static inline int lcf1_get(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* ASSERT(not eof()) */
+  /* LANG_ASSERT(not eof()) */
   lc_getupvalue(L, lua_upvalueindex(1), 19, 98);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 160);
   lua_call(L, 0, 1);
@@ -9219,7 +9219,8 @@ static inline int lcf1_put(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x) */
+  /* LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == x)
+   */
   lc_getupvalue(L, lua_upvalueindex(1), 19, 98);
   lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
@@ -9662,7 +9663,7 @@ static inline int lcf1_set_last(lua_State *L) {
     lua_pop(L, 1);
     if (lc722) {
 
-      /* return ERROR() */
+      /* return LANG_ERROR() */
       const int lc723 = lua_gettop(L);
       lc_getupvalue(L, lua_upvalueindex(1), 22, 99);
       lua_call(L, 0, LUA_MULTRET);
@@ -9719,7 +9720,7 @@ static inline int lcf1_set_last(lua_State *L) {
   lua_pop(L, 1);
   if (lc728) {
 
-    /* return ERROR() */
+    /* return LANG_ERROR() */
     const int lc729 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 22, 99);
     lua_call(L, 0, LUA_MULTRET);
@@ -9744,7 +9745,7 @@ static inline int lcf1_set_last(lua_State *L) {
   lua_pop(L, 1);
   if (lc732) {
 
-    /* return ERROR() */
+    /* return LANG_ERROR() */
     const int lc733 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 22, 99);
     lua_call(L, 0, LUA_MULTRET);
@@ -9781,9 +9782,9 @@ static inline int lcf1_last_add(lua_State *L) {
   return 0;
 }
 
-/* name: list
+/* name: readlist
  * function() */
-static inline int lcf1_list(lua_State *L) {
+static inline int lcf1_readlist(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -9858,7 +9859,7 @@ static inline int lcf1_list(lua_State *L) {
    *             local x = ret
    *             while true do
    *                 if not construction_p(x) then
-   *                     return ERROR()
+   *                     return LANG_ERROR()
    *                 end
    *                 local d = construction_tail(x)
    *                 if d == HOLE then
@@ -9867,10 +9868,10 @@ static inline int lcf1_list(lua_State *L) {
    *                 x = construction_tail(x)
    *             end
    *             if not construction_p(x) then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             if construction_tail(x) ~= HOLE then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             x[2 + 1] = lst
    *         end */
@@ -10114,7 +10115,7 @@ static inline int lcf1_data(lua_State *L) {
   lua_settop(L, lc754);
   assert(lua_gettop(L) == 1);
 
-  /* local xs = list() */
+  /* local xs = readlist() */
   lc_getupvalue(L, lua_upvalueindex(1), 0, 153);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
@@ -10228,7 +10229,7 @@ static inline int lcf1_readerror(lua_State *L) {
   lua_settop(L, lc768);
   assert(lua_gettop(L) == 1);
 
-  /* local xs = list() */
+  /* local xs = readlist() */
   lc_getupvalue(L, lua_upvalueindex(1), 0, 153);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
@@ -10445,7 +10446,7 @@ static inline int lcf1_val(lua_State *L) {
   assert(lua_gettop(L) == 0);
 
   /* local fs = {
-   *             list,
+   *             readlist,
    *             readsysname,
    *             data,
    *             readerror,
@@ -10682,7 +10683,7 @@ static inline int lcf1_readsysname_no_pack_inner_must(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* local fs = strict and {
-   *                 list,
+   *                 readlist,
    *                 symbol,
    *                 readsysname_no_pack_bracket,
    *                 data,
@@ -10692,7 +10693,7 @@ static inline int lcf1_readsysname_no_pack_inner_must(lua_State *L) {
    *                 readformbuiltin,
    *                 readapply,
    *             } or {
-   *                 list,
+   *                 readlist,
    *                 readsysname_no_pack,
    *                 data,
    *                 readerror,
@@ -11110,7 +11111,7 @@ static inline int lcf1_may_xfx_xf(lua_State *L) {
   lua_settop(L, lc814);
   assert(lua_gettop(L) == 2);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc846 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 20, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -11143,7 +11144,7 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
    *                 return x
    *             end
    *             local fs = strict and {
-   *                 list,
+   *                 readlist,
    *                 symbol,
    *                 readsysname_no_pack_bracket,
    *                 data,
@@ -11153,7 +11154,7 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
    *                 readformbuiltin,
    *                 readapply,
    *             } or {
-   *                 list,
+   *                 readlist,
    *                 readsysname_no_pack,
    *                 data,
    *                 readerror,
@@ -11212,7 +11213,7 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
    *                 put(head)
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end */
   lua_pushvalue(L, lc801);
   lua_pushcclosure(L, lcf1_may_xfx_xf, 1);
@@ -11576,7 +11577,7 @@ static inline int lcf1_readsysname_no_pack(lua_State *L) {
   lua_settop(L, lc849);
   assert(lua_gettop(L) == 3);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc889 = lua_gettop(L);
   lc_getupvalue(L, lc801, 20, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -11691,7 +11692,7 @@ static inline int lcf915(lua_State *L) {
   lua_settop(L, lc899);
   assert(lua_gettop(L) == 1);
 
-  /* local xs = list() */
+  /* local xs = readlist() */
   lc_getupvalue(L, lua_upvalueindex(1), 1, 153);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
@@ -11810,7 +11811,7 @@ static inline int lcf1_make_read_two(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -11879,7 +11880,7 @@ static inline int lcf938(lua_State *L) {
   lua_settop(L, lc919);
   assert(lua_gettop(L) == 1);
 
-  /* local xs = list() */
+  /* local xs = readlist() */
   lc_getupvalue(L, lua_upvalueindex(1), 1, 153);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
@@ -12029,7 +12030,7 @@ static inline int lcf1_make_read_three(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -12272,8 +12273,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
   lua_settop(L, 1);
 
   /* local state_const, state, eof, get, put, parse_error, a_space_p, space,
-   * symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin,
-   * readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
+   * symbol, readlist, data, readerror, readeval, readfuncapply,
+   * readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
    * readsysname_no_pack, readsysname */
   lc_newclosuretable(L, lua_upvalueindex(1));
   enum { lc680 = 2 };
@@ -12313,7 +12314,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* function get()
-   *         ASSERT(not eof())
+   *         LANG_ASSERT(not eof())
    *         local ret = string.sub(state_const, state + 1, state + 1)
    *         state = state + 1
    *         return ret
@@ -12324,8 +12325,8 @@ static inline int lcf1_complex_parse(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* function put(x)
-   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
-   * x) state = state - 1 end */
+   *         LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) +
+   * 1) == x) state = state - 1 end */
   lua_pushvalue(L, lc680);
   lua_pushcclosure(L, lcf1_put, 1);
   lc_setupvalue(L, lc680, 0, 158);
@@ -12399,7 +12400,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
   lc_setupvalue(L, lc680, 0, 154);
   assert(lua_gettop(L) == 2);
 
-  /* function list()
+  /* function readlist()
    *         if eof() then
    *             return false
    *         end
@@ -12418,7 +12419,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             local x = ret
    *             while true do
    *                 if not construction_p(x) then
-   *                     return ERROR()
+   *                     return LANG_ERROR()
    *                 end
    *                 local d = construction_tail(x)
    *                 if d == HOLE then
@@ -12427,10 +12428,10 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 x = construction_tail(x)
    *             end
    *             if not construction_p(x) then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             if construction_tail(x) ~= HOLE then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             x[2 + 1] = lst
    *         end
@@ -12467,7 +12468,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *         end
    *     end */
   lua_pushvalue(L, lc680);
-  lua_pushcclosure(L, lcf1_list, 1);
+  lua_pushcclosure(L, lcf1_readlist, 1);
   lc_setupvalue(L, lc680, 0, 153);
   assert(lua_gettop(L) == 2);
 
@@ -12480,7 +12481,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             put(x)
    *             return false
    *         end
-   *         local xs = list()
+   *         local xs = readlist()
    *         if xs == false then
    *             return parse_error()
    *         end
@@ -12503,7 +12504,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             put(x)
    *             return false
    *         end
-   *         local xs = list()
+   *         local xs = readlist()
    *         if xs == false then
    *             return parse_error()
    *         end
@@ -12561,7 +12562,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
   /* function val()
    *         space()
    *         local fs = {
-   *             list,
+   *             readlist,
    *             readsysname,
    *             data,
    *             readerror,
@@ -12628,7 +12629,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 return x
    *             end
    *             local fs = strict and {
-   *                 list,
+   *                 readlist,
    *                 symbol,
    *                 readsysname_no_pack_bracket,
    *                 data,
@@ -12638,7 +12639,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 readformbuiltin,
    *                 readapply,
    *             } or {
-   *                 list,
+   *                 readlist,
    *                 readsysname_no_pack,
    *                 data,
    *                 readerror,
@@ -12692,7 +12693,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 put(head)
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end
    *         if eof() then
    *             return false
@@ -12743,7 +12744,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *             end
    *             return may_xfx_xf(x)
    *         end
-   *         return ERROR()
+   *         return LANG_ERROR()
    *     end */
   lua_pushvalue(L, lc680);
   lua_pushcclosure(L, lcf1_readsysname_no_pack, 1);
@@ -12785,7 +12786,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -12810,7 +12811,7 @@ static inline int lcf1_complex_parse(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -12938,7 +12939,7 @@ static inline int lcf1_inner_bracket(lua_State *L) {
   lua_settop(L, lc971);
   assert(lua_gettop(L) == 1);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc977 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 21, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -12983,7 +12984,7 @@ static inline int lcf1_print_sys_name(lua_State *L) {
    *             elseif where == "top" then
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end */
   lua_pushvalue(L, lc967);
   lua_pushcclosure(L, lcf1_inner_bracket, 1);
@@ -13817,7 +13818,7 @@ static inline int lcf1_print_sys_name(lua_State *L) {
   lua_settop(L, lc1062);
   assert(lua_gettop(L) == 5);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc1071 = lua_gettop(L);
   lc_getupvalue(L, lc967, 21, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -13841,7 +13842,7 @@ static inline int lcf1_complex_print(lua_State *L) {
    *             elseif where == "top" then
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end
    *         local maybe_xs = maybe_list_to_jsArray(x)
    *         if maybe_xs ~= false and #maybe_xs == 3 and
@@ -13906,7 +13907,7 @@ static inline int lcf1_complex_print(lua_State *L) {
    *         elseif where == "top" then
    *             return simple_print(systemName_make(x))
    *         end
-   *         return ERROR()
+   *         return LANG_ERROR()
    *     end */
   lc_newclosuretable(L, lua_upvalueindex(1));
   enum { lc966 = 2 };
@@ -14424,7 +14425,7 @@ static inline int lcf1_complex_print(lua_State *L) {
   lua_settop(L, lc1073);
   assert(lua_gettop(L) == 5);
 
-  /* return ERROR() */
+  /* return LANG_ERROR() */
   const int lc1132 = lua_gettop(L);
   lc_getupvalue(L, lc966, 20, 99);
   lua_call(L, 0, LUA_MULTRET);
@@ -14468,12 +14469,12 @@ static inline int lcf_main(lua_State *L) {
   lua_newtable(L);
   assert(lua_gettop(L) - lc_nextra == 2);
 
-  /* local ERROR, ASSERT, symbol_t, construction_t, null_t, data_t, error_t,
-   * just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t,
-   * delay_apply_t, symbol_p, un_symbol, new_construction, construction_p,
-   * construction_head, construction_tail, null_v, null_p, new_data, data_p,
-   * data_name, data_list, new_error, error_p, error_name, error_list,
-   * lang_set_do, just_p, un_just, evaluate, delay_evaluate_p,
+  /* local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t,
+   * error_t, just_t, delay_evaluate_t, delay_builtin_func_t,
+   * delay_builtin_form_t, delay_apply_t, symbol_p, un_symbol, new_construction,
+   * construction_p, construction_head, construction_tail, null_v, null_p,
+   * new_data, data_p, data_name, data_list, new_error, error_p, error_name,
+   * error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p,
    * delay_evaluate_env, delay_evaluate_x, builtin_form_apply,
    * delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f,
    * delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p,
@@ -14602,20 +14603,20 @@ static inline int lcf_main(lua_State *L) {
   lua_rawseti(L, (lc4 + lc_nextra), 99);
   assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ERROR()
+  /* function LANG_ERROR()
    *     error("TheLanguage PANIC")
    * end */
-  lua_pushcfunction(L, lcf1_ERROR);
+  lua_pushcfunction(L, lcf1_LANG_ERROR);
   lc_setupvalue(L, (lc4 + lc_nextra), 0, 99);
   assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ASSERT(x)
+  /* function LANG_ASSERT(x)
    *     if not x then
-   *         return ERROR()
+   *         return LANG_ERROR()
    *     end
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ASSERT, 1);
+  lua_pushcclosure(L, lcf1_LANG_ASSERT, 1);
   lc_setupvalue(L, (lc4 + lc_nextra), 0, 98);
   assert(lua_gettop(L) - lc_nextra == 3);
 
@@ -15099,21 +15100,20 @@ static inline int lcf_main(lua_State *L) {
    *                     end
    *                 end
    *                 if is_elim then
-   *                     ASSERT(#xs == 1)
-   *                     ASSERT(ref_novalue_replace[1 + 1] == false)
+   *                     LANG_ASSERT(#xs == 1)
+   *                     LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
    *                     local inner = force_all(xs[0 + 1], make_history(),
    * ref_novalue_replace) if ref_novalue_replace[1 + 1] then return
-   * do_rewrite_force_all(builtin_func_apply(f, {inner})) else return ERROR()
-   *                     end
-   *                 end
-   *                 if jsbool_equal_p(f, equal_p_function_builtin_systemName)
-   * then return replace_this_with_stopped() elseif jsbool_equal_p(f,
+   * do_rewrite_force_all(builtin_func_apply(f, {inner})) else return
+   * LANG_ERROR() end end if jsbool_equal_p(f,
+   * equal_p_function_builtin_systemName) then return
+   * replace_this_with_stopped() elseif jsbool_equal_p(f,
    * apply_function_builtin_systemName) then return replace_this_with_stopped()
    *                 elseif jsbool_equal_p(f,
    * evaluate_function_builtin_systemName) then return
    * replace_this_with_stopped() elseif jsbool_equal_p(f,
-   * if_function_builtin_systemName) then ASSERT(#xs == 3)
-   *                     ASSERT(ref_novalue_replace[1 + 1] == false)
+   * if_function_builtin_systemName) then LANG_ASSERT(#xs == 3)
+   *                     LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
    *                     local tf = force_all(xs[0 + 1], make_history(),
    * ref_novalue_replace) if ref_novalue_replace[1 + 1] then return
    * do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, {
@@ -15122,16 +15122,16 @@ static inline int lcf_main(lua_State *L) {
    *                             xs[2 + 1],
    *                         }))
    *                     else
-   *                         return ERROR()
+   *                         return LANG_ERROR()
    *                     end
    *                 end
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             elseif delay_builtin_form_p(x) then
    *                 return replace_this_with_stopped()
    *             elseif delay_apply_p(x) then
    *                 return replace_this_with_stopped()
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end
    *         history[x_id] = true
    *         __TS__ArrayPush(xs, x)
@@ -15147,7 +15147,7 @@ static inline int lcf_main(lua_State *L) {
   /* function force1(raw)
    *     local x = un_just_all(raw)
    *     local ret
-   *     ASSERT(not just_p(x))
+   *     LANG_ASSERT(not just_p(x))
    *     if delay_evaluate_p(x) then
    *         ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x),
    * raw) elseif delay_builtin_form_p(x) then ret =
@@ -15224,7 +15224,7 @@ static inline int lcf_main(lua_State *L) {
    *             i = i + 2
    *         end
    *     end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_must_env_get, 1);
@@ -15361,7 +15361,7 @@ static inline int lcf_main(lua_State *L) {
    *     elseif error_p(x) then
    *         return error_v
    *     end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_real_evaluate, 1);
@@ -15419,7 +15419,8 @@ static inline int lcf_main(lua_State *L) {
    * real_builtin_func_apply_s[i + 1][2 + 1] if actually_length == 1 then return
    * f(xs[0 + 1], error_v) elseif actually_length == 2 then return f(xs[0 + 1],
    * xs[1 + 1], error_v) elseif actually_length == 3 then return f(xs[0 + 1],
-   * xs[1 + 1], xs[2 + 1], error_v) end return ERROR() end i = i + 1 end end
+   * xs[1 + 1], xs[2 + 1], error_v) end return LANG_ERROR() end i = i + 1 end
+   *     end
    *     return error_v
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
@@ -15537,7 +15538,7 @@ static inline int lcf_main(lua_State *L) {
    *         end
    *         return end_2(x, y, data_name, data_list)
    *     end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_jsbool_equal_p, 1);
@@ -15579,7 +15580,7 @@ static inline int lcf_main(lua_State *L) {
    *     elseif delay_apply_p(x) then
    *         return "^(" .. tostring(simple_print(delay_apply_f(x))) .. " " ..
    * tostring(simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")" end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lua_pushvalue(L, (lc4 + lc_nextra));
   lua_pushcclosure(L, lcf1_simple_print, 1);
@@ -15637,7 +15638,7 @@ static inline int lcf_main(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 3);
 
   /* local function new_symbol(x)
-   *     ASSERT(symbols_set[x] ~= nil)
+   *     LANG_ASSERT(symbols_set[x] ~= nil)
    *     return {
    *         symbol_t,
    *         symbols_set[x],
@@ -17429,7 +17430,7 @@ static inline int lcf_main(lua_State *L) {
    *             local function H_and(x, y)
    *                 return H_if(x, y, false_v)
    *             end
-   *             ASSERT(not any_delay_just_p(x))
+   *             LANG_ASSERT(not any_delay_just_p(x))
    *             local function end_2(x, y, f1, f2)
    *                 return
    * H_and(builtin_func_apply(equal_p_function_builtin_systemName, { f1(x),
@@ -17464,7 +17465,7 @@ static inline int lcf_main(lua_State *L) {
    *                 end
    *                 return end_2(x, y, error_name, error_list)
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end,
    *     },
    *     {
@@ -17728,7 +17729,7 @@ static inline int lcf_main(lua_State *L) {
    *     elseif delay_apply_p(x) then
    *         return false
    *     end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lc_newclosuretable(L, (lc508 + lc_nextra));
   enum { lc633 = 43 };
@@ -17761,21 +17762,17 @@ static inline int lcf_main(lua_State *L) {
 
   /* local function complex_parse(x)
    *     local state_const, state, eof, get, put, parse_error, a_space_p, space,
-   * symbol, list, data, readerror, readeval, readfuncapply, readformbuiltin,
-   * readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
+   * symbol, readlist, data, readerror, readeval, readfuncapply,
+   * readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get,
    * readsysname_no_pack, readsysname function eof() return #state_const ==
-   * state end function get() ASSERT(not eof()) local ret =
+   * state end function get() LANG_ASSERT(not eof()) local ret =
    * string.sub(state_const, state + 1, state + 1) state = state + 1 return ret
    *     end
    *     function put(x)
-   *         ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) ==
-   * x) state = state - 1 end function parse_error(x) if x == nil then x = ""
-   *         end
-   *         error("TheLanguage parse ERROR!" .. tostring(x))
-   *     end
-   *     function a_space_p(x)
-   *         return x == " " or x == "\n" or x == "\t" or x == "\r"
-   *     end
+   *         LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) +
+   * 1) == x) state = state - 1 end function parse_error(x) if x == nil then x =
+   * "" end error("TheLanguage parse ERROR!" .. tostring(x)) end function
+   * a_space_p(x) return x == " " or x == "\n" or x == "\t" or x == "\r" end
    *     function space()
    *         if eof() then
    *             return false
@@ -17817,7 +17814,7 @@ static inline int lcf_main(lua_State *L) {
    *         end
    *         return new_symbol(ret)
    *     end
-   *     function list()
+   *     function readlist()
    *         if eof() then
    *             return false
    *         end
@@ -17836,7 +17833,7 @@ static inline int lcf_main(lua_State *L) {
    *             local x = ret
    *             while true do
    *                 if not construction_p(x) then
-   *                     return ERROR()
+   *                     return LANG_ERROR()
    *                 end
    *                 local d = construction_tail(x)
    *                 if d == HOLE then
@@ -17845,10 +17842,10 @@ static inline int lcf_main(lua_State *L) {
    *                 x = construction_tail(x)
    *             end
    *             if not construction_p(x) then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             if construction_tail(x) ~= HOLE then
-   *                 return ERROR()
+   *                 return LANG_ERROR()
    *             end
    *             x[2 + 1] = lst
    *         end
@@ -17893,7 +17890,7 @@ static inline int lcf_main(lua_State *L) {
    *             put(x)
    *             return false
    *         end
-   *         local xs = list()
+   *         local xs = readlist()
    *         if xs == false then
    *             return parse_error()
    *         end
@@ -17911,7 +17908,7 @@ static inline int lcf_main(lua_State *L) {
    *             put(x)
    *             return false
    *         end
-   *         local xs = list()
+   *         local xs = readlist()
    *         if xs == false then
    *             return parse_error()
    *         end
@@ -17959,7 +17956,7 @@ static inline int lcf_main(lua_State *L) {
    *     function val()
    *         space()
    *         local fs = {
-   *             list,
+   *             readlist,
    *             readsysname,
    *             data,
    *             readerror,
@@ -18006,7 +18003,7 @@ static inline int lcf_main(lua_State *L) {
    *                 return x
    *             end
    *             local fs = strict and {
-   *                 list,
+   *                 readlist,
    *                 symbol,
    *                 readsysname_no_pack_bracket,
    *                 data,
@@ -18016,7 +18013,7 @@ static inline int lcf_main(lua_State *L) {
    *                 readformbuiltin,
    *                 readapply,
    *             } or {
-   *                 list,
+   *                 readlist,
    *                 readsysname_no_pack,
    *                 data,
    *                 readerror,
@@ -18070,7 +18067,7 @@ static inline int lcf_main(lua_State *L) {
    *                 put(head)
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end
    *         if eof() then
    *             return false
@@ -18121,7 +18118,7 @@ static inline int lcf_main(lua_State *L) {
    *             end
    *             return may_xfx_xf(x)
    *         end
-   *         return ERROR()
+   *         return LANG_ERROR()
    *     end
    *     function readsysname()
    *         local x = readsysname_no_pack()
@@ -18145,7 +18142,7 @@ static inline int lcf_main(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -18165,7 +18162,7 @@ static inline int lcf_main(lua_State *L) {
    *                 put(c)
    *                 return false
    *             end
-   *             local xs = list()
+   *             local xs = readlist()
    *             if xs == false then
    *                 return parse_error()
    *             end
@@ -18221,7 +18218,7 @@ static inline int lcf_main(lua_State *L) {
    *             elseif where == "top" then
    *                 return x
    *             end
-   *             return ERROR()
+   *             return LANG_ERROR()
    *         end
    *         local maybe_xs = maybe_list_to_jsArray(x)
    *         if maybe_xs ~= false and #maybe_xs == 3 and
@@ -18286,7 +18283,7 @@ static inline int lcf_main(lua_State *L) {
    *         elseif where == "top" then
    *             return simple_print(systemName_make(x))
    *         end
-   *         return ERROR()
+   *         return LANG_ERROR()
    *     end
    *     local x = complex_parse(simple_print(val))
    *     local temp = ""
@@ -18324,7 +18321,7 @@ static inline int lcf_main(lua_State *L) {
    *     elseif delay_apply_p(x) then
    *         return "^(" .. tostring(complex_print(delay_apply_f(x))) .. " " ..
    * tostring(complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")" end
-   *     return ERROR()
+   *     return LANG_ERROR()
    * end */
   lc_newclosuretable(L, (lc679 + lc_nextra));
   enum { lc965 = 46 };

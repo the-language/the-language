@@ -98,7 +98,7 @@ in-dir "typescript" {
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
              ;;"python3/lang.py";;暫停。因爲性能太差。
-             ;;"php/lang.php";;正在修復
+             ;;"php/lang.php";;WIP
              "java/src"
              "c/lang.h"
              "c/lang.c"
@@ -283,6 +283,23 @@ in-dir "typescript" {
 
              clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
      }})
+     ("php/lang.php" ("typescript/lang.ts" "ecmascript/exports.list") {
+         in-dir "php" {
+             yarn
+             |> ++ "function _TS_THROW(x:string):never{throw x}\n" #{sed (id "s|throw\\([^;]*\\)|return _TS_THROW(\\1)|g") ../typescript/lang.ts} &>! lang.ts
+             (define raw #{npx ts2php lang.ts})
+             (define lang.php
+                 (match (string->lines raw)
+                     [(list "<?php" (regexp #rx"^namespace (.*)$") "function _TS_THROW($x) {  }" lines ...)
+                         (string-append
+                             "<?php\n"
+                             c-generatedby
+                             c-copyright
+                             "function _TS_THROW($x) {throw new Exception($x);}\n"
+                             (lines->string lines))]))
+             |> id lang.php &>! lang.php
+             sed -i (id "s|\\([^;()]*\\) in \\([^;()]*\\)|array_key_exists(\\2, \\1)|g") lang.php
+     }})
      ;; 以下爲停止支持的
      ("python3/lang.py" ("python2/lang.py") {
          in-dir "python3" {
@@ -316,97 +333,6 @@ in-dir "typescript" {
                  "\n"
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
-     }})
-     ("php/lang.php" ("ecmascript/lang.raw.js" "ecmascript/exports.list") {
-         ;; TODO
-         ;; * env_foreach
-         ;; * without mbstring
-         in-dir "php" {
-             yarn
-             (define exports-function-* (list->set '(
-                 new_list
-                 )))
-             (define exports-function-1 (list->set '(
-                 new_symbol
-                 symbol_p
-                 un_symbol
-                 construction_p
-                 construction_head
-                 construction_tail
-                 null_p
-                 data_p
-                 data_name
-                 data_list
-                 error_p
-                 error_name
-                 error_list
-                 force_all_rec
-                 jsArray_to_list
-                 maybe_list_to_jsArray
-                 delay_p
-                 force_all
-                 force1
-                 env2val
-                 val2env
-                 simple_print
-                 simple_print_force_all_rec
-                 complex_parse
-                 complex_print
-                 )))
-             (define exports-function-2 (list->set '(
-                 equal_p
-                 evaluate
-                 apply
-                 new_construction
-                 new_data
-                 new_error
-                 )))
-             (define exports-function-3 (list->set '(
-                 env_set
-                 env_get
-                 env_foreach ;; 應該有BUG,因為傳入函數
-                 )))
-             (define exports-value (list->set '(
-                 null_v
-                 env_null_v
-                 )))
-             (define exports (ecmascript/exports.list-parse))
-             (define raw-js (++ "var exports={};\n" #{cat ../ecmascript/lang.raw.js}))
-             |> id raw-js &>! lang.js
-             (define raw-php-list (string->lines #{npx js2php lang.js}))
-             (define lang.php (++
-                 "<?php\n"
-                 c-generatedby
-                 c-copyright
-                 "\n"
-                 (match raw-php-list [(list "<?php" xs ...) (lines->string xs)])
-                 "\n"
-                 (apply-++ (map
-                     (lambda (export-sym)
-                        (define export-str (symbol->string export-sym))
-                        (cond
-                            [(set-member? exports-function-* export-sym)
-                             (++
-                                 "function "export-str
-                                 "(...$args){global $"export-str";return call($"export-str",...$args);}\n")]
-                            [(set-member? exports-function-1 export-sym)
-                             (++
-                                 "function "export-str
-                                 "($argx){global $"export-str";return call($"export-str",$argx);}\n")]
-                            [(set-member? exports-function-2 export-sym)
-                             (++
-                                 "function "export-str
-                                 "($argx,$argy){global $"export-str";return call($"export-str",$argx,$argy);}\n")]
-                            [(set-member? exports-function-3 export-sym)
-                             (++
-                                 "function "export-str
-                                 "($argx,$argy,$argz){global $"export-str";return call($"export-str",$argx,$argy,$argz);}\n")]
-                            [(set-member? exports-value export-sym) ""]
-                            [else (raise "ERROR!")]))
-                     (map string->symbol exports)))
-                 "?>\n"
-                 ))
-             |> id lang.php &>! lang.php
      }})
      )
     (current-command-line-arguments))
