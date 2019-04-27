@@ -16,7 +16,7 @@
   (define filename (string-append (symbol->string (car langcode))"-"(symbol->string (cdr langcode))".rkt"))
   (define context
     (make-immutable-hash
-     (hash-map (all-char) (lambda (uuc utf8c) (cons uuc (hash-ref (hash-ref (l18n) langcode) uuc (string-append "[未翻譯]"(symbol->string uuc))))))))
+     (hash-map (all-char) (lambda (uuc utf8c) (cons uuc (hash-ref (hash-ref (l18n) langcode) uuc (symbol->string uuc)))))))
   (define context-text (apply
                         string-append
                         (cons "#lang racket\n(require \"ununicode.core.rkt\")\n"
