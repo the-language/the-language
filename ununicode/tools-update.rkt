@@ -1,6 +1,5 @@
 #lang racket
 (require "ununicode.core.rkt")
-(provide (all-from-out "ununicode.core.rkt"))
 
 (display-to-file
  (apply string-append
