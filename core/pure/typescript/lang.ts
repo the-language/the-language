@@ -1240,7 +1240,7 @@ function complex_parse(x: string): LangVal {
     }
     function get(): string {
         LANG_ASSERT(!eof())
-        const ret = state_const[state]
+        const ret = state_const.charAt(state)
         state++
         return ret
     }

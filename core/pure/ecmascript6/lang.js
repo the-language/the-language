@@ -1178,7 +1178,7 @@ function complex_parse(x) {
     }
     function get() {
         LANG_ASSERT(!eof());
-        const ret = state_const[state];
+        const ret = state_const.charAt(state);
         state++;
         return ret;
     }
