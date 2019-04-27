@@ -449,6 +449,8 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
             return LANG_ERROR();
         }
         history[x_id] = true;
+        xs.push(x);
+        x = force1(x);
     }
     return do_rewrite(x);
 }

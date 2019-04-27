@@ -216,6 +216,8 @@ public class Lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
                     }
                 } else {
                     ((org.luaj.vm2.LuaValue)a13).set(a17, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.TRUE);
+                    this.u2.call(a7[0], a0[0]);
+                    a0[0] = this.u6[0].call(a0[0]);
                 }
             }
             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a11, (org.luaj.vm2.Varargs)a0[0]);

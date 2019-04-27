@@ -396,6 +396,8 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
             return LANG_ERROR()
         end
         history[x_id] = true
+        __TS__ArrayPush(xs, x)
+        x = force1(x)
     end
     return do_rewrite(x)
 end

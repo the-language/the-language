@@ -513,6 +513,8 @@ function force_all(
             return LANG_ERROR()
         }
         history[x_id] = true
+        xs.push(x)
+        x = force1(x)
     }
     return do_rewrite(x)
 }

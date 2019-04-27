@@ -3566,6 +3566,20 @@ static inline int lcf1_force_all(lua_State *L) {
     lua_pop(L, 1);
     assert(lua_gettop(L) == 10);
 
+    /* __TS__ArrayPush(xs, x) */
+    lc_getupvalue(L, lc61, 4, 1);
+    lc_getupvalue(L, lc61, 2, 102);
+    lc_getupvalue(L, lc61, 1, 105);
+    lua_call(L, 2, 0);
+    assert(lua_gettop(L) == 10);
+
+    /* x = force1(x) */
+    lc_getupvalue(L, lc61, 3, 17);
+    lc_getupvalue(L, lc61, 1, 105);
+    lua_call(L, 1, 1);
+    lc_setupvalue(L, lc61, 1, 105);
+    assert(lua_gettop(L) == 10);
+
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
@@ -15179,6 +15193,8 @@ static inline int lcf_main(lua_State *L) {
    *             return LANG_ERROR()
    *         end
    *         history[x_id] = true
+   *         __TS__ArrayPush(xs, x)
+   *         x = force1(x)
    *     end
    *     return do_rewrite(x)
    * end */
