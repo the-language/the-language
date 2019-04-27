@@ -1171,14 +1171,14 @@ export { simple_print, simple_print_force_all_rec };
 // 相對獨立的部分。simple printer }}}
 // {{{ 相對獨立的部分。complex parser/complex printer
 function complex_parse(x) {
-    const state_const = x;
+    const state_const = x; // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
     let state = 0;
     function eof() {
         return state_const.length === state;
     }
     function get() {
         LANG_ASSERT(!eof());
-        const ret = state_const.charAt(state);
+        const ret = state_const[state];
         state++;
         return ret;
     }

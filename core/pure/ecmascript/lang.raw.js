@@ -1202,14 +1202,14 @@ exports.simple_print_force_all_rec = simple_print_force_all_rec;
 // 相對獨立的部分。simple printer }}}
 // {{{ 相對獨立的部分。complex parser/complex printer
 function complex_parse(x) {
-    var state_const = x;
+    var state_const = x; // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
     var state = 0;
     function eof() {
         return state_const.length === state;
     }
     function get() {
         LANG_ASSERT(!eof());
-        var ret = state_const.charAt(state);
+        var ret = state_const[state];
         state++;
         return ret;
     }
