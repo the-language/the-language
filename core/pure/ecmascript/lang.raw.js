@@ -394,6 +394,10 @@ function force_all(raw, parents_history, ref_novalue_replace, xs) {
         }
         return ret;
     }
+    for (var i = 0; any_delay_just_p(x) && i < 512; i++) { // 一般情況
+        xs.push(x);
+        x = force1(x);
+    }
     while (any_delay_just_p(x)) {
         var x_id = simple_print(x);
         if (parents_history[x_id] === true) {
@@ -468,8 +472,6 @@ function force_all(raw, parents_history, ref_novalue_replace, xs) {
             return LANG_ERROR();
         }
         history[x_id] = true;
-        xs.push(x);
-        x = force1(x);
     }
     return do_rewrite(x);
 }

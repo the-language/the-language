@@ -316,6 +316,14 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
         end
         return ret
     end
+    do
+        local i = 0
+        while any_delay_just_p(x) and i < 512 do
+            __TS__ArrayPush(xs, x)
+            x = force1(x)
+            i = i + 1
+        end
+    end
     while any_delay_just_p(x) do
         local x_id = simple_print(x)
         if parents_history[x_id] == true then
@@ -388,8 +396,6 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
             return LANG_ERROR()
         end
         history[x_id] = true
-        __TS__ArrayPush(xs, x)
-        x = force1(x)
     end
     return do_rewrite(x)
 end

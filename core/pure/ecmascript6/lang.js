@@ -372,6 +372,10 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
         }
         return ret;
     }
+    for (let i = 0; any_delay_just_p(x) && i < 512; i++) { // 一般情況
+        xs.push(x);
+        x = force1(x);
+    }
     while (any_delay_just_p(x)) {
         const x_id = simple_print(x);
         if (parents_history[x_id] === true) {
@@ -445,8 +449,6 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
             return LANG_ERROR();
         }
         history[x_id] = true;
-        xs.push(x);
-        x = force1(x);
     }
     return do_rewrite(x);
 }
@@ -976,7 +978,7 @@ function new_lambda(env, args_pat, body, error_v = false) {
         args_pat_vars_val = jsArray_to_list(args_pat_vars);
     }
     let env_vars = []; // : JSList LangVal/Name
-    env_foreach(env, function (k, v) {
+    env_foreach(env, (k, v) => {
         for (let i = 0; i < args_pat_vars.length; i++) {
             if (jsbool_equal_p(args_pat_vars[i], k)) {
                 // WIP delay未正確處理(影響較小)
