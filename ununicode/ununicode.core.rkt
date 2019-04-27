@@ -147,22 +147,3 @@
 (_ '序乙 #\乙)
 (_ '序丙 #\丙)
 (_ '序丁 #\丁)
-
-(require/typed racket/hash
-              [hash-union (All (k v) (-> (Immutable-HashTable k v) (Immutable-HashTable k v) [#:combine (-> Any Any Any)] (Immutable-HashTable k v)))]) ;; Type Checker: Inference for polymorphic keyword functions not supported
-(require/typed racket [hash-map (All (k v v2) (-> (HashTable k v) (-> k v v2) Boolean (Listof v2)))])
-(for ([langcode (all-langcode)])
-  (define filename (string-append (symbol->string (car langcode))"-"(symbol->string (cdr langcode))".rkt"))
-  (load filename)
-  (define context (hash-map
-                   (ann (hash-union
-                         (ann (hash-ref (l18n) langcode)
-                             (Immutable-HashTable UUCChar String))
-                         (ann (make-immutable-hash (hash-map (all-char) (lambda ([uuc : UUCChar] [utf8c : UUCCharUnicodeCode]) (cons uuc (string-append "[未翻譯]"(symbol->string uuc)))) #f))
-                             (Immutable-HashTable UUCChar String))
-                         #:combine (lambda (x y) x))
-                       (Immutable-HashTable UUCChar String))
-                   (lambda ([uuc : UUCChar] [str : String]) (string-append "(~ '("(symbol->string (car langcode))" . "(symbol->string (cdr langcode))") '"(symbol->string uuc)" \""str"\")"))
-                   #t))
-  (display-to-file context filename #:mode 'text #:exists 'replace)
-  )
