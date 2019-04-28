@@ -21,7 +21,6 @@
 #include <assert.h>
 
 /*-- #include "src.cpp/ctype.h" start --*/
-#include <ctype.h>
 
 /*-- #include "src.cpp/errno.h" start --*/
 #include <errno.h>
@@ -18492,7 +18491,6 @@ static inline void lc_createarg(lua_State *L, const lc_args_t *const args) {
   }
   lua_setglobal(L, "arg");
 }
-
 /*-- #include "src.cpp/lang.h" start --*/
 
 #ifndef THE_LANGUAGE_h

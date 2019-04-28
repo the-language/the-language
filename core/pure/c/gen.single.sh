@@ -21,7 +21,7 @@ for f in io.h stddef.h stdio.h stdarg.h limits.h unistd.h readline/readline.h re
   echo '#pragma once' > "./src.cpp/$f"
   echo "#include <$f>" >> "./src.cpp/$f"
 done
-for f in io.h readline/readline.h readline/history.h locale.h ;do
+for f in io.h readline/readline.h readline/history.h ctype.h locale.h ;do
   echo '#pragma once' > "./src.cpp/$f"
 done
 f=all.c
