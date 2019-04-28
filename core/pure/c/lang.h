@@ -16,8 +16,8 @@ typedef struct lang_value lang_value;
 extern void lang_value_delete(lang_state *L, lang_value *val);
 extern lang_value *lang_value_copy_orNULL(lang_state *L, lang_value *val);
 extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str);
-extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val);
-extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val);
+extern char *lang_complex_print_retMalloc_orNULL(lang_state *L, lang_value *val);
+extern char *lang_simple_print_retMalloc_orNULL(lang_state *L, lang_value *val);
 
 #if defined(__cplusplus)
 }

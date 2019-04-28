@@ -18470,7 +18470,7 @@ extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str) {
   assert(lua_gettop(L->L) == 0);
   return ret;
 }
-extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val) {
+extern char *lang_complex_print_retMalloc_orNULL(lang_state *L, lang_value *val) {
   assert(lua_gettop(L->L) == 0);
   lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
   lua_getfield(L->L, -1, "complex_print");
@@ -18482,14 +18482,14 @@ extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val) {
   lua_remove(L->L, -1);
   assert(lua_gettop(L->L) == 0);
   size_t len = strlen(rawret);
-  const char *ret = malloc(len + 1);
+  char *ret = malloc(len + 1);
   if (NULL == ret) {
     return NULL;
   }
   memcpy(ret, rawret, len + 1);
   return ret;
 }
-extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val) {
+extern char *lang_simple_print_retMalloc_orNULL(lang_state *L, lang_value *val) {
   assert(lua_gettop(L->L) == 0);
   lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
   lua_getfield(L->L, -1, "simple_print");
@@ -18501,7 +18501,7 @@ extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val) {
   lua_remove(L->L, -1);
   assert(lua_gettop(L->L) == 0);
   size_t len = strlen(rawret);
-  const char *ret = malloc(len + 1);
+  char *ret = malloc(len + 1);
   if (NULL == ret) {
     return NULL;
   }
