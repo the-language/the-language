@@ -18,11 +18,11 @@ for f in ./src.cpp/* ;do
   sed -i 's|^#include <\(.*\)>$|^#include "\1"|' "$f"
 done
 mkdir ./src.cpp/readline
-for f in stddef.h stdio.h stdarg.h limits.h unistd.h assert.h stdlib.h string.h errno.h setjmp.h # io.h readline/readline.h readline/history.h ctype.h locale.h # ctype.h math.h
+for f in stddef.h stdio.h stdarg.h limits.h assert.h stdlib.h string.h errno.h setjmp.h # io.h readline/readline.h readline/history.h ctype.h locale.h # ctype.h math.h
 do
   echo "#include <$f>" > "./src.cpp/$f"
 done
-for f in io.h readline/readline.h readline/history.h locale.h
+for f in io.h unistd.h readline/readline.h readline/history.h locale.h
 do
   > "./src.cpp/$f"
 done

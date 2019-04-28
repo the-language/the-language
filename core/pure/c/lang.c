@@ -313,7 +313,6 @@ extern "C" {
 */
 #if defined(LUA_USE_ISATTY)
 /*-- #include "src.cpp/unistd.h" start --*/
-#include <unistd.h>
 
 #define lua_stdin_is_tty()	isatty(0)
 #elif defined(LUA_WIN)
