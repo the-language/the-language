@@ -21,6 +21,18 @@
 #include <assert.h>
 
 /*-- #include "src.cpp/ctype.h" start --*/
+/* ctype.h 單文件時起作用，只用於精簡 */
+
+#ifndef string_isspace_h
+#define string_isspace_h
+
+/* https://github.com/bminor/musl/blob/da55d4884bf26ce31cd6a64ed176019c2ba9839a/src/ctype/isspace.c */
+
+static inline int isspace(int c) {
+	return c == ' ' || (unsigned)c-'\t' < 5;
+}
+
+#endif
 
 /*-- #include "src.cpp/errno.h" start --*/
 #include <errno.h>
@@ -609,7 +621,18 @@ extern "C" {
 */
 #if 1
 /*-- #include "src.cpp/math.h" start --*/
-#include <math.h>
+/* math.h 單文件時起作用，只用於精簡 */
+
+#ifndef math_unFLOOR_unPOW_h
+#define math_unFLOOR_unPOW_h
+
+/*-- #include "src.cpp/assert.h" start --*/
+
+
+#define pow(base, exponent) ({assert(!"[錯誤]pow()未實現 : pow("#base","#exponent")");*((volatile int*)0)=0;(double)*((volatile double*)0);})
+#define floor(x) ({assert(!"[錯誤]floor()未實現 : floor("#x")");*((volatile int*)0)=0;(double)*((volatile double*)0);})
+
+#endif
 
 #define luai_numadd(a,b)	((a)+(b))
 #define luai_numsub(a,b)	((a)-(b))
@@ -1030,10 +1053,8 @@ LUA_API int   (lua_setfenv) (lua_State *L, int idx);
 LUA_API void  (lua_call) (lua_State *L, int nargs, int nresults);
 LUA_API int   (lua_pcall) (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int   (lua_cpcall) (lua_State *L, lua_CFunction func, void *ud);
-LUA_API int   (lua_load) (lua_State *L, lua_Reader reader, void *dt,
-                                        const char *chunkname);
 
-LUA_API int (lua_dump) (lua_State *L, lua_Writer writer, void *data);
+
 
 
 /*
@@ -1042,21 +1063,6 @@ LUA_API int (lua_dump) (lua_State *L, lua_Writer writer, void *data);
 LUA_API int  (lua_yield) (lua_State *L, int nresults);
 LUA_API int  (lua_resume) (lua_State *L, int narg);
 LUA_API int  (lua_status) (lua_State *L);
-
-/*
-** garbage-collection function and options
-*/
-
-#define LUA_GCSTOP		0
-#define LUA_GCRESTART		1
-#define LUA_GCCOLLECT		2
-#define LUA_GCCOUNT		3
-#define LUA_GCCOUNTB		4
-#define LUA_GCSTEP		5
-#define LUA_GCSETPAUSE		6
-#define LUA_GCSETSTEPMUL	7
-
-LUA_API int (lua_gc) (lua_State *L, int what, int data);
 
 
 /*
@@ -1074,7 +1080,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 
 
-/* 
+/*
 ** ===============================================================
 ** some useful macros
 ** ===============================================================
@@ -1117,7 +1123,6 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_getregistry(L)	lua_pushvalue(L, LUA_REGISTRYINDEX)
 
-#define lua_getgccount(L)	lua_gc(L, LUA_GCCOUNT, 0)
 
 #define lua_Chunkreader		lua_Reader
 #define lua_Chunkwriter		lua_Writer
@@ -20000,7 +20005,7 @@ LUA_API void lua_replace (lua_State *L, int idx) {
   api_checkvalidindex(L, o);
   if (idx == LUA_ENVIRONINDEX) {
     Closure *func = curr_func(L);
-    api_check(L, ttistable(L->top - 1)); 
+    api_check(L, ttistable(L->top - 1));
     func->c.env = hvalue(L->top - 1);
     luaC_barrier(L, func, L->top - 1);
   }
@@ -20560,7 +20565,7 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
-	
+
 
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;
@@ -20648,100 +20653,12 @@ LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud) {
 }
 
 
-LUA_API int lua_load (lua_State *L, lua_Reader reader, void *data,
-                      const char *chunkname) {
-  ZIO z;
-  int status;
-  lua_lock(L);
-  if (!chunkname) chunkname = "?";
-  luaZ_init(L, &z, reader, data);
-  status = luaD_protectedparser(L, &z, chunkname);
-  lua_unlock(L);
-  return status;
-}
-
-
-LUA_API int lua_dump (lua_State *L, lua_Writer writer, void *data) {
-  int status;
-  TValue *o;
-  lua_lock(L);
-  api_checknelems(L, 1);
-  o = L->top - 1;
-  if (isLfunction(o))
-    status = luaU_dump(L, clvalue(o)->l.p, writer, data, 0);
-  else
-    status = 1;
-  lua_unlock(L);
-  return status;
-}
-
 
 LUA_API int  lua_status (lua_State *L) {
   return L->status;
 }
 
 
-/*
-** Garbage-collection function
-*/
-
-LUA_API int lua_gc (lua_State *L, int what, int data) {
-  int res = 0;
-  global_State *g;
-  lua_lock(L);
-  g = G(L);
-  switch (what) {
-    case LUA_GCSTOP: {
-      g->GCthreshold = MAX_LUMEM;
-      break;
-    }
-    case LUA_GCRESTART: {
-      g->GCthreshold = g->totalbytes;
-      break;
-    }
-    case LUA_GCCOLLECT: {
-      luaC_fullgc(L);
-      break;
-    }
-    case LUA_GCCOUNT: {
-      /* GC values are expressed in Kbytes: #bytes/2^10 */
-      res = cast_int(g->totalbytes >> 10);
-      break;
-    }
-    case LUA_GCCOUNTB: {
-      res = cast_int(g->totalbytes & 0x3ff);
-      break;
-    }
-    case LUA_GCSTEP: {
-      lu_mem a = (cast(lu_mem, data) << 10);
-      if (a <= g->totalbytes)
-        g->GCthreshold = g->totalbytes - a;
-      else
-        g->GCthreshold = 0;
-      while (g->GCthreshold <= g->totalbytes) {
-        luaC_step(L);
-        if (g->gcstate == GCSpause) {  /* end of cycle? */
-          res = 1;  /* signal it */
-          break;
-        }
-      }
-      break;
-    }
-    case LUA_GCSETPAUSE: {
-      res = g->gcpause;
-      g->gcpause = data;
-      break;
-    }
-    case LUA_GCSETSTEPMUL: {
-      res = g->gcstepmul;
-      g->gcstepmul = data;
-      break;
-    }
-    default: res = -1;  /* invalid option */
-  }
-  lua_unlock(L);
-  return res;
-}
 
 
 
@@ -20873,7 +20790,6 @@ LUA_API const char *lua_setupvalue (lua_State *L, int funcindex, int n) {
   lua_unlock(L);
   return name;
 }
-
 
 /*-- File: src.cpp/lapi.cpp end --*/
 /*-- #include "src.cpp/lapi.h" start --*/
@@ -27129,7 +27045,9 @@ char *luaZ_openspace (lua_State *L, Mbuffer *buff, size_t n) {
 /*-- #include "src.cpp/lzio.h" start --*/
 /*-- #include "src.cpp/math.h" start --*/
 /*-- #include "src.cpp/readline/history.h" start --*/
+
 /*-- #include "src.cpp/readline/readline.h" start --*/
+
 /*-- #include "src.cpp/setjmp.h" start --*/
 /*-- #include "src.cpp/stdarg.h" start --*/
 /*-- #include "src.cpp/stddef.h" start --*/

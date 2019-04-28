@@ -13,16 +13,24 @@ for f in ./src.cpp/*.h ;do
   cat "$f.1" >> "$f"
   rm "$f.1"
 done
+cp ./patch/math.h ./patch/ctype.h ./src.cpp
 for f in ./src.cpp/* ;do
   sed -i 's|^#include <\(.*\)>$|^#include "\1"|' "$f"
 done
 mkdir ./src.cpp/readline
-for f in io.h stddef.h stdio.h stdarg.h limits.h unistd.h readline/readline.h readline/history.h assert.h math.h stdlib.h string.h ctype.h errno.h setjmp.h locale.h ;do
-  echo '#pragma once' > "./src.cpp/$f"
-  echo "#include <$f>" >> "./src.cpp/$f"
+for f in stddef.h stdio.h stdarg.h limits.h unistd.h assert.h stdlib.h string.h errno.h setjmp.h # io.h readline/readline.h readline/history.h ctype.h locale.h # ctype.h math.h
+do
+  echo "#include <$f>" > "./src.cpp/$f"
 done
-for f in io.h readline/readline.h readline/history.h ctype.h locale.h ;do
-  echo '#pragma once' > "./src.cpp/$f"
+for f in io.h readline/readline.h readline/history.h locale.h
+do
+  > "./src.cpp/$f"
+done
+for f in ./src.cpp/*.h ;do
+  mv "$f" "$f.1"
+  echo '#pragma once' > "$f"
+  cat "$f.1" >> "$f"
+  rm "$f.1"
 done
 f=all.c
 npx codingame-merge -w src.cpp/ -o "$f"

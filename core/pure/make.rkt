@@ -281,7 +281,7 @@ in-dir "typescript" {
              |> id single &>! lang.c
              touch lang.h
 
-             clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c -lm
+             clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c
      }})
      ("php/lang.php" ("typescript/lang.ts" "ecmascript/exports.list") {
          in-dir "php" {
