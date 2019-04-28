@@ -318,7 +318,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
     end
     do
         local i = 0
-        while any_delay_just_p(x) and i < 512 do
+        while any_delay_just_p(x) and i < 32 do
             __TS__ArrayPush(xs, x)
             x = force1(x)
             i = i + 1

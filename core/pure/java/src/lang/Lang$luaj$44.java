@@ -41,7 +41,7 @@ public class Lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(0);
-        k1 = org.luaj.vm2.LuaValue.valueOf(512);
+        k1 = org.luaj.vm2.LuaValue.valueOf(32);
         k2 = org.luaj.vm2.LuaValue.valueOf(1);
         k3 = org.luaj.vm2.LuaValue.valueOf(2);
         k4 = org.luaj.vm2.LuaValue.valueOf(3);

@@ -3019,7 +3019,7 @@ static inline int lcf1_force_all(lua_State *L) {
   lua_pushnumber(L, 0);
   assert(lua_gettop(L) == 10);
 
-  /* while any_delay_just_p(x) and i < 512 do */
+  /* while any_delay_just_p(x) and i < 32 do */
   enum { lc65 = 10 };
   while (1) {
     lc_getupvalue(L, lc61, 3, 19);
@@ -3027,7 +3027,7 @@ static inline int lcf1_force_all(lua_State *L) {
     lua_call(L, 1, 1);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lua_pushnumber(L, 512);
+      lua_pushnumber(L, 32);
       const int lc66 = lua_lessthan(L, 10, -1);
       lua_pop(L, 1);
       lua_pushboolean(L, lc66);
@@ -15119,7 +15119,7 @@ static inline int lcf_main(lua_State *L) {
    *     end
    *     do
    *         local i = 0
-   *         while any_delay_just_p(x) and i < 512 do
+   *         while any_delay_just_p(x) and i < 32 do
    *             __TS__ArrayPush(xs, x)
    *             x = force1(x)
    *             i = i + 1

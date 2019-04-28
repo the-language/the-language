@@ -444,7 +444,7 @@ function force_all(
         }
         return ret
     }
-    for(let i=0;any_delay_just_p(x) && i<512;i++){ // 一般情況
+    for (let i = 0; any_delay_just_p(x) && i < 32; i++) { // 一般情況
         xs.push(x)
         x = force1(x)
     }
@@ -1237,7 +1237,7 @@ export { simple_print, simple_print_force_all_rec }
 
 // {{{ 相對獨立的部分。complex parser/complex printer
 function complex_parse(x: string): LangVal {
-    const state_const : string = x // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
+    const state_const: string = x // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
     let state = 0
     function eof() {
         return state_const.length === state

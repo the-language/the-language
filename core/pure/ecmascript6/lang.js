@@ -372,7 +372,7 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
         }
         return ret;
     }
-    for (let i = 0; any_delay_just_p(x) && i < 512; i++) { // 一般情況
+    for (let i = 0; any_delay_just_p(x) && i < 32; i++) { // 一般情況
         xs.push(x);
         x = force1(x);
     }
