@@ -48,6 +48,8 @@ done
 for x in lua_ident luaX_tokens luaO_nilobject_ luaP_opnames luaP_opmodes luaT_typenames ;do
   sed -i "s|^\([^=;]*const[^=;]*$x[^=;]*[=;].*\)$|static \1|g" "$f"
 done
+sed -i "s|^static inline |static |g" "$f"
+sed -i "s|^static\([ \*][ \*]*[\*a-zA-Z0-9_][\*a-zA-Z0-9_]*[ \*][ \*]*[\*a-zA-Z0-9_][\*a-zA-Z0-9_]* *(\)|static inline\1|g" "$f"
 echo '#include "lang.h"' > lang.c
 cat "$f" >> lang.c
 rm "$f"
