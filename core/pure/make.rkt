@@ -279,7 +279,6 @@ in-dir "typescript" {
                    c-copyright
                    #{cat lang.c}))
              |> id single &>! lang.c
-             touch lang.h
 
              clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c
      }})

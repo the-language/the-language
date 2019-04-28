@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+#include "lang.h"
 /*-- #include "src.cpp/assert.h" start --*/
 #include <assert.h>
 
@@ -18388,32 +18389,6 @@ static inline int lcf_main(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 46);
 }
 /*-- #include "src.cpp/lang.h" start --*/
-
-#ifndef THE_LANGUAGE_h
-#define THE_LANGUAGE_h
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-struct lang_state;
-typedef struct lang_state lang_state;
-extern lang_state *lang_state_new_orNULL(void);
-extern void lang_state_delete(lang_state *L);
-
-struct lang_value;
-typedef struct lang_value lang_value;
-extern void lang_value_delete(lang_state *L, lang_value *val);
-extern lang_value *lang_value_copy_orNULL(lang_state *L, lang_value *val);
-extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str);
-extern const char *lang_complex_print_orNULL(lang_state *L, lang_value *val);
-extern const char *lang_simple_print_orNULL(lang_state *L, lang_value *val);
-
-#if defined(__cplusplus)
-}
-#endif
-
-#endif
 
 
 /* TODO: Lua 錯誤處理 */
