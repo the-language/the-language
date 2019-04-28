@@ -1231,10 +1231,6 @@ LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
 #endif
 
 
-/* extra error code for `luaL_load' */
-#define LUA_ERRFILE     (LUA_ERRERR+1)
-
-
 typedef struct luaL_Reg {
   const char *name;
   lua_CFunction func;
@@ -1277,11 +1273,6 @@ LUALIB_API int (luaL_checkoption) (lua_State *L, int narg, const char *def,
 LUALIB_API int (luaL_ref) (lua_State *L, int t);
 LUALIB_API void (luaL_unref) (lua_State *L, int t, int ref);
 
-LUALIB_API int (luaL_loadfile) (lua_State *L, const char *filename);
-LUALIB_API int (luaL_loadbuffer) (lua_State *L, const char *buff, size_t sz,
-                                  const char *name);
-LUALIB_API int (luaL_loadstring) (lua_State *L, const char *s);
-
 LUALIB_API lua_State *(luaL_newstate) (void);
 
 
@@ -1310,12 +1301,6 @@ LUALIB_API const char *(luaL_findtable) (lua_State *L, int idx,
 #define luaL_optlong(L,n,d)	((long)luaL_optinteger(L, (n), (d)))
 
 #define luaL_typename(L,i)	lua_typename(L, lua_type(L,(i)))
-
-#define luaL_dofile(L, fn) \
-	(luaL_loadfile(L, fn) || lua_pcall(L, 0, LUA_MULTRET, 0))
-
-#define luaL_dostring(L, s) \
-	(luaL_loadstring(L, s) || lua_pcall(L, 0, LUA_MULTRET, 0))
 
 #define luaL_getmetatable(L,n)	(lua_getfield(L, LUA_REGISTRYINDEX, (n)))
 
@@ -1373,8 +1358,6 @@ LUALIB_API void (luaL_pushresult) (luaL_Buffer *B);
 #define luaL_reg	luaL_Reg
 
 #endif
-
-
 
 /*-- #include "src.cpp/lua.h" start --*/
 /*-- #include "src.cpp/lualib.h" start --*/
@@ -21410,117 +21393,6 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 
 
 
-/*
-** {======================================================
-** Load functions
-** =======================================================
-*/
-
-typedef struct LoadF {
-  int extraline;
-  FILE *f;
-  char buff[LUAL_BUFFERSIZE];
-} LoadF;
-
-
-static const char *getF (lua_State *L, void *ud, size_t *size) {
-  LoadF *lf = (LoadF *)ud;
-  (void)L;
-  if (lf->extraline) {
-    lf->extraline = 0;
-    *size = 1;
-    return "\n";
-  }
-  if (feof(lf->f)) return NULL;
-  *size = fread(lf->buff, 1, sizeof(lf->buff), lf->f);
-  return (*size > 0) ? lf->buff : NULL;
-}
-
-
-static int errfile (lua_State *L, const char *what, int fnameindex) {
-  const char *serr = strerror(errno);
-  const char *filename = lua_tostring(L, fnameindex) + 1;
-  lua_pushfstring(L, "cannot %s %s: %s", what, filename, serr);
-  lua_remove(L, fnameindex);
-  return LUA_ERRFILE;
-}
-
-
-LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
-  LoadF lf;
-  int status, readstatus;
-  int c;
-  int fnameindex = lua_gettop(L) + 1;  /* index of filename on the stack */
-  lf.extraline = 0;
-  if (filename == NULL) {
-    lua_pushliteral(L, "=stdin");
-    lf.f = stdin;
-  }
-  else {
-    lua_pushfstring(L, "@%s", filename);
-    lf.f = fopen(filename, "r");
-    if (lf.f == NULL) return errfile(L, "open", fnameindex);
-  }
-  c = getc(lf.f);
-  if (c == '#') {  /* Unix exec. file? */
-    lf.extraline = 1;
-    while ((c = getc(lf.f)) != EOF && c != '\n') ;  /* skip first line */
-    if (c == '\n') c = getc(lf.f);
-  }
-  if (c == LUA_SIGNATURE[0] && filename) {  /* binary file? */
-    lf.f = freopen(filename, "rb", lf.f);  /* reopen in binary mode */
-    if (lf.f == NULL) return errfile(L, "reopen", fnameindex);
-    /* skip eventual `#!...' */
-   while ((c = getc(lf.f)) != EOF && c != LUA_SIGNATURE[0]) ;
-    lf.extraline = 0;
-  }
-  ungetc(c, lf.f);
-  status = lua_load(L, getF, &lf, lua_tostring(L, -1));
-  readstatus = ferror(lf.f);
-  if (filename) fclose(lf.f);  /* close file (even in case of errors) */
-  if (readstatus) {
-    lua_settop(L, fnameindex);  /* ignore results from `lua_load' */
-    return errfile(L, "read", fnameindex);
-  }
-  lua_remove(L, fnameindex);
-  return status;
-}
-
-
-typedef struct LoadS {
-  const char *s;
-  size_t size;
-} LoadS;
-
-
-static const char *getS (lua_State *L, void *ud, size_t *size) {
-  LoadS *ls = (LoadS *)ud;
-  (void)L;
-  if (ls->size == 0) return NULL;
-  *size = ls->size;
-  ls->size = 0;
-  return ls->s;
-}
-
-
-LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
-                                const char *name) {
-  LoadS ls;
-  ls.s = buff;
-  ls.size = size;
-  return lua_load(L, getS, &ls, name);
-}
-
-
-LUALIB_API int (luaL_loadstring) (lua_State *L, const char *s) {
-  return luaL_loadbuffer(L, s, strlen(s), s);
-}
-
-
-
-/* }====================================================== */
-
-
 static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
   (void)ud;
   (void)osize;
@@ -21546,7 +21418,6 @@ LUALIB_API lua_State *luaL_newstate (void) {
   if (L) lua_atpanic(L, &panic);
   return L;
 }
-
 
 /*-- File: src.cpp/lauxlib.cpp end --*/
 /*-- #include "src.cpp/lauxlib.h" start --*/
