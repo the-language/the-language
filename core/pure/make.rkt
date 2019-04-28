@@ -251,7 +251,7 @@ in-dir "typescript" {
            git clone --depth 1 https://github.com/davidm/lua2c.git
      }})
      ("c/lang.h" () (void))
-     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/patch/linit.c" "c/patch/lualib.h" "c/testmain.c") {
+     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/testmain.c") {
        in-dir "c" {
              (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
 
@@ -269,7 +269,7 @@ in-dir "typescript" {
              |> id out &>! ./src/lang.c
              cp lang.h ./src
 
-             cp ./patch/linit.c ./patch/lualib.h ./src
+             cp ./patch/tailor/* ./src
              rm ./src/loslib.c ./src/lmathlib.c ./src/ltablib.c ./src/liolib.c ./src/ldblib.c ./src/loadlib.c
 
              ./gen.single.sh
