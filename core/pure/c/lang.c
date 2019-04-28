@@ -35,7 +35,6 @@ static inline int isspace(int c) {
 #endif
 
 /*-- #include "src.cpp/errno.h" start --*/
-#include <errno.h>
 
 /*-- #include "src.cpp/io.h" start --*/
 
