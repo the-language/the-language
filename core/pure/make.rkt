@@ -248,7 +248,7 @@ in-dir "typescript" {
      ("c/lua-5.1.5/src/lua" ("c/lua-5.1.5") (void))
      ("c/lua2c" ("c/lua2c-lib-lua2c-ast2cast.lua") {
        in-dir "c" {
-           |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh
+           |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh ;; commit c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 [TODO] 改做下載https://github.com/davidm/lua2c/archive/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92.zip
            rm -fr ./lua2c/lib/lua2c/ast2cast.lua
            cp ./lua2c-lib-lua2c-ast2cast.lua ./lua2c/lib/lua2c/ast2cast.lua
            touch lua2c
