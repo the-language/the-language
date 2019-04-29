@@ -295,6 +295,7 @@ in-dir "typescript" {
                              "function _TS_THROW($x) {throw new Exception($x);}\n"
                              (lines->string lines))]))
              |> id lang.php &>! lang.php
+	     sed -i (id "s|&\\$|$|g") lang.php
      }})
      ;; 以下爲停止支持的
      ("python3/lang.py" ("python2/lang.py") {

@@ -45,7 +45,7 @@ function new_symbol($x) {
 function symbol_p($x) {
     return $x[0] === $symbol_t;
 }
-function un_symbol(&$x) {
+function un_symbol($x) {
     return $symbols_set_neg[$x[1]];
 }
 function new_construction($x, $y) {
@@ -54,10 +54,10 @@ function new_construction($x, $y) {
 function construction_p($x) {
     return $x[0] === $construction_t;
 }
-function construction_head(&$x) {
+function construction_head($x) {
     return $x[1];
 }
-function construction_tail(&$x) {
+function construction_tail($x) {
     return $x[2];
 }
 $null_v = array($null_t);
@@ -70,10 +70,10 @@ function new_data($x, $y) {
 function data_p($x) {
     return $x[0] === $data_t;
 }
-function data_name(&$x) {
+function data_name($x) {
     return $x[1];
 }
-function data_list(&$x) {
+function data_list($x) {
     return $x[2];
 }
 function new_error($x, $y) {
@@ -82,10 +82,10 @@ function new_error($x, $y) {
 function error_p($x) {
     return $x[0] === $error_t;
 }
-function error_name(&$x) {
+function error_name($x) {
     return $x[1];
 }
-function error_list(&$x) {
+function error_list($x) {
     return $x[2];
 }
 function lang_set_do($x, $y) {
@@ -100,58 +100,58 @@ function lang_set_do($x, $y) {
 function just_p($x) {
     return $x[0] === $just_t;
 }
-function un_just(&$x) {
+function un_just($x) {
     return $x[1];
 }
-function evaluate(&$x, $y) {
+function evaluate($x, $y) {
     return array($delay_evaluate_t, $x, $y);
 }
 function delay_evaluate_p($x) {
     return $x[0] === $delay_evaluate_t;
 }
-function delay_evaluate_env(&$x) {
+function delay_evaluate_env($x) {
     return $x[1];
 }
-function delay_evaluate_x(&$x) {
+function delay_evaluate_x($x) {
     return $x[2];
 }
-function builtin_form_apply(&$x, $y, &$z) {
+function builtin_form_apply($x, $y, $z) {
     return array($delay_builtin_form_t, $x, $y, $z);
 }
 function delay_builtin_form_p($x) {
     return $x[0] === $delay_builtin_form_t;
 }
-function delay_builtin_form_env(&$x) {
+function delay_builtin_form_env($x) {
     return $x[1];
 }
-function delay_builtin_form_f(&$x) {
+function delay_builtin_form_f($x) {
     return $x[2];
 }
-function delay_builtin_form_xs(&$x) {
+function delay_builtin_form_xs($x) {
     return $x[3];
 }
-function builtin_func_apply($x, &$y) {
+function builtin_func_apply($x, $y) {
     return array($delay_builtin_func_t, $x, $y);
 }
 function delay_builtin_func_p($x) {
     return $x[0] === $delay_builtin_func_t;
 }
-function delay_builtin_func_f(&$x) {
+function delay_builtin_func_f($x) {
     return $x[1];
 }
-function delay_builtin_func_xs(&$x) {
+function delay_builtin_func_xs($x) {
     return $x[2];
 }
-function apply($f, &$xs) {
+function apply($f, $xs) {
     return array($delay_apply_t, $f, $xs);
 }
 function delay_apply_p($x) {
     return $x[0] === $delay_apply_t;
 }
-function delay_apply_f(&$x) {
+function delay_apply_f($x) {
     return $x[1];
 }
-function delay_apply_xs(&$x) {
+function delay_apply_xs($x) {
     return $x[2];
 }
 function force_all_rec($raw) {
@@ -212,13 +212,13 @@ $the_world_stopped_v = new_error($system_symbol, new_list($theWorldStopped_symbo
 function systemName_make($x) {
     return new_data($name_symbol, new_list($system_symbol, $x));
 }
-function make_builtin_f_new_sym_f(&$x_sym) {
+function make_builtin_f_new_sym_f($x_sym) {
     return systemName_make(new_list($typeAnnotation_symbol, new_list($function_symbol, $something_symbol, $x_sym), $theThing_symbol));
 }
-function make_builtin_f_get_sym_f(&$t_sym, $x_sym) {
+function make_builtin_f_get_sym_f($t_sym, $x_sym) {
     return systemName_make(new_list($typeAnnotation_symbol, new_list($function_symbol, new_list($t_sym), $something_symbol), $x_sym));
 }
-function make_builtin_f_p_sym_f(&$t_sym) {
+function make_builtin_f_p_sym_f($t_sym) {
     return systemName_make(new_list($typeAnnotation_symbol, $function_symbol, new_list($isOrNot_symbol, new_list($typeAnnotation_symbol, $t_sym, $something_symbol))));
 }
 $new_data_function_builtin_systemName = make_builtin_f_new_sym_f($data_symbol);
@@ -247,7 +247,7 @@ $form_builtin_use_systemName = systemName_make(new_list($form_symbol, new_list($
 $form_use_systemName = systemName_make(new_list($form_symbol, $form_symbol));
 $false_v = new_data($false_symbol, new_list());
 $true_v = new_data($true_symbol, new_list());
-function symbol_equal_p(&$x, &$y) {
+function symbol_equal_p($x, $y) {
     if ($x === $y) {
         return true;
     }
@@ -259,14 +259,14 @@ function symbol_equal_p(&$x, &$y) {
         return false;
     }
 }
-function jsArray_to_list(&$xs) {
+function jsArray_to_list($xs) {
     $ret = $null_v;
     for ($i = count($xs) - 1; $i >= 0; $i--) {
         $ret = new_construction($xs[$i], $ret);
     }
     return $ret;
 }
-function list_to_jsArray($xs, &$k_done, &$k_tail) {
+function list_to_jsArray($xs, $k_done, $k_tail) {
     $ret = array();
     while (construction_p($xs)) {
         array_push($ret, construction_head($xs));
@@ -284,7 +284,7 @@ function maybe_list_to_jsArray($xs) {
     return false;
     });
 }
-function new_list(&$xs) {
+function new_list($xs) {
     return jsArray_to_list($xs);
 }
 function un_just_all($raw) {
@@ -302,7 +302,7 @@ function un_just_all($raw) {
 function any_delay_just_p($x) {
     return just_p($x) ?: delay_evaluate_p($x) ?: delay_builtin_form_p($x) ?: delay_builtin_func_p($x) ?: delay_apply_p($x);
 }
-function force_all($raw, &$parents_history = array(), &$ref_novalue_replace = array(false, false), &$xs = array()) {
+function force_all($raw, $parents_history = array(), $ref_novalue_replace = array(false, false), $xs = array()) {
     $history = array();
     $x = $raw;
     function do_rewrite($newval) {
@@ -440,7 +440,7 @@ function force1($raw) {
     return $ret;
 }
 $env_null_v = array();
-function env_set(&$env, $key, $val) {
+function env_set($env, $key, $val) {
     $ret = array();
     for ($i = 0; $i < count($env); $i = $i + 2) {
         if (jsbool_equal_p($env[$i + 0], $key)) {
@@ -461,7 +461,7 @@ function env_set(&$env, $key, $val) {
     $ret[count($env) + 1] = $val;
     return $ret;
 }
-function env_get(&$env, $key, $default_v) {
+function env_get($env, $key, $default_v) {
     for ($i = 0; $i < count($env); $i = $i + 2) {
         if (jsbool_equal_p($env[$i + 0], $key)) {
             return $env[$i + 1];
@@ -469,7 +469,7 @@ function env_get(&$env, $key, $default_v) {
     }
     return $default_v;
 }
-function must_env_get(&$env, $key) {
+function must_env_get($env, $key) {
     for ($i = 0; $i < count($env); $i = $i + 2) {
         if (jsbool_equal_p($env[$i + 0], $key)) {
             return $env[$i + 1];
@@ -477,14 +477,14 @@ function must_env_get(&$env, $key) {
     }
     return LANG_ERROR();
 }
-function env2val(&$env) {
+function env2val($env) {
     $ret = $null_v;
     for ($i = 0; $i < count($env); $i = $i + 2) {
         $ret = new_construction(new_list($env[$i + 0], $env[$i + 1]), $ret);
     }
     return new_data($mapping_symbol, new_list($ret));
 }
-function env_foreach(&$env, &$f) {
+function env_foreach($env, $f) {
     for ($i = 0; $i < count($env); $i = $i + 2) {
         f($env[$i + 0], $env[$i + 1]);
     }
@@ -543,7 +543,7 @@ function val2env($x) {
     }
     return $ret;
 }
-function real_evaluate(&$env, $raw, $selfvalraw) {
+function real_evaluate($env, $raw, $selfvalraw) {
     $x = force1($raw);
     if (any_delay_just_p($x)) {
         return $selfvalraw;
@@ -648,10 +648,10 @@ function real_evaluate(&$env, $raw, $selfvalraw) {
 function name_p($x) {
     return symbol_p($x) ?: data_p($x);
 }
-function make_builtin_p_func(&$p_sym, &$p_jsfunc) {
+function make_builtin_p_func($p_sym, $p_jsfunc) {
     return array($p_sym,
         1,
-        function ($x, $error_v) use(&$force1, &$any_delay_just_p, &$builtin_func_apply, &$p_sym, &$p_jsfunc, &$true_v, &$false_v)  {
+        function ($x, $error_v) use($force1, $any_delay_just_p, $builtin_func_apply, $p_sym, $p_jsfunc, $true_v, $false_v)  {
             $x = force1($x);
             if (any_delay_just_p($x)) {
                 return builtin_func_apply($p_sym, array($x));
@@ -662,10 +662,10 @@ function make_builtin_p_func(&$p_sym, &$p_jsfunc) {
             return $false_v;
         });
 }
-function make_builtin_get_func(&$f_sym, &$p_jsfunc, &$f_jsfunc) {
+function make_builtin_get_func($f_sym, $p_jsfunc, $f_jsfunc) {
     return array($f_sym,
         1,
-        function ($x, $error_v) use(&$force1, &$any_delay_just_p, &$builtin_func_apply, &$f_sym, &$p_jsfunc, &$f_jsfunc)  {
+        function ($x, $error_v) use($force1, $any_delay_just_p, $builtin_func_apply, $f_sym, $p_jsfunc, $f_jsfunc)  {
             $x = force1($x);
             if (any_delay_just_p($x)) {
                 return builtin_func_apply($f_sym, array($x));
@@ -690,7 +690,7 @@ $real_builtin_func_apply_s = [
     make_builtin_p_func($construction_p_function_builtin_systemName, $construction_p),
     make_builtin_get_func($construction_head_function_builtin_systemName, $construction_p, $construction_head),
     make_builtin_get_func($construction_tail_function_builtin_systemName, $construction_p, $construction_tail),
-    array($equal_p_function_builtin_systemName, 2, function ($x, $y, $error_v) use(&$LangVal, &$LangVal, &$LangVal, &$true_v, &$force1, &$force1, &$any_delay_just_p, &$any_delay_just_p, &$builtin_func_apply, &$equal_p_function_builtin_systemName, &$true_v, &$LangVal, &$LangVal, &$LangVal, &$LangVal, &$builtin_func_apply, &$if_function_builtin_systemName, &$LangVal, &$LangVal, &$LangVal, &$false_v, &$LANG_ASSERT, &$any_delay_just_p, &$LangVal, &$LangVal, &$LangVal, &$LangVal, &$builtin_func_apply, &$equal_p_function_builtin_systemName, &$builtin_func_apply, &$equal_p_function_builtin_systemName, &$null_p, &$null_p, &$false_v, &$true_v, &$symbol_p, &$symbol_p, &$false_v, &$symbol_equal_p, &$true_v, &$false_v, &$data_p, &$data_p, &$false_v, &$data_name, &$data_list, &$construction_p, &$construction_p, &$false_v, &$construction_head, &$construction_tail, &$error_p, &$error_p, &$false_v, &$error_name, &$error_list, &$LANG_ERROR)  {
+    array($equal_p_function_builtin_systemName, 2, function ($x, $y, $error_v) use($LangVal, $LangVal, $LangVal, $true_v, $force1, $force1, $any_delay_just_p, $any_delay_just_p, $builtin_func_apply, $equal_p_function_builtin_systemName, $true_v, $LangVal, $LangVal, $LangVal, $LangVal, $builtin_func_apply, $if_function_builtin_systemName, $LangVal, $LangVal, $LangVal, $false_v, $LANG_ASSERT, $any_delay_just_p, $LangVal, $LangVal, $LangVal, $LangVal, $builtin_func_apply, $equal_p_function_builtin_systemName, $builtin_func_apply, $equal_p_function_builtin_systemName, $null_p, $null_p, $false_v, $true_v, $symbol_p, $symbol_p, $false_v, $symbol_equal_p, $true_v, $false_v, $data_p, $data_p, $false_v, $data_name, $data_list, $construction_p, $construction_p, $false_v, $construction_head, $construction_tail, $error_p, $error_p, $false_v, $error_name, $error_list, $LANG_ERROR)  {
             if ($x === $y) {
                 return $true_v;
             }
@@ -709,7 +709,7 @@ $real_builtin_func_apply_s = [
                 return H_if($x, $y, $false_v);
             }
             LANG_ASSERT(!any_delay_just_p($x));
-            function end_2($x, $y, &$f1, &$f2) {
+            function end_2($x, $y, $f1, $f2) {
                 return H_and(builtin_func_apply($equal_p_function_builtin_systemName, array(f1($x), f1($y))), builtin_func_apply($equal_p_function_builtin_systemName, array(f2($x), f2($y))));
             }
             if (null_p($x)) {
@@ -744,7 +744,7 @@ $real_builtin_func_apply_s = [
             }
             return LANG_ERROR();
         }),
-    array($apply_function_builtin_systemName, 2, function ($f, $xs, $error_v) use(&$LangVal, &$LangVal, &$LangVal, &$Array, &$LangVal, &$LangVal, &$force_all, &$construction_p, &$construction_head, &$force_all, &$construction_tail, &$null_p, &$apply)  {
+    array($apply_function_builtin_systemName, 2, function ($f, $xs, $error_v) use($LangVal, $LangVal, $LangVal, $Array, $LangVal, $LangVal, $force_all, $construction_p, $construction_head, $force_all, $construction_tail, $null_p, $apply)  {
             $jslist = array();
             $iter = force_all($xs);
             while (construction_p($iter)) {
@@ -756,7 +756,7 @@ $real_builtin_func_apply_s = [
             }
             return apply($f, $jslist);
         }),
-    array($evaluate_function_builtin_systemName, 2, function ($env, $x, $error_v) use(&$LangVal, &$LangVal, &$LangVal, &$val2env, &$evaluate)  {
+    array($evaluate_function_builtin_systemName, 2, function ($env, $x, $error_v) use($LangVal, $LangVal, $LangVal, $val2env, $evaluate)  {
             $maybeenv = val2env($env);
             if ($maybeenv === false) {
                 return $error_v;
@@ -764,7 +764,7 @@ $real_builtin_func_apply_s = [
             return evaluate($maybeenv, $x);
         }),
     make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
-    array($list_chooseOne_function_builtin_systemName, 1, function ($xs, $error_v) use(&$LangVal, &$LangVal, &$force1, &$any_delay_just_p, &$builtin_func_apply, &$list_chooseOne_function_builtin_systemName, &$construction_p, &$construction_head)  {
+    array($list_chooseOne_function_builtin_systemName, 1, function ($xs, $error_v) use($LangVal, $LangVal, $force1, $any_delay_just_p, $builtin_func_apply, $list_chooseOne_function_builtin_systemName, $construction_p, $construction_head)  {
             $xs = force1($xs);
             if (any_delay_just_p($xs)) {
                 return builtin_func_apply($list_chooseOne_function_builtin_systemName, array($xs));
@@ -774,7 +774,7 @@ $real_builtin_func_apply_s = [
             }
             return construction_head($xs);
         }),
-    array($if_function_builtin_systemName, 3, function ($b, $x, $y, $error_v) use(&$force1, &$any_delay_just_p, &$builtin_func_apply, &$if_function_builtin_systemName, &$data_p, &$force_all, &$data_name, &$symbol_p, &$symbol_equal_p, &$true_symbol, &$symbol_equal_p, &$false_symbol)  {
+    array($if_function_builtin_systemName, 3, function ($b, $x, $y, $error_v) use($force1, $any_delay_just_p, $builtin_func_apply, $if_function_builtin_systemName, $data_p, $force_all, $data_name, $symbol_p, $symbol_equal_p, $true_symbol, $symbol_equal_p, $false_symbol)  {
             $b = force1($b);
             if (any_delay_just_p($b)) {
                 return builtin_func_apply($if_function_builtin_systemName, array($b, $x, $y));
@@ -795,7 +795,7 @@ $real_builtin_func_apply_s = [
             return $error_v;
         }),
 ];
-function real_apply($f, &$xs, $selfvalraw) {
+function real_apply($f, $xs, $selfvalraw) {
     function make_error_v() {
         return new_error($system_symbol, new_list($function_builtin_use_systemName, new_list($apply_function_builtin_systemName, new_list($f, jsArray_to_list($xs)))));
     }
@@ -852,7 +852,7 @@ function real_apply($f, &$xs, $selfvalraw) {
     }
     return evaluate($env, $f_code);
 }
-function real_builtin_func_apply($f, &$xs, $selfvalraw) {
+function real_builtin_func_apply($f, $xs, $selfvalraw) {
     $error_v = new_error($system_symbol, new_list($function_builtin_use_systemName, new_list($f, jsArray_to_list($xs))));
     for ($i = 0; $i < count($real_builtin_func_apply_s); $i++) {
         if (jsbool_equal_p($f, $real_builtin_func_apply_s[$i][0])) {
@@ -875,7 +875,7 @@ function real_builtin_func_apply($f, &$xs, $selfvalraw) {
     }
     return $error_v;
 }
-function real_builtin_form_apply(&$env, $f, &$xs, $selfvalraw) {
+function real_builtin_form_apply($env, $f, $xs, $selfvalraw) {
     $error_v = new_error($system_symbol, new_list($form_builtin_use_systemName, new_list(env2val($env), $f, jsArray_to_list($xs))));
     if (jsbool_equal_p($f, $quote_form_builtin_systemName)) {
         if (count($xs) !== 1) {
@@ -891,7 +891,7 @@ function real_builtin_form_apply(&$env, $f, &$xs, $selfvalraw) {
     }
     return $error_v;
 }
-function new_lambda(&$env, $args_pat, $body, $error_v = false) {
+function new_lambda($env, $args_pat, $body, $error_v = false) {
     function make_error_v() {
         if ($error_v === false) {
             return new_error($system_symbol, new_list($form_builtin_use_systemName, new_list(env2val($env), $lambda_form_builtin_systemName, jsArray_to_list(array($args_pat, $body)))));
@@ -926,7 +926,7 @@ function new_lambda(&$env, $args_pat, $body, $error_v = false) {
         $args_pat_vars_val = jsArray_to_list($args_pat_vars);
     }
     $env_vars = array();
-    env_foreach($env, function ($k, $v) use(&$args_pat_vars, &$jsbool_equal_p, &$args_pat_vars, &$env_vars)  {
+    env_foreach($env, function ($k, $v) use($args_pat_vars, $jsbool_equal_p, $args_pat_vars, $env_vars)  {
         for ($i = 0; $i < count($args_pat_vars); $i++) {
             if (jsbool_equal_p($args_pat_vars[$i], $k)) {
                 return;
@@ -953,7 +953,7 @@ function jsbool_equal_p($x, $y) {
     if ($x === $y) {
         return true;
     }
-    function end_2($x, $y, &$f1, &$f2) {
+    function end_2($x, $y, $f1, $f2) {
         if (jsbool_equal_p(f1($x), f1($y)) && jsbool_equal_p(f2($x), f2($y))) {
             lang_set_do($x, $y);
             return true;
@@ -1005,7 +1005,7 @@ function jsbool_no_force_equal_p($x, $y) {
     if ($x === $y) {
         return true;
     }
-    function end_2($x, $y, &$f1, &$f2) {
+    function end_2($x, $y, $f1, $f2) {
         if (jsbool_no_force_equal_p(f1($x), f1($y)) && jsbool_no_force_equal_p(f2($x), f2($y))) {
             lang_set_do($x, $y);
             return true;
@@ -1276,8 +1276,8 @@ function complex_parse($x) {
         }
         return new_error(construction_head($xs), construction_tail($xs));
     }
-    function make_read_two($prefix, &$k) {
-        return function () use(&$eof, &$get, &$prefix, &$put, &$readlist, &$parse_error, &$construction_p, &$parse_error, &$construction_tail, &$construction_p, &$null_p, &$construction_tail, &$parse_error, &$k, &$construction_head, &$construction_head)  {
+    function make_read_two($prefix, $k) {
+        return function () use($eof, $get, $prefix, $put, $readlist, $parse_error, $construction_p, $parse_error, $construction_tail, $construction_p, $null_p, $construction_tail, $parse_error, $k, $construction_head, $construction_head)  {
             if (eof()) {
                 return false;
             }
@@ -1300,8 +1300,8 @@ function complex_parse($x) {
             return k(construction_head($xs), construction_head($x));
         };
     }
-    function make_read_three($prefix, &$k) {
-        return function () use(&$eof, &$get, &$prefix, &$put, &$readlist, &$parse_error, &$construction_p, &$parse_error, &$construction_tail, &$construction_p, &$parse_error, &$construction_tail, &$construction_p, &$null_p, &$construction_tail, &$parse_error, &$k, &$construction_head, &$construction_head, &$construction_head)  {
+    function make_read_three($prefix, $k) {
+        return function () use($eof, $get, $prefix, $put, $readlist, $parse_error, $construction_p, $parse_error, $construction_tail, $construction_p, $parse_error, $construction_tail, $construction_p, $null_p, $construction_tail, $parse_error, $k, $construction_head, $construction_head, $construction_head)  {
             if (eof()) {
                 return false;
             }
@@ -1328,25 +1328,25 @@ function complex_parse($x) {
             return k(construction_head($xs), construction_head($x), construction_head($x_d));
         };
     }
-    $readeval = make_read_two("$", function ($e, $x) use(&$val2env, &$parse_error, &$evaluate)  {
+    $readeval = make_read_two("$", function ($e, $x) use($val2env, $parse_error, $evaluate)  {
         $env = val2env($e);
         if ($env === false) {
             return parse_error();
         }
         return evaluate($env, $x);
     });
-    $readfuncapply = make_read_two("%", function ($f, $xs) use(&$list_to_jsArray, &$parse_error, &$builtin_func_apply)  {
+    $readfuncapply = make_read_two("%", function ($f, $xs) use($list_to_jsArray, $parse_error, $builtin_func_apply)  {
         $jsxs = list_to_jsArray($xs, function ($xs){
         return $xs;
-        }, function ($xs, $y) use(&$parse_error) {
+        }, function ($xs, $y) use($parse_error) {
         return parse_error();
         });
         return builtin_func_apply($f, $jsxs);
     });
-    $readformbuiltin = make_read_three("@", function ($e, $f, $xs) use(&$list_to_jsArray, &$parse_error, &$val2env, &$parse_error, &$builtin_form_apply)  {
+    $readformbuiltin = make_read_three("@", function ($e, $f, $xs) use($list_to_jsArray, $parse_error, $val2env, $parse_error, $builtin_form_apply)  {
         $jsxs = list_to_jsArray($xs, function ($xs){
         return $xs;
-        }, function ($xs, $y) use(&$parse_error) {
+        }, function ($xs, $y) use($parse_error) {
         return parse_error();
         });
         $env = val2env($e);
@@ -1355,10 +1355,10 @@ function complex_parse($x) {
         }
         return builtin_form_apply($env, $f, $jsxs);
     });
-    $readapply = make_read_two("^", function ($f, $xs) use(&$list_to_jsArray, &$parse_error, &$apply)  {
+    $readapply = make_read_two("^", function ($f, $xs) use($list_to_jsArray, $parse_error, $apply)  {
         $jsxs = list_to_jsArray($xs, function ($xs){
         return $xs;
-        }, function ($xs, $y) use(&$parse_error) {
+        }, function ($xs, $y) use($parse_error) {
         return parse_error();
         });
         return apply($f, $jsxs);
