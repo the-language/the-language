@@ -16,11 +16,13 @@ public class Lang$luaj$env_null_v extends org.luaj.vm2.lib.OneArgFunction {
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
+    final static org.luaj.vm2.LuaValue k3;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(0);
         k1 = org.luaj.vm2.LuaValue.valueOf(1);
         k2 = org.luaj.vm2.LuaValue.valueOf(2);
+        k3 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
     }
     
     public Lang$luaj$env_null_v() {
@@ -88,8 +90,8 @@ public class Lang$luaj$env_null_v extends org.luaj.vm2.lib.OneArgFunction {
                 if (!((org.luaj.vm2.LuaValue)a18).toboolean()) {
                     break;
                 }
-                this.u12.call((org.luaj.vm2.LuaValue)a8, a13);
-                this.u12.call((org.luaj.vm2.LuaValue)a8, a16);
+                this.u12.get(k3).call((org.luaj.vm2.LuaValue)a8, a13);
+                this.u12.get(k3).call((org.luaj.vm2.LuaValue)a8, a16);
                 break;
             }
         }

@@ -142,29 +142,7 @@ in-dir "typescript" {
              (define out (++
                  haskell-generatedby
                  haskell-copyright
-                 (match (string->lines raw)
-                    [(list "--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]"
-                    "-- Lua Library inline imports"
-                    "function __TS__ArrayPush(arr, ...)"
-                    "    local items = ({...})"
-                    "    for ____TS_index = 1, #items do"
-                    "        local item = items[____TS_index]"
-                    "        arr[#arr + 1] = item"
-                    "    end"
-                    "    return #arr"
-                    "end"
-                    ""
-                    "local ____exports = {}"
-                    xs ...
-                    ) (++
-                          "local __TS__ArrayPush = function(arr, item)\n"
-                          "    arr[#arr+1] = item\n"
-                          "    return #arr\n"
-                          "end\n"
-                          "local ____exports = {}\n"
-                          (lines->string xs)
-                      )])
-                 ))
+                 raw))
              |> id out &>! lang.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {

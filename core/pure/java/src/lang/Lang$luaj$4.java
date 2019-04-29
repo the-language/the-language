@@ -1,17 +1,19 @@
 package lang;
-public class Lang$luaj$4 extends org.luaj.vm2.lib.OneArgFunction {
-    org.luaj.vm2.LuaValue[] u0;
+public class Lang$luaj$4 extends org.luaj.vm2.lib.ZeroArgFunction {
+    org.luaj.vm2.LuaValue u0;
     final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(2);
+        k0 = org.luaj.vm2.LuaString.valueOf("error");
+        k1 = org.luaj.vm2.LuaString.valueOf("TheLanguage PANIC");
     }
     
     public Lang$luaj$4() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        org.luaj.vm2.LuaValue a0 = a.get(k0);
-        return this.u0[0].get(a0);
+    final public org.luaj.vm2.LuaValue call() {
+        this.u0.get(k0).call(k1);
+        return org.luaj.vm2.LuaValue.NONE;
     }
 }

@@ -94,13 +94,19 @@ export type LangValRec = any // WIP
 
 function new_symbol(x: string): LangValSymbol {
     LANG_ASSERT(x in symbols_set)
-    return [symbol_t, symbols_set[x]]
+    return new_symbol_unicodechar(symbols_set[x])
+}
+function new_symbol_unicodechar(x:string):LangValSymbol{
+    return [symbol_t,x]
 }
 function symbol_p(x: LangVal): x is LangValSymbol {
     return x[0] === symbol_t
 }
+function un_symbol_unicodechar(x:LangValSymbol):string{
+    return x[1]
+}
 function un_symbol(x: LangValSymbol): string {
-    return symbols_set_neg[x[1]]
+    return symbols_set_neg[un_symbol_unicodechar(x)]
 }
 export { new_symbol, symbol_p, un_symbol }
 
@@ -1782,6 +1788,75 @@ function complex_print(val: LangVal): string {
 }
 export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}
+
+
+// {{{ 相對獨立的部分。machineasctext parse/print
+function machineasctext_parse(x:string):LangVal{
+    const result=new_hole_do()
+    let stack:Array<LangValHole>=[result]
+    let strstack:Array<string>=x.split('').reverse()
+    while(strstack.length!==0){
+	if(stack.length===0){return LANG_ERROR()}
+	const new_stack:Array<LangValHole>=[]
+	while(stack.length!==0){
+	    const chr:string=strstack.pop() as string // type WIP
+	    if(chr=='$'){
+		let tmp:string=''
+		while(true){
+		    if(strstack.length===0){return LANG_ERROR()}
+		    const chr:string=strstack.pop() as string // type WIP
+		    if(chr==='$'){break}
+		    tmp+=chr
+		}
+		const hol=stack.shift() as LangValHole // type WIP
+		hole_set_do(hol,new_symbol_unicodechar(decodeURI(tmp)))
+	    }else{
+		throw 'WIP'
+	    }
+	}
+	stack=new_stack
+    }
+    if(stack.length!==0){return LANG_ERROR()}
+    return result
+}
+// 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
+function machineasctext_print(x:LangVal):string{
+    let stack:Array<LangVal>=[x]
+    let result:string=""
+    while(stack.length!==0){
+        const new_stack:Array<LangVal>=[]
+	for(let x of stack){
+	    x=un_just_all(x)
+	    if(symbol_p(x)){
+		const ascstr:string=encodeURI(un_symbol_unicodechar(x))
+		result+='$'
+		result+=ascstr
+		result+='$'
+	    }else if(construction_p(x)){
+		result+='.'
+		new_stack.push(construction_head(x))
+		new_stack.push(construction_tail(x))
+	    }else if(null_p(x)){
+		result+='_'
+	    }else if(data_p(x)){
+		result+='#'
+		new_stack.push(data_name(x))
+		new_stack.push(data_list(x))
+	    }else if(error_p(x)){
+		result+='!'
+		new_stack.push(error_name(x))
+		new_stack.push(error_list(x))
+	    }else{
+		throw 'WIP'
+	    }
+	}
+	stack=new_stack
+    }
+    return result
+}
+export {machineasctext_parse,machineasctext_print}
+// 相對獨立的部分。machineasctext parse/print }}}
+
 
 /*
 // {{{ 相對獨立的部分。IO

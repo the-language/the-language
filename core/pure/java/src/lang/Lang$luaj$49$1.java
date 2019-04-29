@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$44$1 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$49$1 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -7,8 +7,13 @@ public class Lang$luaj$44$1 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u4;
     org.luaj.vm2.LuaValue[] u5;
     org.luaj.vm2.LuaValue[] u6;
+    final static org.luaj.vm2.LuaValue k0;
     
-    public Lang$luaj$44$1() {
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
+    }
+    
+    public Lang$luaj$49$1() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
@@ -19,7 +24,7 @@ public class Lang$luaj$44$1 extends org.luaj.vm2.lib.VarArgFunction {
             org.luaj.vm2.Varargs a1 = a0;
             return a1;
         }
-        this.u2.call(this.u3[0], this.u4[0]);
+        this.u2.get(k0).call(this.u3[0], this.u4[0]);
         org.luaj.vm2.LuaValue a2 = this.u5[0];
         org.luaj.vm2.LuaValue a3 = this.u6[0];
         org.luaj.vm2.LuaTable a4 = org.luaj.vm2.LuaValue.tableOf(2, 0);

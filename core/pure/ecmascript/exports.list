@@ -35,3 +35,5 @@ simple_print
 simple_print_force_all_rec
 complex_parse
 complex_print
+machineasctext_parse
+machineasctext_print
