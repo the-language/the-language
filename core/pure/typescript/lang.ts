@@ -39,6 +39,8 @@ export const enum LangValType {
     delay_builtin_func_t,
     delay_builtin_form_t,
     delay_apply_t,
+    
+    hole_t,
 }
 const symbol_t = LangValType.symbol_t
 const construction_t = LangValType.construction_t
@@ -68,7 +70,10 @@ export type LangValSysName = LangValData // WIP
 export type LangValName = LangValData | LangValSymbol
 export type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
 export type LangValFunctionJustDelay = LangValRec // WIP
-export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+
+const hole_t = LangValType.hole_t
+type LangValHole = [LangValType.hole_t]
+export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValHole
 export type LangValRec = any // WIP
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
@@ -100,7 +105,7 @@ function un_symbol(x: LangValSymbol): string {
 export { new_symbol, symbol_p, un_symbol }
 
 function new_construction(x: LangVal, y: LangVal): LangValCons {
-    return [construction_t, x, y] // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
+    return [construction_t, x, y]
 }
 function construction_p(x: LangVal): x is LangValCons {
     return x[0] === construction_t
@@ -241,6 +246,22 @@ function force_all_rec(raw: LangVal): LangVal {
     return x
 }
 export { force_all_rec }
+
+function new_hole_do(): LangValHole {
+    return [hole_t]
+}
+function hole_p(x: LangVal): x is LangValHole {
+    return x[0] === hole_t
+}
+function hole_set_do(rawx: LangValHole, rawy:LangVal): void {
+    LANG_ASSERT(hole_p(rawx)) // 可能曾经是hole，现在不是。
+    const x = rawx as Array<any>
+    const y = rawy as Array<any>
+    x[0] = y[0]
+    x[1] = y[1]
+    x[2] = y[2]
+    x[3] = y[3]
+}
 // 相對獨立的部分。內建數據結構 }}}
 
 // {{{ 相對獨立的部分。符號名稱
@@ -1308,35 +1329,12 @@ function complex_parse(x: string): LangVal {
             put(x)
             return false
         }
-        const HOLE: LangVal = (null as unknown) as LangVal // 只能比較指針
-        let ret: LangVal = HOLE
-        function set_last(lst: LangVal): void {
-            if (ret === HOLE) {
-                ret = lst
-                return
-            }
-            let x = ret
-            while (true) {
-                if (!construction_p(x)) {
-                    return LANG_ERROR()
-                }
-                const d = construction_tail(x)
-                if (d === HOLE) {
-                    break
-                }
-                x = construction_tail(x)
-            }
-            if (!construction_p(x)) {
-                return LANG_ERROR()
-            }
-            if (construction_tail(x) !== HOLE) {
-                return LANG_ERROR()
-            }
-            // x[2]是construction_tail
-            x[2] = lst // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
-        }
-        function last_add(x: LangVal) {
-            set_last(new_construction(x, HOLE))
+	let ret_last: LangValHole = new_hole_do()
+	const ret: LangVal = ret_last
+        function last_add_do(x: LangVal) {
+            const ret_last2: LangValHole = new_hole_do()
+	    hole_set_do(ret_last, new_construction(x, ret_last2))
+	    ret_last = ret_last2
         }
         while (true) {
             space()
@@ -1345,13 +1343,13 @@ function complex_parse(x: string): LangVal {
             }
             x = get()
             if (x === ")") {
-                set_last(null_v)
+                hole_set_do(ret_last, null_v)
                 return ret
             }
             if (x === ".") {
                 space()
                 const e: LangVal = val()
-                set_last(e)
+                hole_set_do(ret_last, e)
                 space()
                 if (eof()) {
                     return parse_error()
@@ -1364,7 +1362,7 @@ function complex_parse(x: string): LangVal {
             }
             put(x)
             const e: LangVal = val()
-            last_add(e)
+            last_add_do(e)
         }
     }
     function data() {

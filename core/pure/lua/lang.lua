@@ -836,6 +836,7 @@ delay_evaluate_t = 6
 delay_builtin_func_t = 7
 delay_builtin_form_t = 8
 delay_apply_t = 9
+local hole_t = 10
 local function new_symbol(x)
     LANG_ASSERT(symbols_set[x] ~= nil)
     return {
@@ -864,6 +865,21 @@ ____exports.error_list = error_list
 ____exports.evaluate = evaluate
 ____exports.apply = apply
 ____exports.force_all_rec = force_all_rec
+local function new_hole_do()
+    return {hole_t}
+end
+local function hole_p(x)
+    return x[0 + 1] == hole_t
+end
+local function hole_set_do(rawx, rawy)
+    LANG_ASSERT(hole_p(rawx))
+    local x = rawx
+    local y = rawy
+    x[0 + 1] = y[0 + 1]
+    x[1 + 1] = y[1 + 1]
+    x[2 + 1] = y[2 + 1]
+    x[3 + 1] = y[3 + 1]
+end
 symbols_set = {
     ["0"] = "0",
     ["1"] = "1",
@@ -1546,34 +1562,12 @@ local function complex_parse(x)
             put(x)
             return false
         end
-        local HOLE = nil
-        local ret = HOLE
-        local function set_last(lst)
-            if ret == HOLE then
-                ret = lst
-                return
-            end
-            local x = ret
-            while true do
-                if not construction_p(x) then
-                    return LANG_ERROR()
-                end
-                local d = construction_tail(x)
-                if d == HOLE then
-                    break
-                end
-                x = construction_tail(x)
-            end
-            if not construction_p(x) then
-                return LANG_ERROR()
-            end
-            if construction_tail(x) ~= HOLE then
-                return LANG_ERROR()
-            end
-            x[2 + 1] = lst
-        end
-        local function last_add(x)
-            set_last(new_construction(x, HOLE))
+        local ret_last = new_hole_do()
+        local ret = ret_last
+        local function last_add_do(x)
+            local ret_last2 = new_hole_do()
+            hole_set_do(ret_last, new_construction(x, ret_last2))
+            ret_last = ret_last2
         end
         while true do
             space()
@@ -1582,13 +1576,13 @@ local function complex_parse(x)
             end
             x = get()
             if x == ")" then
-                set_last(null_v)
+                hole_set_do(ret_last, null_v)
                 return ret
             end
             if x == "." then
                 space()
                 local e = val()
-                set_last(e)
+                hole_set_do(ret_last, e)
                 space()
                 if eof() then
                     return parse_error()
@@ -1601,7 +1595,7 @@ local function complex_parse(x)
             end
             put(x)
             local e = val()
-            last_add(e)
+            last_add_do(e)
         end
     end
     function data()

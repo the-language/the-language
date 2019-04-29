@@ -35,6 +35,7 @@ const delay_evaluate_t = 6 /* delay_evaluate_t */;
 const delay_builtin_func_t = 7 /* delay_builtin_func_t */;
 const delay_builtin_form_t = 8 /* delay_builtin_form_t */;
 const delay_apply_t = 9 /* delay_apply_t */;
+const hole_t = 10 /* hole_t */;
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
     interface t extends trec < null > {}
@@ -59,7 +60,7 @@ function un_symbol(x) {
 }
 export { new_symbol, symbol_p, un_symbol };
 function new_construction(x, y) {
-    return [construction_t, x, y]; // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
+    return [construction_t, x, y];
 }
 function construction_p(x) {
     return x[0] === construction_t;
@@ -197,6 +198,21 @@ function force_all_rec(raw) {
     return x;
 }
 export { force_all_rec };
+function new_hole_do() {
+    return [hole_t];
+}
+function hole_p(x) {
+    return x[0] === hole_t;
+}
+function hole_set_do(rawx, rawy) {
+    LANG_ASSERT(hole_p(rawx)); // 可能曾经是hole，现在不是。
+    const x = rawx;
+    const y = rawy;
+    x[0] = y[0];
+    x[1] = y[1];
+    x[2] = y[2];
+    x[3] = y[3];
+}
 // 相對獨立的部分。內建數據結構 }}}
 // {{{ 相對獨立的部分。符號名稱
 /* !!!Racket Code Generator!!!
@@ -1247,35 +1263,12 @@ function complex_parse(x) {
             put(x);
             return false;
         }
-        const HOLE = null; // 只能比較指針
-        let ret = HOLE;
-        function set_last(lst) {
-            if (ret === HOLE) {
-                ret = lst;
-                return;
-            }
-            let x = ret;
-            while (true) {
-                if (!construction_p(x)) {
-                    return LANG_ERROR();
-                }
-                const d = construction_tail(x);
-                if (d === HOLE) {
-                    break;
-                }
-                x = construction_tail(x);
-            }
-            if (!construction_p(x)) {
-                return LANG_ERROR();
-            }
-            if (construction_tail(x) !== HOLE) {
-                return LANG_ERROR();
-            }
-            // x[2]是construction_tail
-            x[2] = lst; // 實現底層依賴[編號 0] complex_parse <-> 內建數據結構
-        }
-        function last_add(x) {
-            set_last(new_construction(x, HOLE));
+        let ret_last = new_hole_do();
+        const ret = ret_last;
+        function last_add_do(x) {
+            const ret_last2 = new_hole_do();
+            hole_set_do(ret_last, new_construction(x, ret_last2));
+            ret_last = ret_last2;
         }
         while (true) {
             space();
@@ -1284,13 +1277,13 @@ function complex_parse(x) {
             }
             x = get();
             if (x === ")") {
-                set_last(null_v);
+                hole_set_do(ret_last, null_v);
                 return ret;
             }
             if (x === ".") {
                 space();
                 const e = val();
-                set_last(e);
+                hole_set_do(ret_last, e);
                 space();
                 if (eof()) {
                     return parse_error();
@@ -1303,7 +1296,7 @@ function complex_parse(x) {
             }
             put(x);
             const e = val();
-            last_add(e);
+            last_add_do(e);
         }
     }
     function data() {
