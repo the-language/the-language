@@ -1329,12 +1329,12 @@ function complex_parse(x: string): LangVal {
             put(x)
             return false
         }
-	let ret_last: LangValHole = new_hole_do()
-	const ret: LangVal = ret_last
+        let ret_last: LangValHole = new_hole_do()
+        const ret: LangVal = ret_last
         function last_add_do(x: LangVal) {
             const ret_last2: LangValHole = new_hole_do()
-	    hole_set_do(ret_last, new_construction(x, ret_last2))
-	    ret_last = ret_last2
+            hole_set_do(ret_last, new_construction(x, ret_last2))
+            ret_last = ret_last2
         }
         while (true) {
             space()
