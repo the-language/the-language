@@ -23382,7 +23382,7 @@ static inline void DumpString(const TString* s, DumpState* D)
 
 #define DumpCode(f,D)	 DumpVector(f->code,f->sizecode,sizeof(Instruction),D)
 
-static void DumpFunction(const Proto* f, const TString* p, DumpState* D);
+static inline void DumpFunction(const Proto* f, const TString* p, DumpState* D);
 
 static inline void DumpConstants(const Proto* f, DumpState* D)
 {
@@ -26028,7 +26028,7 @@ static inline void LoadCode(LoadState* S, Proto* f)
  LoadVector(S,f->code,n,sizeof(Instruction));
 }
 
-static Proto* LoadFunction(LoadState* S, TString* p);
+static inline Proto* LoadFunction(LoadState* S, TString* p);
 
 static inline void LoadConstants(LoadState* S, Proto* f)
 {
