@@ -15845,6 +15845,68 @@ static inline int lcf_main(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 4);
 
   /* symbols_set = {
+   *     ["0"] = "0",
+   *     ["1"] = "1",
+   *     ["2"] = "2",
+   *     ["3"] = "3",
+   *     ["4"] = "4",
+   *     ["5"] = "5",
+   *     ["6"] = "6",
+   *     ["7"] = "7",
+   *     ["8"] = "8",
+   *     ["9"] = "9",
+   *     A = "A",
+   *     B = "B",
+   *     C = "C",
+   *     D = "D",
+   *     E = "E",
+   *     F = "F",
+   *     G = "G",
+   *     H = "H",
+   *     I = "I",
+   *     J = "J",
+   *     K = "K",
+   *     L = "L",
+   *     M = "M",
+   *     N = "N",
+   *     O = "O",
+   *     P = "P",
+   *     Q = "Q",
+   *     R = "R",
+   *     S = "S",
+   *     T = "T",
+   *     U = "U",
+   *     V = "V",
+   *     W = "W",
+   *     X = "X",
+   *     Y = "Y",
+   *     Z = "Z",
+   *     a = "a",
+   *     b = "b",
+   *     c = "c",
+   *     d = "d",
+   *     e = "e",
+   *     f = "f",
+   *     g = "g",
+   *     h = "h",
+   *     i = "i",
+   *     j = "j",
+   *     k = "k",
+   *     l = "l",
+   *     m = "m",
+   *     n = "n",
+   *     o = "o",
+   *     p = "p",
+   *     q = "q",
+   *     r = "r",
+   *     s = "s",
+   *     t = "t",
+   *     u = "u",
+   *     v = "v",
+   *     w = "w",
+   *     x = "x",
+   *     y = "y",
+   *     z = "z",
    *     ["一類何物"] = "：",
    *     ["之物"] = "物",
    *     ["其子"] = "分",
@@ -15881,70 +15943,194 @@ static inline int lcf_main(lua_State *L) {
    *     ["陰"] = "陰",
    *     ["陽"] = "陽",
    *     ["首始"] = "首",
-   *     ["0"] = "0",
-   *     ["1"] = "1",
-   *     ["2"] = "2",
-   *     ["3"] = "3",
-   *     ["4"] = "4",
-   *     ["5"] = "5",
-   *     ["6"] = "6",
-   *     ["7"] = "7",
-   *     ["8"] = "8",
-   *     ["9"] = "9",
-   *     A = "A",
-   *     B = "B",
-   *     C = "C",
-   *     D = "D",
-   *     E = "E",
-   *     F = "F",
-   *     G = "G",
-   *     H = "H",
-   *     I = "I",
-   *     J = "J",
-   *     K = "K",
-   *     L = "L",
-   *     M = "M",
-   *     N = "N",
-   *     O = "O",
-   *     P = "P",
-   *     Q = "Q",
-   *     R = "R",
-   *     S = "S",
-   *     T = "T",
-   *     U = "U",
-   *     V = "V",
-   *     W = "W",
-   *     X = "X",
-   *     Y = "Y",
-   *     Z = "Z",
-   *     a = "a",
-   *     b = "b",
-   *     c = "c",
-   *     d = "d",
-   *     e = "e",
-   *     f = "f",
-   *     g = "g",
-   *     h = "h",
-   *     i = "i",
-   *     j = "j",
-   *     k = "k",
-   *     l = "l",
-   *     m = "m",
-   *     n = "n",
-   *     o = "o",
-   *     p = "p",
-   *     q = "q",
-   *     r = "r",
-   *     s = "s",
-   *     t = "t",
-   *     u = "u",
-   *     v = "v",
-   *     w = "w",
-   *     x = "x",
-   *     y = "y",
-   *     z = "z",
    * } */
   lua_createtable(L, 0, 98);
+  lua_pushliteral(L, "0");
+  lua_pushliteral(L, "0");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "1");
+  lua_pushliteral(L, "1");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "2");
+  lua_pushliteral(L, "2");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "3");
+  lua_pushliteral(L, "3");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "4");
+  lua_pushliteral(L, "4");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "5");
+  lua_pushliteral(L, "5");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "6");
+  lua_pushliteral(L, "6");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "7");
+  lua_pushliteral(L, "7");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "8");
+  lua_pushliteral(L, "8");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "9");
+  lua_pushliteral(L, "9");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "A");
+  lua_pushliteral(L, "A");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "B");
+  lua_pushliteral(L, "B");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "C");
+  lua_pushliteral(L, "C");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "D");
+  lua_pushliteral(L, "D");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "E");
+  lua_pushliteral(L, "E");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "F");
+  lua_pushliteral(L, "F");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "G");
+  lua_pushliteral(L, "G");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "H");
+  lua_pushliteral(L, "H");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "I");
+  lua_pushliteral(L, "I");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "J");
+  lua_pushliteral(L, "J");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "K");
+  lua_pushliteral(L, "K");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "L");
+  lua_pushliteral(L, "L");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "M");
+  lua_pushliteral(L, "M");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "N");
+  lua_pushliteral(L, "N");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "O");
+  lua_pushliteral(L, "O");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "P");
+  lua_pushliteral(L, "P");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Q");
+  lua_pushliteral(L, "Q");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "R");
+  lua_pushliteral(L, "R");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "S");
+  lua_pushliteral(L, "S");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "T");
+  lua_pushliteral(L, "T");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "U");
+  lua_pushliteral(L, "U");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "V");
+  lua_pushliteral(L, "V");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "W");
+  lua_pushliteral(L, "W");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "X");
+  lua_pushliteral(L, "X");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Y");
+  lua_pushliteral(L, "Y");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Z");
+  lua_pushliteral(L, "Z");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "a");
+  lua_pushliteral(L, "a");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "b");
+  lua_pushliteral(L, "b");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "c");
+  lua_pushliteral(L, "c");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "d");
+  lua_pushliteral(L, "d");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "e");
+  lua_pushliteral(L, "e");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "f");
+  lua_pushliteral(L, "f");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "g");
+  lua_pushliteral(L, "g");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "h");
+  lua_pushliteral(L, "h");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "i");
+  lua_pushliteral(L, "i");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "j");
+  lua_pushliteral(L, "j");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "k");
+  lua_pushliteral(L, "k");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "l");
+  lua_pushliteral(L, "l");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "m");
+  lua_pushliteral(L, "m");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "n");
+  lua_pushliteral(L, "n");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "o");
+  lua_pushliteral(L, "o");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "p");
+  lua_pushliteral(L, "p");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "q");
+  lua_pushliteral(L, "q");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "r");
+  lua_pushliteral(L, "r");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "s");
+  lua_pushliteral(L, "s");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "t");
+  lua_pushliteral(L, "t");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "u");
+  lua_pushliteral(L, "u");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "v");
+  lua_pushliteral(L, "v");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "w");
+  lua_pushliteral(L, "w");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "x");
+  lua_pushliteral(L, "x");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "y");
+  lua_pushliteral(L, "y");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "z");
+  lua_pushliteral(L, "z");
+  lua_rawset(L, -3);
   lua_pushliteral(L, "一類何物");
   lua_pushliteral(L, "：");
   lua_rawset(L, -3);
@@ -16053,196 +16239,72 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "首始");
   lua_pushliteral(L, "首");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "0");
-  lua_pushliteral(L, "0");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "1");
-  lua_pushliteral(L, "1");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "2");
-  lua_pushliteral(L, "2");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "3");
-  lua_pushliteral(L, "3");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "4");
-  lua_pushliteral(L, "4");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "5");
-  lua_pushliteral(L, "5");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "6");
-  lua_pushliteral(L, "6");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "7");
-  lua_pushliteral(L, "7");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "8");
-  lua_pushliteral(L, "8");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "9");
-  lua_pushliteral(L, "9");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "A");
-  lua_pushliteral(L, "A");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "B");
-  lua_pushliteral(L, "B");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "C");
-  lua_pushliteral(L, "C");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "D");
-  lua_pushliteral(L, "D");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "E");
-  lua_pushliteral(L, "E");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "F");
-  lua_pushliteral(L, "F");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "G");
-  lua_pushliteral(L, "G");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "H");
-  lua_pushliteral(L, "H");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "I");
-  lua_pushliteral(L, "I");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "J");
-  lua_pushliteral(L, "J");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "K");
-  lua_pushliteral(L, "K");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "L");
-  lua_pushliteral(L, "L");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "M");
-  lua_pushliteral(L, "M");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "N");
-  lua_pushliteral(L, "N");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "O");
-  lua_pushliteral(L, "O");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "P");
-  lua_pushliteral(L, "P");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Q");
-  lua_pushliteral(L, "Q");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "R");
-  lua_pushliteral(L, "R");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "S");
-  lua_pushliteral(L, "S");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "T");
-  lua_pushliteral(L, "T");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "U");
-  lua_pushliteral(L, "U");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "V");
-  lua_pushliteral(L, "V");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "W");
-  lua_pushliteral(L, "W");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "X");
-  lua_pushliteral(L, "X");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Y");
-  lua_pushliteral(L, "Y");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Z");
-  lua_pushliteral(L, "Z");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "a");
-  lua_pushliteral(L, "a");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "b");
-  lua_pushliteral(L, "b");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "c");
-  lua_pushliteral(L, "c");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "d");
-  lua_pushliteral(L, "d");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "e");
-  lua_pushliteral(L, "e");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "f");
-  lua_pushliteral(L, "f");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "g");
-  lua_pushliteral(L, "g");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "h");
-  lua_pushliteral(L, "h");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "i");
-  lua_pushliteral(L, "i");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "j");
-  lua_pushliteral(L, "j");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "k");
-  lua_pushliteral(L, "k");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "l");
-  lua_pushliteral(L, "l");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "m");
-  lua_pushliteral(L, "m");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "n");
-  lua_pushliteral(L, "n");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "o");
-  lua_pushliteral(L, "o");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "p");
-  lua_pushliteral(L, "p");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "q");
-  lua_pushliteral(L, "q");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "r");
-  lua_pushliteral(L, "r");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "s");
-  lua_pushliteral(L, "s");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "t");
-  lua_pushliteral(L, "t");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "u");
-  lua_pushliteral(L, "u");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "v");
-  lua_pushliteral(L, "v");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "w");
-  lua_pushliteral(L, "w");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "x");
-  lua_pushliteral(L, "x");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "y");
-  lua_pushliteral(L, "y");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "z");
-  lua_pushliteral(L, "z");
-  lua_rawset(L, -3);
   lc_setupvalue(L, (lc458 + lc_nextra), 1, 50);
   assert(lua_gettop(L) - lc_nextra == 4);
 
   /* symbols_set_neg = {
+   *     ["0"] = "0",
+   *     ["1"] = "1",
+   *     ["2"] = "2",
+   *     ["3"] = "3",
+   *     ["4"] = "4",
+   *     ["5"] = "5",
+   *     ["6"] = "6",
+   *     ["7"] = "7",
+   *     ["8"] = "8",
+   *     ["9"] = "9",
+   *     A = "A",
+   *     B = "B",
+   *     C = "C",
+   *     D = "D",
+   *     E = "E",
+   *     F = "F",
+   *     G = "G",
+   *     H = "H",
+   *     I = "I",
+   *     J = "J",
+   *     K = "K",
+   *     L = "L",
+   *     M = "M",
+   *     N = "N",
+   *     O = "O",
+   *     P = "P",
+   *     Q = "Q",
+   *     R = "R",
+   *     S = "S",
+   *     T = "T",
+   *     U = "U",
+   *     V = "V",
+   *     W = "W",
+   *     X = "X",
+   *     Y = "Y",
+   *     Z = "Z",
+   *     a = "a",
+   *     b = "b",
+   *     c = "c",
+   *     d = "d",
+   *     e = "e",
+   *     f = "f",
+   *     g = "g",
+   *     h = "h",
+   *     i = "i",
+   *     j = "j",
+   *     k = "k",
+   *     l = "l",
+   *     m = "m",
+   *     n = "n",
+   *     o = "o",
+   *     p = "p",
+   *     q = "q",
+   *     r = "r",
+   *     s = "s",
+   *     t = "t",
+   *     u = "u",
+   *     v = "v",
+   *     w = "w",
+   *     x = "x",
+   *     y = "y",
+   *     z = "z",
    *     ["："] = "一類何物",
    *     ["物"] = "之物",
    *     ["分"] = "其子",
@@ -16279,70 +16341,194 @@ static inline int lcf_main(lua_State *L) {
    *     ["陰"] = "陰",
    *     ["陽"] = "陽",
    *     ["首"] = "首始",
-   *     ["0"] = "0",
-   *     ["1"] = "1",
-   *     ["2"] = "2",
-   *     ["3"] = "3",
-   *     ["4"] = "4",
-   *     ["5"] = "5",
-   *     ["6"] = "6",
-   *     ["7"] = "7",
-   *     ["8"] = "8",
-   *     ["9"] = "9",
-   *     A = "A",
-   *     B = "B",
-   *     C = "C",
-   *     D = "D",
-   *     E = "E",
-   *     F = "F",
-   *     G = "G",
-   *     H = "H",
-   *     I = "I",
-   *     J = "J",
-   *     K = "K",
-   *     L = "L",
-   *     M = "M",
-   *     N = "N",
-   *     O = "O",
-   *     P = "P",
-   *     Q = "Q",
-   *     R = "R",
-   *     S = "S",
-   *     T = "T",
-   *     U = "U",
-   *     V = "V",
-   *     W = "W",
-   *     X = "X",
-   *     Y = "Y",
-   *     Z = "Z",
-   *     a = "a",
-   *     b = "b",
-   *     c = "c",
-   *     d = "d",
-   *     e = "e",
-   *     f = "f",
-   *     g = "g",
-   *     h = "h",
-   *     i = "i",
-   *     j = "j",
-   *     k = "k",
-   *     l = "l",
-   *     m = "m",
-   *     n = "n",
-   *     o = "o",
-   *     p = "p",
-   *     q = "q",
-   *     r = "r",
-   *     s = "s",
-   *     t = "t",
-   *     u = "u",
-   *     v = "v",
-   *     w = "w",
-   *     x = "x",
-   *     y = "y",
-   *     z = "z",
    * } */
   lua_createtable(L, 0, 98);
+  lua_pushliteral(L, "0");
+  lua_pushliteral(L, "0");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "1");
+  lua_pushliteral(L, "1");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "2");
+  lua_pushliteral(L, "2");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "3");
+  lua_pushliteral(L, "3");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "4");
+  lua_pushliteral(L, "4");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "5");
+  lua_pushliteral(L, "5");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "6");
+  lua_pushliteral(L, "6");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "7");
+  lua_pushliteral(L, "7");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "8");
+  lua_pushliteral(L, "8");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "9");
+  lua_pushliteral(L, "9");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "A");
+  lua_pushliteral(L, "A");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "B");
+  lua_pushliteral(L, "B");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "C");
+  lua_pushliteral(L, "C");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "D");
+  lua_pushliteral(L, "D");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "E");
+  lua_pushliteral(L, "E");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "F");
+  lua_pushliteral(L, "F");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "G");
+  lua_pushliteral(L, "G");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "H");
+  lua_pushliteral(L, "H");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "I");
+  lua_pushliteral(L, "I");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "J");
+  lua_pushliteral(L, "J");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "K");
+  lua_pushliteral(L, "K");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "L");
+  lua_pushliteral(L, "L");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "M");
+  lua_pushliteral(L, "M");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "N");
+  lua_pushliteral(L, "N");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "O");
+  lua_pushliteral(L, "O");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "P");
+  lua_pushliteral(L, "P");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Q");
+  lua_pushliteral(L, "Q");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "R");
+  lua_pushliteral(L, "R");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "S");
+  lua_pushliteral(L, "S");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "T");
+  lua_pushliteral(L, "T");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "U");
+  lua_pushliteral(L, "U");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "V");
+  lua_pushliteral(L, "V");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "W");
+  lua_pushliteral(L, "W");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "X");
+  lua_pushliteral(L, "X");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Y");
+  lua_pushliteral(L, "Y");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "Z");
+  lua_pushliteral(L, "Z");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "a");
+  lua_pushliteral(L, "a");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "b");
+  lua_pushliteral(L, "b");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "c");
+  lua_pushliteral(L, "c");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "d");
+  lua_pushliteral(L, "d");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "e");
+  lua_pushliteral(L, "e");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "f");
+  lua_pushliteral(L, "f");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "g");
+  lua_pushliteral(L, "g");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "h");
+  lua_pushliteral(L, "h");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "i");
+  lua_pushliteral(L, "i");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "j");
+  lua_pushliteral(L, "j");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "k");
+  lua_pushliteral(L, "k");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "l");
+  lua_pushliteral(L, "l");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "m");
+  lua_pushliteral(L, "m");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "n");
+  lua_pushliteral(L, "n");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "o");
+  lua_pushliteral(L, "o");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "p");
+  lua_pushliteral(L, "p");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "q");
+  lua_pushliteral(L, "q");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "r");
+  lua_pushliteral(L, "r");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "s");
+  lua_pushliteral(L, "s");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "t");
+  lua_pushliteral(L, "t");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "u");
+  lua_pushliteral(L, "u");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "v");
+  lua_pushliteral(L, "v");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "w");
+  lua_pushliteral(L, "w");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "x");
+  lua_pushliteral(L, "x");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "y");
+  lua_pushliteral(L, "y");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "z");
+  lua_pushliteral(L, "z");
+  lua_rawset(L, -3);
   lua_pushliteral(L, "：");
   lua_pushliteral(L, "一類何物");
   lua_rawset(L, -3);
@@ -16450,192 +16636,6 @@ static inline int lcf_main(lua_State *L) {
   lua_rawset(L, -3);
   lua_pushliteral(L, "首");
   lua_pushliteral(L, "首始");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "0");
-  lua_pushliteral(L, "0");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "1");
-  lua_pushliteral(L, "1");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "2");
-  lua_pushliteral(L, "2");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "3");
-  lua_pushliteral(L, "3");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "4");
-  lua_pushliteral(L, "4");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "5");
-  lua_pushliteral(L, "5");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "6");
-  lua_pushliteral(L, "6");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "7");
-  lua_pushliteral(L, "7");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "8");
-  lua_pushliteral(L, "8");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "9");
-  lua_pushliteral(L, "9");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "A");
-  lua_pushliteral(L, "A");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "B");
-  lua_pushliteral(L, "B");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "C");
-  lua_pushliteral(L, "C");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "D");
-  lua_pushliteral(L, "D");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "E");
-  lua_pushliteral(L, "E");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "F");
-  lua_pushliteral(L, "F");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "G");
-  lua_pushliteral(L, "G");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "H");
-  lua_pushliteral(L, "H");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "I");
-  lua_pushliteral(L, "I");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "J");
-  lua_pushliteral(L, "J");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "K");
-  lua_pushliteral(L, "K");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "L");
-  lua_pushliteral(L, "L");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "M");
-  lua_pushliteral(L, "M");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "N");
-  lua_pushliteral(L, "N");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "O");
-  lua_pushliteral(L, "O");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "P");
-  lua_pushliteral(L, "P");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Q");
-  lua_pushliteral(L, "Q");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "R");
-  lua_pushliteral(L, "R");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "S");
-  lua_pushliteral(L, "S");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "T");
-  lua_pushliteral(L, "T");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "U");
-  lua_pushliteral(L, "U");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "V");
-  lua_pushliteral(L, "V");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "W");
-  lua_pushliteral(L, "W");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "X");
-  lua_pushliteral(L, "X");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Y");
-  lua_pushliteral(L, "Y");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "Z");
-  lua_pushliteral(L, "Z");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "a");
-  lua_pushliteral(L, "a");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "b");
-  lua_pushliteral(L, "b");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "c");
-  lua_pushliteral(L, "c");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "d");
-  lua_pushliteral(L, "d");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "e");
-  lua_pushliteral(L, "e");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "f");
-  lua_pushliteral(L, "f");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "g");
-  lua_pushliteral(L, "g");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "h");
-  lua_pushliteral(L, "h");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "i");
-  lua_pushliteral(L, "i");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "j");
-  lua_pushliteral(L, "j");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "k");
-  lua_pushliteral(L, "k");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "l");
-  lua_pushliteral(L, "l");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "m");
-  lua_pushliteral(L, "m");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "n");
-  lua_pushliteral(L, "n");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "o");
-  lua_pushliteral(L, "o");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "p");
-  lua_pushliteral(L, "p");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "q");
-  lua_pushliteral(L, "q");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "r");
-  lua_pushliteral(L, "r");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "s");
-  lua_pushliteral(L, "s");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "t");
-  lua_pushliteral(L, "t");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "u");
-  lua_pushliteral(L, "u");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "v");
-  lua_pushliteral(L, "v");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "w");
-  lua_pushliteral(L, "w");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "x");
-  lua_pushliteral(L, "x");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "y");
-  lua_pushliteral(L, "y");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "z");
-  lua_pushliteral(L, "z");
   lua_rawset(L, -3);
   lc_setupvalue(L, (lc458 + lc_nextra), 1, 49);
   assert(lua_gettop(L) - lc_nextra == 4);

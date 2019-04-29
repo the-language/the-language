@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "ts2php": "^0.6.1"
+    "ts2php": "^0.7.0"
   }
 }

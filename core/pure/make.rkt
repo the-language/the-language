@@ -93,7 +93,6 @@ in-dir "typescript" {
 
 (make
     (("all" ("ecmascript/lang.js"
-             "ecmascript/lang.raw.js"
              "lua/lang.lua"
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
@@ -105,7 +104,6 @@ in-dir "typescript" {
              "go/src")
             (void))
      ("typescript/lang.ts" () (void)) ;; 實現在前面
-     ("ecmascript/lang.raw.js" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
         in-dir "typescript" {

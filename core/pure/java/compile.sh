@@ -1,21 +1,21 @@
 #!/bin/bash
 ./get-ant.sh
 
-[ -d luaj ] || git clone --depth 1 https://github.com/luaj/luaj.git
+[ -d luaj ] || git clone --depth 1 https://github.com/luaj/luaj.git ||exit
 cd luaj
-[ -f luaj-jse-3.0.2.jar ] || ../ant/bin/ant
+[ -f luaj-jse-3.0.2.jar ] || ../ant/bin/ant ||exit
 cd -
 
-[ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git
+[ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git ||exit
 
 mkdir -p luaj-out
 rm -fr luaj-out
 mkdir luaj-out
 cp ../lua/lang.lua 'Lang$luaj.lua'
-java -cp "luaj/luaj-jse-3.0.2.jar:luaj/lib/bcel-5.2.jar" luajc -s . -d luaj-out 'Lang$luaj.lua'
+java -cp "luaj/luaj-jse-3.0.2.jar:luaj/lib/bcel-5.2.jar" luajc -s . -d luaj-out 'Lang$luaj.lua' ||exit
 rm 'Lang$luaj.lua'
 
-cd luaj-out
+cd luaj-out ||exit
 jar cf lang.jar *
 cd -
 
@@ -30,7 +30,7 @@ done
 cp -r ./luaj/build/jse/src/* ./src/
 cp -r ./real-src/* ./src/
 
-cd src
+cd src ||exit
 javac ./lang/Lang.java
 javac testmain.java
 cd -
