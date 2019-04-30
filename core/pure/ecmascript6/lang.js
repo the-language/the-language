@@ -1769,6 +1769,13 @@ function machinetext_parse(rawstr) {
         const new_stack = [];
         for (const hol of stack) {
             const chr = get_do();
+            const conslike = (c) => {
+                const hol1 = new_hole_do();
+                const hol2 = new_hole_do();
+                new_stack.push(hol1);
+                new_stack.push(hol2);
+                hole_set_do(hol, c(hol1, hol2));
+            };
             if (chr === '$') {
                 let tmp = '';
                 while (true) {
@@ -1781,11 +1788,16 @@ function machinetext_parse(rawstr) {
                 hole_set_do(hol, new_symbol_unicodechar(tmp));
             }
             else if (chr === '.') {
-                const hol1 = new_hole_do();
-                const hol2 = new_hole_do();
-                new_stack.push(hol1);
-                new_stack.push(hol2);
-                hole_set_do(hol, new_construction(hol1, hol2));
+                conslike(new_construction);
+            }
+            else if (chr === '#') {
+                conslike(new_data);
+            }
+            else if (chr === '!') {
+                conslike(new_error);
+            }
+            else if (chr === '_') {
+                hole_set_do(hol, null_v);
             }
             else {
                 throw 'WIP';
@@ -1804,28 +1816,27 @@ function machinetext_print(x) {
         const new_stack = [];
         for (let x of stack) {
             x = un_just_all(x);
+            const conslike = function (x, s, g1, g2) {
+                result += s;
+                new_stack.push(g1(x));
+                new_stack.push(g2(x));
+            };
             if (symbol_p(x)) {
                 result += '$';
                 result += un_symbol_unicodechar(x);
                 result += '$';
             }
             else if (construction_p(x)) {
-                result += '.';
-                new_stack.push(construction_head(x));
-                new_stack.push(construction_tail(x));
+                conslike(x, '.', construction_head, construction_tail);
             }
             else if (null_p(x)) {
                 result += '_';
             }
             else if (data_p(x)) {
-                result += '#';
-                new_stack.push(data_name(x));
-                new_stack.push(data_list(x));
+                conslike(x, '#', data_name, data_list);
             }
             else if (error_p(x)) {
-                result += '!';
-                new_stack.push(error_name(x));
-                new_stack.push(error_list(x));
+                conslike(x, '!', error_name, error_list);
             }
             else {
                 throw 'WIP';

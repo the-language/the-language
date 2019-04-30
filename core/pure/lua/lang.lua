@@ -2082,6 +2082,14 @@ local function machinetext_parse(rawstr)
         for ____TS_index = 1, #stack do
             local hol = stack[____TS_index]
             local chr = get_do()
+            local conslike
+            conslike = function(c)
+                local hol1 = new_hole_do()
+                local hol2 = new_hole_do()
+                __TS__ArrayPush(new_stack, hol1)
+                __TS__ArrayPush(new_stack, hol2)
+                hole_set_do(hol, c(hol1, hol2))
+            end
             if chr == "$" then
                 local tmp = ""
                 while true do
@@ -2093,11 +2101,13 @@ local function machinetext_parse(rawstr)
                 end
                 hole_set_do(hol, new_symbol_unicodechar(tmp))
             elseif chr == "." then
-                local hol1 = new_hole_do()
-                local hol2 = new_hole_do()
-                __TS__ArrayPush(new_stack, hol1)
-                __TS__ArrayPush(new_stack, hol2)
-                hole_set_do(hol, new_construction(hol1, hol2))
+                conslike(new_construction)
+            elseif chr == "#" then
+                conslike(new_data)
+            elseif chr == "!" then
+                conslike(new_error)
+            elseif chr == "_" then
+                hole_set_do(hol, null_v)
             else
                 error("WIP")
             end
@@ -2115,24 +2125,24 @@ local function machinetext_print(x)
         for ____TS_index = 1, #stack do
             local x = stack[____TS_index]
             x = un_just_all(x)
+            local conslike
+            conslike = function(x, s, g1, g2)
+                result = tostring(result) .. tostring(s)
+                __TS__ArrayPush(new_stack, g1(x))
+                __TS__ArrayPush(new_stack, g2(x))
+            end
             if symbol_p(x) then
                 result = tostring(result) .. "$"
                 result = tostring(result) .. tostring(un_symbol_unicodechar(x))
                 result = tostring(result) .. "$"
             elseif construction_p(x) then
-                result = tostring(result) .. "."
-                __TS__ArrayPush(new_stack, construction_head(x))
-                __TS__ArrayPush(new_stack, construction_tail(x))
+                conslike(x, ".", construction_head, construction_tail)
             elseif null_p(x) then
                 result = tostring(result) .. "_"
             elseif data_p(x) then
-                result = tostring(result) .. "#"
-                __TS__ArrayPush(new_stack, data_name(x))
-                __TS__ArrayPush(new_stack, data_list(x))
+                conslike(x, "#", data_name, data_list)
             elseif error_p(x) then
-                result = tostring(result) .. "!"
-                __TS__ArrayPush(new_stack, error_name(x))
-                __TS__ArrayPush(new_stack, error_list(x))
+                conslike(x, "!", error_name, error_list)
             else
                 error("WIP")
             end

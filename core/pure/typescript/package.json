@@ -1,5 +1,6 @@
 {
     "devDependencies": {
+        "@types/node": "^11.13.8",
         "google-closure-compiler-java": "^20190415.0.0",
         "ts-node": "^8.1.0",
         "typescript": "^3.4.5"
