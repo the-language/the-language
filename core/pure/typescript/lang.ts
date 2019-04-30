@@ -1790,37 +1790,52 @@ export { complex_print }
 // 相對獨立的部分。complex parser/complex printer }}}
 
 
-// {{{ 相對獨立的部分。machineasctext parse/print
-function machineasctext_parse(x:string):LangVal{
+// {{{ 相對獨立的部分。machinetext parse/print
+function machinetext_parse(rawstr:string):LangVal{
     const result=new_hole_do()
     let stack:Array<LangValHole>=[result]
-    let strstack:Array<string>=x.split('').reverse()
-    while(strstack.length!==0){
-	if(stack.length===0){return LANG_ERROR()}
+    let state=0
+    function parse_error():never{
+	throw 'MT parse ERROR'
+    }
+    function parse_assert(x:boolean):void{
+	if(!x){return parse_error()}
+    }
+    function get_do():string{
+	parse_assert(rawstr.length>state)
+	const result:string=rawstr[state]
+	state++
+	return result
+    }
+    while(stack.length!==0){
 	const new_stack:Array<LangValHole>=[]
-	while(stack.length!==0){
-	    const chr:string=strstack.pop() as string // type WIP
-	    if(chr=='$'){
+	for(const hol of stack){
+	    const chr:string=get_do()
+	    if(chr==='$'){
 		let tmp:string=''
 		while(true){
-		    if(strstack.length===0){return LANG_ERROR()}
-		    const chr:string=strstack.pop() as string // type WIP
+		    const chr:string=get_do()
 		    if(chr==='$'){break}
 		    tmp+=chr
 		}
-		const hol=stack.shift() as LangValHole // type WIP
-		hole_set_do(hol,new_symbol_unicodechar(decodeURI(tmp)))
+		hole_set_do(hol,new_symbol_unicodechar(tmp))
+	    }else if(chr==='.'){
+		const hol1=new_hole_do()
+		const hol2=new_hole_do()
+		new_stack.push(hol1)
+		new_stack.push(hol2)
+		hole_set_do(hol,new_construction(hol1,hol2))
 	    }else{
 		throw 'WIP'
 	    }
 	}
 	stack=new_stack
     }
-    if(stack.length!==0){return LANG_ERROR()}
+    parse_assert(state==rawstr.length)
     return result
 }
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
-function machineasctext_print(x:LangVal):string{
+function machinetext_print(x:LangVal):string{
     let stack:Array<LangVal>=[x]
     let result:string=""
     while(stack.length!==0){
@@ -1828,9 +1843,8 @@ function machineasctext_print(x:LangVal):string{
 	for(let x of stack){
 	    x=un_just_all(x)
 	    if(symbol_p(x)){
-		const ascstr:string=encodeURI(un_symbol_unicodechar(x))
 		result+='$'
-		result+=ascstr
+		result+=un_symbol_unicodechar(x)
 		result+='$'
 	    }else if(construction_p(x)){
 		result+='.'
@@ -1854,8 +1868,8 @@ function machineasctext_print(x:LangVal):string{
     }
     return result
 }
-export {machineasctext_parse,machineasctext_print}
-// 相對獨立的部分。machineasctext parse/print }}}
+export {machinetext_parse,machinetext_print}
+// 相對獨立的部分。machinetext parse/print }}}
 
 
 /*

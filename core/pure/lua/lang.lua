@@ -27,55 +27,6 @@ function __TS__ArrayPush(arr, ...)
     return #arr
 end
 
-function __TS__StringSplit(source, separator, limit)
-    if limit == nil then
-        limit = 4294967295
-    end
-    if limit == 0 then
-        return {}
-    end
-    local out = {}
-    local index = 0
-    local count = 0
-    if separator == nil or separator == "" then
-        while index < #source - 1 and count < limit do
-            out[count + 1] = string.sub(source, index + 1, index + 1)
-            count = count + 1
-            index = index + 1
-        end
-    else
-        local separatorLength = #separator
-        local nextIndex = ((string.find(source, separator) or 0) - 1)
-        while nextIndex >= 0 and count < limit do
-            out[count + 1] = string.sub(source, index + 1, nextIndex)
-            count = count + 1
-            index = nextIndex + separatorLength
-            nextIndex = ((string.find(source, separator, index + 1, true) or 0) - 1)
-        end
-    end
-    if count < limit then
-        out[count + 1] = string.sub(source, index + 1)
-    end
-    return out
-end
-
-function __TS__ArrayReverse(arr)
-    local i = 0
-    local j = #arr - 1
-    while i < j do
-        local temp = arr[j + 1]
-        arr[j + 1] = arr[i + 1]
-        arr[i + 1] = temp
-        i = i + 1
-        j = j - 1
-    end
-    return arr
-end
-
-function __TS__ArrayShift(arr)
-    return table.remove(arr, 1)
-end
-
 local ____exports = {}
 local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, lang_set_do, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
@@ -2108,43 +2059,55 @@ local function complex_print(val)
     return LANG_ERROR()
 end
 ____exports.complex_print = complex_print
-local function machineasctext_parse(x)
+local function machinetext_parse(rawstr)
     local result = new_hole_do()
     local stack = {result}
-    local strstack = __TS__ArrayReverse(__TS__StringSplit(x, ""))
-    while #strstack ~= 0 do
-        if #stack == 0 then
-            return LANG_ERROR()
+    local state = 0
+    local function parse_error()
+        error("MT parse ERROR")
+    end
+    local function parse_assert(x)
+        if not x then
+            return parse_error()
         end
+    end
+    local function get_do()
+        parse_assert(#rawstr > state)
+        local result = string.sub(rawstr, state + 1, state + 1)
+        state = state + 1
+        return result
+    end
+    while #stack ~= 0 do
         local new_stack = {}
-        while #stack ~= 0 do
-            local chr = table.remove(strstack)
+        for ____TS_index = 1, #stack do
+            local hol = stack[____TS_index]
+            local chr = get_do()
             if chr == "$" then
                 local tmp = ""
                 while true do
-                    if #strstack == 0 then
-                        return LANG_ERROR()
-                    end
-                    local chr = table.remove(strstack)
+                    local chr = get_do()
                     if chr == "$" then
                         break
                     end
                     tmp = tostring(tmp) .. tostring(chr)
                 end
-                local hol = __TS__ArrayShift(stack)
-                hole_set_do(hol, new_symbol_unicodechar(decodeURI(nil, tmp)))
+                hole_set_do(hol, new_symbol_unicodechar(tmp))
+            elseif chr == "." then
+                local hol1 = new_hole_do()
+                local hol2 = new_hole_do()
+                __TS__ArrayPush(new_stack, hol1)
+                __TS__ArrayPush(new_stack, hol2)
+                hole_set_do(hol, new_construction(hol1, hol2))
             else
                 error("WIP")
             end
         end
         stack = new_stack
     end
-    if #stack ~= 0 then
-        return LANG_ERROR()
-    end
+    parse_assert(state == #rawstr)
     return result
 end
-local function machineasctext_print(x)
+local function machinetext_print(x)
     local stack = {x}
     local result = ""
     while #stack ~= 0 do
@@ -2153,9 +2116,8 @@ local function machineasctext_print(x)
             local x = stack[____TS_index]
             x = un_just_all(x)
             if symbol_p(x) then
-                local ascstr = encodeURI(nil, un_symbol_unicodechar(x))
                 result = tostring(result) .. "$"
-                result = tostring(result) .. tostring(ascstr)
+                result = tostring(result) .. tostring(un_symbol_unicodechar(x))
                 result = tostring(result) .. "$"
             elseif construction_p(x) then
                 result = tostring(result) .. "."
@@ -2179,6 +2141,6 @@ local function machineasctext_print(x)
     end
     return result
 end
-____exports.machineasctext_parse = machineasctext_parse
-____exports.machineasctext_print = machineasctext_print
+____exports.machinetext_parse = machinetext_parse
+____exports.machinetext_print = machinetext_print
 return ____exports
