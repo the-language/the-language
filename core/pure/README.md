@@ -4,6 +4,8 @@
 racket gen.Makefile.rkt
 make -j8
 ```
+或`racket do-make.rkt`
+
 ## 測試
 ```bash
 racket test.rkt
