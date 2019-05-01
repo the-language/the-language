@@ -22,7 +22,7 @@ racket test.rkt
 * clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make`
 * wget | `sudo apt install wget` `sudo pacman -S wget` `sudo apk add wget`
-* golang 1.10+ | `sudo pacman -S go` `sudo apk add go`
+* golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
 
 ```bash
 raco pkg install --auto rash
