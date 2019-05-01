@@ -1,4 +1,4 @@
 #lang racket
 (require "make.rkt")
-(pre-make)
+(pre-do-make)
 (do-make (current-command-line-arguments))
