@@ -1,12 +1,11 @@
 ## 編譯
 
 ```bash
-cd pure
-./make
+racket gen.Makefile.rkt
+make -j8
 ```
 ## 測試
 ```bash
-cd pure
 racket test.rkt
 ./do_testmain.sh
 ```

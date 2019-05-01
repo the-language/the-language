@@ -80,18 +80,37 @@
                 (run-racket-code-generators->lines tail-other-lines)
                 )]
         [x x])
-)
+  )
+
+
+(define-syntax-rule (define-make++ self write-id (pre-file pre-id) main-id pre ((name (depend ...) code) ...))
+  (begin
+    (define (write-id Makefile)
+      (define mkfile
+        (string-append
+         (string-append
+          name ":" (string-append " " depend) ...
+          "\n\tracket "Makefile".domake.rkt "name"\n\n"
+          ) ...
+         pre-file":\n\tracket "Makefile".premake.rkt\n"))
+      (display-to-file mkfile Makefile #:exists 'replace)
+      (display-to-file (string-append"#lang racket\n(require \""self"\")\n(pre-make)") (string-append Makefile".premake.rkt") #:exists 'replace)
+      (display-to-file (string-append"#lang racket\n(require \""self"\")\n(do-make (current-command-line-arguments))") (string-append Makefile".domake.rkt") #:exists 'replace))
+    (define (pre-id) pre)
+    (define (main-id cmd) (make ((name (depend ...) code) ...) cmd))))
+
+;; (do-make (current-command-line-arguments))
+(provide write-Makefile pre-do-make do-make)
+(define-make++ "make.rkt" write-Makefile ("typescript/lang.ts" pre-do-make) do-make
+  {
 in-dir "typescript" {
     (make ((".done.racket.code.generator" ("lang.ts") {
         |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.ts.tmp
         mv lang.ts.tmp lang.ts
         touch .done.racket.code.generator
     })))
+    }
 }
-
-
-
-(make
     (("all" ("ecmascript/lang.js"
              "lua/lang.lua"
              "ecmascript6/lang.js"
@@ -103,7 +122,6 @@ in-dir "typescript" {
              "c/lang.c"
              "go/src")
             (void))
-     ("typescript/lang.ts" () (void)) ;; 實現在前面
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
         in-dir "typescript" {
@@ -309,5 +327,4 @@ in-dir "typescript" {
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
      }})
-     )
-    (current-command-line-arguments))
+     ))
