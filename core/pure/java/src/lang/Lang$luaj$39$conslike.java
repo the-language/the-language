@@ -3,10 +3,12 @@ public class Lang$luaj$39$conslike extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
+    final static org.luaj.vm2.LuaValue k2;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(2);
         k1 = org.luaj.vm2.LuaValue.valueOf(3);
+        k2 = org.luaj.vm2.LuaValue.valueOf(1);
     }
     
     public Lang$luaj$39$conslike() {
@@ -16,9 +18,9 @@ public class Lang$luaj$39$conslike extends org.luaj.vm2.lib.OneArgFunction {
         org.luaj.vm2.LuaValue a0 = a.get(k0);
         org.luaj.vm2.LuaValue a1 = a.get(k1);
         org.luaj.vm2.LuaValue a2 = this.u0[0].call(a0);
-        a.set(k0, a2);
+        a.set(k2, a2);
         org.luaj.vm2.LuaValue a3 = this.u0[0].call(a1);
-        a.set(k1, a3);
+        a.set(k0, a3);
         return a;
     }
 }

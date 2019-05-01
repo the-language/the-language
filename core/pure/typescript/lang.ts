@@ -60,11 +60,11 @@ export type LangValNull = [LangValType.null_t]
 export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
 export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
 export type LangValJust = [LangValType.just_t, LangValRec, false, false]
-export type LangValDelayEval = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
+export type LangValDelayEvaluate = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
 export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
 export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
 export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
-export type LangValDelay = LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValSysName = LangValData // WIP
 export type LangValName = LangValData | LangValSymbol
@@ -73,7 +73,7 @@ export type LangValFunctionJustDelay = LangValRec // WIP
 
 const hole_t = LangValType.hole_t
 type LangValHole = [LangValType.hole_t]
-export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEval | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValHole
+export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValHole
 export type LangValRec = any // WIP
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
@@ -164,17 +164,17 @@ function just_p(x: LangVal): x is LangValJust {
 function un_just(x: LangValJust): LangVal {
     return x[1]
 }
-function evaluate(x: Env, y: LangVal): LangValDelayEval {
+function evaluate(x: Env, y: LangVal): LangValDelayEvaluate {
     return [delay_evaluate_t, x, y]
 }
 export { evaluate }
-function delay_evaluate_p(x: LangVal): x is LangValDelayEval {
+function delay_evaluate_p(x: LangVal): x is LangValDelayEvaluate {
     return x[0] === delay_evaluate_t
 }
-function delay_evaluate_env(x: LangValDelayEval): Env {
+function delay_evaluate_env(x: LangValDelayEvaluate): Env {
     return x[1]
 }
-function delay_evaluate_x(x: LangValDelayEval): LangVal {
+function delay_evaluate_x(x: LangValDelayEvaluate): LangVal {
     return x[2]
 }
 function builtin_form_apply(x: Env, y: LangVal, z: Array<LangVal>): LangValDelayBuiltinForm {
@@ -220,10 +220,8 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 }
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
-    //function conslike<S,T extends [S, LangVal, LangVal] & LangVal>(x:T):LangVal{//type-to-lua-bug
-    function conslike(x:Array<any>):any{
-        const a: LangVal = x[1]
-        const d: LangVal = x[2]
+    function conslike<S,T extends [S, LangVal, LangVal] & LangVal>(x:T):LangVal{
+        const [,a,d] = x
         x[1] = force_all_rec(a)
         x[2] = force_all_rec(d)
         return x
