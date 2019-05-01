@@ -170,6 +170,7 @@ function delay_apply_xs(x) {
 }
 function force_all_rec(raw) {
     const x = force_all(raw);
+    //function conslike<S,T extends [S, LangVal, LangVal] & LangVal>(x:T):LangVal{//type-to-lua-bug
     function conslike(x) {
         const a = x[1];
         const d = x[2];

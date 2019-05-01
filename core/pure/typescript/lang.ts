@@ -220,7 +220,8 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 }
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
-    function conslike<S,T extends [S, LangVal, LangVal] & LangVal>(x:T):LangVal{
+    //function conslike<S,T extends [S, LangVal, LangVal] & LangVal>(x:T):LangVal{//type-to-lua-bug
+    function conslike(x:Array<any>):any{
         const a: LangVal = x[1]
         const d: LangVal = x[2]
         x[1] = force_all_rec(a)

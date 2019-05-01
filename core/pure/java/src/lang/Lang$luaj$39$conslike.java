@@ -5,8 +5,8 @@ public class Lang$luaj$39$conslike extends org.luaj.vm2.lib.OneArgFunction {
     final static org.luaj.vm2.LuaValue k1;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(1);
-        k1 = org.luaj.vm2.LuaValue.valueOf(2);
+        k0 = org.luaj.vm2.LuaValue.valueOf(2);
+        k1 = org.luaj.vm2.LuaValue.valueOf(3);
     }
     
     public Lang$luaj$39$conslike() {
