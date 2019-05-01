@@ -209,8 +209,8 @@ end
 function force_all_rec(raw)
     local x = force_all(raw)
     local function conslike(x)
-        local a = x[1 + 1]
-        local d = x[2 + 1]
+        local a = x[2]
+        local d = x[3]
         x[1 + 1] = force_all_rec(a)
         x[2 + 1] = force_all_rec(d)
         return x

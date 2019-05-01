@@ -2171,12 +2171,12 @@ static inline int lcf1_conslike(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local a = x[1 + 1] */
+  /* local a = x[2] */
   lua_pushnumber(L, 2);
   lua_gettable(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* local d = x[2 + 1] */
+  /* local d = x[3] */
   lua_pushnumber(L, 3);
   lua_gettable(L, 1);
   assert(lua_gettop(L) == 3);
@@ -2218,8 +2218,8 @@ static inline int lcf1_force_all_rec(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* local function conslike(x)
-   *         local a = x[1 + 1]
-   *         local d = x[2 + 1]
+   *         local a = x[2]
+   *         local d = x[3]
    *         x[1 + 1] = force_all_rec(a)
    *         x[2 + 1] = force_all_rec(d)
    *         return x
@@ -15677,8 +15677,8 @@ static inline int lcf_main(lua_State *L) {
   /* function force_all_rec(raw)
    *     local x = force_all(raw)
    *     local function conslike(x)
-   *         local a = x[1 + 1]
-   *         local d = x[2 + 1]
+   *         local a = x[2]
+   *         local d = x[3]
    *         x[1 + 1] = force_all_rec(a)
    *         x[2 + 1] = force_all_rec(d)
    *         return x
