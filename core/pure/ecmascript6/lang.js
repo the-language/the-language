@@ -109,16 +109,6 @@ function error_list(x) {
     return x[2];
 }
 export { new_error, error_p, error_name, error_list };
-function lang_set_do(x, y) {
-    // 只用于x与y等价的情况
-    if (x === y) {
-        return;
-    }
-    x[0] = just_t;
-    x[1] = y;
-    x[2] = false;
-    x[3] = false;
-}
 function just_p(x) {
     return x[0] === just_t;
 }
@@ -180,26 +170,21 @@ function delay_apply_xs(x) {
 }
 function force_all_rec(raw) {
     const x = force_all(raw);
-    if (data_p(x)) {
+    function conslike(x) {
         const a = x[1];
         const d = x[2];
         x[1] = force_all_rec(a);
         x[2] = force_all_rec(d);
         return x;
+    }
+    if (data_p(x)) {
+        return conslike(x);
     }
     else if (error_p(x)) {
-        const a = x[1];
-        const d = x[2];
-        x[1] = force_all_rec(a);
-        x[2] = force_all_rec(d);
-        return x;
+        return conslike(x);
     }
     else if (construction_p(x)) {
-        const a = x[1];
-        const d = x[2];
-        x[1] = force_all_rec(a);
-        x[2] = force_all_rec(d);
-        return x;
+        return conslike(x);
     }
     return x;
 }
@@ -209,6 +194,16 @@ function new_hole_do() {
 }
 function hole_p(x) {
     return x[0] === hole_t;
+}
+function lang_set_do(x, y) {
+    // 只用于x与y等价的情况
+    if (x === y) {
+        return;
+    }
+    x[0] = just_t;
+    x[1] = y;
+    x[2] = false;
+    x[3] = false;
 }
 function hole_set_do(rawx, rawy) {
     LANG_ASSERT(hole_p(rawx)); // 可能曾经是hole，现在不是。
@@ -304,8 +299,7 @@ function symbol_equal_p(x, y) {
     if (x === y) {
         return true;
     }
-    // 其他自然語言暫未實現。  改為在new_symbol 和 新函數 localized_complex_print實現 WIP
-    if (un_symbol(x) === un_symbol(y)) {
+    if (un_symbol_unicodechar(x) === un_symbol_unicodechar(y)) {
         lang_set_do(x, y);
         return true;
     }
@@ -1125,16 +1119,16 @@ function jsbool_no_force_equal_p(x, y) {
         return end_2(x, y, data_name, data_list);
     }
     else if (delay_evaluate_p(x)) {
-        return false; //WIP
+        throw 'WIP';
     }
     else if (delay_builtin_func_p(x)) {
-        return false; //WIP
+        throw 'WIP';
     }
     else if (delay_builtin_form_p(x)) {
-        return false; //WIP
+        throw 'WIP';
     }
     else if (delay_apply_p(x)) {
-        return false; //WIP
+        throw 'WIP';
     }
     return LANG_ERROR();
 }

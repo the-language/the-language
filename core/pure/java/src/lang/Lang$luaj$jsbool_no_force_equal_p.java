@@ -21,6 +21,14 @@ public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.VarArgFu
     org.luaj.vm2.LuaValue u18;
     org.luaj.vm2.LuaValue u19;
     org.luaj.vm2.LuaValue u20;
+    org.luaj.vm2.LuaValue u21;
+    final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
+    
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("error");
+        k1 = org.luaj.vm2.LuaString.valueOf("WIP");
+    }
     
     public Lang$luaj$jsbool_no_force_equal_p() {
     }
@@ -98,22 +106,15 @@ public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.VarArgFu
             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a6, org.luaj.vm2.LuaValue.varargsOf(a21));
         } else {
             if (this.u16.call(a3).toboolean()) {
-                org.luaj.vm2.Varargs a22 = org.luaj.vm2.LuaValue.FALSE;
-                return a22;
+                this.u17.get(k0).call(k1);
+            } else if (this.u18.call(a3).toboolean()) {
+                this.u17.get(k0).call(k1);
+            } else if (this.u19.call(a3).toboolean()) {
+                this.u17.get(k0).call(k1);
+            } else if (this.u20.call(a3).toboolean()) {
+                this.u17.get(k0).call(k1);
             }
-            if (this.u17.call(a3).toboolean()) {
-                org.luaj.vm2.Varargs a23 = org.luaj.vm2.LuaValue.FALSE;
-                return a23;
-            }
-            if (this.u18.call(a3).toboolean()) {
-                org.luaj.vm2.Varargs a24 = org.luaj.vm2.LuaValue.FALSE;
-                return a24;
-            }
-            if (this.u19.call(a3).toboolean()) {
-                org.luaj.vm2.Varargs a25 = org.luaj.vm2.LuaValue.FALSE;
-                return a25;
-            }
-            return org.luaj.vm2.LuaValue.tailcallOf(this.u20, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
+            return org.luaj.vm2.LuaValue.tailcallOf(this.u21, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
         }
     }
 }
