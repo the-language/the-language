@@ -3,7 +3,7 @@ public class Lang$luaj$30 extends org.luaj.vm2.lib.OneArgFunction {
     final static org.luaj.vm2.LuaValue k0;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(4);
+        k0 = org.luaj.vm2.LuaValue.valueOf(5);
     }
     
     public Lang$luaj$30() {

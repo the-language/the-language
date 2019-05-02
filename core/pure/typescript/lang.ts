@@ -54,21 +54,20 @@ const delay_builtin_form_t = LangValType.delay_builtin_form_t
 const delay_apply_t = LangValType.delay_apply_t
 export type LangValDelayType = LangValType.delay_evaluate_t | LangValType.delay_builtin_func_t | LangValType.delay_builtin_form_t | LangValType.delay_apply_t
 export type LangValJustDelayType = LangValType.just_t | LangValDelayType
-export type LangValSymbol = [LangValType.symbol_t, string]
-export type LangValCons = [LangValType.construction_t, LangValRec, LangValRec]
-export type LangValNull = [LangValType.null_t]
-export type LangValData = [LangValType.data_t, LangValRec, LangValRec]
-export type LangValError = [LangValType.error_t, LangValRec, LangValRec]
-export type LangValJust = [LangValType.just_t, LangValRec, false, false]
-export type LangValDelayEvaluate = [LangValType.delay_evaluate_t, any, LangValRec] // WIP
-export type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
-export type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, any, LangValRec, Array<LangValRec>] // WIP
-export type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
+export type LangValSymbol = [LangComment, LangValType.symbol_t, string]
+export type LangValCons = [LangComment, LangValType.construction_t, LangValRec, LangValRec]
+export type LangValNull = [LangComment, LangValType.null_t]
+export type LangValData = [LangComment, LangValType.data_t, LangValRec, LangValRec]
+export type LangValError = [LangComment, LangValType.error_t, LangValRec, LangValRec]
+export type LangValJust = [LangComment, LangValType.just_t, LangValRec, false, false]
+type LangValDelayEvaluate = [LangComment, LangValType.delay_evaluate_t, EnvRec, LangValRec]
+type LangValDelayBuiltinFunc = [LangComment, LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
+type LangValDelayBuiltinForm = [LangComment, LangValType.delay_builtin_form_t, EnvRec, LangValRec, Array<LangValRec>]
+type LangValDelayApply = [LangComment, LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
 export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValSysName = LangValData // WIP
 export type LangValName = LangValData | LangValSymbol
-export type LangValSysNameJustDelay = LangValSysName | LangValJustDelayType
 export type LangValFunctionJustDelay = LangValRec // WIP
 
 const hole_t = LangValType.hole_t
@@ -80,6 +79,8 @@ export type LangValRec = any // WIP
     interface t extends trec < null > {}
     */
 
+export type LangComment = Array<LangValRec>
+const comment_null_v: LangComment = []
 
 /* !!!Racket Code Generator!!! (string-append "// TEST Racket Code Generator 0\n"
 "// TEST Racket Code Generator 1\n"
@@ -97,13 +98,13 @@ function new_symbol(x: string): LangValSymbol {
     return new_symbol_unicodechar(symbols_set[x])
 }
 function new_symbol_unicodechar(x: string): LangValSymbol {
-    return [symbol_t, x]
+    return [comment_null_v, symbol_t, x]
 }
 function symbol_p(x: LangVal): x is LangValSymbol {
-    return x[0] === symbol_t
+    return x[1] === symbol_t
 }
 function un_symbol_unicodechar(x: LangValSymbol): string {
-    return x[1]
+    return x[2]
 }
 function un_symbol(x: LangValSymbol): string {
     return symbols_set_neg[un_symbol_unicodechar(x)]
@@ -111,119 +112,119 @@ function un_symbol(x: LangValSymbol): string {
 export { new_symbol, symbol_p, un_symbol }
 
 function new_construction(x: LangVal, y: LangVal): LangValCons {
-    return [construction_t, x, y]
+    return [comment_null_v, construction_t, x, y]
 }
 function construction_p(x: LangVal): x is LangValCons {
-    return x[0] === construction_t
+    return x[1] === construction_t
 }
 function construction_head(x: LangValCons): LangVal {
-    return x[1]
+    return x[2]
 }
 function construction_tail(x: LangValCons): LangVal {
-    return x[2]
+    return x[3]
 }
 export { new_construction, construction_p, construction_head, construction_tail }
 
-const null_v: LangValNull = [null_t]
+const null_v: LangValNull = [comment_null_v, null_t]
 function null_p(x: LangVal): x is LangValNull {
-    return x[0] === null_t
+    return x[1] === null_t
 }
 export { null_v, null_p }
 
 function new_data(x: LangVal, y: LangVal): LangValData {
-    return [data_t, x, y]
+    return [comment_null_v, data_t, x, y]
 }
 function data_p(x: LangVal): x is LangValData {
-    return x[0] === data_t
+    return x[1] === data_t
 }
 function data_name(x: LangValData): LangVal {
-    return x[1]
+    return x[2]
 }
 function data_list(x: LangValData): LangVal {
-    return x[2]
+    return x[3]
 }
 export { new_data, data_p, data_name, data_list }
 
 function new_error(x: LangVal, y: LangVal): LangValError {
-    return [error_t, x, y]
+    return [comment_null_v, error_t, x, y]
 }
 function error_p(x: LangVal): x is LangValError {
-    return x[0] === error_t
+    return x[1] === error_t
 }
 function error_name(x: LangValError): LangVal {
-    return x[1]
+    return x[2]
 }
 function error_list(x: LangValError): LangVal {
-    return x[2]
+    return x[3]
 }
 export { new_error, error_p, error_name, error_list }
 
 function just_p(x: LangVal): x is LangValJust {
-    return x[0] === just_t
+    return x[1] === just_t
 }
 function un_just(x: LangValJust): LangVal {
-    return x[1]
+    return x[2]
 }
 function evaluate(x: Env, y: LangVal): LangValDelayEvaluate {
-    return [delay_evaluate_t, x, y]
+    return [comment_null_v, delay_evaluate_t, x, y]
 }
 export { evaluate }
 function delay_evaluate_p(x: LangVal): x is LangValDelayEvaluate {
-    return x[0] === delay_evaluate_t
+    return x[1] === delay_evaluate_t
 }
 function delay_evaluate_env(x: LangValDelayEvaluate): Env {
-    return x[1]
+    return x[2]
 }
 function delay_evaluate_x(x: LangValDelayEvaluate): LangVal {
-    return x[2]
-}
-function builtin_form_apply(x: Env, y: LangVal, z: Array<LangVal>): LangValDelayBuiltinForm {
-    return [delay_builtin_form_t, x, y, z]
-}
-function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
-    return x[0] === delay_builtin_form_t
-}
-function delay_builtin_form_env(x: LangValDelayBuiltinForm): Env {
-    return x[1]
-}
-function delay_builtin_form_f(x: LangValDelayBuiltinForm): LangVal {
-    return x[2]
-}
-function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangVal> {
     return x[3]
 }
+function builtin_form_apply(x: Env, y: LangVal, z: Array<LangVal>): LangValDelayBuiltinForm {
+    return [comment_null_v, delay_builtin_form_t, x, y, z]
+}
+function delay_builtin_form_p(x: LangVal): x is LangValDelayBuiltinForm {
+    return x[1] === delay_builtin_form_t
+}
+function delay_builtin_form_env(x: LangValDelayBuiltinForm): Env {
+    return x[2]
+}
+function delay_builtin_form_f(x: LangValDelayBuiltinForm): LangVal {
+    return x[3]
+}
+function delay_builtin_form_xs(x: LangValDelayBuiltinForm): Array<LangVal> {
+    return x[4]
+}
 function builtin_func_apply(x: LangVal, y: Array<LangVal>): LangValDelayBuiltinFunc {
-    return [delay_builtin_func_t, x, y]
+    return [comment_null_v, delay_builtin_func_t, x, y]
 }
 function delay_builtin_func_p(x: LangVal): x is LangValDelayBuiltinFunc {
-    return x[0] === delay_builtin_func_t
+    return x[1] === delay_builtin_func_t
 }
 function delay_builtin_func_f(x: LangValDelayBuiltinFunc): LangVal {
-    return x[1]
+    return x[2]
 }
 function delay_builtin_func_xs(x: LangValDelayBuiltinFunc): Array<LangVal> {
-    return x[2]
+    return x[3]
 }
 
 function apply(f: LangValFunctionJustDelay, xs: Array<LangVal>): LangValDelayApply {
-    return [delay_apply_t, f, xs]
+    return [comment_null_v, delay_apply_t, f, xs]
 }
 export { apply }
 function delay_apply_p(x: LangVal): x is LangValDelayApply {
-    return x[0] === delay_apply_t
+    return x[1] === delay_apply_t
 }
 function delay_apply_f(x: LangValDelayApply): LangVal {
-    return x[1]
+    return x[2]
 }
 function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
-    return x[2]
+    return x[3]
 }
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
-    function conslike<S, T extends [S, LangVal, LangVal] & LangVal>(x: T & Array<any>): LangVal {
-        const [, a, d] = x
-        x[1] = force_all_rec(a)
-        x[2] = force_all_rec(d)
+    function conslike<S, T extends [LangComment, S, LangVal, LangVal] & LangVal>(x: T & Array<any>): LangVal {
+        const [,, a, d] = x
+        x[2] = force_all_rec(a)
+        x[3] = force_all_rec(d)
         return x
     }
     if (data_p(x)) {
@@ -248,10 +249,11 @@ function lang_set_do(x: LangVal, y: LangVal): void {
     if (x === y) {
         return
     }
-    x[0] = just_t
-    x[1] = y
-    x[2] = false
+    x[0] = comment_null_v
+    x[1] = just_t
+    x[2] = y
     x[3] = false
+    x[4] = false
 }
 function hole_set_do(rawx: LangValHole, rawy: LangVal): void {
     LANG_ASSERT(hole_p(rawx)) // 可能曾经是hole，现在不是。
@@ -261,6 +263,7 @@ function hole_set_do(rawx: LangValHole, rawy: LangVal): void {
     x[1] = y[1]
     x[2] = y[2]
     x[3] = y[3]
+    x[4] = y[4]
 }
 // 相對獨立的部分。內建數據結構 }}}
 
@@ -308,6 +311,7 @@ const theWorldStopped_symbol = new_symbol("宇宙亡矣")
 //unused//const effect_symbol = new_symbol("效應")
 //unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
 //unused//const inputOutput_symbol = new_symbol("出入改滅")
+const comment_symbol = new_symbol("註疏")
 
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
@@ -354,6 +358,9 @@ const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_s
 const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
 const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
 const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
+
+const comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol))
+const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol))
 
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
@@ -567,6 +574,7 @@ export { force_all, force1 }
 
 // {{{ 相對獨立的部分。變量之環境
 export type Env = Array<LangVal> // WIP
+export type EnvRec = Array<any> // WIP
 
 const env_null_v: Env = []
 function env_set(env: Env, key: LangVal, val: LangVal): Env {
@@ -951,6 +959,10 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         }
         return error_v
     }],
+
+    [comment_function_builtin_systemName, 2, (comment: LangVal, x: LangVal) => {
+	throw 'WIP'
+    }],
 ]
 function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     // WIP delay未正確處理(影響較小)
@@ -1055,6 +1067,11 @@ function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfv
             return error_v
         }
         return new_lambda(env, xs[0], xs[1], error_v)
+    } else if (jsbool_equal_p(f, comment_form_builtin_systemName)) {
+        if (xs.length !== 2) {
+            return error_v
+        }
+	throw 'WIP'
     }
     return error_v
 }

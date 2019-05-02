@@ -36,10 +36,7 @@ const delay_builtin_func_t = 7 /* delay_builtin_func_t */;
 const delay_builtin_form_t = 8 /* delay_builtin_form_t */;
 const delay_apply_t = 9 /* delay_apply_t */;
 const hole_t = 10 /* hole_t */;
-/* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
-    type trec < T > = [null, t, t] | null
-    interface t extends trec < null > {}
-    */
+const comment_null_v = [];
 /* !!!Racket Code Generator!!! (string-append "// TEST Racket Code Generator 0\n"
 "// TEST Racket Code Generator 1\n"
 "// TEST Racket Code Generator 2\n") */
@@ -53,127 +50,127 @@ function new_symbol(x) {
     return new_symbol_unicodechar(symbols_set[x]);
 }
 function new_symbol_unicodechar(x) {
-    return [symbol_t, x];
+    return [comment_null_v, symbol_t, x];
 }
 function symbol_p(x) {
-    return x[0] === symbol_t;
+    return x[1] === symbol_t;
 }
 function un_symbol_unicodechar(x) {
-    return x[1];
+    return x[2];
 }
 function un_symbol(x) {
     return symbols_set_neg[un_symbol_unicodechar(x)];
 }
 export { new_symbol, symbol_p, un_symbol };
 function new_construction(x, y) {
-    return [construction_t, x, y];
+    return [comment_null_v, construction_t, x, y];
 }
 function construction_p(x) {
-    return x[0] === construction_t;
+    return x[1] === construction_t;
 }
 function construction_head(x) {
-    return x[1];
-}
-function construction_tail(x) {
     return x[2];
 }
+function construction_tail(x) {
+    return x[3];
+}
 export { new_construction, construction_p, construction_head, construction_tail };
-const null_v = [null_t];
+const null_v = [comment_null_v, null_t];
 function null_p(x) {
-    return x[0] === null_t;
+    return x[1] === null_t;
 }
 export { null_v, null_p };
 function new_data(x, y) {
-    return [data_t, x, y];
+    return [comment_null_v, data_t, x, y];
 }
 function data_p(x) {
-    return x[0] === data_t;
+    return x[1] === data_t;
 }
 function data_name(x) {
-    return x[1];
+    return x[2];
 }
 function data_list(x) {
-    return x[2];
+    return x[3];
 }
 export { new_data, data_p, data_name, data_list };
 function new_error(x, y) {
-    return [error_t, x, y];
+    return [comment_null_v, error_t, x, y];
 }
 function error_p(x) {
-    return x[0] === error_t;
+    return x[1] === error_t;
 }
 function error_name(x) {
-    return x[1];
+    return x[2];
 }
 function error_list(x) {
-    return x[2];
+    return x[3];
 }
 export { new_error, error_p, error_name, error_list };
 function just_p(x) {
-    return x[0] === just_t;
+    return x[1] === just_t;
 }
 function un_just(x) {
-    return x[1];
+    return x[2];
 }
 function evaluate(x, y) {
-    return [delay_evaluate_t, x, y];
+    return [comment_null_v, delay_evaluate_t, x, y];
 }
 export { evaluate };
 function delay_evaluate_p(x) {
-    return x[0] === delay_evaluate_t;
+    return x[1] === delay_evaluate_t;
 }
 function delay_evaluate_env(x) {
-    return x[1];
+    return x[2];
 }
 function delay_evaluate_x(x) {
-    return x[2];
-}
-function builtin_form_apply(x, y, z) {
-    return [delay_builtin_form_t, x, y, z];
-}
-function delay_builtin_form_p(x) {
-    return x[0] === delay_builtin_form_t;
-}
-function delay_builtin_form_env(x) {
-    return x[1];
-}
-function delay_builtin_form_f(x) {
-    return x[2];
-}
-function delay_builtin_form_xs(x) {
     return x[3];
 }
-function builtin_func_apply(x, y) {
-    return [delay_builtin_func_t, x, y];
+function builtin_form_apply(x, y, z) {
+    return [comment_null_v, delay_builtin_form_t, x, y, z];
 }
-function delay_builtin_func_p(x) {
-    return x[0] === delay_builtin_func_t;
+function delay_builtin_form_p(x) {
+    return x[1] === delay_builtin_form_t;
 }
-function delay_builtin_func_f(x) {
-    return x[1];
-}
-function delay_builtin_func_xs(x) {
+function delay_builtin_form_env(x) {
     return x[2];
 }
+function delay_builtin_form_f(x) {
+    return x[3];
+}
+function delay_builtin_form_xs(x) {
+    return x[4];
+}
+function builtin_func_apply(x, y) {
+    return [comment_null_v, delay_builtin_func_t, x, y];
+}
+function delay_builtin_func_p(x) {
+    return x[1] === delay_builtin_func_t;
+}
+function delay_builtin_func_f(x) {
+    return x[2];
+}
+function delay_builtin_func_xs(x) {
+    return x[3];
+}
 function apply(f, xs) {
-    return [delay_apply_t, f, xs];
+    return [comment_null_v, delay_apply_t, f, xs];
 }
 export { apply };
 function delay_apply_p(x) {
-    return x[0] === delay_apply_t;
+    return x[1] === delay_apply_t;
 }
 function delay_apply_f(x) {
-    return x[1];
+    return x[2];
 }
 function delay_apply_xs(x) {
-    return x[2];
+    return x[3];
 }
 function force_all_rec(raw) {
     const x = force_all(raw);
     function conslike(x) {
-        const [, a, d] = x;
-        x[1] = force_all_rec(a);
-        x[2] = force_all_rec(d);
+        const [, , a, d] = x;
+        x[2] = force_all_rec(a);
+        x[3] = force_all_rec(d);
         return x;
     }
     if (data_p(x)) {
@@ -199,10 +196,11 @@ function lang_set_do(x, y) {
     if (x === y) {
         return;
     }
-    x[0] = just_t;
-    x[1] = y;
-    x[2] = false;
+    x[0] = comment_null_v;
+    x[1] = just_t;
+    x[2] = y;
     x[3] = false;
+    x[4] = false;
 }
 function hole_set_do(rawx, rawy) {
     LANG_ASSERT(hole_p(rawx)); // 可能曾经是hole，现在不是。
@@ -212,6 +210,7 @@ function hole_set_do(rawx, rawy) {
     x[1] = y[1];
     x[2] = y[2];
     x[3] = y[3];
+    x[4] = y[4];
 }
 // 相對獨立的部分。內建數據結構 }}}
 // {{{ 相對獨立的部分。符號名稱
@@ -256,6 +255,7 @@ const theWorldStopped_symbol = new_symbol("宇宙亡矣");
 //unused//const effect_symbol = new_symbol("效應")
 //unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
 //unused//const inputOutput_symbol = new_symbol("出入改滅")
+const comment_symbol = new_symbol("註疏");
 const the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol));
 function systemName_make(x) {
     return new_data(name_symbol, new_list(system_symbol, x));
@@ -293,6 +293,8 @@ const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_s
 const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)));
 const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)));
 const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol));
+const comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol));
+const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol));
 const false_v = new_data(false_symbol, new_list());
 const true_v = new_data(true_symbol, new_list());
 function symbol_equal_p(x, y) {
@@ -860,6 +862,9 @@ const real_builtin_func_apply_s = [
             }
             return error_v;
         }],
+    [comment_function_builtin_systemName, 2, (comment, x) => {
+            throw 'WIP';
+        }],
 ];
 function real_apply(f, xs, selfvalraw) {
     // WIP delay未正確處理(影響較小)
@@ -957,6 +962,12 @@ function real_builtin_form_apply(env, f, xs, selfvalraw) {
             return error_v;
         }
         return new_lambda(env, xs[0], xs[1], error_v);
+    }
+    else if (jsbool_equal_p(f, comment_form_builtin_systemName)) {
+        if (xs.length !== 2) {
+            return error_v;
+        }
+        throw 'WIP';
     }
     return error_v;
 }
