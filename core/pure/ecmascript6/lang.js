@@ -109,6 +109,7 @@ export { new_error, error_p, error_name, error_list };
 function just_p(x) {
     return x[1] === just_t;
 }
+export { just_p };
 function un_just(x) {
     return x[2];
 }
@@ -348,14 +349,17 @@ function un_just_all(raw) {
     }
     return x;
 }
-function any_delay_just_p(x) {
-    return just_p(x) ||
-        delay_evaluate_p(x) ||
+export { un_just_all as un_just };
+function any_delay_p(x) {
+    return delay_evaluate_p(x) ||
         delay_builtin_form_p(x) ||
         delay_builtin_func_p(x) ||
         delay_apply_p(x);
 }
-export { any_delay_just_p as delay_p };
+function any_delay_just_p(x) {
+    return just_p(x) || any_delay_p(x);
+}
+export { any_delay_p as delay_p, any_delay_just_p as delay_just_p };
 function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false], xs = []) {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {};
@@ -495,7 +499,10 @@ function force1(raw) {
     lang_set_do(x, ret);
     return ret;
 }
-export { force_all, force1 };
+function force_all_export(raw) {
+    return force_all(raw);
+}
+export { force_all_export as force_all, force1 };
 const env_null_v = [];
 function env_set(env, key, val) {
     let ret = [];

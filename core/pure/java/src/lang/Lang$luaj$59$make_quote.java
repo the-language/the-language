@@ -1,10 +1,10 @@
 package lang;
-public class Lang$luaj$58$make_quote extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$59$make_quote extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue[] u2;
     
-    public Lang$luaj$58$make_quote() {
+    public Lang$luaj$59$make_quote() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

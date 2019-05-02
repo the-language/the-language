@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$46$make_history extends org.luaj.vm2.lib.ZeroArgFunction {
+public class Lang$luaj$47$make_history extends org.luaj.vm2.lib.ZeroArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue[] u2;
@@ -9,7 +9,7 @@ public class Lang$luaj$46$make_history extends org.luaj.vm2.lib.ZeroArgFunction 
         k0 = org.luaj.vm2.LuaString.valueOf("pairs");
     }
     
-    public Lang$luaj$46$make_history() {
+    public Lang$luaj$47$make_history() {
     }
     
     final public org.luaj.vm2.LuaValue call() {

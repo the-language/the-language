@@ -4,7 +4,6 @@ public class Lang$luaj$45 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
-    org.luaj.vm2.LuaValue u4;
     
     public Lang$luaj$45() {
     }
@@ -17,9 +16,6 @@ public class Lang$luaj$45 extends org.luaj.vm2.lib.OneArgFunction {
                 a0 = this.u2.call(a);
                 if (!a0.toboolean()) {
                     a0 = this.u3.call(a);
-                    if (!a0.toboolean()) {
-                        a0 = this.u4.call(a);
-                    }
                 }
             }
         }
