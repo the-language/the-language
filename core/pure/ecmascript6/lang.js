@@ -37,6 +37,26 @@ const delay_builtin_form_t = 8 /* delay_builtin_form_t */;
 const delay_apply_t = 9 /* delay_apply_t */;
 const hole_t = 10 /* hole_t */;
 const comment_null_v = [];
+function comment_append(x, y) {
+    if (x === comment_null_v) {
+        return y;
+    }
+    if (y === comment_null_v) {
+        return x;
+    }
+    let ret = [];
+    for (const e of x) {
+        ret.push(e);
+    }
+    for (const e of y) {
+        ret.push(e);
+    }
+    return ret;
+}
+function get_comment_1(x) {
+    return x[0];
+}
+export { comment_null_v, comment_append, get_comment_1 };
 /* !!!Racket Code Generator!!! (string-append "// TEST Racket Code Generator 0\n"
 "// TEST Racket Code Generator 1\n"
 "// TEST Racket Code Generator 2\n") */
@@ -110,7 +130,7 @@ function just_p(x) {
     return x[1] === just_t;
 }
 export { just_p };
-function un_just(x) {
+function un_just_noComment(x) {
     return x[2];
 }
 function evaluate(x, y) {
@@ -340,9 +360,11 @@ export { jsArray_to_list, maybe_list_to_jsArray, new_list };
 function un_just_all(raw) {
     let x = raw;
     let xs = [];
+    let comment = comment_null_v;
     while (just_p(x)) {
         xs.push(x);
-        x = un_just(x);
+        comment = comment_append(comment, get_comment_1(x));
+        x = un_just_noComment(x);
     }
     for (const v of xs) {
         lang_set_do(v, x);
@@ -361,7 +383,19 @@ function any_delay_just_p(x) {
 }
 export { any_delay_p as delay_p, any_delay_just_p as delay_just_p };
 function any_delay2delay_evaluate(x) {
-    throw 'WIP';
+    if (delay_evaluate_p(x)) {
+        return x;
+    }
+    else if (delay_builtin_form_p(x)) {
+        throw 'WIP';
+    }
+    else if (delay_builtin_func_p(x)) {
+        throw 'WIP';
+    }
+    else if (delay_apply_p(x)) {
+        throw 'WIP';
+    }
+    return LANG_ERROR();
 }
 function any_delay_env(x) {
     return delay_evaluate_env(any_delay2delay_evaluate(x));
@@ -370,6 +404,7 @@ function any_delay_x(x) {
     return delay_evaluate_x(any_delay2delay_evaluate(x));
 }
 export { any_delay_env as delay_env, any_delay_x as delay_x };
+// 註疏系統WIP
 function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false], xs = []) {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {};
@@ -486,6 +521,7 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
     }
     return do_rewrite(x);
 }
+// 註疏系統WIP
 function force1(raw) {
     const x = un_just_all(raw);
     let ret;
@@ -620,6 +656,7 @@ function val2env(x) {
 }
 export { env_null_v, env_set, env_get, env2val, env_foreach, val2env };
 // 相對獨立的部分。變量之環境 }}}
+// 註疏系統WIP
 function real_evaluate(env, raw, selfvalraw) {
     const x = force1(raw);
     if (any_delay_just_p(x)) {
@@ -755,6 +792,7 @@ function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc) {
             return error_v;
         }];
 }
+// 註疏系統WIP
 const real_builtin_func_apply_s = [
     make_builtin_p_func(data_p_function_builtin_systemName, data_p),
     [new_data_function_builtin_systemName, 2, new_data],
@@ -883,6 +921,7 @@ const real_builtin_func_apply_s = [
             throw 'WIP';
         }],
 ];
+// 註疏系統WIP
 function real_apply(f, xs, selfvalraw) {
     // WIP delay未正確處理(影響較小)
     function make_error_v() {
@@ -941,6 +980,7 @@ function real_apply(f, xs, selfvalraw) {
     }
     return evaluate(env, f_code);
 }
+// 註疏系統WIP
 function real_builtin_func_apply(f, xs, selfvalraw) {
     const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
     for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
@@ -966,6 +1006,7 @@ function real_builtin_func_apply(f, xs, selfvalraw) {
     }
     return error_v;
 }
+// 註疏系統WIP
 function real_builtin_form_apply(env, f, xs, selfvalraw) {
     const error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
     if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
@@ -991,6 +1032,7 @@ function real_builtin_form_apply(env, f, xs, selfvalraw) {
 function make_quote(x) {
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x);
 }
+// 註疏系統WIP
 function new_lambda(env, args_pat, body, error_v = false) {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
     function make_error_v() {
@@ -1043,6 +1085,7 @@ function new_lambda(env, args_pat, body, error_v = false) {
     }
     return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)));
 }
+// WIP delay未正確處理(影響較小)
 function jsbool_equal_p(x, y) {
     if (x === y) {
         return true;

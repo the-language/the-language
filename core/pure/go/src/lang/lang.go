@@ -57,7 +57,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_null_v, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_null_v, comment_append, get_comment_1, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just_noComment, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -65,6 +65,27 @@ function LANG_ASSERT(x)
     if not x then
         return LANG_ERROR()
     end
+end
+function comment_append(x, y)
+    if x == comment_null_v then
+        return y
+    end
+    if y == comment_null_v then
+        return x
+    end
+    local ret = {}
+    for ____TS_index = 1, #x do
+        local e = x[____TS_index]
+        __TS__ArrayPush(ret, e)
+    end
+    for ____TS_index = 1, #y do
+        local e = y[____TS_index]
+        __TS__ArrayPush(ret, e)
+    end
+    return ret
+end
+function get_comment_1(x)
+    return x[0 + 1]
 end
 function new_symbol_unicodechar(x)
     return {
@@ -139,7 +160,7 @@ end
 function just_p(x)
     return x[1 + 1] == just_t
 end
-function un_just(x)
+function un_just_noComment(x)
     return x[2 + 1]
 end
 function evaluate(x, y)
@@ -271,9 +292,11 @@ end
 function un_just_all(raw)
     local x = raw
     local xs = {}
+    local comment = comment_null_v
     while just_p(x) do
         __TS__ArrayPush(xs, x)
-        x = un_just(x)
+        comment = comment_append(comment, get_comment_1(x))
+        x = un_just_noComment(x)
     end
     for ____TS_index = 1, #xs do
         local v = xs[____TS_index]
@@ -895,6 +918,9 @@ delay_builtin_form_t = 8
 delay_apply_t = 9
 local hole_t = 10
 comment_null_v = {}
+____exports.comment_null_v = comment_null_v
+____exports.comment_append = comment_append
+____exports.get_comment_1 = get_comment_1
 local function new_symbol(x)
     LANG_ASSERT(symbols_set[x] ~= nil)
     return new_symbol_unicodechar(symbols_set[x])
@@ -1232,7 +1258,16 @@ ____exports.un_just = un_just_all
 ____exports.delay_p = any_delay_p
 ____exports.delay_just_p = any_delay_just_p
 local function any_delay2delay_evaluate(x)
-    error("WIP")
+    if delay_evaluate_p(x) then
+        return x
+    elseif delay_builtin_form_p(x) then
+        error("WIP")
+    elseif delay_builtin_func_p(x) then
+        error("WIP")
+    elseif delay_apply_p(x) then
+        error("WIP")
+    end
+    return LANG_ERROR()
 end
 local function any_delay_env(x)
     return delay_evaluate_env(any_delay2delay_evaluate(x))

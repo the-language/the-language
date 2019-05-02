@@ -1,9 +1,9 @@
 package lang;
-public class Lang$luaj$80$H_if extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$82$H_if extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     
-    public Lang$luaj$80$H_if() {
+    public Lang$luaj$82$H_if() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

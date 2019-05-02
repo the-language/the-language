@@ -72,7 +72,8 @@ export type LangValFunctionJustDelay = LangValRec // WIP
 
 const hole_t = LangValType.hole_t
 type LangValHole = [LangValType.hole_t]
-export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValHole
+type LangValNotHole = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
+export type LangVal = LangValNotHole | LangValHole
 export type LangValRec = any // WIP
 /* 遞歸類型 A hack: [Unused] [error TS2312: An interface can only extend an object type or intersection of object types with statically known members.]
     type trec < T > = [null, t, t] | null
@@ -81,6 +82,22 @@ export type LangValRec = any // WIP
 
 export type LangComment = Array<LangValRec>
 const comment_null_v: LangComment = []
+function comment_append(x: LangComment, y: LangComment): LangComment {
+    if (x === comment_null_v) { return y }
+    if (y === comment_null_v) { return x }
+    let ret = []
+    for (const e of x) {
+        ret.push(e)
+    }
+    for (const e of y) {
+        ret.push(e)
+    }
+    return ret
+}
+function get_comment_1(x: LangValNotHole): LangComment {
+    return x[0]
+}
+export { comment_null_v, comment_append, get_comment_1 }
 
 /* !!!Racket Code Generator!!! (string-append "// TEST Racket Code Generator 0\n"
 "// TEST Racket Code Generator 1\n"
@@ -163,7 +180,7 @@ function just_p(x: LangVal): x is LangValJust {
     return x[1] === just_t
 }
 export { just_p }
-function un_just(x: LangValJust): LangVal {
+function un_just_noComment(x: LangValJust): LangVal {
     return x[2]
 }
 function evaluate(x: Env, y: LangVal): LangValDelayEvaluate {
@@ -223,7 +240,7 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
     function conslike<S, T extends [LangComment, S, LangVal, LangVal] & LangVal>(x: T & Array<any>): LangVal {
-        const [,, a, d] = x
+        const [, , a, d] = x
         x[2] = force_all_rec(a)
         x[3] = force_all_rec(d)
         return x
@@ -414,9 +431,11 @@ export { jsArray_to_list, maybe_list_to_jsArray, new_list }
 function un_just_all(raw: LangVal): LangVal {
     let x = raw
     let xs: Array<LangVal> = []
+    let comment: LangComment = comment_null_v
     while (just_p(x)) {
         xs.push(x)
-        x = un_just(x)
+        comment = comment_append(comment, get_comment_1(x))
+        x = un_just_noComment(x)
     }
 
     for (const v of xs) {
@@ -439,7 +458,16 @@ function any_delay_just_p(x: LangVal): x is LangValJustDelay {
 export { any_delay_p as delay_p, any_delay_just_p as delay_just_p }
 
 function any_delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
-    throw 'WIP'
+    if (delay_evaluate_p(x)) {
+        return x
+    } else if (delay_builtin_form_p(x)) {
+        throw 'WIP'
+    } else if (delay_builtin_func_p(x)) {
+        throw 'WIP'
+    } else if (delay_apply_p(x)) {
+        throw 'WIP'
+    }
+    return LANG_ERROR()
 }
 function any_delay_env(x: LangValDelay): Env {
     return delay_evaluate_env(any_delay2delay_evaluate(x))
@@ -449,6 +477,7 @@ function any_delay_x(x: LangValDelay): LangVal {
 }
 export { any_delay_env as delay_env, any_delay_x as delay_x }
 
+// 註疏系統WIP
 function force_all(
     raw: LangVal,
     parents_history: { [key: string]: true } = {},
@@ -562,6 +591,7 @@ function force_all(
     return do_rewrite(x)
 }
 
+// 註疏系統WIP
 function force1(raw: LangVal): LangVal {
     const x: LangVal = un_just_all(raw)
     let ret: LangVal
@@ -714,6 +744,7 @@ export {
 
 // 相對獨立的部分。變量之環境 }}}
 
+// 註疏系統WIP
 function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     const x = force1(raw)
     if (any_delay_just_p(x)) {
@@ -858,6 +889,7 @@ type real_builtin_func_apply_T =
     [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => LangVal] |
     [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal]
 
+// 註疏系統WIP
 const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
     make_builtin_p_func(data_p_function_builtin_systemName, data_p),
     [new_data_function_builtin_systemName, 2, new_data],
@@ -978,9 +1010,10 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
     }],
 
     [comment_function_builtin_systemName, 2, (comment: LangVal, x: LangVal) => {
-	throw 'WIP'
+        throw 'WIP'
     }],
 ]
+// 註疏系統WIP
 function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     // WIP delay未正確處理(影響較小)
     function make_error_v() {
@@ -1043,6 +1076,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVa
     return evaluate(env, f_code)
 }
 
+// 註疏系統WIP
 function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     const error_v = new_error(system_symbol,
         new_list(function_builtin_use_systemName,
@@ -1069,6 +1103,7 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: Lan
     return error_v
 }
 
+// 註疏系統WIP
 function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     const error_v = new_error(system_symbol,
         new_list(form_builtin_use_systemName,
@@ -1088,7 +1123,7 @@ function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfv
         if (xs.length !== 2) {
             return error_v
         }
-	throw 'WIP'
+        throw 'WIP'
     }
     return error_v
 }
@@ -1096,6 +1131,8 @@ function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfv
 function make_quote(x: LangVal): LangVal {
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
 }
+
+// 註疏系統WIP
 function new_lambda(
     env: Env,
     args_pat: LangVal,
@@ -1155,6 +1192,7 @@ function new_lambda(
     return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
 }
 
+// WIP delay未正確處理(影響較小)
 function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
@@ -1860,8 +1898,8 @@ function machinetext_parse(rawstr: string): LangVal {
                 conslike(new_data)
             } else if (chr === '!') {
                 conslike(new_error)
-	    } else if (chr === '$') {
-		conslike((x, y) => evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))))
+            } else if (chr === '$') {
+                conslike((x, y) => evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))))
             } else if (chr === '_') {
                 hole_set_do(hol, null_v)
             } else {
@@ -1898,9 +1936,9 @@ function machinetext_print(x: LangVal): string {
                 conslike(x, '#', data_name, data_list)
             } else if (error_p(x)) {
                 conslike(x, '!', error_name, error_list)
-	    } else if (any_delay_p(x)) {
-		const y = any_delay2delay_evaluate(x)
-		conslike(y, '$', ((x) => env2val(delay_evaluate_env(x))), delay_evaluate_x)
+            } else if (any_delay_p(x)) {
+                const y = any_delay2delay_evaluate(x)
+                conslike(y, '$', ((x) => env2val(delay_evaluate_env(x))), delay_evaluate_x)
             } else {
                 return LANG_ERROR()
             }
