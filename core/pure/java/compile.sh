@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# pypy好像更慢
+py2(){
+  #if type pypy > /dev/null ;then
+    #pypy "$@"
+  #else
+    python2 "$@"
+  #fi
+}
+
 [ -d luaj ] || tar -xJvf luaj.tar.xz
 
 [ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git ||exit
@@ -16,7 +25,7 @@ jar cf lang.jar *
 cd -
 
 rm -fr src
-python2 -OO ./Krakatau/decompile.py -nauto -path "$(echo /usr/lib/jvm/*/jre/lib/rt.jar | awk '{print $1}');./luaj/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
+py2 -OO ./Krakatau/decompile.py -nauto -path "$(echo /usr/lib/jvm/*/jre/lib/rt.jar | awk '{print $1}');./luaj/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
 for f in ./src/lang/*.java ;do
   cp "$f" "$f".1
   echo 'package lang;' > "$f"
