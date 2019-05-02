@@ -172,8 +172,7 @@ in-dir "typescript" {
              (define raw #{cat lang.js})
              |> ++ c-generatedby raw &>! lang.js
      }})
-     ("java/src" ("java/src/lang/Lang.java") (void))
-     ("java/src/lang/Lang.java" ("lua/lang.lua" "java/real-src/lang/Lang.java" "java/real-src/lang/LangValue.java") {
+     ("java/src" ("lua/lang.lua" "java/real-src/lang/Lang.java" "java/real-src/lang/LangValue.java") {
          ;; TODO rewrite in rash
          in-dir "java" {
              ./compile.sh

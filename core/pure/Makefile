@@ -13,11 +13,8 @@ lua/lang.lua: typescript/lang.ts typescript/.done.racket.code.generator
 ecmascript6/lang.js: typescript/lang.ts typescript/.done.racket.code.generator
 	racket Makefile.domake.rkt ecmascript6/lang.js
 
-java/src: java/src/lang/Lang.java
+java/src: lua/lang.lua java/real-src/lang/Lang.java java/real-src/lang/LangValue.java
 	racket Makefile.domake.rkt java/src
-
-java/src/lang/Lang.java: lua/lang.lua java/real-src/lang/Lang.java java/real-src/lang/LangValue.java
-	racket Makefile.domake.rkt java/src/lang/Lang.java
 
 go/src: lua/lang.lua
 	racket Makefile.domake.rkt go/src
