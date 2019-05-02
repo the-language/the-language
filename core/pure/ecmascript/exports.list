@@ -25,6 +25,8 @@ new_list
 un_just
 delay_p
 delay_just_p
+delay_env
+delay_x
 force1
 force_all
 env_null_v

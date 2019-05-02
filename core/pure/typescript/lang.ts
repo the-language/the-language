@@ -438,6 +438,17 @@ function any_delay_just_p(x: LangVal): x is LangValJustDelay {
 }
 export { any_delay_p as delay_p, any_delay_just_p as delay_just_p }
 
+function any_delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
+    throw 'WIP'
+}
+function any_delay_env(x: LangValDelay): Env {
+    return delay_evaluate_env(any_delay2delay_evaluate(x))
+}
+function any_delay_x(x: LangValDelay): LangVal {
+    return delay_evaluate_x(any_delay2delay_evaluate(x))
+}
+export { any_delay_env as delay_env, any_delay_x as delay_x }
+
 function force_all(
     raw: LangVal,
     parents_history: { [key: string]: true } = {},
@@ -1082,6 +1093,9 @@ function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfv
     return error_v
 }
 
+function make_quote(x: LangVal): LangVal {
+    return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
+}
 function new_lambda(
     env: Env,
     args_pat: LangVal,
@@ -1099,9 +1113,6 @@ function new_lambda(
         } else {
             return error_v
         }
-    }
-    function make_quote(x: LangVal): LangVal {
-        return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
     }
     args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
     let args_pat_vars: Array<LangVal> = [] // : JSList LangVal/Name 順序有要求
@@ -1835,11 +1846,11 @@ function machinetext_parse(rawstr: string): LangVal {
                 new_stack.push(hol2)
                 hole_set_do(hol, c(hol1, hol2))
             }
-            if (chr === '$') {
+            if (chr === '^') {
                 let tmp: string = ''
                 while (true) {
                     const chr: string = get_do()
-                    if (chr === '$') { break }
+                    if (chr === '^') { break }
                     tmp += chr
                 }
                 hole_set_do(hol, new_symbol_unicodechar(tmp))
@@ -1849,10 +1860,12 @@ function machinetext_parse(rawstr: string): LangVal {
                 conslike(new_data)
             } else if (chr === '!') {
                 conslike(new_error)
+	    } else if (chr === '$') {
+		conslike((x, y) => evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))))
             } else if (chr === '_') {
                 hole_set_do(hol, null_v)
             } else {
-                throw 'WIP'
+                return parse_error()
             }
         }
         stack = new_stack
@@ -1874,9 +1887,9 @@ function machinetext_print(x: LangVal): string {
                 new_stack.push(g2(x))
             }
             if (symbol_p(x)) {
-                result += '$'
+                result += '^'
                 result += un_symbol_unicodechar(x)
-                result += '$'
+                result += '^'
             } else if (construction_p(x)) {
                 conslike(x, '.', construction_head, construction_tail)
             } else if (null_p(x)) {
@@ -1885,8 +1898,11 @@ function machinetext_print(x: LangVal): string {
                 conslike(x, '#', data_name, data_list)
             } else if (error_p(x)) {
                 conslike(x, '!', error_name, error_list)
+	    } else if (any_delay_p(x)) {
+		const y = any_delay2delay_evaluate(x)
+		conslike(y, '$', ((x) => env2val(delay_evaluate_env(x))), delay_evaluate_x)
             } else {
-                throw 'WIP'
+                return LANG_ERROR()
             }
         }
         stack = new_stack

@@ -28,7 +28,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_null_v, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_null_v, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -702,6 +702,9 @@ function real_builtin_form_apply(env, f, xs, selfvalraw)
     end
     return error_v
 end
+function make_quote(x)
+    return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
+end
 function new_lambda(env, args_pat, body, error_v)
     if error_v == nil then
         error_v = false
@@ -715,9 +718,6 @@ function new_lambda(env, args_pat, body, error_v)
         else
             return error_v
         end
-    end
-    local function make_quote(x)
-        return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
     end
     args_pat = force_all_rec(args_pat)
     local args_pat_vars = {}
@@ -1202,6 +1202,17 @@ ____exports.new_list = new_list
 ____exports.un_just = un_just_all
 ____exports.delay_p = any_delay_p
 ____exports.delay_just_p = any_delay_just_p
+local function any_delay2delay_evaluate(x)
+    error("WIP")
+end
+local function any_delay_env(x)
+    return delay_evaluate_env(any_delay2delay_evaluate(x))
+end
+local function any_delay_x(x)
+    return delay_evaluate_x(any_delay2delay_evaluate(x))
+end
+____exports.delay_env = any_delay_env
+____exports.delay_x = any_delay_x
 local function force_all_export(raw)
     return force_all(raw)
 end
@@ -2125,11 +2136,11 @@ local function machinetext_parse(rawstr)
                 __TS__ArrayPush(new_stack, hol2)
                 hole_set_do(hol, c(hol1, hol2))
             end
-            if chr == "$" then
+            if chr == "^" then
                 local tmp = ""
                 while true do
                     local chr = get_do()
-                    if chr == "$" then
+                    if chr == "^" then
                         break
                     end
                     tmp = tostring(tmp) .. tostring(chr)
@@ -2141,10 +2152,12 @@ local function machinetext_parse(rawstr)
                 conslike(new_data)
             elseif chr == "!" then
                 conslike(new_error)
+            elseif chr == "$" then
+                conslike(function(x, y) return evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))) end)
             elseif chr == "_" then
                 hole_set_do(hol, null_v)
             else
-                error("WIP")
+                return parse_error()
             end
         end
         stack = new_stack
@@ -2167,9 +2180,9 @@ local function machinetext_print(x)
                 __TS__ArrayPush(new_stack, g2(x))
             end
             if symbol_p(x) then
-                result = tostring(result) .. "$"
+                result = tostring(result) .. "^"
                 result = tostring(result) .. tostring(un_symbol_unicodechar(x))
-                result = tostring(result) .. "$"
+                result = tostring(result) .. "^"
             elseif construction_p(x) then
                 conslike(x, ".", construction_head, construction_tail)
             elseif null_p(x) then
@@ -2178,8 +2191,11 @@ local function machinetext_print(x)
                 conslike(x, "#", data_name, data_list)
             elseif error_p(x) then
                 conslike(x, "!", error_name, error_list)
+            elseif any_delay_p(x) then
+                local y = any_delay2delay_evaluate(x)
+                conslike(y, "$", (function(x) return env2val(delay_evaluate_env(x)) end), delay_evaluate_x)
             else
-                error("WIP")
+                return LANG_ERROR()
             end
         end
         stack = new_stack
