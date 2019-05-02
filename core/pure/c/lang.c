@@ -16678,44 +16678,45 @@ static inline int lcf_main(lua_State *L) {
    *     x = "x",
    *     y = "y",
    *     z = "z",
-   *     ["一類何物"] = "：",
-   *     ["之物"] = "物",
-   *     ["其子"] = "分",
-   *     ["出入改滅"] = "變",
-   *     ["列序"] = "列",
-   *     ["化滅"] = "化",
-   *     ["參形"] = "參",
-   *     ["吾自"] = "自",
-   *     ["太始初核"] = "核",
-   *     ["如若"] = "若",
-   *     ["宇宙亡矣"] = "止",
-   *     ["尾末"] = "尾",
-   *     ["序丁"] = "丁",
-   *     ["序丙"] = "丙",
-   *     ["序乙"] = "乙",
-   *     ["序甲"] = "甲",
-   *     ["式形"] = "形",
-   *     ["引用"] = "引",
-   *     ["應用"] = "用",
-   *     ["效應"] = "效",
-   *     ["映表"] = "表",
+   *     ["一類何物"] = "㝉",
+   *     ["之物"] = "𫙦",
+   *     ["其子"] = "𦮪",
+   *     ["出入改滅"] = "𢒟",
+   *     ["列序"] = "𠜺",
+   *     ["化滅"] = "𠏁",
+   *     ["參形"] = "𠫰",
+   *     ["吾自"] = "𦣹",
+   *     ["太始初核"] = "𣝗",
+   *     ["如若"] = "𦱡",
+   *     ["宇宙亡矣"] = "𨹹",
+   *     ["尾末"] = "𡲵",
+   *     ["序丁"] = "𠆤",
+   *     ["序丙"] = "𠇮",
+   *     ["序乙"] = "㐈",
+   *     ["序甲"] = "𠇚",
+   *     ["式形"] = "佱",
+   *     ["引用"] = "㧈",
+   *     ["應用"] = "𤰆",
+   *     ["效應"] = "効",
+   *     ["映表"] = "𤅔",
    *     ["是非"] = "欤",
-   *     ["構物"] = "構",
+   *     ["構物"] = "𡒫",
    *     ["為符名連"] = "‐",
-   *     ["特定其物"] = "獨",
-   *     ["省略一物"] = "某",
-   *     ["符名"] = "符",
-   *     ["等同"] = "等",
-   *     ["解算"] = "算",
-   *     ["詞素"] = "文",
-   *     ["謬誤"] = "謬",
-   *     ["連頸"] = "連",
-   *     ["間空"] = "空",
-   *     ["陰"] = "陰",
-   *     ["陽"] = "陽",
-   *     ["首始"] = "首",
+   *     ["特定其物"] = "亓",
+   *     ["省略一物"] = "畧",
+   *     ["符名"] = "謼",
+   *     ["等同"] = "弌",
+   *     ["解算"] = "筭",
+   *     ["註疏"] = "疎",
+   *     ["詞素"] = "𧥝",
+   *     ["謬誤"] = "䥘",
+   *     ["連頸"] = "丩",
+   *     ["間空"] = "𣣓",
+   *     ["陰"] = "侌",
+   *     ["陽"] = "𣆄",
+   *     ["首始"] = "𩠐",
    * } */
-  lua_createtable(L, 0, 98);
+  lua_createtable(L, 0, 99);
   lua_pushliteral(L, "0");
   lua_pushliteral(L, "0");
   lua_rawset(L, -3);
@@ -16903,112 +16904,115 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "z");
   lua_rawset(L, -3);
   lua_pushliteral(L, "一類何物");
-  lua_pushliteral(L, "：");
+  lua_pushliteral(L, "㝉");
   lua_rawset(L, -3);
   lua_pushliteral(L, "之物");
-  lua_pushliteral(L, "物");
+  lua_pushliteral(L, "𫙦");
   lua_rawset(L, -3);
   lua_pushliteral(L, "其子");
-  lua_pushliteral(L, "分");
+  lua_pushliteral(L, "𦮪");
   lua_rawset(L, -3);
   lua_pushliteral(L, "出入改滅");
-  lua_pushliteral(L, "變");
+  lua_pushliteral(L, "𢒟");
   lua_rawset(L, -3);
   lua_pushliteral(L, "列序");
-  lua_pushliteral(L, "列");
+  lua_pushliteral(L, "𠜺");
   lua_rawset(L, -3);
   lua_pushliteral(L, "化滅");
-  lua_pushliteral(L, "化");
+  lua_pushliteral(L, "𠏁");
   lua_rawset(L, -3);
   lua_pushliteral(L, "參形");
-  lua_pushliteral(L, "參");
+  lua_pushliteral(L, "𠫰");
   lua_rawset(L, -3);
   lua_pushliteral(L, "吾自");
-  lua_pushliteral(L, "自");
+  lua_pushliteral(L, "𦣹");
   lua_rawset(L, -3);
   lua_pushliteral(L, "太始初核");
-  lua_pushliteral(L, "核");
+  lua_pushliteral(L, "𣝗");
   lua_rawset(L, -3);
   lua_pushliteral(L, "如若");
-  lua_pushliteral(L, "若");
+  lua_pushliteral(L, "𦱡");
   lua_rawset(L, -3);
   lua_pushliteral(L, "宇宙亡矣");
-  lua_pushliteral(L, "止");
+  lua_pushliteral(L, "𨹹");
   lua_rawset(L, -3);
   lua_pushliteral(L, "尾末");
-  lua_pushliteral(L, "尾");
+  lua_pushliteral(L, "𡲵");
   lua_rawset(L, -3);
   lua_pushliteral(L, "序丁");
-  lua_pushliteral(L, "丁");
+  lua_pushliteral(L, "𠆤");
   lua_rawset(L, -3);
   lua_pushliteral(L, "序丙");
-  lua_pushliteral(L, "丙");
+  lua_pushliteral(L, "𠇮");
   lua_rawset(L, -3);
   lua_pushliteral(L, "序乙");
-  lua_pushliteral(L, "乙");
+  lua_pushliteral(L, "㐈");
   lua_rawset(L, -3);
   lua_pushliteral(L, "序甲");
-  lua_pushliteral(L, "甲");
+  lua_pushliteral(L, "𠇚");
   lua_rawset(L, -3);
   lua_pushliteral(L, "式形");
-  lua_pushliteral(L, "形");
+  lua_pushliteral(L, "佱");
   lua_rawset(L, -3);
   lua_pushliteral(L, "引用");
-  lua_pushliteral(L, "引");
+  lua_pushliteral(L, "㧈");
   lua_rawset(L, -3);
   lua_pushliteral(L, "應用");
-  lua_pushliteral(L, "用");
+  lua_pushliteral(L, "𤰆");
   lua_rawset(L, -3);
   lua_pushliteral(L, "效應");
-  lua_pushliteral(L, "效");
+  lua_pushliteral(L, "効");
   lua_rawset(L, -3);
   lua_pushliteral(L, "映表");
-  lua_pushliteral(L, "表");
+  lua_pushliteral(L, "𤅔");
   lua_rawset(L, -3);
   lua_pushliteral(L, "是非");
   lua_pushliteral(L, "欤");
   lua_rawset(L, -3);
   lua_pushliteral(L, "構物");
-  lua_pushliteral(L, "構");
+  lua_pushliteral(L, "𡒫");
   lua_rawset(L, -3);
   lua_pushliteral(L, "為符名連");
   lua_pushliteral(L, "‐");
   lua_rawset(L, -3);
   lua_pushliteral(L, "特定其物");
-  lua_pushliteral(L, "獨");
+  lua_pushliteral(L, "亓");
   lua_rawset(L, -3);
   lua_pushliteral(L, "省略一物");
-  lua_pushliteral(L, "某");
+  lua_pushliteral(L, "畧");
   lua_rawset(L, -3);
   lua_pushliteral(L, "符名");
-  lua_pushliteral(L, "符");
+  lua_pushliteral(L, "謼");
   lua_rawset(L, -3);
   lua_pushliteral(L, "等同");
-  lua_pushliteral(L, "等");
+  lua_pushliteral(L, "弌");
   lua_rawset(L, -3);
   lua_pushliteral(L, "解算");
-  lua_pushliteral(L, "算");
+  lua_pushliteral(L, "筭");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "註疏");
+  lua_pushliteral(L, "疎");
   lua_rawset(L, -3);
   lua_pushliteral(L, "詞素");
-  lua_pushliteral(L, "文");
+  lua_pushliteral(L, "𧥝");
   lua_rawset(L, -3);
   lua_pushliteral(L, "謬誤");
-  lua_pushliteral(L, "謬");
+  lua_pushliteral(L, "䥘");
   lua_rawset(L, -3);
   lua_pushliteral(L, "連頸");
-  lua_pushliteral(L, "連");
+  lua_pushliteral(L, "丩");
   lua_rawset(L, -3);
   lua_pushliteral(L, "間空");
-  lua_pushliteral(L, "空");
+  lua_pushliteral(L, "𣣓");
   lua_rawset(L, -3);
   lua_pushliteral(L, "陰");
-  lua_pushliteral(L, "陰");
+  lua_pushliteral(L, "侌");
   lua_rawset(L, -3);
   lua_pushliteral(L, "陽");
-  lua_pushliteral(L, "陽");
+  lua_pushliteral(L, "𣆄");
   lua_rawset(L, -3);
   lua_pushliteral(L, "首始");
-  lua_pushliteral(L, "首");
+  lua_pushliteral(L, "𩠐");
   lua_rawset(L, -3);
   lc_setupvalue(L, (lc473 + lc_nextra), 5, 49);
   assert(lua_gettop(L) - lc_nextra == 7);
@@ -17076,44 +17080,45 @@ static inline int lcf_main(lua_State *L) {
    *     x = "x",
    *     y = "y",
    *     z = "z",
-   *     ["："] = "一類何物",
-   *     ["物"] = "之物",
-   *     ["分"] = "其子",
-   *     ["變"] = "出入改滅",
-   *     ["列"] = "列序",
-   *     ["化"] = "化滅",
-   *     ["參"] = "參形",
-   *     ["自"] = "吾自",
-   *     ["核"] = "太始初核",
-   *     ["若"] = "如若",
-   *     ["止"] = "宇宙亡矣",
-   *     ["尾"] = "尾末",
-   *     ["丁"] = "序丁",
-   *     ["丙"] = "序丙",
-   *     ["乙"] = "序乙",
-   *     ["甲"] = "序甲",
-   *     ["形"] = "式形",
-   *     ["引"] = "引用",
-   *     ["用"] = "應用",
-   *     ["效"] = "效應",
-   *     ["表"] = "映表",
+   *     ["㝉"] = "一類何物",
+   *     ["𫙦"] = "之物",
+   *     ["𦮪"] = "其子",
+   *     ["𢒟"] = "出入改滅",
+   *     ["𠜺"] = "列序",
+   *     ["𠏁"] = "化滅",
+   *     ["𠫰"] = "參形",
+   *     ["𦣹"] = "吾自",
+   *     ["𣝗"] = "太始初核",
+   *     ["𦱡"] = "如若",
+   *     ["𨹹"] = "宇宙亡矣",
+   *     ["𡲵"] = "尾末",
+   *     ["𠆤"] = "序丁",
+   *     ["𠇮"] = "序丙",
+   *     ["㐈"] = "序乙",
+   *     ["𠇚"] = "序甲",
+   *     ["佱"] = "式形",
+   *     ["㧈"] = "引用",
+   *     ["𤰆"] = "應用",
+   *     ["効"] = "效應",
+   *     ["𤅔"] = "映表",
    *     ["欤"] = "是非",
-   *     ["構"] = "構物",
+   *     ["𡒫"] = "構物",
    *     ["‐"] = "為符名連",
-   *     ["獨"] = "特定其物",
-   *     ["某"] = "省略一物",
-   *     ["符"] = "符名",
-   *     ["等"] = "等同",
-   *     ["算"] = "解算",
-   *     ["文"] = "詞素",
-   *     ["謬"] = "謬誤",
-   *     ["連"] = "連頸",
-   *     ["空"] = "間空",
-   *     ["陰"] = "陰",
-   *     ["陽"] = "陽",
-   *     ["首"] = "首始",
+   *     ["亓"] = "特定其物",
+   *     ["畧"] = "省略一物",
+   *     ["謼"] = "符名",
+   *     ["弌"] = "等同",
+   *     ["筭"] = "解算",
+   *     ["疎"] = "註疏",
+   *     ["𧥝"] = "詞素",
+   *     ["䥘"] = "謬誤",
+   *     ["丩"] = "連頸",
+   *     ["𣣓"] = "間空",
+   *     ["侌"] = "陰",
+   *     ["𣆄"] = "陽",
+   *     ["𩠐"] = "首始",
    * } */
-  lua_createtable(L, 0, 98);
+  lua_createtable(L, 0, 99);
   lua_pushliteral(L, "0");
   lua_pushliteral(L, "0");
   lua_rawset(L, -3);
@@ -17300,112 +17305,115 @@ static inline int lcf_main(lua_State *L) {
   lua_pushliteral(L, "z");
   lua_pushliteral(L, "z");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "：");
+  lua_pushliteral(L, "㝉");
   lua_pushliteral(L, "一類何物");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "物");
+  lua_pushliteral(L, "𫙦");
   lua_pushliteral(L, "之物");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "分");
+  lua_pushliteral(L, "𦮪");
   lua_pushliteral(L, "其子");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "變");
+  lua_pushliteral(L, "𢒟");
   lua_pushliteral(L, "出入改滅");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "列");
+  lua_pushliteral(L, "𠜺");
   lua_pushliteral(L, "列序");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "化");
+  lua_pushliteral(L, "𠏁");
   lua_pushliteral(L, "化滅");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "參");
+  lua_pushliteral(L, "𠫰");
   lua_pushliteral(L, "參形");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "自");
+  lua_pushliteral(L, "𦣹");
   lua_pushliteral(L, "吾自");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "核");
+  lua_pushliteral(L, "𣝗");
   lua_pushliteral(L, "太始初核");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "若");
+  lua_pushliteral(L, "𦱡");
   lua_pushliteral(L, "如若");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "止");
+  lua_pushliteral(L, "𨹹");
   lua_pushliteral(L, "宇宙亡矣");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "尾");
+  lua_pushliteral(L, "𡲵");
   lua_pushliteral(L, "尾末");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "丁");
+  lua_pushliteral(L, "𠆤");
   lua_pushliteral(L, "序丁");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "丙");
+  lua_pushliteral(L, "𠇮");
   lua_pushliteral(L, "序丙");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "乙");
+  lua_pushliteral(L, "㐈");
   lua_pushliteral(L, "序乙");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "甲");
+  lua_pushliteral(L, "𠇚");
   lua_pushliteral(L, "序甲");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "形");
+  lua_pushliteral(L, "佱");
   lua_pushliteral(L, "式形");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "引");
+  lua_pushliteral(L, "㧈");
   lua_pushliteral(L, "引用");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "用");
+  lua_pushliteral(L, "𤰆");
   lua_pushliteral(L, "應用");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "效");
+  lua_pushliteral(L, "効");
   lua_pushliteral(L, "效應");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "表");
+  lua_pushliteral(L, "𤅔");
   lua_pushliteral(L, "映表");
   lua_rawset(L, -3);
   lua_pushliteral(L, "欤");
   lua_pushliteral(L, "是非");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "構");
+  lua_pushliteral(L, "𡒫");
   lua_pushliteral(L, "構物");
   lua_rawset(L, -3);
   lua_pushliteral(L, "‐");
   lua_pushliteral(L, "為符名連");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "獨");
+  lua_pushliteral(L, "亓");
   lua_pushliteral(L, "特定其物");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "某");
+  lua_pushliteral(L, "畧");
   lua_pushliteral(L, "省略一物");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "符");
+  lua_pushliteral(L, "謼");
   lua_pushliteral(L, "符名");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "等");
+  lua_pushliteral(L, "弌");
   lua_pushliteral(L, "等同");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "算");
+  lua_pushliteral(L, "筭");
   lua_pushliteral(L, "解算");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "文");
+  lua_pushliteral(L, "疎");
+  lua_pushliteral(L, "註疏");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "𧥝");
   lua_pushliteral(L, "詞素");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "謬");
+  lua_pushliteral(L, "䥘");
   lua_pushliteral(L, "謬誤");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "連");
+  lua_pushliteral(L, "丩");
   lua_pushliteral(L, "連頸");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "空");
+  lua_pushliteral(L, "𣣓");
   lua_pushliteral(L, "間空");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "陰");
+  lua_pushliteral(L, "侌");
   lua_pushliteral(L, "陰");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "陽");
+  lua_pushliteral(L, "𣆄");
   lua_pushliteral(L, "陽");
   lua_rawset(L, -3);
-  lua_pushliteral(L, "首");
+  lua_pushliteral(L, "𩠐");
   lua_pushliteral(L, "首始");
   lua_rawset(L, -3);
   lc_setupvalue(L, (lc473 + lc_nextra), 5, 48);
