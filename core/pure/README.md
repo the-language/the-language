@@ -16,6 +16,7 @@ racket test.rkt
 
 * GNU coreutils, BASH, GNU tar, ... `sudo apk add bash`
 * NodeJS NPM | `sudo apt install nodejs npm` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/
+* npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn`
 * racket | `sudo apt install racket` `sudo pacman -S racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip`
