@@ -29,6 +29,7 @@
 (~ '(English . US) '|符名| "name")
 (~ '(English . US) '|等同| "equal")
 (~ '(English . US) '|解算| "eval")
+(~ '(English . US) '|註疏| "comment")
 (~ '(English . US) '|詞素| "token")
 (~ '(English . US) '|謬誤| "error")
 (~ '(English . US) '|連頸| "conact")
