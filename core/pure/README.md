@@ -12,6 +12,12 @@ racket test.rkt
 ./do_testmain.sh
 ```
 
+## 依賴
+
+### 可選依賴
+
+* hanazono字體 | `sudo pacman -S ttf-hanazono`
+
 ### 編譯依賴
 
 * GNU coreutils, BASH, GNU tar, ... `sudo apk add bash`
@@ -34,6 +40,6 @@ pip3 install js2py --user
 pip2 install js2py --user
 ```
 
-## 運行依賴
+### 運行依賴
 
 * php+mbstring | `sudo apt install php php7.0-mbstring` `sudo pacman -S php`
