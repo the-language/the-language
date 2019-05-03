@@ -15532,10 +15532,24 @@ static inline int lcf1_machinetext_print(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
+/* name: run_effect_helper
+ * function(handler, state, code, next) */
+static inline int lcf1_run_effect_helper(lua_State *L) {
+  enum { lc_nformalargs = 4 };
+  lua_settop(L, 4);
+
+  /* error("WIP") */
+  lua_getfield(L, LUA_ENVIRONINDEX, "error");
+  lua_pushliteral(L, "WIP");
+  lua_call(L, 1, 0);
+  assert(lua_gettop(L) == 4);
+  return 0;
+}
+
 /* name: (main)
  * function(...) */
 static inline int lcf_main(lua_State *L) {
-  lua_checkstack(L, 70);
+  lua_checkstack(L, 73);
   enum { lc_nformalargs = 0 };
   const int lc_nactualargs = lua_gettop(L);
   const int lc_nextra = (lc_nactualargs - lc_nformalargs);
@@ -19821,10 +19835,50 @@ static inline int lcf_main(lua_State *L) {
   lua_settable(L, (1 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 60);
 
+  /* local return_inputOutput_systemName = complex_parse("效應/[:物]") */
+  lc_getupvalue(L, (lc989 + lc_nextra), 1, 150);
+  lua_pushliteral(L, "效應/[:物]");
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) - lc_nextra == 61);
+
+  /* local bind_inputOutput_systemName = complex_parse("效應/連頸") */
+  lc_getupvalue(L, (lc989 + lc_nextra), 1, 150);
+  lua_pushliteral(L, "效應/連頸");
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) - lc_nextra == 62);
+
+  /* local function run_effect_helper(handler, state, code, next)
+   *     error("WIP")
+   * end */
+  lua_pushcfunction(L, lcf1_run_effect_helper);
+  assert(lua_gettop(L) - lc_nextra == 63);
+
+  /* ____exports.return_inputOutput_systemName = return_inputOutput_systemName
+   */
+  lua_pushvalue(L, (61 + lc_nextra));
+  lua_pushliteral(L, "return_inputOutput_systemName");
+  lua_insert(L, -2);
+  lua_settable(L, (1 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 63);
+
+  /* ____exports.bind_inputOutput_systemName = bind_inputOutput_systemName */
+  lua_pushvalue(L, (62 + lc_nextra));
+  lua_pushliteral(L, "bind_inputOutput_systemName");
+  lua_insert(L, -2);
+  lua_settable(L, (1 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 63);
+
+  /* ____exports.run_effect_helper = run_effect_helper */
+  lua_pushvalue(L, (63 + lc_nextra));
+  lua_pushliteral(L, "run_effect_helper");
+  lua_insert(L, -2);
+  lua_settable(L, (1 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 63);
+
   /* return ____exports */
   lua_pushvalue(L, (1 + lc_nextra));
   return 1;
-  assert(lua_gettop(L) - lc_nextra == 60);
+  assert(lua_gettop(L) - lc_nextra == 63);
 }
 /*-- #include "src.cpp/lang.h" start --*/
 

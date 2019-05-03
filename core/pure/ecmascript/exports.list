@@ -46,3 +46,6 @@ complex_parse
 complex_print
 machinetext_parse
 machinetext_print
+return_inputOutput_systemName
+bind_inputOutput_systemName
+run_effect_helper

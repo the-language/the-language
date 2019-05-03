@@ -198,6 +198,11 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
     final static org.luaj.vm2.LuaValue k194;
     final static org.luaj.vm2.LuaValue k195;
     final static org.luaj.vm2.LuaValue k196;
+    final static org.luaj.vm2.LuaValue k197;
+    final static org.luaj.vm2.LuaValue k198;
+    final static org.luaj.vm2.LuaValue k199;
+    final static org.luaj.vm2.LuaValue k200;
+    final static org.luaj.vm2.LuaValue k201;
     
     static {
         k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
@@ -397,6 +402,11 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         k194 = org.luaj.vm2.LuaString.valueOf("complex_print");
         k195 = org.luaj.vm2.LuaString.valueOf("machinetext_parse");
         k196 = org.luaj.vm2.LuaString.valueOf("machinetext_print");
+        k197 = org.luaj.vm2.LuaString.valueOf("\u6548\u61c9/[:\u7269]");
+        k198 = org.luaj.vm2.LuaString.valueOf("\u6548\u61c9/\u9023\u9838");
+        k199 = org.luaj.vm2.LuaString.valueOf("return_inputOutput_systemName");
+        k200 = org.luaj.vm2.LuaString.valueOf("bind_inputOutput_systemName");
+        k201 = org.luaj.vm2.LuaString.valueOf("run_effect_helper");
     }
     
     public Lang$luaj() {
@@ -1564,6 +1574,13 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         a239.u19 = a56;
         ((org.luaj.vm2.LuaValue)a1).set(k195, (org.luaj.vm2.LuaValue)a238);
         ((org.luaj.vm2.LuaValue)a1).set(k196, (org.luaj.vm2.LuaValue)a239);
+        org.luaj.vm2.LuaValue a240 = ((org.luaj.vm2.LuaValue)a236).call(k197);
+        org.luaj.vm2.LuaValue a241 = ((org.luaj.vm2.LuaValue)a236).call(k198);
+        Lang$luaj$return_inputOutput_systemName a242 = new Lang$luaj$return_inputOutput_systemName();
+        a242.u0 = this.u0;
+        ((org.luaj.vm2.LuaValue)a1).set(k199, a240);
+        ((org.luaj.vm2.LuaValue)a1).set(k200, a241);
+        ((org.luaj.vm2.LuaValue)a1).set(k201, (org.luaj.vm2.LuaValue)a242);
         return a1;
     }
     

@@ -2247,6 +2247,14 @@ local function machinetext_print(x)
 end
 ____exports.machinetext_parse = machinetext_parse
 ____exports.machinetext_print = machinetext_print
+local return_inputOutput_systemName = complex_parse("效應/[:物]")
+local bind_inputOutput_systemName = complex_parse("效應/連頸")
+local function run_effect_helper(handler, state, code, next)
+    error("WIP")
+end
+____exports.return_inputOutput_systemName = return_inputOutput_systemName
+____exports.bind_inputOutput_systemName = bind_inputOutput_systemName
+____exports.run_effect_helper = run_effect_helper
 return ____exports`); err != nil {panic(err)}
 exports = ls.Get(-1).(*lua.LTable)
 ls.Pop(1)
