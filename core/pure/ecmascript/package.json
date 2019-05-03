@@ -1,6 +1,6 @@
 {
     "name": "the-language",
-    "version": "0.0.11-f",
+    "version": "0.0.12",
     "description": "The Language",
     "main": "lang.js",
     "repository": {
