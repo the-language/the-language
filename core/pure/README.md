@@ -16,7 +16,7 @@ racket test.rkt
 
 ### 可選依賴
 
-* hanazono字體 | `sudo pacman -S ttf-hanazono`
+* hanazono字體 | `sudo pacman -S ttf-hanazono` https://ctext.org/font-test-page/zh
 
 ### 編譯依賴
 
