@@ -103,8 +103,8 @@ public class Lang$luaj$complex_parse extends org.luaj.vm2.lib.VarArgFunction {
         a18.u3 = a14;
         a18.u4 = this.u1;
         a18.u5 = this.u2;
-        a18.u6 = a15;
-        a18.u7 = this.u3;
+        a18.u6 = this.u3;
+        a18.u7 = a15;
         Lang$luaj$complex_parse$7 a19 = new Lang$luaj$complex_parse$7();
         a19.u0 = a12;
         a19.u1 = a13;

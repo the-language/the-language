@@ -45,10 +45,10 @@ public class Lang$luaj$complex_parse$6 extends org.luaj.vm2.lib.VarArgFunction {
             } else {
                 this.u3.call(a1);
             }
-            if (this.u5.get(a2).eq_b(org.luaj.vm2.LuaValue.NIL)) {
-                this.u6.call(k2.concat(this.u4.get(k1).call(a2)));
+            if (this.u5.call(a2).toboolean()) {
+                return org.luaj.vm2.LuaValue.tailcallOf(this.u6, (org.luaj.vm2.Varargs)a2);
             }
-            return org.luaj.vm2.LuaValue.tailcallOf(this.u7, (org.luaj.vm2.Varargs)a2);
+            return org.luaj.vm2.LuaValue.tailcallOf(this.u7, (org.luaj.vm2.Varargs)k2.concat(this.u4.get(k1).call(a2)));
         }
     }
 }

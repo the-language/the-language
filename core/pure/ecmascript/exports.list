@@ -3,6 +3,7 @@ comment_p
 comment_comment
 comment_x
 symbol_p
+can_new_symbol_p
 new_symbol
 un_symbol
 new_construction
