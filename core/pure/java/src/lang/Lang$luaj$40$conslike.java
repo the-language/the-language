@@ -1,15 +1,15 @@
 package lang;
-public class Lang$luaj$41$conslike extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$40$conslike extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(3);
-        k1 = org.luaj.vm2.LuaValue.valueOf(4);
+        k0 = org.luaj.vm2.LuaValue.valueOf(2);
+        k1 = org.luaj.vm2.LuaValue.valueOf(3);
     }
     
-    public Lang$luaj$41$conslike() {
+    public Lang$luaj$40$conslike() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

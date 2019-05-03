@@ -57,7 +57,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_null_v, comment_append, get_comment_1, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just_noComment, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, new_comment, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -66,123 +66,103 @@ function LANG_ASSERT(x)
         return LANG_ERROR()
     end
 end
-function comment_append(x, y)
-    if x == comment_null_v then
-        return y
-    end
-    if y == comment_null_v then
-        return x
-    end
-    local ret = {}
-    for ____TS_index = 1, #x do
-        local e = x[____TS_index]
-        __TS__ArrayPush(ret, e)
-    end
-    for ____TS_index = 1, #y do
-        local e = y[____TS_index]
-        __TS__ArrayPush(ret, e)
-    end
-    return ret
-end
-function get_comment_1(x)
-    return x[0 + 1]
+function new_comment(comment, x)
+    return {
+        comment_t,
+        comment,
+        x,
+    }
 end
 function new_symbol_unicodechar(x)
     return {
-        comment_null_v,
         symbol_t,
         x,
     }
 end
 function symbol_p(x)
-    return x[1 + 1] == symbol_t
+    return x[0 + 1] == symbol_t
 end
 function un_symbol_unicodechar(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function un_symbol(x)
     return symbols_set_neg[un_symbol_unicodechar(x)]
 end
 function new_construction(x, y)
     return {
-        comment_null_v,
         construction_t,
         x,
         y,
     }
 end
 function construction_p(x)
-    return x[1 + 1] == construction_t
+    return x[0 + 1] == construction_t
 end
 function construction_head(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function construction_tail(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function null_p(x)
-    return x[1 + 1] == null_t
+    return x[0 + 1] == null_t
 end
 function new_data(x, y)
     return {
-        comment_null_v,
         data_t,
         x,
         y,
     }
 end
 function data_p(x)
-    return x[1 + 1] == data_t
+    return x[0 + 1] == data_t
 end
 function data_name(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function data_list(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function new_error(x, y)
     return {
-        comment_null_v,
         error_t,
         x,
         y,
     }
 end
 function error_p(x)
-    return x[1 + 1] == error_t
+    return x[0 + 1] == error_t
 end
 function error_name(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function error_list(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function just_p(x)
-    return x[1 + 1] == just_t
+    return x[0 + 1] == just_t
 end
-function un_just_noComment(x)
-    return x[2 + 1]
+function un_just(x)
+    return x[1 + 1]
 end
 function evaluate(x, y)
     return {
-        comment_null_v,
         delay_evaluate_t,
         x,
         y,
     }
 end
 function delay_evaluate_p(x)
-    return x[1 + 1] == delay_evaluate_t
+    return x[0 + 1] == delay_evaluate_t
 end
 function delay_evaluate_env(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function delay_evaluate_x(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function builtin_form_apply(x, y, z)
     return {
-        comment_null_v,
         delay_builtin_form_t,
         x,
         y,
@@ -190,58 +170,56 @@ function builtin_form_apply(x, y, z)
     }
 end
 function delay_builtin_form_p(x)
-    return x[1 + 1] == delay_builtin_form_t
+    return x[0 + 1] == delay_builtin_form_t
 end
 function delay_builtin_form_env(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function delay_builtin_form_f(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function delay_builtin_form_xs(x)
-    return x[4 + 1]
+    return x[3 + 1]
 end
 function builtin_func_apply(x, y)
     return {
-        comment_null_v,
         delay_builtin_func_t,
         x,
         y,
     }
 end
 function delay_builtin_func_p(x)
-    return x[1 + 1] == delay_builtin_func_t
+    return x[0 + 1] == delay_builtin_func_t
 end
 function delay_builtin_func_f(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function delay_builtin_func_xs(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function apply(f, xs)
     return {
-        comment_null_v,
         delay_apply_t,
         f,
         xs,
     }
 end
 function delay_apply_p(x)
-    return x[1 + 1] == delay_apply_t
+    return x[0 + 1] == delay_apply_t
 end
 function delay_apply_f(x)
-    return x[2 + 1]
+    return x[1 + 1]
 end
 function delay_apply_xs(x)
-    return x[3 + 1]
+    return x[2 + 1]
 end
 function force_all_rec(raw)
     local x = force_all(raw)
     local function conslike(x)
-        local a = x[3]
-        local d = x[4]
-        x[2 + 1] = force_all_rec(a)
-        x[3 + 1] = force_all_rec(d)
+        local a = x[2]
+        local d = x[3]
+        x[1 + 1] = force_all_rec(a)
+        x[2 + 1] = force_all_rec(d)
         return x
     end
     if data_p(x) then
@@ -257,11 +235,10 @@ function lang_set_do(x, y)
     if x == y then
         return
     end
-    x[0 + 1] = comment_null_v
-    x[1 + 1] = just_t
-    x[2 + 1] = y
+    x[0 + 1] = just_t
+    x[1 + 1] = y
+    x[2 + 1] = false
     x[3 + 1] = false
-    x[4 + 1] = false
 end
 function symbol_equal_p(x, y)
     if x == y then
@@ -292,11 +269,9 @@ end
 function un_just_all(raw)
     local x = raw
     local xs = {}
-    local comment = comment_null_v
     while just_p(x) do
         __TS__ArrayPush(xs, x)
-        comment = comment_append(comment, get_comment_1(x))
-        x = un_just_noComment(x)
+        x = un_just(x)
     end
     for ____TS_index = 1, #xs do
         local v = xs[____TS_index]
@@ -750,7 +725,7 @@ function real_builtin_form_apply(env, f, xs, selfvalraw)
         if #xs ~= 2 then
             return error_v
         end
-        error("WIP")
+        return new_comment(xs[0 + 1], evaluate(env, xs[1 + 1]))
     end
     return error_v
 end
@@ -916,11 +891,21 @@ delay_evaluate_t = 6
 delay_builtin_func_t = 7
 delay_builtin_form_t = 8
 delay_apply_t = 9
+comment_t = 11
 local hole_t = 10
-comment_null_v = {}
-____exports.comment_null_v = comment_null_v
-____exports.comment_append = comment_append
-____exports.get_comment_1 = get_comment_1
+local function comment_p(x)
+    return x[0 + 1] == comment_t
+end
+local function comment_comment(x)
+    return x[1 + 1]
+end
+local function comment_x(x)
+    return x[2 + 1]
+end
+____exports.new_comment = new_comment
+____exports.comment_p = comment_p
+____exports.comment_comment = comment_comment
+____exports.comment_x = comment_x
 local function new_symbol(x)
     LANG_ASSERT(symbols_set[x] ~= nil)
     return new_symbol_unicodechar(symbols_set[x])
@@ -932,10 +917,7 @@ ____exports.new_construction = new_construction
 ____exports.construction_p = construction_p
 ____exports.construction_head = construction_head
 ____exports.construction_tail = construction_tail
-null_v = {
-    comment_null_v,
-    null_t,
-}
+null_v = {null_t}
 ____exports.null_v = null_v
 ____exports.null_p = null_p
 ____exports.new_data = new_data
@@ -964,7 +946,6 @@ local function hole_set_do(rawx, rawy)
     x[1 + 1] = y[1 + 1]
     x[2 + 1] = y[2 + 1]
     x[3 + 1] = y[3 + 1]
-    x[4 + 1] = y[4 + 1]
 end
 symbols_set = {
     ["0"] = "0",
@@ -1545,9 +1526,7 @@ real_builtin_func_apply_s = {
     {
         comment_function_builtin_systemName,
         2,
-        function(comment, x)
-            error("WIP")
-        end,
+        new_comment,
     },
 }
 ____exports.equal_p = jsbool_equal_p

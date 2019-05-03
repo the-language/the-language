@@ -1,15 +1,30 @@
 package lang;
-public class Lang$luaj$40 extends org.luaj.vm2.lib.OneArgFunction {
-    final static org.luaj.vm2.LuaValue k0;
-    
-    static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(4);
-    }
+public class Lang$luaj$40 extends org.luaj.vm2.lib.VarArgFunction {
+    org.luaj.vm2.LuaValue[] u0;
+    org.luaj.vm2.LuaValue[] u1;
+    org.luaj.vm2.LuaValue u2;
+    org.luaj.vm2.LuaValue u3;
+    org.luaj.vm2.LuaValue u4;
     
     public Lang$luaj$40() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        return a.get(k0);
+    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
+        org.luaj.vm2.LuaValue a0 = a.arg(1);
+        a.subargs(2);
+        org.luaj.vm2.LuaValue a1 = this.u0[0].call(a0);
+        Lang$luaj$40$conslike a2 = new Lang$luaj$40$conslike();
+        a2.u0 = this.u1;
+        if (this.u2.call(a1).toboolean()) {
+            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
+        }
+        if (this.u3.call(a1).toboolean()) {
+            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
+        }
+        if (!this.u4.call(a1).toboolean()) {
+            org.luaj.vm2.Varargs a3 = a1;
+            return a3;
+        }
+        return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
     }
 }

@@ -1,6 +1,7 @@
-comment_null_v
-comment_append
-get_comment_1
+new_comment
+comment_p
+comment_comment
+comment_x
 new_symbol
 symbol_p
 un_symbol
