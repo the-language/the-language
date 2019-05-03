@@ -28,7 +28,7 @@ function LANG_ASSERT(x: boolean): void {
 
 // {{{ 相對獨立的部分。內建數據結構
 // 如果沒有const不能過google-closure-compiler -O ADVANCED
-export const enum LangValType {
+const enum LangValType {
     symbol_t,
     construction_t,
     null_t,

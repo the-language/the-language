@@ -8,5 +8,10 @@
         "type": "git"
     },
     "author": "Zaoqi",
-    "license": "AGPL-3.0-or-later"
+    "license": "AGPL-3.0-or-later",
+    "devDependencies": {
+        "google-closure-compiler-java": "^20190415.0.0",
+        "tsickle": "^0.35.0",
+        "typescript": "^3.4.5"
+    }
 }

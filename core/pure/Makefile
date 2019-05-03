@@ -34,7 +34,7 @@ c/lang.h:
 c/lang.c: c/lua-5.1.5 c/lua-5.1.5/src/lua c/lua2c lua/lang.lua c/patch/lang.tail.c c/lang.h c/testmain.c
 	racket Makefile.domake.rkt c/lang.c
 
-php/lang.php: typescript/lang.ts typescript/.done.racket.code.generator ecmascript/exports.list
+php/lang.php: typescript/lang.ts typescript/.done.racket.code.generator
 	racket Makefile.domake.rkt php/lang.php
 
 python3/lang.py: python2/lang.py

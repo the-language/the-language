@@ -106,6 +106,7 @@
 in-dir "typescript" {
     (make ((".done.racket.code.generator" ("lang.ts") {
         |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.tmp.ts
+        yarn
         npx tsfmt -r lang.tmp.ts
         dos2unix lang.tmp.ts
         mv lang.tmp.ts lang.ts
@@ -126,30 +127,16 @@ in-dir "typescript" {
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
-        in-dir "typescript" {
+        in-dir "ecmascript" {
             yarn
-            touch lang.js
-            rm lang.js
-            npx tsc --build tsconfig.json
-            (define raw (++ c-generatedby (match (string->lines #{cat lang.js})
-                [(list "\"use strict\";" "exports.__esModule = true;" xs ...) (lines->string xs)])))
-            |> id raw &>! ../ecmascript/lang.raw.js
-            (define exports
-                (filter-not
-                    (lambda (x) (equal? x ""))
-                    (string->lines
-                        #{grep "^exports." ../ecmascript/lang.raw.js | awk (id "{print $1}") | sed (id "s|^exports.\\(.*\\)$|\\1|")})))
-            (define exports.list (lines->string exports))
-            (define google-closure-exports (++
-                c-generatedby
-                "var exports = {};\n"
-                (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports))
-                ))
-            |> id google-closure-exports &>! lang.externs.js
-            java -jar ./node_modules/google-closure-compiler-java/compiler.jar -W QUIET --assume_function_wrapper --language_out ECMASCRIPT3 --js ../ecmascript/lang.raw.js --externs lang.externs.js -O ADVANCED &>! lang.js
-            cp lang.js ../ecmascript
-            |> id exports.list &>! ../ecmascript/exports.list
-            touch ../ecmascript/lang.raw.js ;; 因為"ecmascript/lang.raw.js"生成之實現
+            npx tsickle --typed
+            (define raw (match (string->lines #{cat langraw.js})
+                          [(list "/**" " * @fileoverview added by tsickle" " * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc" " */" "goog.module('_..langraw');" "var module = module || { id: '' };" rest ...) (lines->string rest)]))
+            |> id raw &>! langraw.js
+            (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
+            |> lines->string exports &>! exports.list
+            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
+            |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
@@ -277,7 +264,7 @@ in-dir "typescript" {
 
              clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c
      }})
-     ("php/lang.php" ("typescript/lang.ts" "ecmascript/exports.list") {
+     ("php/lang.php" ("typescript/lang.ts") {
          in-dir "php" {
              yarn
              |> ++ "function _TS_THROW(x:string):never{throw x}\n" #{sed (id "s|throw\\([^;]*\\)|return _TS_THROW(\\1)|g") ../typescript/lang.ts} &>! lang.ts
