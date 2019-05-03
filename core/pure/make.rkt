@@ -131,7 +131,7 @@ in-dir "typescript" {
             yarn
             npx tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
-                          [(list "/**" " * @fileoverview added by tsickle" " * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc" " */" "goog.module('_..langraw');" "var module = module || { id: '' };" rest ...) (lines->string rest)]))
+                          [(list "/**" " * @fileoverview added by tsickle" " * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc" " */" "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
             |> id raw &>! langraw.js
             (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
             |> lines->string exports &>! exports.list

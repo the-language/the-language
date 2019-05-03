@@ -24,7 +24,7 @@ function LANG_ASSERT(x: boolean): void {
         return LANG_ERROR()
     }
 }
-// 用export{}，不用export const .../export function...，否則生成的代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
+// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
 
 // {{{ 相對獨立的部分。內建數據結構
 // 如果沒有const不能過google-closure-compiler -O ADVANCED
