@@ -1,6 +1,6 @@
 {
     "name": "the-language",
-    "version": "0.0.12",
+    "version": "0.0.12-a",
     "description": "The Language",
     "main": "lang.js",
     "repository": {
@@ -14,5 +14,7 @@
         "tsickle": "^0.35.0",
         "typescript": "^3.4.5"
     },
-    "files": ["lang.js"]
+    "files": [
+        "lang.js"
+    ]
 }
