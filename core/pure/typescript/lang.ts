@@ -135,16 +135,16 @@ function un_symbol(x: LangValSymbol): string {
 }
 export { new_symbol, symbol_p, un_symbol }
 
-function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValConsG<X,Y> {
+function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValConsG<X, Y> {
     return [construction_t, x, y]
 }
 function construction_p(x: LangVal): x is LangValCons {
     return x[0] === construction_t
 }
-function construction_head<X extends LangVal, Y extends LangVal>(x: LangValConsG<X,Y>): X {
+function construction_head<X extends LangVal, Y extends LangVal>(x: LangValConsG<X, Y>): X {
     return x[1]
 }
-function construction_tail<X extends LangVal, Y extends LangVal>(x: LangValConsG<X,Y>): Y {
+function construction_tail<X extends LangVal, Y extends LangVal>(x: LangValConsG<X, Y>): Y {
     return x[2]
 }
 export { new_construction, construction_p, construction_head, construction_tail }
@@ -155,30 +155,30 @@ function null_p(x: LangVal): x is LangValNull {
 }
 export { null_v, null_p }
 
-function new_data<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValDataG<X,Y> {
+function new_data<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValDataG<X, Y> {
     return [data_t, x, y]
 }
 function data_p(x: LangVal): x is LangValData {
     return x[0] === data_t
 }
-function data_name<X extends LangVal, Y extends LangVal>(x: LangValDataG<X,Y>): X {
+function data_name<X extends LangVal, Y extends LangVal>(x: LangValDataG<X, Y>): X {
     return x[1]
 }
-function data_list<X extends LangVal, Y extends LangVal>(x: LangValDataG<X,Y>): Y {
+function data_list<X extends LangVal, Y extends LangVal>(x: LangValDataG<X, Y>): Y {
     return x[2]
 }
 export { new_data, data_p, data_name, data_list }
 
-function new_error<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValErrorG<X,Y> {
+function new_error<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValErrorG<X, Y> {
     return [error_t, x, y]
 }
 function error_p(x: LangVal): x is LangValError {
     return x[0] === error_t
 }
-function error_name<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X,Y>): X {
+function error_name<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>): X {
     return x[1]
 }
-function error_list<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X,Y>): Y {
+function error_list<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>): Y {
     return x[2]
 }
 export { new_error, error_p, error_name, error_list }
@@ -1958,7 +1958,7 @@ export { machinetext_parse, machinetext_print }
 const return_inputOutput_systemName = complex_parse('效應/[:物]')
 const bind_inputOutput_systemName = complex_parse('效應/連頸')
 export type EffectCode<Op extends LangVal> = any // WIP
-function run_effect_helper<Op extends LangVal, St>(handler:(op:Op, state:St)=>[LangVal, St], state:St, code:EffectCode<Op>, next:(x:LangVal)=>EffectCode<Op>){
+function run_effect_helper<Op extends LangVal, St>(handler: (op: Op, state: St) => [LangVal, St], state: St, code: EffectCode<Op>, next: (x: LangVal) => EffectCode<Op>) {
     throw 'WIP'
 }
 export {

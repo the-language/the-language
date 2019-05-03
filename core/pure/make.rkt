@@ -105,8 +105,10 @@
   {
 in-dir "typescript" {
     (make ((".done.racket.code.generator" ("lang.ts") {
-        |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.ts.tmp
-        mv lang.ts.tmp lang.ts
+        |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.tmp.ts
+        npx tsfmt -r lang.tmp.ts
+        dos2unix lang.tmp.ts
+        mv lang.tmp.ts lang.ts
         touch .done.racket.code.generator
     })))
     }
