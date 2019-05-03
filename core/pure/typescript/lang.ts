@@ -621,7 +621,7 @@ export { force_all_export as force_all, force1 }
 
 // {{{ 相對獨立的部分。變量之環境
 export type Env = Array<LangVal> // WIP
-export type EnvRec = Array<any> // WIP
+export type EnvRec = Array<LangValRec> // WIP
 
 const env_null_v: Env = []
 function env_set(env: Env, key: LangVal, val: LangVal): Env {
