@@ -511,9 +511,8 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
     function conslike<S, T extends [S, LangVal, LangVal] & LangVal>(x: T & Array<any>): LangVal {
-        const [, a, d] = x
-        x[1] = force_all_rec(a)
-        x[2] = force_all_rec(d)
+        x[1] = force_all_rec(x[1])
+        x[2] = force_all_rec(x[2])
         return x
     }
     if (data_p(x)) {

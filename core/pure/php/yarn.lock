@@ -1220,10 +1220,10 @@ ts-morph@^1.3.3:
     tslib "^1.9.0"
     typescript ">=3.0.1 <3.5.0"
 
-ts2php@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/ts2php/-/ts2php-0.7.0.tgz#ff14dbf52f5445776eadda5faff9b45d0b459977"
-  integrity sha512-P8VCzCESifMgvUKZhTqCkUhmLAELaD9TOtoHBNyIfc5ZGW344GEIHmc5mECgiFnBqBWRAad0ZbFBFqvMOZMevg==
+ts2php@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/ts2php/-/ts2php-0.8.0.tgz#bc54c82271998d2017e4d8d2d0ba06d1186caf2f"
+  integrity sha512-BuXdvKNh02gV3kPS799RqfsWhV+a09GmakxrHMdE71v8vCSXW2gV1/F5h70XjHXO/57oh/QHDhMLs/3CFfpfiw==
   dependencies:
     fs-extra "^7.0.1"
     lodash "^4.17.11"
