@@ -28,7 +28,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, new_comment, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, symbols_set, symbols_set_neg, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, new_comment, symbol_p, un_symbol_unicodechar, symbols_set_neg, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, lang_set_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -41,12 +41,6 @@ function new_comment(comment, x)
     return {
         comment_t,
         comment,
-        x,
-    }
-end
-function new_symbol_unicodechar(x)
-    return {
-        symbol_t,
         x,
     }
 end
@@ -877,48 +871,13 @@ ____exports.new_comment = new_comment
 ____exports.comment_p = comment_p
 ____exports.comment_comment = comment_comment
 ____exports.comment_x = comment_x
-local function new_symbol(x)
-    LANG_ASSERT(symbols_set[x] ~= nil)
-    return new_symbol_unicodechar(symbols_set[x])
+local function new_symbol_unicodechar(x)
+    return {
+        symbol_t,
+        x,
+    }
 end
-____exports.new_symbol = new_symbol
-____exports.symbol_p = symbol_p
-____exports.un_symbol = un_symbol
-____exports.new_construction = new_construction
-____exports.construction_p = construction_p
-____exports.construction_head = construction_head
-____exports.construction_tail = construction_tail
-null_v = {null_t}
-____exports.null_v = null_v
-____exports.null_p = null_p
-____exports.new_data = new_data
-____exports.data_p = data_p
-____exports.data_name = data_name
-____exports.data_list = data_list
-____exports.new_error = new_error
-____exports.error_p = error_p
-____exports.error_name = error_name
-____exports.error_list = error_list
-____exports.just_p = just_p
-____exports.evaluate = evaluate
-____exports.apply = apply
-____exports.force_all_rec = force_all_rec
-local function new_hole_do()
-    return {hole_t}
-end
-local function hole_p(x)
-    return x[0 + 1] == hole_t
-end
-local function hole_set_do(rawx, rawy)
-    LANG_ASSERT(hole_p(rawx))
-    local x = rawx
-    local y = rawy
-    x[0 + 1] = y[0 + 1]
-    x[1 + 1] = y[1 + 1]
-    x[2 + 1] = y[2 + 1]
-    x[3 + 1] = y[3 + 1]
-end
-symbols_set = {
+local symbols_set = {
     ["0"] = "0",
     ["1"] = "1",
     ["2"] = "2",
@@ -1120,6 +1079,47 @@ symbols_set_neg = {
     ["𣆄"] = "陽",
     ["𩠐"] = "首始",
 }
+local function new_symbol(x)
+    LANG_ASSERT(symbols_set[x] ~= nil)
+    return new_symbol_unicodechar(symbols_set[x])
+end
+____exports.new_symbol = new_symbol
+____exports.symbol_p = symbol_p
+____exports.un_symbol = un_symbol
+____exports.new_construction = new_construction
+____exports.construction_p = construction_p
+____exports.construction_head = construction_head
+____exports.construction_tail = construction_tail
+null_v = {null_t}
+____exports.null_v = null_v
+____exports.null_p = null_p
+____exports.new_data = new_data
+____exports.data_p = data_p
+____exports.data_name = data_name
+____exports.data_list = data_list
+____exports.new_error = new_error
+____exports.error_p = error_p
+____exports.error_name = error_name
+____exports.error_list = error_list
+____exports.just_p = just_p
+____exports.evaluate = evaluate
+____exports.apply = apply
+____exports.force_all_rec = force_all_rec
+local function new_hole_do()
+    return {hole_t}
+end
+local function hole_p(x)
+    return x[0 + 1] == hole_t
+end
+local function hole_set_do(rawx, rawy)
+    LANG_ASSERT(hole_p(rawx))
+    local x = rawx
+    local y = rawy
+    x[0 + 1] = y[0 + 1]
+    x[1 + 1] = y[1 + 1]
+    x[2 + 1] = y[2 + 1]
+    x[3 + 1] = y[3 + 1]
+end
 system_symbol = new_symbol("太始初核")
 local name_symbol = new_symbol("符名")
 function_symbol = new_symbol("化滅")
@@ -2218,12 +2218,12 @@ local function machinetext_print(x)
 end
 ____exports.machinetext_parse = machinetext_parse
 ____exports.machinetext_print = machinetext_print
-local return_inputOutput_systemName = complex_parse("效應/[:物]")
-local bind_inputOutput_systemName = complex_parse("效應/連頸")
+local return_effect_systemName = complex_parse("效應/[:之物]")
+local bind_effect_systemName = complex_parse("效應/連頸")
 local function run_effect_helper(handler, state, code, next)
     error("WIP")
 end
-____exports.return_inputOutput_systemName = return_inputOutput_systemName
-____exports.bind_inputOutput_systemName = bind_inputOutput_systemName
+____exports.return_effect_systemName = return_effect_systemName
+____exports.bind_effect_systemName = bind_effect_systemName
 ____exports.run_effect_helper = run_effect_helper
 return ____exports

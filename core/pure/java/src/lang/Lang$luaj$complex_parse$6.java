@@ -5,7 +5,7 @@ public class Lang$luaj$complex_parse$6 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u2;
     org.luaj.vm2.LuaValue u3;
     org.luaj.vm2.LuaValue u4;
-    org.luaj.vm2.LuaValue[] u5;
+    org.luaj.vm2.LuaValue u5;
     org.luaj.vm2.LuaValue u6;
     org.luaj.vm2.LuaValue u7;
     final static org.luaj.vm2.LuaValue k0;
@@ -45,7 +45,7 @@ public class Lang$luaj$complex_parse$6 extends org.luaj.vm2.lib.VarArgFunction {
             } else {
                 this.u3.call(a1);
             }
-            if (this.u5[0].get(a2).eq_b(org.luaj.vm2.LuaValue.NIL)) {
+            if (this.u5.get(a2).eq_b(org.luaj.vm2.LuaValue.NIL)) {
                 this.u6.call(k2.concat(this.u4.get(k1).call(a2)));
             }
             return org.luaj.vm2.LuaValue.tailcallOf(this.u7, (org.luaj.vm2.Varargs)a2);

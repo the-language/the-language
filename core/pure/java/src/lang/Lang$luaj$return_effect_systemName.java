@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$return_inputOutput_systemName extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$return_effect_systemName extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
@@ -9,7 +9,7 @@ public class Lang$luaj$return_inputOutput_systemName extends org.luaj.vm2.lib.Va
         k1 = org.luaj.vm2.LuaString.valueOf("WIP");
     }
     
-    public Lang$luaj$return_inputOutput_systemName() {
+    public Lang$luaj$return_effect_systemName() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

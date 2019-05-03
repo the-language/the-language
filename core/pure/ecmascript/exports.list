@@ -2,8 +2,8 @@ new_comment
 comment_p
 comment_comment
 comment_x
-new_symbol
 symbol_p
+new_symbol
 un_symbol
 new_construction
 construction_p
@@ -46,6 +46,6 @@ complex_parse
 complex_print
 machinetext_parse
 machinetext_print
-return_inputOutput_systemName
-bind_inputOutput_systemName
+return_effect_systemName
+bind_effect_systemName
 run_effect_helper

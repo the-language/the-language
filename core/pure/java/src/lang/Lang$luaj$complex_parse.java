@@ -2,7 +2,7 @@ package lang;
 public class Lang$luaj$complex_parse extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
-    org.luaj.vm2.LuaValue[] u2;
+    org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
     org.luaj.vm2.LuaValue u4;
     org.luaj.vm2.LuaValue u5;
