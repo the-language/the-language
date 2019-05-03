@@ -14,13 +14,12 @@
     {
         (unless (p-new-version) (raise "ERROR!"))
         (unless (p-message) (p-message ""))
-
-        racket make.rkt
-
+                
         in-dir "ecmascript" {
+            cp ../../../README.md ./
             yarn publish --no-git-tag-version --no-commit-hooks --new-version (p-new-version) --message (p-message)
         }
-
+        
         git add .
         git commit -m (string-append "[NEW VERSION]"(p-new-version)"\n"(p-message))
         git tag -a (p-new-version) -m (p-message)
