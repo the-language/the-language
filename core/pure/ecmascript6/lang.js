@@ -232,8 +232,6 @@ function hole_set_do(rawx, rawy) {
     x[2] = y[2];
     x[3] = y[3];
 }
-// 相對獨立的部分。內建數據結構 }}}
-// {{{ 相對獨立的部分。符號名稱
 const system_symbol = new_symbol("太始初核");
 const name_symbol = new_symbol("符名");
 const function_symbol = new_symbol("化滅");
@@ -267,7 +265,7 @@ const theWorldStopped_symbol = new_symbol("宇宙亡矣");
 const comment_symbol = new_symbol("註疏");
 const the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol));
 function systemName_make(x) {
-    return new_data(name_symbol, new_list(system_symbol, x));
+    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)));
 }
 function make_builtin_f_new_sym_f(x_sym) {
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol));

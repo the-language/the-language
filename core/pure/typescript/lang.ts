@@ -57,12 +57,12 @@ const delay_apply_t = LangValType.delay_apply_t
 
 // 以下爲對TypeScript類型系統的hack，因爲不支援遞回的`type`
 
-interface LangValSymbolGI<a extends keyof Symbols_Set_Neg> {
+interface LangValSymbolUnicodecharGI<a extends keyof Symbols_Set_Neg> {
     "0": LangValType.symbol_t
     "1": a
 }
-export type LangValSymbolG<a extends keyof Symbols_Set_Neg> = LangValSymbolGI<a> & [LangValType.symbol_t, a]
-export type LangValSymbol = LangValSymbolG<keyof Symbols_Set_Neg>
+export type LangValSymbolUnicodecharG<a extends keyof Symbols_Set_Neg> = LangValSymbolUnicodecharGI<a> & [LangValType.symbol_t, a]
+export type LangValSymbol = LangValSymbolUnicodecharG<keyof Symbols_Set_Neg>
 
 interface LangValConsGI<a extends LangVal, b extends LangVal> {
     "0": LangValType.construction_t
@@ -105,7 +105,8 @@ export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | Lang
 export type LangValDelayG<a extends LangVal> = LangValDelay // 可能不可用類型描述
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValJustDelayG<a extends LangVal> = LangValJustDelay // 可能不可用類型描述
-export type LangValSysName = LangValData // WIP
+export type LangValSysNameG<x extends LangVal> = SystemName_Make<x>
+export type LangValSysName = LangValSysNameG<LangVal>
 export type LangValName = LangValData | LangValSymbol
 export type LangValFunctionJustDelay = LangValRec // WIP
 
@@ -372,27 +373,30 @@ const symbols_set_neg: Symbols_Set_Neg & { [key: string]: string } = { "0": "0",
 function can_new_symbol_unicodechar_p(x: string): x is keyof Symbols_Set_Neg {
     return x in symbols_set_neg
 }
-function new_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: X): LangValSymbolG<X> {
+type New_Symbol_Unicodechar<X extends keyof Symbols_Set_Neg> = LangValSymbolUnicodecharG<X>
+function new_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: X): New_Symbol_Unicodechar<X> {
     return [symbol_t, x]
 }
 function symbol_p(x: LangVal): x is LangValSymbol {
     return x[0] === symbol_t
 }
-function un_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: LangValSymbolG<X>): X {
+function un_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: LangValSymbolUnicodecharG<X>): X {
     return x[1]
 }
 function can_new_symbol_p(x: string): x is keyof Symbols_Set {
     return x in symbols_set
 }
-function new_symbol(x: keyof Symbols_Set): LangValSymbol {
+type New_Symbol<X extends keyof Symbols_Set> = New_Symbol_Unicodechar<Symbols_Set[X]>
+function new_symbol<X extends keyof Symbols_Set>(x: X): New_Symbol<X> {
     return new_symbol_unicodechar(symbols_set[x])
 }
 function un_symbol(x: LangValSymbol): keyof Symbols_Set {
     return symbols_set_neg[un_symbol_unicodechar(x)]
 }
-export { can_new_symbol_p, new_symbol, symbol_p, un_symbol }
+export { can_new_symbol_p, New_Symbol, new_symbol, symbol_p, un_symbol }
 
-function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValConsG<X, Y> {
+type New_Construction<X extends LangVal, Y extends LangVal> = LangValConsG<X, Y>
+function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Construction<X, Y> {
     return [construction_t, x, y]
 }
 function construction_p(x: LangVal): x is LangValCons {
@@ -404,15 +408,17 @@ function construction_head<X extends LangVal, Y extends LangVal>(x: LangValConsG
 function construction_tail<X extends LangVal, Y extends LangVal>(x: LangValConsG<X, Y>): Y {
     return x[2]
 }
-export { new_construction, construction_p, construction_head, construction_tail }
+export { New_Construction, new_construction, construction_p, construction_head, construction_tail }
 
-const null_v: LangValNull = [null_t]
+type Null_V = LangValNull
+const null_v: Null_V = [null_t]
 function null_p(x: LangVal): x is LangValNull {
     return x[0] === null_t
 }
-export { null_v, null_p }
+export { Null_V, null_v, null_p }
 
-function new_data<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValDataG<X, Y> {
+type New_Data<X extends LangVal, Y extends LangVal> = LangValDataG<X, Y>
+function new_data<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Data<X, Y> {
     return [data_t, x, y]
 }
 function data_p(x: LangVal): x is LangValData {
@@ -424,9 +430,10 @@ function data_name<X extends LangVal, Y extends LangVal>(x: LangValDataG<X, Y>):
 function data_list<X extends LangVal, Y extends LangVal>(x: LangValDataG<X, Y>): Y {
     return x[2]
 }
-export { new_data, data_p, data_name, data_list }
+export { New_Data, new_data, data_p, data_name, data_list }
 
-function new_error<X extends LangVal, Y extends LangVal>(x: X, y: Y): LangValErrorG<X, Y> {
+type New_Error<X extends LangVal, Y extends LangVal> = LangValErrorG<X, Y>
+function new_error<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Error<X, Y> {
     return [error_t, x, y]
 }
 function error_p(x: LangVal): x is LangValError {
@@ -438,7 +445,7 @@ function error_name<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>
 function error_list<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>): Y {
     return x[2]
 }
-export { new_error, error_p, error_name, error_list }
+export { New_Error, new_error, error_p, error_name, error_list }
 
 function just_p(x: LangVal): x is LangValJust {
     return x[0] === just_t
@@ -549,8 +556,10 @@ function hole_set_do(rawx: LangValHole, rawy: LangVal): void {
 
 // {{{ 相對獨立的部分。符號名稱
 
-const system_symbol = new_symbol("太始初核")
-const name_symbol = new_symbol("符名")
+type System_Symbol = New_Symbol<"太始初核">
+const system_symbol: System_Symbol = new_symbol("太始初核")
+type Name_Symbol = New_Symbol<"符名">
+const name_symbol: Name_Symbol = new_symbol("符名")
 const function_symbol = new_symbol("化滅")
 const form_symbol = new_symbol("式形")
 const equal_symbol = new_symbol("等同")
@@ -583,8 +592,9 @@ const comment_symbol = new_symbol("註疏")
 
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
-function systemName_make(x: LangVal): LangValSysName {
-    return new_data(name_symbol, new_list(system_symbol, x))
+type SystemName_Make<X extends LangVal> = New_Data<Name_Symbol, New_Construction<System_Symbol, New_Construction<X, Null_V>>>
+function systemName_make<X extends LangVal>(x: X): SystemName_Make<X> {
+    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
 }
 function make_builtin_f_new_sym_f(x_sym: LangValSymbol): LangValSysName {
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))

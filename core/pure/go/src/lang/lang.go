@@ -1118,20 +1118,25 @@ local function new_symbol(x)
     return new_symbol_unicodechar(symbols_set[x])
 end
 ____exports.can_new_symbol_p = can_new_symbol_p
+____exports.New_Symbol = New_Symbol
 ____exports.new_symbol = new_symbol
 ____exports.symbol_p = symbol_p
 ____exports.un_symbol = un_symbol
+____exports.New_Construction = New_Construction
 ____exports.new_construction = new_construction
 ____exports.construction_p = construction_p
 ____exports.construction_head = construction_head
 ____exports.construction_tail = construction_tail
 null_v = {null_t}
+____exports.Null_V = Null_V
 ____exports.null_v = null_v
 ____exports.null_p = null_p
+____exports.New_Data = New_Data
 ____exports.new_data = new_data
 ____exports.data_p = data_p
 ____exports.data_name = data_name
 ____exports.data_list = data_list
+____exports.New_Error = New_Error
 ____exports.new_error = new_error
 ____exports.error_p = error_p
 ____exports.error_name = error_name
@@ -1185,7 +1190,7 @@ local theWorldStopped_symbol = new_symbol("宇宙亡矣")
 local comment_symbol = new_symbol("註疏")
 the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 local function systemName_make(x)
-    return new_data(name_symbol, new_list(system_symbol, x))
+    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
 end
 local function make_builtin_f_new_sym_f(x_sym)
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
