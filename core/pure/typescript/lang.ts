@@ -503,10 +503,10 @@ function delay_apply_xs(x: LangValDelayApply): Array<LangVal> {
 }
 function force_all_rec(raw: LangVal): LangVal {
     const x = force_all(raw)
-    function conslike<S, T extends [S, LangVal, LangVal] & LangVal>(x: T & Array<any>): LangVal {
-        x[1] = force_all_rec(x[1])
-        x[2] = force_all_rec(x[2])
-        return x
+    function conslike<S, T extends [S, LangVal, LangVal] & LangVal>(xx: T & Array<any>): T & Array<any> {
+        xx[1] = force_all_rec(xx[1])
+        xx[2] = force_all_rec(xx[2])
+        return xx
     }
     if (data_p(x)) {
         return conslike(x)
@@ -680,7 +680,7 @@ function list_to_jsArray<T>(
 }
 
 function maybe_list_to_jsArray(xs: LangVal): false | Array<LangVal> {
-    return list_to_jsArray<false | Array<LangVal>>(xs, (xs) => xs, (xs, x) => false)
+    return list_to_jsArray<false | Array<LangVal>>(xs, (x) => x, (_1, _2) => false)
 }
 function new_list(...xs: Array<LangVal>): LangVal {
     return jsArray_to_list(xs)
@@ -1176,18 +1176,18 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         if (x === y) {
             return true_v
         }
-        function H_if(b: LangVal, x: LangVal, y: LangVal): LangVal {
+        function H_if(b: LangVal, xx: LangVal, yy: LangVal): LangVal {
             // H = helper
-            return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
+            return builtin_func_apply(if_function_builtin_systemName, [b, xx, yy])
         }
-        function H_and(x: LangVal, y: LangVal): LangVal {
-            return H_if(x, y, false_v)
+        function H_and(xx: LangVal, yy: LangVal): LangVal {
+            return H_if(xx, yy, false_v)
         }
         LANG_ASSERT(!any_delay_just_p(x))
-        function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): LangVal {
+        function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): LangVal {
             return H_and(
-                builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]),
-                builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]))
+                builtin_func_apply(equal_p_function_builtin_systemName, [f1(xx), f1(yy)]),
+                builtin_func_apply(equal_p_function_builtin_systemName, [f2(xx), f2(yy)]))
         }
         if (null_p(x)) {
             if (!null_p(x)) { return false_v }
@@ -1457,9 +1457,9 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
-    function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
-        if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
-            lang_set_do(x, y)
+    function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
+        if (jsbool_equal_p(f1(xx), f1(yy)) && jsbool_equal_p(f2(xx), f2(yy))) {
+            lang_set_do(xx, yy)
             return true
         } else {
             return false
@@ -1496,9 +1496,9 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
-    function end_2<T extends LangVal>(x: T, y: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
-        if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
-            lang_set_do(x, y)
+    function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
+        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
+            lang_set_do(xx, yy)
             return true
         } else {
             return false
@@ -1596,15 +1596,15 @@ function complex_parse(x: string): LangVal {
         state++
         return ret
     }
-    function put(x: string) {
-        LANG_ASSERT(state_const[state - 1] === x)
+    function put(chr: string) {
+        LANG_ASSERT(state_const[state - 1] === chr)
         state--
     }
     function parse_error(x: string = ""): never {
         throw "TheLanguage parse ERROR!" + x
     }
-    function a_space_p(x: string): boolean {
-        return x === " " || x === "\n" || x === "\t" || x === "\r"
+    function a_space_p(chr: string): boolean {
+        return chr === " " || chr === "\n" || chr === "\t" || chr === "\r"
     }
     function space() {
         if (eof()) {
@@ -1659,9 +1659,9 @@ function complex_parse(x: string): LangVal {
         }
         let ret_last: LangValHole = new_hole_do()
         const ret: LangVal = ret_last
-        function last_add_do(x: LangVal) {
+        function last_add_do(val: LangVal) {
             const ret_last2: LangValHole = new_hole_do()
-            hole_set_do(ret_last, new_construction(x, ret_last2))
+            hole_set_do(ret_last, new_construction(val, ret_last2))
             ret_last = ret_last2
         }
         while (true) {
@@ -1781,19 +1781,19 @@ function complex_parse(x: string): LangVal {
             return k(construction_head(xs), construction_head(x), construction_head(x_d))
         }
     }
-    const readeval = make_read_two("$", (e, x) => {
-        const env = val2env(e)
+    const readeval = make_read_two("$", (ev, val) => {
+        const env = val2env(ev)
         if (env === false) {
             return parse_error()
         }
-        return evaluate(env, x)
+        return evaluate(env, val)
     })
     const readfuncapply = make_read_two("%", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error())
         return builtin_func_apply(f, jsxs)
     })
     const readformbuiltin = make_read_three("@", (e, f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error())
         const env = val2env(e)
         if (env === false) {
             return parse_error()
@@ -1801,18 +1801,17 @@ function complex_parse(x: string): LangVal {
         return builtin_form_apply(env, f, jsxs)
     })
     const readapply = make_read_two("^", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error())
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error())
         return apply(f, jsxs)
     })
-    function a_symbol_p(x: string): boolean {
-        if (a_space_p(x)) {
+    function a_symbol_p(chr: string): boolean {
+        if (a_space_p(chr)) {
             return false
         }
-        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@",
+        for (const v of ["(", ")", "!", "#", ".", "$", "%", "^", "@",
             '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
-        ]
-        for (let i = 0; i < not_xs.length; i++) {
-            if (x === not_xs[i]) {
+        ]) {
+            if (v === chr) {
                 return false
             }
         }
@@ -1830,11 +1829,11 @@ function complex_parse(x: string): LangVal {
         return parse_error()
     }
     return val()
-    function un_maybe<T>(x: false | T): T {
-        if (x === false) {
+    function un_maybe<T>(vl: false | T): T {
+        if (vl === false) {
             return parse_error()
         }
-        return x
+        return vl
     }
     function not_eof() {
         return !eof()
@@ -1842,6 +1841,63 @@ function complex_parse(x: string): LangVal {
     function assert_get(c: string) {
         un_maybe(not_eof())
         un_maybe(get() === c)
+    }
+    function readsysname_no_pack_inner_must(strict = false): LangVal {
+        function readsysname_no_pack_bracket() {
+            assert_get('[')
+            const x = readsysname_no_pack_inner_must()
+            assert_get(']')
+            return x
+        }
+        // 重複自val()
+        const fs: Array<() => false | LangVal> = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
+            readerror, readeval, readfuncapply, readformbuiltin, readapply] :
+            [readlist, readsysname_no_pack, data,
+                readerror, readeval, readfuncapply, readformbuiltin, readapply]
+        for (let i = 0; i < fs.length; i++) {
+            const x: false | LangVal = fs[i]()
+            if (x !== false) {
+                return x
+            }
+        }
+        return parse_error()
+    }
+    function may_xfx_xf(vl: LangVal): LangVal {
+        if (eof()) {
+            return vl
+        }
+        const head = get()
+        if (head === '.') {
+            const y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y)
+        } else if (head === ':') {
+            const y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, y, vl)
+        } else if (head === '~') {
+            return new_list(isOrNot_symbol, vl)
+        } else if (head === '@') {
+            const y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y)
+        } else if (head === '?') {
+            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl))
+        } else if (head === '/') {
+            let ys: Array<LangVal> = [vl]
+            while (true) {
+                const y = readsysname_no_pack_inner_must(true)
+                ys.push(y)
+                if (eof()) {
+                    break
+                } const c0 = get()
+                if (c0 !== '/') {
+                    put(c0)
+                    break
+                }
+            }
+            return new_list(sub_symbol, jsArray_to_list(ys))
+        } else {
+            put(head)
+            return vl
+        }
     }
     function readsysname_no_pack(): false | LangVal {
         if (eof()) {
@@ -1900,66 +1956,6 @@ function complex_parse(x: string): LangVal {
             }
             return may_xfx_xf(x)
         }
-        return LANG_ERROR()
-        function readsysname_no_pack_inner_must(strict = false): LangVal {
-            function readsysname_no_pack_bracket() {
-                assert_get('[')
-                const x = readsysname_no_pack_inner_must()
-                assert_get(']')
-                return x
-            }
-            // 重複自val()
-            const fs: Array<() => false | LangVal> = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply] :
-                [readlist, readsysname_no_pack, data,
-                    readerror, readeval, readfuncapply, readformbuiltin, readapply]
-            for (let i = 0; i < fs.length; i++) {
-                const x: false | LangVal = fs[i]()
-                if (x !== false) {
-                    return x
-                }
-            }
-            return parse_error()
-        }
-        function may_xfx_xf(x: LangVal): LangVal {
-            if (eof()) {
-                return x
-            }
-            const head = get()
-            if (head === '.') {
-                const y = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y)
-            } else if (head === ':') {
-                const y = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, y, x)
-            } else if (head === '~') {
-                return new_list(isOrNot_symbol, x)
-            } else if (head === '@') {
-                const y = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y)
-            } else if (head === '?') {
-                return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x))
-            } else if (head === '/') {
-                let ys: Array<LangVal> = [x]
-                while (true) {
-                    const y = readsysname_no_pack_inner_must(true)
-                    ys.push(y)
-                    if (eof()) {
-                        break
-                    } const c0 = get()
-                    if (c0 !== '/') {
-                        put(c0)
-                        break
-                    }
-                }
-                return new_list(sub_symbol, jsArray_to_list(ys))
-            } else {
-                put(head)
-                return x
-            }
-            return LANG_ERROR()
-        }
-        return LANG_ERROR()
     }
     function readsysname() {
         const x = readsysname_no_pack()
@@ -1981,13 +1977,13 @@ function complex_print(val: LangVal): string {
         if (symbol_p(x)) {
             return un_symbol(x)
         }
-        function inner_bracket(x: string): string {
+        function inner_bracket(vl: string): string {
+            // where: 'inner' | 'top'
             if (where === 'inner') {
-                return '[' + x + ']'
-            } else if (where === 'top') {
-                return x
+                return '[' + vl + ']'
+            } else {// where === 'top'
+                return vl
             }
-            return LANG_ERROR()
         }
         const maybe_xs = maybe_list_to_jsArray(x)
         if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
@@ -2179,10 +2175,10 @@ function machinetext_print(x: LangVal): string {
         const new_stack: Array<LangVal> = []
         for (let x of stack) {
             x = un_just_all(x)
-            const conslike = function <T>(x: T, s: string, g1: (x: T) => LangVal, g2: (x: T) => LangVal): void {
+            const conslike = function <T>(xx: T, s: string, g1: (x: T) => LangVal, g2: (x: T) => LangVal): void {
                 result += s
-                new_stack.push(g1(x))
-                new_stack.push(g2(x))
+                new_stack.push(g1(xx))
+                new_stack.push(g2(xx))
             }
             if (symbol_p(x)) {
                 result += '^'
@@ -2198,7 +2194,7 @@ function machinetext_print(x: LangVal): string {
                 conslike(x, '!', error_name, error_list)
             } else if (any_delay_p(x)) {
                 const y = any_delay2delay_evaluate(x)
-                conslike(y, '$', ((x) => env2val(delay_evaluate_env(x))), delay_evaluate_x)
+                conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x)
             } else {
                 return LANG_ERROR()
             }
