@@ -134,9 +134,9 @@ in-dir "typescript" {
                           [(list "/**" " * @fileoverview added by tsickle" " * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc" " */" "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
             |> id raw &>! langraw.js
             (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
-            |> lines->string exports &>! exports.list
-            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
+            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
+            |> lines->string exports &>! exports.list
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
