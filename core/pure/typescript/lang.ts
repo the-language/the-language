@@ -71,7 +71,7 @@ interface LangValConsGI<a extends LangVal, b extends LangVal> {
 }
 export type LangValConsG<a extends LangVal, b extends LangVal> = LangValConsGI<a, b> & [LangValType.construction_t, a, b]
 interface LangValConsI extends LangValConsGI<LangVal, LangVal> { }
-export type LangValCons = LangValConsI & [LangValType.construction_t, LangValRec, LangValRec]
+export type LangValCons = LangValConsI & [LangValType.construction_t, HackRec_LangVal, HackRec_LangVal]
 
 interface LangValNullI {
     "0": LangValType.null_t
@@ -85,7 +85,7 @@ interface LangValDataGI<a extends LangVal, b extends LangVal> {
 }
 export type LangValDataG<a extends LangVal, b extends LangVal> = LangValDataGI<a, b> & [LangValType.data_t, a, b]
 interface LangValDataI extends LangValDataGI<LangVal, LangVal> { }
-export type LangValData = LangValDataI & [LangValType.data_t, LangValRec, LangValRec]
+export type LangValData = LangValDataI & [LangValType.data_t, HackRec_LangVal, HackRec_LangVal]
 
 interface LangValErrorGI<a extends LangVal, b extends LangVal> {
     "0": LangValType.error_t
@@ -94,13 +94,55 @@ interface LangValErrorGI<a extends LangVal, b extends LangVal> {
 }
 export type LangValErrorG<a extends LangVal, b extends LangVal> = LangValErrorGI<a, b> & [LangValType.error_t, a, b]
 interface LangValErrorI extends LangValErrorGI<LangVal, LangVal> { }
-export type LangValError = LangValErrorI & [LangValType.error_t, LangValRec, LangValRec]
+export type LangValError = LangValErrorI & [LangValType.error_t, HackRec_LangVal, HackRec_LangVal]
 
-export type LangValJust = [LangValType.just_t, LangValRec, false, false]
-type LangValDelayEvaluate = [LangValType.delay_evaluate_t, EnvRec, LangValRec]
-type LangValDelayBuiltinFunc = [LangValType.delay_builtin_func_t, LangValRec, Array<LangValRec>]
-type LangValDelayBuiltinForm = [LangValType.delay_builtin_form_t, EnvRec, LangValRec, Array<LangValRec>]
-type LangValDelayApply = [LangValType.delay_apply_t, LangValFunctionJustDelay, Array<LangValRec>]
+interface LangValJustGI<a extends LangVal> {
+    "0": LangValType.just_t
+    "1": a
+    "2": false
+    "3": false
+}
+export type LangValJustG<a extends LangVal> = LangValJustGI<a> & [LangValType.just_t, HackRec_LangVal, false, false]
+interface LangValJustI extends LangValJustG<LangVal> { }
+export type LangValJust = LangValJustI & [LangValType.just_t, HackRec_LangVal, false, false]
+
+interface LangValDelayEvaluateGI<a extends Env, b extends LangVal> {
+    "0": LangValType.delay_evaluate_t
+    "1": a
+    "2": b
+}
+type LangValDelayEvaluateG<a extends Env, b extends LangVal> = LangValDelayEvaluateGI<a, b> & [LangValType.delay_evaluate_t, HackRec_Env, HackRec_LangVal]
+interface LangValDelayEvaluateI extends LangValDelayEvaluateGI<Env, LangVal> { }
+type LangValDelayEvaluate = LangValDelayEvaluateI & [LangValType.delay_evaluate_t, HackRec_Env, HackRec_LangVal]
+
+interface LangValDelayBuiltinFuncGI<a extends LangVal, b extends Array<LangVal>> {
+    "0": LangValType.delay_builtin_func_t
+    "1": a
+    "2": b
+}
+type LangValDelayBuiltinFuncG<a extends LangVal, b extends Array<LangVal>> = LangValDelayBuiltinFuncGI<a, b> & [LangValType.delay_builtin_func_t, HackRec_LangVal, Array<HackRec_LangVal>]
+interface LangValDelayBuiltinFuncI extends LangValDelayBuiltinFuncG<LangVal, Array<LangVal>> { }
+type LangValDelayBuiltinFunc = LangValDelayBuiltinFuncI & [LangValType.delay_builtin_func_t, HackRec_LangVal, Array<HackRec_LangVal>]
+
+interface LangValDelayBuiltinFormGI<a extends Env, b extends LangVal, c extends Array<LangVal>> {
+    "0": LangValType.delay_builtin_form_t
+    "1": a
+    "2": b
+    "3": c
+}
+type LangValDelayBuiltinFormG<a extends Env, b extends LangVal, c extends Array<LangVal>> = LangValDelayBuiltinFormGI<a, b, c> & [LangValType.delay_builtin_form_t, HackRec_Env, HackRec_LangVal, Array<HackRec_LangVal>]
+interface LangValDelayBuiltinFormI extends LangValDelayBuiltinFormG<Env, LangVal, Array<LangVal>> { }
+type LangValDelayBuiltinForm = LangValDelayBuiltinFormI & [LangValType.delay_builtin_form_t, HackRec_Env, HackRec_LangVal, Array<HackRec_LangVal>]
+
+interface LangValDelayApplyGI<a extends LangVal, b extends Array<LangVal>> {
+    "0": LangValType.delay_apply_t
+    "1": a
+    "2": b
+}
+type LangValDelayApplyG<a extends LangVal, b extends Array<LangVal>> = LangValDelayApplyGI<a, b> & [LangValType.delay_apply_t, HackRec_LangVal, Array<HackRec_LangVal>]
+interface LangValDelayApplyI extends LangValDelayApplyG<LangVal, Array<LangVal>> { }
+type LangValDelayApply = LangValDelayApplyI & [LangValType.delay_apply_t, HackRec_LangVal, Array<HackRec_LangVal>]
+
 export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply
 export type LangValDelayG<a extends LangVal> = LangValDelay // 可能不可用類型描述
 export type LangValJustDelay = LangValJust | LangValDelay
@@ -108,17 +150,17 @@ export type LangValJustDelayG<a extends LangVal> = LangValJustDelay // 可能不
 export type LangValSysNameG<x extends LangVal> = SystemName_Make<x>
 export type LangValSysName = LangValSysNameG<LangVal>
 export type LangValName = LangValData | LangValSymbol
-export type LangValFunctionJustDelay = LangValRec // WIP
 
 const comment_t = LangValType.comment_t
 export type LangValCommentG<a extends LangVal, b extends LangVal> = [LangValType.comment_t, a, b]
-export type LangValComment = LangValCommentG<LangValRec, LangValRec>
+interface LangValCommentI extends LangValCommentG<LangVal, LangVal> { }
+export type LangValComment = LangValCommentI & LangValCommentG<HackRec_LangVal, HackRec_LangVal>
 
 const hole_t = LangValType.hole_t
 type LangValHole = [LangValType.hole_t]
 export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValComment | LangValHole
-export type LangValRec = any // WIP
-
+type HackRec_LangVal = any
+type HackRec_Env = any
 
 
 /* !!!Racket Code Generator!!! (string-append "// TEST Racket Code Generator 0\n"
@@ -495,7 +537,7 @@ function delay_builtin_func_xs(x: LangValDelayBuiltinFunc): Array<LangVal> {
     return x[2]
 }
 
-function apply(f: LangValFunctionJustDelay, xs: Array<LangVal>): LangValDelayApply {
+function apply(f: LangVal, xs: Array<LangVal>): LangValDelayApply {
     return [delay_apply_t, f, xs]
 }
 export { apply }
@@ -879,7 +921,6 @@ export { force_all_export as force_all, force1 }
 
 // {{{ 相對獨立的部分。變量之環境
 export type Env = Array<LangVal> // WIP
-export type EnvRec = Array<LangValRec> // WIP
 
 const env_null_v: Env = []
 function env_set(env: Env, key: LangVal, val: LangVal): Env {
