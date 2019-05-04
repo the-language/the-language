@@ -2217,9 +2217,67 @@ type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New
 const return_effect_systemName: Return_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
 type Bind_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<Construction_Symbol, Null_V>>, Null_V>>>
 const bind_effect_systemName: Bind_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
-export type EffectCode<Op extends LangVal> = any // WIP
-function run_effect_helper<Op extends LangVal, St>(handler: (op: Op, state: St) => [LangVal, St], state: St, code: EffectCode<Op>, next: (x: LangVal) => EffectCode<Op>) {
-    throw 'WIP'
+function new_bind(x: LangVal, y: LangValFunction): LangVal {
+    return new_data(bind_effect_systemName, x, y)
+}
+function new_return(x: LangVal): LangVal {
+    return new_data(return_effect_systemName, x)
+}
+// 註疏系統WIP
+// 矛盾，需重寫
+function run_effect_helper<Op extends LangValData, St, T extends LangVal>(
+    op_p: (x: LangVal) => x is Op,
+    op_handler: (op: Op, state: St, resume: (val: LangVal, state: St) => LangVal) => T,
+    return_handler: (val: LangVal, state: St) => T,
+    state: St,
+    code: LangVal,
+    next_illegal_instruction: (code: LangVal) => T,
+    next: null | LangValFunction = null
+): T {
+    code = force_all(code)
+    if (data_p(code)) {
+        const name = force_all_rec(data_name(code))
+        const list = force_all(data_list(code))
+        if (construction_p(list)) {
+            if (jsbool_no_force_equal_p(name, return_effect_systemName)) {
+                const list_a = construction_head(list)
+                const list_d = force_all(construction_tail(list))
+                if (null_p(list_d)) {
+                    if (next === null) {
+                        return new_return(return_handler(list_a, state))
+                    } else {
+                        return run_effect_helper(op_p, op_handler, return_handler, state, apply(next, [list_a]), next_illegal_instruction)
+                    }
+                }
+            } else if (jsbool_no_force_equal_p(name, bind_effect_systemName)) {
+                const list_a = construction_head(list)
+                const list_d = force_all(construction_tail(list))
+                if (construction_p(list_d)) {
+                    const list_d_a = construction_head(list_d)
+                    const list_d_d = force_all(construction_tail(list_d))
+                    if (null_p(list_d_d)) {
+                        code = list_a
+                        const current_next = next
+                        if (current_next === null) {
+                            throw 'WIP'
+                            //next=(x:LangVal)=>apply(list_d_a,[x])//僞代碼
+                        } else {
+                            throw 'WIP'
+                            //next=(x:LangVal)=>new_bind(apply(list_d_a, [x]),current_next)//僞代碼
+                        }
+                    }
+                }
+            } else {
+                const next1 = next === null ? new_hole_do(/*WIP 爲[return]*/) : next
+                if (op_p(code)) {
+                    return op_handler(code, state, (val: LangVal, state1: St) => run_effect_helper(op_p, op_handler, return_handler, state1, apply(next, [val]), next_illegal_instruction))
+                } else {
+                    return new_bind(code, new_hole_do(/*WIP 爲[ERROR run-effect 提爲Val ERROR]*/))
+                }
+            }
+        }
+    }
+    return next_illegal_instruction(code)
 }
 export {
     Return_Effect_SystemName,
