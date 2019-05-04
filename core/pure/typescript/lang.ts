@@ -57,89 +57,40 @@ const delay_apply_t = LangValType.delay_apply_t
 
 // 以下爲對TypeScript類型系統的hack，因爲不支援遞回的`type`
 
-interface LangValSymbolUnicodecharGI<a extends keyof Symbols_Set_Neg> {
-    "0": LangValType.symbol_t
-    "1": a
-}
-export type LangValSymbolUnicodecharG<a extends keyof Symbols_Set_Neg> = LangValSymbolUnicodecharGI<a> & [LangValType.symbol_t, a]
+export type LangValSymbolUnicodecharG<a extends keyof Symbols_Set_Neg> = [LangValType.symbol_t, a]
 export type LangValSymbol = LangValSymbolUnicodecharG<keyof Symbols_Set_Neg>
 
-interface LangValConsGI<a extends LangVal, b extends LangVal> {
-    "0": LangValType.construction_t
-    "1": a
-    "2": b
-}
-export type LangValConsG<a extends LangVal, b extends LangVal> = LangValConsGI<a, b> & [LangValType.construction_t, a, b]
-interface LangValConsI extends LangValConsGI<LangVal, LangVal> { }
+export type LangValConsG<a extends LangVal, b extends LangVal> = [LangValType.construction_t, a, b]
+interface LangValConsI extends LangValConsG<LangVal, LangVal> { }
 export type LangValCons = LangValConsI & [LangValType.construction_t, HackRec_LangVal, HackRec_LangVal]
 
-interface LangValNullI {
-    "0": LangValType.null_t
-}
-export type LangValNull = LangValNullI & [LangValType.null_t]
+export type LangValNull = [LangValType.null_t]
 
-interface LangValDataGI<a extends LangVal, b extends LangVal> {
-    "0": LangValType.data_t
-    "1": a
-    "2": b
-}
-export type LangValDataG<a extends LangVal, b extends LangVal> = LangValDataGI<a, b> & [LangValType.data_t, a, b]
-interface LangValDataI extends LangValDataGI<LangVal, LangVal> { }
+export type LangValDataG<a extends LangVal, b extends LangVal> = [LangValType.data_t, a, b]
+interface LangValDataI extends LangValDataG<LangVal, LangVal> { }
 export type LangValData = LangValDataI & [LangValType.data_t, HackRec_LangVal, HackRec_LangVal]
 
-interface LangValErrorGI<a extends LangVal, b extends LangVal> {
-    "0": LangValType.error_t
-    "1": a
-    "2": b
-}
-export type LangValErrorG<a extends LangVal, b extends LangVal> = LangValErrorGI<a, b> & [LangValType.error_t, a, b]
-interface LangValErrorI extends LangValErrorGI<LangVal, LangVal> { }
+export type LangValErrorG<a extends LangVal, b extends LangVal> = [LangValType.error_t, a, b]
+interface LangValErrorI extends LangValErrorG<LangVal, LangVal> { }
 export type LangValError = LangValErrorI & [LangValType.error_t, HackRec_LangVal, HackRec_LangVal]
 
-interface LangValJustGI<a extends LangVal> {
-    "0": LangValType.just_t
-    "1": a
-    "2": false
-    "3": false
-}
-export type LangValJustG<a extends LangVal> = LangValJustGI<a> & [LangValType.just_t, HackRec_LangVal, false, false]
+export type LangValJustG<a extends LangVal> = [LangValType.just_t, a, false, false]
 interface LangValJustI extends LangValJustG<LangVal> { }
 export type LangValJust = LangValJustI & [LangValType.just_t, HackRec_LangVal, false, false]
 
-interface LangValDelayEvaluateGI<a extends Env, b extends LangVal> {
-    "0": LangValType.delay_evaluate_t
-    "1": a
-    "2": b
-}
-type LangValDelayEvaluateG<a extends Env, b extends LangVal> = LangValDelayEvaluateGI<a, b> & [LangValType.delay_evaluate_t, HackRec_Env, HackRec_LangVal]
-interface LangValDelayEvaluateI extends LangValDelayEvaluateGI<Env, LangVal> { }
+type LangValDelayEvaluateG<a extends Env, b extends LangVal> = [LangValType.delay_evaluate_t, a, b]
+interface LangValDelayEvaluateI extends LangValDelayEvaluateG<Env, LangVal> { }
 type LangValDelayEvaluate = LangValDelayEvaluateI & [LangValType.delay_evaluate_t, HackRec_Env, HackRec_LangVal]
 
-interface LangValDelayBuiltinFuncGI<a extends LangVal, b extends Array<LangVal>> {
-    "0": LangValType.delay_builtin_func_t
-    "1": a
-    "2": b
-}
-type LangValDelayBuiltinFuncG<a extends LangVal, b extends Array<LangVal>> = LangValDelayBuiltinFuncGI<a, b> & [LangValType.delay_builtin_func_t, HackRec_LangVal, Array<HackRec_LangVal>]
+type LangValDelayBuiltinFuncG<a extends LangVal, b extends Array<LangVal>> = [LangValType.delay_builtin_func_t, a, b]
 interface LangValDelayBuiltinFuncI extends LangValDelayBuiltinFuncG<LangVal, Array<LangVal>> { }
 type LangValDelayBuiltinFunc = LangValDelayBuiltinFuncI & [LangValType.delay_builtin_func_t, HackRec_LangVal, Array<HackRec_LangVal>]
 
-interface LangValDelayBuiltinFormGI<a extends Env, b extends LangVal, c extends Array<LangVal>> {
-    "0": LangValType.delay_builtin_form_t
-    "1": a
-    "2": b
-    "3": c
-}
-type LangValDelayBuiltinFormG<a extends Env, b extends LangVal, c extends Array<LangVal>> = LangValDelayBuiltinFormGI<a, b, c> & [LangValType.delay_builtin_form_t, HackRec_Env, HackRec_LangVal, Array<HackRec_LangVal>]
+type LangValDelayBuiltinFormG<a extends Env, b extends LangVal, c extends Array<LangVal>> = [LangValType.delay_builtin_form_t, a, b, c]
 interface LangValDelayBuiltinFormI extends LangValDelayBuiltinFormG<Env, LangVal, Array<LangVal>> { }
 type LangValDelayBuiltinForm = LangValDelayBuiltinFormI & [LangValType.delay_builtin_form_t, HackRec_Env, HackRec_LangVal, Array<HackRec_LangVal>]
 
-interface LangValDelayApplyGI<a extends LangVal, b extends Array<LangVal>> {
-    "0": LangValType.delay_apply_t
-    "1": a
-    "2": b
-}
-type LangValDelayApplyG<a extends LangVal, b extends Array<LangVal>> = LangValDelayApplyGI<a, b> & [LangValType.delay_apply_t, HackRec_LangVal, Array<HackRec_LangVal>]
+type LangValDelayApplyG<a extends LangVal, b extends Array<LangVal>> = [LangValType.delay_apply_t, a, b]
 interface LangValDelayApplyI extends LangValDelayApplyG<LangVal, Array<LangVal>> { }
 type LangValDelayApply = LangValDelayApplyI & [LangValType.delay_apply_t, HackRec_LangVal, Array<HackRec_LangVal>]
 
