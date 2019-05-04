@@ -1,0 +1,24 @@
+image: archlinux/base
+
+variables:
+  # Please edit to your GitLab project
+  REPO_NAME: gitlab.com/namespace/project
+
+before_script:
+  - pacman -Sy
+  - pacman -S --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk jre8-openjdk clang make go wget git python2 gawk
+  - archlinux-java set java-11-openjdk
+  - raco pkg install --batch --user --auto rash
+
+stages:
+    - all
+
+all:
+    stage: all
+    script:
+      - cd core/pure
+      - touch typescript/lang.ts
+      - racket gen.Makefile.rkt
+      - make -j8
+      - racket test.rkt
+      - ./do_testmain.sh
