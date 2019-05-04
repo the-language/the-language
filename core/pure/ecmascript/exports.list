@@ -49,4 +49,5 @@ machinetext_parse
 machinetext_print
 return_effect_systemName
 bind_effect_systemName
-run_effect_helper
+new_effect_bind
+new_effect_return

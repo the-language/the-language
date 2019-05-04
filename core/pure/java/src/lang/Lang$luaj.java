@@ -209,6 +209,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
     final static org.luaj.vm2.LuaValue k205;
     final static org.luaj.vm2.LuaValue k206;
     final static org.luaj.vm2.LuaValue k207;
+    final static org.luaj.vm2.LuaValue k208;
     
     static {
         k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
@@ -418,7 +419,8 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         k204 = org.luaj.vm2.LuaString.valueOf("return_effect_systemName");
         k205 = org.luaj.vm2.LuaString.valueOf("Bind_Effect_SystemName");
         k206 = org.luaj.vm2.LuaString.valueOf("bind_effect_systemName");
-        k207 = org.luaj.vm2.LuaString.valueOf("run_effect_helper");
+        k207 = org.luaj.vm2.LuaString.valueOf("new_effect_bind");
+        k208 = org.luaj.vm2.LuaString.valueOf("new_effect_return");
     }
     
     public Lang$luaj() {
@@ -1620,15 +1622,21 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue[] a259 = new org.luaj.vm2.LuaValue[1];
         a259[0] = a144;
         org.luaj.vm2.LuaValue a260 = ((org.luaj.vm2.LuaValue)a164).invoke(((org.luaj.vm2.LuaValue)a61).invoke(org.luaj.vm2.LuaValue.varargsOf(a259, a258)).subargs(1)).arg1();
-        Lang$luaj$run_effect_helper a261 = new Lang$luaj$run_effect_helper();
-        a261.u0 = this.u0;
-        org.luaj.vm2.LuaValue a262 = this.u0.get(k203);
-        ((org.luaj.vm2.LuaValue)a1).set(k203, a262);
+        Lang$luaj$new_effect_bind a261 = new Lang$luaj$new_effect_bind();
+        a261.u0 = a66;
+        a261.u1 = a260;
+        a261.u2 = a97;
+        Lang$luaj$new_effect_return a262 = new Lang$luaj$new_effect_return();
+        a262.u0 = a66;
+        a262.u1 = a255;
+        org.luaj.vm2.LuaValue a263 = this.u0.get(k203);
+        ((org.luaj.vm2.LuaValue)a1).set(k203, a263);
         ((org.luaj.vm2.LuaValue)a1).set(k204, a255);
-        org.luaj.vm2.LuaValue a263 = this.u0.get(k205);
-        ((org.luaj.vm2.LuaValue)a1).set(k205, a263);
+        org.luaj.vm2.LuaValue a264 = this.u0.get(k205);
+        ((org.luaj.vm2.LuaValue)a1).set(k205, a264);
         ((org.luaj.vm2.LuaValue)a1).set(k206, a260);
         ((org.luaj.vm2.LuaValue)a1).set(k207, (org.luaj.vm2.LuaValue)a261);
+        ((org.luaj.vm2.LuaValue)a1).set(k208, (org.luaj.vm2.LuaValue)a262);
         return a1;
     }
     

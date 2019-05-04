@@ -15572,24 +15572,46 @@ static inline int lcf1_machinetext_print(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
-/* name: run_effect_helper
- * function(handler, state, code, next) */
-static inline int lcf1_run_effect_helper(lua_State *L) {
-  enum { lc_nformalargs = 4 };
-  lua_settop(L, 4);
+/* name: new_effect_bind
+ * function(monad, func) */
+static inline int lcf1_new_effect_bind(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
 
-  /* error("WIP") */
-  lua_getfield(L, LUA_ENVIRONINDEX, "error");
-  lua_pushliteral(L, "WIP");
-  lua_call(L, 1, 0);
-  assert(lua_gettop(L) == 4);
-  return 0;
+  /* return new_data(bind_effect_systemName, new_list(monad, func)) */
+  const int lc1255 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 30, 79);
+  const int lc1256 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 30, 22);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1256), LUA_MULTRET);
+  return (lua_gettop(L) - lc1255);
+  assert(lua_gettop(L) == 2);
+}
+
+/* name: new_effect_return
+ * function(x) */
+static inline int lcf1_new_effect_return(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
+  /* return new_data(return_effect_systemName, x) */
+  const int lc1257 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 30, 79);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+  lua_pushvalue(L, 1);
+  lua_call(L, 2, LUA_MULTRET);
+  return (lua_gettop(L) - lc1257);
+  assert(lua_gettop(L) == 1);
 }
 
 /* name: (main)
  * function(...) */
 static inline int lcf_main(lua_State *L) {
-  lua_checkstack(L, 78);
+  lua_checkstack(L, 79);
   enum { lc_nformalargs = 0 };
   const int lc_nactualargs = lua_gettop(L);
   const int lc_nextra = (lc_nactualargs - lc_nformalargs);
@@ -19957,105 +19979,128 @@ static inline int lcf_main(lua_State *L) {
    * new_construction(new_construction(typeAnnotation_symbol,
    * new_construction(thing_symbol, new_construction(something_symbol,
    * null_v))), null_v)), null_v))) */
+  lc_newclosuretable(L, (lc995 + lc_nextra));
+  enum { lc1245 = 66 };
+  assert((lua_gettop(L) == (lc1245 + lc_nextra)));
   lc_getupvalue(L, (lc995 + lc_nextra), 10, 136);
-  const int lc1245 = lua_gettop(L);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
   const int lc1246 = lua_gettop(L);
+  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
+  const int lc1247 = lua_gettop(L);
   lc_getupvalue(L, (lc995 + lc_nextra), 13, 133);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
-  const int lc1247 = lua_gettop(L);
+  const int lc1248 = lua_gettop(L);
   lua_pushvalue(L, (38 + lc_nextra));
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
-  const int lc1248 = lua_gettop(L);
+  const int lc1249 = lua_gettop(L);
   lc_getupvalue(L, (lc995 + lc_nextra), 15, 131);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
-  const int lc1249 = lua_gettop(L);
+  const int lc1250 = lua_gettop(L);
   lua_pushvalue(L, (36 + lc_nextra));
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
   lc_getupvalue(L, (lc995 + lc_nextra), 16, 130);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1249), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1250), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1249), 1);
+  lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
+  lua_call(L, 2, LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc1248), 1);
   lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1247), 1);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1246), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1245), 1);
+  lua_call(L, (lua_gettop(L) - lc1247), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1246), 1);
+  lua_rawseti(L, (lc1245 + lc_nextra), 193);
   assert(lua_gettop(L) - lc_nextra == 66);
 
   /* local bind_effect_systemName = systemName_make(new_construction(sub_symbol,
    * new_construction(new_construction(effect_symbol,
    * new_construction(construction_symbol, null_v)), null_v))) */
-  lc_getupvalue(L, (lc995 + lc_nextra), 10, 136);
-  const int lc1250 = lua_gettop(L);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
-  const int lc1251 = lua_gettop(L);
-  lc_getupvalue(L, (lc995 + lc_nextra), 13, 133);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
+  lc_newclosuretable(L, (lc1245 + lc_nextra));
+  enum { lc1251 = 67 };
+  assert((lua_gettop(L) == (lc1251 + lc_nextra)));
+  lc_getupvalue(L, (lc1245 + lc_nextra), 11, 136);
   const int lc1252 = lua_gettop(L);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 85);
+  const int lc1253 = lua_gettop(L);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 14, 133);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 85);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 85);
+  const int lc1254 = lua_gettop(L);
   lua_pushvalue(L, (38 + lc_nextra));
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 85);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 85);
   lua_pushvalue(L, (29 + lc_nextra));
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 81);
   lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1254), 1);
+  lc_getupvalue(L, (lc1245 + lc_nextra), 29, 81);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1253), LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc1252), 1);
-  lc_getupvalue(L, (lc995 + lc_nextra), 28, 81);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1251), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1250), 1);
+  lua_rawseti(L, (lc1251 + lc_nextra), 194);
   assert(lua_gettop(L) - lc_nextra == 67);
 
-  /* local function run_effect_helper(handler, state, code, next)
-   *     error("WIP")
+  /* local function new_effect_bind(monad, func)
+   *     return new_data(bind_effect_systemName, new_list(monad, func))
    * end */
-  lua_pushcfunction(L, lcf1_run_effect_helper);
+  lua_pushvalue(L, (lc1251 + lc_nextra));
+  lua_pushcclosure(L, lcf1_new_effect_bind, 1);
   assert(lua_gettop(L) - lc_nextra == 68);
+
+  /* local function new_effect_return(x)
+   *     return new_data(return_effect_systemName, x)
+   * end */
+  lua_pushvalue(L, (lc1251 + lc_nextra));
+  lua_pushcclosure(L, lcf1_new_effect_return, 1);
+  assert(lua_gettop(L) - lc_nextra == 69);
 
   /* ____exports.Return_Effect_SystemName = Return_Effect_SystemName */
   lua_getfield(L, LUA_ENVIRONINDEX, "Return_Effect_SystemName");
   lua_pushliteral(L, "Return_Effect_SystemName");
   lua_insert(L, -2);
   lua_settable(L, (1 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
 
   /* ____exports.return_effect_systemName = return_effect_systemName */
-  lua_pushvalue(L, (66 + lc_nextra));
+  lc_getupvalue(L, (lc1251 + lc_nextra), 1, 193);
   lua_pushliteral(L, "return_effect_systemName");
   lua_insert(L, -2);
   lua_settable(L, (1 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
 
   /* ____exports.Bind_Effect_SystemName = Bind_Effect_SystemName */
   lua_getfield(L, LUA_ENVIRONINDEX, "Bind_Effect_SystemName");
   lua_pushliteral(L, "Bind_Effect_SystemName");
   lua_insert(L, -2);
   lua_settable(L, (1 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
 
   /* ____exports.bind_effect_systemName = bind_effect_systemName */
-  lua_pushvalue(L, (67 + lc_nextra));
+  lc_getupvalue(L, (lc1251 + lc_nextra), 0, 194);
   lua_pushliteral(L, "bind_effect_systemName");
   lua_insert(L, -2);
   lua_settable(L, (1 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
 
-  /* ____exports.run_effect_helper = run_effect_helper */
+  /* ____exports.new_effect_bind = new_effect_bind */
   lua_pushvalue(L, (68 + lc_nextra));
-  lua_pushliteral(L, "run_effect_helper");
+  lua_pushliteral(L, "new_effect_bind");
   lua_insert(L, -2);
   lua_settable(L, (1 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
+
+  /* ____exports.new_effect_return = new_effect_return */
+  lua_pushvalue(L, (69 + lc_nextra));
+  lua_pushliteral(L, "new_effect_return");
+  lua_insert(L, -2);
+  lua_settable(L, (1 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 69);
 
   /* return ____exports */
   lua_pushvalue(L, (1 + lc_nextra));
   return 1;
-  assert(lua_gettop(L) - lc_nextra == 68);
+  assert(lua_gettop(L) - lc_nextra == 69);
 }
 /*-- #include "src.cpp/lang.h" start --*/
 

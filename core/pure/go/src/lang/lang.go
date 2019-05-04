@@ -2264,14 +2264,18 @@ ____exports.machinetext_parse = machinetext_parse
 ____exports.machinetext_print = machinetext_print
 local return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
 local bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
-local function run_effect_helper(handler, state, code, next)
-    error("WIP")
+local function new_effect_bind(monad, func)
+    return new_data(bind_effect_systemName, new_list(monad, func))
+end
+local function new_effect_return(x)
+    return new_data(return_effect_systemName, x)
 end
 ____exports.Return_Effect_SystemName = Return_Effect_SystemName
 ____exports.return_effect_systemName = return_effect_systemName
 ____exports.Bind_Effect_SystemName = Bind_Effect_SystemName
 ____exports.bind_effect_systemName = bind_effect_systemName
-____exports.run_effect_helper = run_effect_helper
+____exports.new_effect_bind = new_effect_bind
+____exports.new_effect_return = new_effect_return
 return ____exports`); err != nil {panic(err)}
 exports = ls.Get(-1).(*lua.LTable)
 ls.Pop(1)

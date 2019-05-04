@@ -1910,9 +1910,12 @@ function machinetext_print(x) {
 export { machinetext_parse, machinetext_print };
 const return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)));
 const bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)));
-function run_effect_helper(handler, state, code, next) {
-    throw 'WIP';
+function new_effect_bind(monad, func) {
+    return new_data(bind_effect_systemName, new_list(monad, func));
 }
-export { return_effect_systemName, bind_effect_systemName, run_effect_helper, };
+function new_effect_return(x) {
+    return new_data(return_effect_systemName, x);
+}
+export { return_effect_systemName, bind_effect_systemName, new_effect_bind, new_effect_return, };
 //WIP
 // 相對獨立的部分。Effect }}}
