@@ -258,7 +258,7 @@ const head_symbol = new_symbol("首始");
 const tail_symbol = new_symbol("尾末");
 const thing_symbol = new_symbol("之物");
 const theWorldStopped_symbol = new_symbol("宇宙亡矣");
-//unused//const effect_symbol = new_symbol("效應")
+const effect_symbol = new_symbol("效應");
 //unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
 //unused//const inputOutput_symbol = new_symbol("出入改滅")
 const comment_symbol = new_symbol("註疏");
@@ -1908,10 +1908,8 @@ function machinetext_print(x) {
     return result;
 }
 export { machinetext_parse, machinetext_print };
-// 相對獨立的部分。machinetext parse/print }}}
-// {{{ 相對獨立的部分。Effect
-const return_effect_systemName = complex_parse('效應/[:之物]');
-const bind_effect_systemName = complex_parse('效應/連頸');
+const return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)));
+const bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)));
 function run_effect_helper(handler, state, code, next) {
     throw 'WIP';
 }

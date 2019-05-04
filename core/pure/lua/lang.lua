@@ -1156,6 +1156,7 @@ local head_symbol = new_symbol("首始")
 local tail_symbol = new_symbol("尾末")
 local thing_symbol = new_symbol("之物")
 local theWorldStopped_symbol = new_symbol("宇宙亡矣")
+local effect_symbol = new_symbol("效應")
 local comment_symbol = new_symbol("註疏")
 the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 local function systemName_make(x)
@@ -2232,12 +2233,14 @@ local function machinetext_print(x)
 end
 ____exports.machinetext_parse = machinetext_parse
 ____exports.machinetext_print = machinetext_print
-local return_effect_systemName = complex_parse("效應/[:之物]")
-local bind_effect_systemName = complex_parse("效應/連頸")
+local return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
+local bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
 local function run_effect_helper(handler, state, code, next)
     error("WIP")
 end
+____exports.Return_Effect_SystemName = Return_Effect_SystemName
 ____exports.return_effect_systemName = return_effect_systemName
+____exports.Bind_Effect_SystemName = Bind_Effect_SystemName
 ____exports.bind_effect_systemName = bind_effect_systemName
 ____exports.run_effect_helper = run_effect_helper
 return ____exports

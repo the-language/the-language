@@ -557,33 +557,40 @@ const form_symbol = new_symbol("式形")
 const equal_symbol = new_symbol("等同")
 const evaluate_sym = new_symbol("解算")
 const theThing_symbol = new_symbol("特定其物")
-const something_symbol = new_symbol("省略一物")
+type Something_Symbol = New_Symbol<"省略一物">
+const something_symbol: Something_Symbol = new_symbol("省略一物")
 const mapping_symbol = new_symbol("映表")
 const if_symbol = new_symbol("如若")
-const typeAnnotation_symbol = new_symbol("一類何物")
+type TypeAnnotation_Symbol = New_Symbol<"一類何物">
+const typeAnnotation_symbol: TypeAnnotation_Symbol = new_symbol("一類何物")
 const isOrNot_symbol = new_symbol("是非")
-const sub_symbol = new_symbol("其子")
+type Sub_Symbol = New_Symbol<"其子">
+const sub_symbol: Sub_Symbol = new_symbol("其子")
 const true_symbol = new_symbol("陽")
 const false_symbol = new_symbol("陰")
 const quote_symbol = new_symbol("引用")
 const apply_symbol = new_symbol("應用")
 const null_symbol = new_symbol("間空")
-const construction_symbol = new_symbol("連頸")
+type Construction_Symbol = New_Symbol<"連頸">
+const construction_symbol: Construction_Symbol = new_symbol("連頸")
 const data_symbol = new_symbol("構物")
 const error_symbol = new_symbol("謬誤")
 const symbol_symbol = new_symbol("詞素")
 const list_symbol = new_symbol("列序")
 const head_symbol = new_symbol("首始")
 const tail_symbol = new_symbol("尾末")
-const thing_symbol = new_symbol("之物")
+type Thing_Symbol = New_Symbol<"之物">
+const thing_symbol: Thing_Symbol = new_symbol("之物")
 const theWorldStopped_symbol = new_symbol("宇宙亡矣")
-//unused//const effect_symbol = new_symbol("效應")
+type Effect_Symbol = New_Symbol<"效應">
+const effect_symbol: Effect_Symbol = new_symbol("效應")
 //unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
 //unused//const inputOutput_symbol = new_symbol("出入改滅")
 const comment_symbol = new_symbol("註疏")
 
 const the_world_stopped_v: LangVal = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
 
+// 指內建標識符系統
 type SystemName_Make<X extends LangVal> = New_Data<Name_Symbol, New_Construction<System_Symbol, New_Construction<X, Null_V>>>
 function systemName_make<X extends LangVal>(x: X): SystemName_Make<X> {
     return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
@@ -2206,14 +2213,18 @@ export { machinetext_parse, machinetext_print }
 
 
 // {{{ 相對獨立的部分。Effect
-const return_effect_systemName = complex_parse('效應/[:之物]')
-const bind_effect_systemName = complex_parse('效應/連頸')
+type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<New_Construction<TypeAnnotation_Symbol, New_Construction<Thing_Symbol, New_Construction<Something_Symbol, Null_V>>>, Null_V>>, Null_V>>>
+const return_effect_systemName: Return_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
+type Bind_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<Construction_Symbol, Null_V>>, Null_V>>>
+const bind_effect_systemName: Bind_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
 export type EffectCode<Op extends LangVal> = any // WIP
 function run_effect_helper<Op extends LangVal, St>(handler: (op: Op, state: St) => [LangVal, St], state: St, code: EffectCode<Op>, next: (x: LangVal) => EffectCode<Op>) {
     throw 'WIP'
 }
 export {
+    Return_Effect_SystemName,
     return_effect_systemName,
+    Bind_Effect_SystemName,
     bind_effect_systemName,
     run_effect_helper,
 }
