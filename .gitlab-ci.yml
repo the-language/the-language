@@ -20,5 +20,5 @@ all:
       - touch typescript/lang.ts
       - racket gen.Makefile.rkt
       - make -j8
-      - racket test.rkt
+      - racket test.all.rkt
       - ./do_testmain.sh
