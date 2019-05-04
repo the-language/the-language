@@ -17,7 +17,7 @@
 |#
 #lang racket
 (require rackunit)
-
+(provide (all-defined-out) (all-from-out rackunit))
 
 (define (assert-value p? x)
   (match x
@@ -40,20 +40,6 @@
 
 (define (lisp-id->js-id x)
   (apply-++ (map (λ (c) (assert-value char? c) (if (equal? c #\-) "_" (string c))) (string->list (symbol->string x)))))
-(define (js-expr-compile x)
-  (match x
-    [(? string?) (with-output-to-string (λ () (write x)))]
-    [(? number?) (number->string x)]
-    [(list (? string? f) xs ...) (++ "L."f"("(apply-++ (add-between (map (λ (x) (js-expr-compile x)) xs) ","))")")]
-    [(list (? symbol? f) xs ...) (js-expr-compile (cons (lisp-id->js-id f) xs))]
-    ))
-(define (js-test-compile code)
-  (match code
-    [(list 'check-equal? v1 v2)
-     (++ "console.log(\""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\");\nassert.strictEqual("(js-expr-compile v1)","(js-expr-compile v2)");\n")]
-    [(list 'begin xs ...)
-     (apply ++ (map js-test-compile xs))]))
-(define (js-run x) (system (string-append "node -e 'const L=require(\"./ecmascript/lang.js\");\n"(assert-safe-string/single-quote x)"'")))
 
 (define lisp-id->py3-id lisp-id->js-id)
 (define (py3-expr-compile x)
@@ -70,22 +56,6 @@
     [(list 'begin xs ...)
      (apply ++ (map py3-test-compile xs))]))
 (define (py3-run x) (system (string-append "echo 'import python3.lang as L\n"(assert-safe-string/single-quote x)"' | python3")))
-
-(define lisp-id->lua-id lisp-id->js-id)
-(define (lua-expr-compile x)
-  (match x
-    [(? string?) (with-output-to-string (λ () (write x)))]
-    [(? number?) (number->string x)]
-    [(list (? string? f) xs ...) (++ "L."f"("(apply-++ (add-between (map (λ (x) (lua-expr-compile x)) xs) ","))")")]
-    [(list (? symbol? f) xs ...) (lua-expr-compile (cons (lisp-id->lua-id f) xs))]
-    ))
-(define (lua-test-compile code)
-  (match code
-    [(list 'check-equal? v1 v2)
-     (++ "print(\""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\")\nassert("(lua-expr-compile v1)" == "(lua-expr-compile v2)")\n")]
-    [(list 'begin xs ...)
-     (apply ++ (map lua-test-compile xs))]))
-(define (lua-run x) (system (string-append "./c/lua-5.1.5/src/lua -e 'local L=require(\"./lua/lang\")\n"(assert-safe-string/single-quote x)"'")))
 
 (define lisp-id->php-id lisp-id->js-id)
 (define (php-expr-compile x)
@@ -188,14 +158,3 @@
           "(a b)"
           "(a b . !(c d #(e)))"))
      ))
-
-(void (and
- (begin
-   (displayln "-- JS --")
-   (js-run (js-test-compile test-main)))
- (begin
-   (displayln "-- Lua --")
-   (lua-run (lua-test-compile test-main)))
- #|(begin ;; 停止支持的
-   (displayln "-- PY3 --")
-   (py3-run (py3-test-compile test-main)))|#))

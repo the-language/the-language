@@ -1,11 +1,11 @@
 #!/bin/sh
 
 cd java/src
-java testmain
+java testmain ||exit
 cd ../..
 
-./c/testmain
+./c/testmain ||exit
 
 cd go
-GOPATH="$PWD/deps:$PWD" go run testmain.go
+GOPATH="$PWD/deps:$PWD" go run testmain.go ||exit
 cd ..
