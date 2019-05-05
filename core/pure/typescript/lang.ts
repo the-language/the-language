@@ -2211,7 +2211,24 @@ function machinetext_print(x: LangVal): string {
 export { machinetext_parse, machinetext_print }
 // 相對獨立的部分。machinetext parse/print }}}
 
-
+// {{{ 相對獨立的部分。trampoline
+type TrampolineHelper<T> = () => ([false, T] | [true, Trampoline<T>])
+export interface Trampoline<T> extends TrampolineHelper<T> { }
+function trampoline_return<T>(x: T): Trampoline<T> {
+    return () => [false, x]
+}
+function trampoline_delay<T>(x: () => Trampoline<T>): Trampoline<T> {
+    return () => [true, x()]
+}
+function run_trampoline<T>(x: Trampoline<T>): T {
+    let i = x()
+    while (i[0]) {
+        i = i[1]()
+    }
+    return i[1]
+}
+export { trampoline_return, trampoline_delay, run_trampoline }
+// 相對獨立的部分。trampoline }}}
 
 // {{{ 相對獨立的部分。Effect
 type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<New_Construction<TypeAnnotation_Symbol, New_Construction<Thing_Symbol, New_Construction<Something_Symbol, Null_V>>>, Null_V>>, Null_V>>>
@@ -2226,12 +2243,12 @@ function new_effect_return(x: LangVal): LangVal {
 }
 // 註疏系統WIP
 function run_monad_helper<St, T>(
-    return_handler: (val: LangVal, state: St) => T,
-    op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => T) => T,
+    return_handler: (val: LangVal, state: St) => Trampoline<T>,
+    op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => Trampoline<T>) => Trampoline<T>,
     code: LangVal,
     state: St,
     next: false | LangVal = false,
-): () => T {
+): Trampoline<T> {
     function make_bind(x: LangVal, f: LangVal): LangVal {
         throw 'WIP'
     }
@@ -2249,9 +2266,15 @@ function run_monad_helper<St, T>(
                     if (next === false) {
                         const upval_v = list_a // luaj有BUG，只能這樣寫
                         const upval_st = state
-                        return () => return_handler(upval_v, upval_st)
+                        const r = () => return_handler(upval_v, upval_st)
+                        return trampoline_delay(r)
                     } else {
-                        return run_monad_helper(return_handler, op_handler, apply(next, list_a), state)
+                        const upval_rt = return_handler // luaj有BUG，只能這樣寫
+                        const upval_op = op_handler
+                        const upval_v = list_a
+                        const upval_st = state
+                        const r = () => run_monad_helper(upval_rt, upval_op, apply(next, upval_v), upval_st)
+                        return trampoline_delay(r)
                     }
                 }
             }
@@ -2265,10 +2288,23 @@ function run_monad_helper<St, T>(
                     const list_d_d = force_all(construction_tail(list_d))
                     if (null_p(list_d_d)) {
                         if (next === false) {
-                            return run_monad_helper(return_handler, op_handler, list_a, list_d_a)
+                            const upval_rt = return_handler // luaj有BUG，只能這樣寫
+                            const upval_op = op_handler
+                            const upval_a = list_a
+                            const upval_b = list_d_a
+                            const upval_st = state
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, upval_b)
+                            return trampoline_delay(r)
                         } else {
+                            const upval_rt = return_handler// luaj有BUG，只能這樣寫
+                            const upval_op = op_handler
+                            const upval_a = list_a
+                            const upval_b = list_d_a
+                            const upval_st = state
+                            const upval_nt = next
                             const x = new_symbol('序甲')
-                            return run_monad_helper(return_handler, op_handler, list_a, state, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(list_d_a), x), make_quote(next)))))
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))))
+                            return trampoline_delay(r)
                         }
                     }
                 }
@@ -2277,20 +2313,27 @@ function run_monad_helper<St, T>(
     }
     // op
     if (next === false) {
-        return () => op_handler(code, state, return_handler)
+        return trampoline_delay(() => op_handler(code, state, return_handler))
     } else {
-        return () => op_handler(code, state, (val2, state2) => run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2)())
+        return trampoline_delay(() => op_handler(code, state, (val2, state2) => trampoline_delay(() => run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2))))
     }
 }
 // 註疏系統WIP
-function run_monad<St, T>(
+function run_monad_trampoline<St, T>(
+    return_handler: (val: LangVal, state: St) => Trampoline<T>,
+    op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => Trampoline<T>) => Trampoline<T>,
+    code: LangVal,
+    state: St,
+): Trampoline<T> {
+    return run_monad_helper(return_handler, op_handler, code, state)
+}
+function run_monad_stackoverflow<St, T>(
     return_handler: (val: LangVal, state: St) => T,
     op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => T) => T,
     code: LangVal,
     state: St,
 ): T {
-    const c = run_monad_helper(return_handler, op_handler, code, state)
-    return c()
+    return run_trampoline(run_monad_helper(((v, s) => trampoline_return(return_handler(v, s))), ((op, st, rs) => trampoline_return(op_handler(op, st, (v, s) => run_trampoline(rs(v, s))))), code, state))
 }
 
 export {
@@ -2300,7 +2343,8 @@ export {
     bind_effect_systemName,
     new_effect_bind,
     new_effect_return,
-    run_monad,
+    run_monad_trampoline,
+    run_monad_stackoverflow,
 }
 //WIP
 // 相對獨立的部分。Effect }}}

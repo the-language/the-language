@@ -189,10 +189,10 @@ function delay_apply_xs(x) {
 }
 function force_all_rec(raw) {
     const x = force_all(raw);
-    function conslike(x) {
-        x[1] = force_all_rec(x[1]);
-        x[2] = force_all_rec(x[2]);
-        return x;
+    function conslike(xx) {
+        xx[1] = force_all_rec(xx[1]);
+        xx[2] = force_all_rec(xx[2]);
+        return xx;
     }
     if (data_p(x)) {
         return conslike(x);
@@ -336,7 +336,7 @@ function list_to_jsArray(xs, k_done, k_tail) {
     return k_tail(ret, xs);
 }
 function maybe_list_to_jsArray(xs) {
-    return list_to_jsArray(xs, (xs) => xs, (xs, x) => false);
+    return list_to_jsArray(xs, (x) => x, (_1, _2) => false);
 }
 function new_list(...xs) {
     return jsArray_to_list(xs);
@@ -803,16 +803,16 @@ const real_builtin_func_apply_s = [
             if (x === y) {
                 return true_v;
             }
-            function H_if(b, x, y) {
+            function H_if(b, xx, yy) {
                 // H = helper
-                return builtin_func_apply(if_function_builtin_systemName, [b, x, y]);
+                return builtin_func_apply(if_function_builtin_systemName, [b, xx, yy]);
             }
-            function H_and(x, y) {
-                return H_if(x, y, false_v);
+            function H_and(xx, yy) {
+                return H_if(xx, yy, false_v);
             }
             LANG_ASSERT(!any_delay_just_p(x));
-            function end_2(x, y, f1, f2) {
-                return H_and(builtin_func_apply(equal_p_function_builtin_systemName, [f1(x), f1(y)]), builtin_func_apply(equal_p_function_builtin_systemName, [f2(x), f2(y)]));
+            function end_2(xx, yy, f1, f2) {
+                return H_and(builtin_func_apply(equal_p_function_builtin_systemName, [f1(xx), f1(yy)]), builtin_func_apply(equal_p_function_builtin_systemName, [f2(xx), f2(yy)]));
             }
             if (null_p(x)) {
                 if (!null_p(x)) {
@@ -1077,9 +1077,9 @@ function jsbool_equal_p(x, y) {
     if (x === y) {
         return true;
     }
-    function end_2(x, y, f1, f2) {
-        if (jsbool_equal_p(f1(x), f1(y)) && jsbool_equal_p(f2(x), f2(y))) {
-            lang_set_do(x, y);
+    function end_2(xx, yy, f1, f2) {
+        if (jsbool_equal_p(f1(xx), f1(yy)) && jsbool_equal_p(f2(xx), f2(yy))) {
+            lang_set_do(xx, yy);
             return true;
         }
         else {
@@ -1130,9 +1130,9 @@ function jsbool_no_force_equal_p(x, y) {
     if (x === y) {
         return true;
     }
-    function end_2(x, y, f1, f2) {
-        if (jsbool_no_force_equal_p(f1(x), f1(y)) && jsbool_no_force_equal_p(f2(x), f2(y))) {
-            lang_set_do(x, y);
+    function end_2(xx, yy, f1, f2) {
+        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
+            lang_set_do(xx, yy);
             return true;
         }
         else {
@@ -1257,15 +1257,15 @@ function complex_parse(x) {
         state++;
         return ret;
     }
-    function put(x) {
-        LANG_ASSERT(state_const[state - 1] === x);
+    function put(chr) {
+        LANG_ASSERT(state_const[state - 1] === chr);
         state--;
     }
     function parse_error(x = "") {
         throw "TheLanguage parse ERROR!" + x;
     }
-    function a_space_p(x) {
-        return x === " " || x === "\n" || x === "\t" || x === "\r";
+    function a_space_p(chr) {
+        return chr === " " || chr === "\n" || chr === "\t" || chr === "\r";
     }
     function space() {
         if (eof()) {
@@ -1322,9 +1322,9 @@ function complex_parse(x) {
         }
         let ret_last = new_hole_do();
         const ret = ret_last;
-        function last_add_do(x) {
+        function last_add_do(val) {
             const ret_last2 = new_hole_do();
-            hole_set_do(ret_last, new_construction(x, ret_last2));
+            hole_set_do(ret_last, new_construction(val, ret_last2));
             ret_last = ret_last2;
         }
         while (true) {
@@ -1444,19 +1444,19 @@ function complex_parse(x) {
             return k(construction_head(xs), construction_head(x), construction_head(x_d));
         };
     }
-    const readeval = make_read_two("$", (e, x) => {
-        const env = val2env(e);
+    const readeval = make_read_two("$", (ev, val) => {
+        const env = val2env(ev);
         if (env === false) {
             return parse_error();
         }
-        return evaluate(env, x);
+        return evaluate(env, val);
     });
     const readfuncapply = make_read_two("%", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error());
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error());
         return builtin_func_apply(f, jsxs);
     });
     const readformbuiltin = make_read_three("@", (e, f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error());
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error());
         const env = val2env(e);
         if (env === false) {
             return parse_error();
@@ -1464,18 +1464,17 @@ function complex_parse(x) {
         return builtin_form_apply(env, f, jsxs);
     });
     const readapply = make_read_two("^", (f, xs) => {
-        const jsxs = list_to_jsArray(xs, (xs) => xs, (xs, y) => parse_error());
+        const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error());
         return apply(f, jsxs);
     });
-    function a_symbol_p(x) {
-        if (a_space_p(x)) {
+    function a_symbol_p(chr) {
+        if (a_space_p(chr)) {
             return false;
         }
-        const not_xs = ["(", ")", "!", "#", ".", "$", "%", "^", "@",
+        for (const v of ["(", ")", "!", "#", ".", "$", "%", "^", "@",
             '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
-        ];
-        for (let i = 0; i < not_xs.length; i++) {
-            if (x === not_xs[i]) {
+        ]) {
+            if (v === chr) {
                 return false;
             }
         }
@@ -1493,11 +1492,11 @@ function complex_parse(x) {
         return parse_error();
     }
     return val();
-    function un_maybe(x) {
-        if (x === false) {
+    function un_maybe(vl) {
+        if (vl === false) {
             return parse_error();
         }
-        return x;
+        return vl;
     }
     function not_eof() {
         return !eof();
@@ -1505,6 +1504,70 @@ function complex_parse(x) {
     function assert_get(c) {
         un_maybe(not_eof());
         un_maybe(get() === c);
+    }
+    function readsysname_no_pack_inner_must(strict = false) {
+        function readsysname_no_pack_bracket() {
+            assert_get('[');
+            const x = readsysname_no_pack_inner_must();
+            assert_get(']');
+            return x;
+        }
+        // 重複自val()
+        const fs = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
+            readerror, readeval, readfuncapply, readformbuiltin, readapply] :
+            [readlist, readsysname_no_pack, data,
+                readerror, readeval, readfuncapply, readformbuiltin, readapply];
+        for (let i = 0; i < fs.length; i++) {
+            const x = fs[i]();
+            if (x !== false) {
+                return x;
+            }
+        }
+        return parse_error();
+    }
+    function may_xfx_xf(vl) {
+        if (eof()) {
+            return vl;
+        }
+        const head = get();
+        if (head === '.') {
+            const y = readsysname_no_pack_inner_must();
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y);
+        }
+        else if (head === ':') {
+            const y = readsysname_no_pack_inner_must();
+            return new_list(typeAnnotation_symbol, y, vl);
+        }
+        else if (head === '~') {
+            return new_list(isOrNot_symbol, vl);
+        }
+        else if (head === '@') {
+            const y = readsysname_no_pack_inner_must();
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y);
+        }
+        else if (head === '?') {
+            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl));
+        }
+        else if (head === '/') {
+            let ys = [vl];
+            while (true) {
+                const y = readsysname_no_pack_inner_must(true);
+                ys.push(y);
+                if (eof()) {
+                    break;
+                }
+                const c0 = get();
+                if (c0 !== '/') {
+                    put(c0);
+                    break;
+                }
+            }
+            return new_list(sub_symbol, jsArray_to_list(ys));
+        }
+        else {
+            put(head);
+            return vl;
+        }
     }
     function readsysname_no_pack() {
         if (eof()) {
@@ -1564,73 +1627,6 @@ function complex_parse(x) {
             }
             return may_xfx_xf(x);
         }
-        return LANG_ERROR();
-        function readsysname_no_pack_inner_must(strict = false) {
-            function readsysname_no_pack_bracket() {
-                assert_get('[');
-                const x = readsysname_no_pack_inner_must();
-                assert_get(']');
-                return x;
-            }
-            // 重複自val()
-            const fs = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply] :
-                [readlist, readsysname_no_pack, data,
-                    readerror, readeval, readfuncapply, readformbuiltin, readapply];
-            for (let i = 0; i < fs.length; i++) {
-                const x = fs[i]();
-                if (x !== false) {
-                    return x;
-                }
-            }
-            return parse_error();
-        }
-        function may_xfx_xf(x) {
-            if (eof()) {
-                return x;
-            }
-            const head = get();
-            if (head === '.') {
-                const y = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(x), something_symbol), y);
-            }
-            else if (head === ':') {
-                const y = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, y, x);
-            }
-            else if (head === '~') {
-                return new_list(isOrNot_symbol, x);
-            }
-            else if (head === '@') {
-                const y = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(x, something_symbol), something_symbol), y);
-            }
-            else if (head === '?') {
-                return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, x));
-            }
-            else if (head === '/') {
-                let ys = [x];
-                while (true) {
-                    const y = readsysname_no_pack_inner_must(true);
-                    ys.push(y);
-                    if (eof()) {
-                        break;
-                    }
-                    const c0 = get();
-                    if (c0 !== '/') {
-                        put(c0);
-                        break;
-                    }
-                }
-                return new_list(sub_symbol, jsArray_to_list(ys));
-            }
-            else {
-                put(head);
-                return x;
-            }
-            return LANG_ERROR();
-        }
-        return LANG_ERROR();
     }
     function readsysname() {
         const x = readsysname_no_pack();
@@ -1653,14 +1649,14 @@ function complex_print(val) {
         if (symbol_p(x)) {
             return un_symbol(x);
         }
-        function inner_bracket(x) {
+        function inner_bracket(vl) {
+            // where: 'inner' | 'top'
             if (where === 'inner') {
-                return '[' + x + ']';
+                return '[' + vl + ']';
             }
-            else if (where === 'top') {
-                return x;
+            else { // where === 'top'
+                return vl;
             }
-            return LANG_ERROR();
         }
         const maybe_xs = maybe_list_to_jsArray(x);
         if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
@@ -1878,10 +1874,10 @@ function machinetext_print(x) {
         const new_stack = [];
         for (let x of stack) {
             x = un_just_all(x);
-            const conslike = function (x, s, g1, g2) {
+            const conslike = function (xx, s, g1, g2) {
                 result += s;
-                new_stack.push(g1(x));
-                new_stack.push(g2(x));
+                new_stack.push(g1(xx));
+                new_stack.push(g2(xx));
             };
             if (symbol_p(x)) {
                 result += '^';
@@ -1902,7 +1898,7 @@ function machinetext_print(x) {
             }
             else if (any_delay_p(x)) {
                 const y = any_delay2delay_evaluate(x);
-                conslike(y, '$', ((x) => env2val(delay_evaluate_env(x))), delay_evaluate_x);
+                conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
             }
             else {
                 return LANG_ERROR();
@@ -1913,6 +1909,20 @@ function machinetext_print(x) {
     return result;
 }
 export { machinetext_parse, machinetext_print };
+function trampoline_return(x) {
+    return () => [false, x];
+}
+function trampoline_delay(x) {
+    return () => [true, x()];
+}
+function run_trampoline(x) {
+    let i = x();
+    while (i[0]) {
+        i = i[1]();
+    }
+    return i[1];
+}
+export { trampoline_return, trampoline_delay, run_trampoline };
 const return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)));
 const bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)));
 function new_effect_bind(monad, func) {
@@ -1939,10 +1949,16 @@ function run_monad_helper(return_handler, op_handler, code, state, next = false)
                     if (next === false) {
                         const upval_v = list_a; // luaj有BUG，只能這樣寫
                         const upval_st = state;
-                        return () => return_handler(upval_v, upval_st);
+                        const r = () => return_handler(upval_v, upval_st);
+                        return trampoline_delay(r);
                     }
                     else {
-                        return run_monad_helper(return_handler, op_handler, apply(next, list_a), state);
+                        const upval_rt = return_handler; // luaj有BUG，只能這樣寫
+                        const upval_op = op_handler;
+                        const upval_v = list_a;
+                        const upval_st = state;
+                        const r = () => run_monad_helper(upval_rt, upval_op, apply(next, upval_v), upval_st);
+                        return trampoline_delay(r);
                     }
                 }
             }
@@ -1957,11 +1973,24 @@ function run_monad_helper(return_handler, op_handler, code, state, next = false)
                     const list_d_d = force_all(construction_tail(list_d));
                     if (null_p(list_d_d)) {
                         if (next === false) {
-                            return run_monad_helper(return_handler, op_handler, list_a, list_d_a);
+                            const upval_rt = return_handler; // luaj有BUG，只能這樣寫
+                            const upval_op = op_handler;
+                            const upval_a = list_a;
+                            const upval_b = list_d_a;
+                            const upval_st = state;
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, upval_b);
+                            return trampoline_delay(r);
                         }
                         else {
+                            const upval_rt = return_handler; // luaj有BUG，只能這樣寫
+                            const upval_op = op_handler;
+                            const upval_a = list_a;
+                            const upval_b = list_d_a;
+                            const upval_st = state;
+                            const upval_nt = next;
                             const x = new_symbol('序甲');
-                            return run_monad_helper(return_handler, op_handler, list_a, state, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(list_d_a), x), make_quote(next)))));
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))));
+                            return trampoline_delay(r);
                         }
                     }
                 }
@@ -1970,17 +1999,19 @@ function run_monad_helper(return_handler, op_handler, code, state, next = false)
     }
     // op
     if (next === false) {
-        return () => op_handler(code, state, return_handler);
+        return trampoline_delay(() => op_handler(code, state, return_handler));
     }
     else {
-        return () => op_handler(code, state, (val2, state2) => run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2)());
+        return trampoline_delay(() => op_handler(code, state, (val2, state2) => trampoline_delay(() => run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2))));
     }
 }
 // 註疏系統WIP
-function run_monad(return_handler, op_handler, code, state) {
-    const c = run_monad_helper(return_handler, op_handler, code, state);
-    return c();
+function run_monad_trampoline(return_handler, op_handler, code, state) {
+    return run_monad_helper(return_handler, op_handler, code, state);
 }
-export { return_effect_systemName, bind_effect_systemName, new_effect_bind, new_effect_return, run_monad, };
+function run_monad_stackoverflow(return_handler, op_handler, code, state) {
+    return run_trampoline(run_monad_helper(((v, s) => trampoline_return(return_handler(v, s))), ((op, st, rs) => trampoline_return(op_handler(op, st, (v, s) => run_trampoline(rs(v, s))))), code, state));
+}
+export { return_effect_systemName, bind_effect_systemName, new_effect_bind, new_effect_return, run_monad_trampoline, run_monad_stackoverflow, };
 //WIP
 // 相對獨立的部分。Effect }}}

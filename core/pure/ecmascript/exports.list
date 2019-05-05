@@ -47,8 +47,13 @@ complex_parse
 complex_print
 machinetext_parse
 machinetext_print
+Trampoline
+trampoline_return
+trampoline_delay
+run_trampoline
 return_effect_systemName
 bind_effect_systemName
 new_effect_bind
 new_effect_return
-run_monad
+run_monad_trampoline
+run_monad_stackoverflow
