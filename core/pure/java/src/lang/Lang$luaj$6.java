@@ -7,7 +7,6 @@ public class Lang$luaj$6 extends org.luaj.vm2.lib.OneArgFunction {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        org.luaj.vm2.LuaValue a0 = this.u1.call(a);
-        return this.u0[0].get(a0);
+        return this.u0[0].call().get(this.u1.call(a));
     }
 }
