@@ -1534,6 +1534,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
 }
 
 // {{{ 相對獨立的部分。simple printer
+// 註疏系統WIP
 function simple_print(x: LangVal): string {
     // [[[ 大量重複代碼 simple_print <-> complex_print
     x = un_just_all(x)
@@ -1584,6 +1585,7 @@ export { simple_print, simple_print_force_all_rec }
 // 相對獨立的部分。simple printer }}}
 
 // {{{ 相對獨立的部分。complex parser/complex printer
+// 註疏系統WIP
 function complex_parse(x: string): LangVal {
     const state_const: string = x // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
     let state = 0
@@ -1973,6 +1975,7 @@ function complex_parse(x: string): LangVal {
     }
 }
 export { complex_parse }
+// 註疏系統WIP
 function complex_print(val: LangVal): string {
     function print_sys_name(x: LangVal, where: 'inner' | 'top'): string {
         // 是 complex_print(systemName_make(x))
@@ -2113,6 +2116,7 @@ export { complex_print }
 
 
 // {{{ 相對獨立的部分。machinetext parse/print
+// 註疏系統WIP
 function machinetext_parse(rawstr: string): LangVal {
     const result = new_hole_do()
     let stack: Array<LangValHole> = [result]
@@ -2171,6 +2175,7 @@ function machinetext_parse(rawstr: string): LangVal {
     parse_assert(state == rawstr.length)
     return result
 }
+// 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
 function machinetext_print(x: LangVal): string {
     let stack: Array<LangVal> = [x]
@@ -2223,6 +2228,75 @@ function new_effect_bind(monad: LangVal, func: LangVal): LangVal {
 function new_effect_return(x: LangVal): LangVal {
     return new_data(return_effect_systemName, x)
 }
+// 註疏系統WIP
+function run_monad_helper<St, T>(
+    return_handler: (val: LangVal, state: St) => T,
+    op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => T) => T,
+    code: LangVal,
+    state: St,
+    next: false | LangVal = false,
+): () => T {
+    function make_bind(x: LangVal, f: LangVal): LangVal {
+        throw 'WIP'
+    }
+
+    code = force_all(code)
+    if (data_p(code)) {
+        const name = data_name(code)
+        let list = data_list(code)
+        if (jsbool_equal_p(name, return_effect_systemName)) {
+            list = force_all(list)
+            if (construction_p(list)) {
+                const list_a = construction_head(list)
+                const list_d = force_all(construction_tail(list))
+                if (null_p(list_d)) {
+                    if (next === false) {
+                        return () => return_handler(list_a, state)
+                    } else {
+                        return run_monad_helper(return_handler, op_handler, apply(next, list_a), state)
+                    }
+                }
+            }
+        } else if (jsbool_equal_p(name, bind_effect_systemName)) {
+            list = force_all(list)
+            if (construction_p(list)) {
+                const list_a = construction_head(list)
+                const list_d = force_all(construction_tail(list))
+                if (construction_p(list_d)) {
+                    const list_d_a = construction_head(list_d)
+                    const list_d_d = force_all(construction_tail(list_d))
+                    if (null_p(list_d_d)) {
+                        if (next === false) {
+                            return run_monad_helper(return_handler, op_handler, list_a, list_d_a)
+                        } else {
+                            const x = new_symbol('序甲')
+                            return run_monad_helper(return_handler, op_handler, list_a, state, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(list_d_a), x), make_quote(next)))))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // op
+    if (next === false) {
+        return () => op_handler(code, state, return_handler)
+    } else {
+        return () => op_handler(code, state, (val2, state2) => {
+            const c = run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2)
+            return c()
+        })
+    }
+}
+// 註疏系統WIP
+function run_monad<St, T>(
+    return_handler: (val: LangVal, state: St) => T,
+    op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => T) => T,
+    code: LangVal,
+    state: St,
+): T {
+    const c = run_monad_helper(return_handler, op_handler, code, state)
+    return c()
+}
 
 export {
     Return_Effect_SystemName,
@@ -2231,6 +2305,7 @@ export {
     bind_effect_systemName,
     new_effect_bind,
     new_effect_return,
+    run_monad,
 }
 //WIP
 // 相對獨立的部分。Effect }}}

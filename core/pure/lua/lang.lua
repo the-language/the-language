@@ -2241,10 +2241,70 @@ end
 local function new_effect_return(x)
     return new_data(return_effect_systemName, x)
 end
+local function run_monad_helper(return_handler, op_handler, code, state, next)
+    if next == nil then
+        next = false
+    end
+    local function make_bind(x, f)
+        error("WIP")
+    end
+    code = force_all(code)
+    if data_p(code) then
+        local name = data_name(code)
+        local list = data_list(code)
+        if jsbool_equal_p(name, return_effect_systemName) then
+            list = force_all(list)
+            if construction_p(list) then
+                local list_a = construction_head(list)
+                local list_d = force_all(construction_tail(list))
+                if null_p(list_d) then
+                    if next == false then
+                        return function() return return_handler(list_a, state) end
+                    else
+                        return run_monad_helper(return_handler, op_handler, apply(next, list_a), state)
+                    end
+                end
+            end
+        elseif jsbool_equal_p(name, bind_effect_systemName) then
+            list = force_all(list)
+            if construction_p(list) then
+                local list_a = construction_head(list)
+                local list_d = force_all(construction_tail(list))
+                if construction_p(list_d) then
+                    local list_d_a = construction_head(list_d)
+                    local list_d_d = force_all(construction_tail(list_d))
+                    if null_p(list_d_d) then
+                        if next == false then
+                            return run_monad_helper(return_handler, op_handler, list_a, list_d_a)
+                        else
+                            local x = new_symbol("序甲")
+                            return run_monad_helper(return_handler, op_handler, list_a, state, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(list_d_a), x), make_quote(next)))))
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if next == false then
+        return function() return op_handler(code, state, return_handler) end
+    else
+        return function() return op_handler(code, state, function(val2, state2)
+            local c
+            c = run_monad_helper(return_handler, op_handler, apply(next, {val2}), state2)
+            return c()
+        end) end
+    end
+end
+local function run_monad(return_handler, op_handler, code, state)
+    local c
+    c = run_monad_helper(return_handler, op_handler, code, state)
+    return c()
+end
 ____exports.Return_Effect_SystemName = Return_Effect_SystemName
 ____exports.return_effect_systemName = return_effect_systemName
 ____exports.Bind_Effect_SystemName = Bind_Effect_SystemName
 ____exports.bind_effect_systemName = bind_effect_systemName
 ____exports.new_effect_bind = new_effect_bind
 ____exports.new_effect_return = new_effect_return
+____exports.run_monad = run_monad
 return ____exports
