@@ -1315,6 +1315,7 @@ function jsbool_no_force_equal_p( $x, $y ) {
 	return LANG_ERROR();
 }
 // {{{ 相對獨立的部分。simple printer
+// 註疏系統WIP
 function simple_print( $x ) {
 	// [[[ 大量重複代碼 simple_print <-> complex_print
 	$x = un_just_all( $x );
@@ -1373,6 +1374,7 @@ function simple_print_force_all_rec( $x ) {
 
 // 相對獨立的部分。simple printer }}}
 // {{{ 相對獨立的部分。complex parser/complex printer
+// 註疏系統WIP
 function complex_parse( $x ) {
 	global $null_v;
 	global $typeAnnotation_symbol;
@@ -1785,6 +1787,7 @@ function complex_parse( $x ) {
 	};
 }
 
+// 註疏系統WIP
 function complex_print( $val ) {
 	global $typeAnnotation_symbol;
 	global $function_symbol;
@@ -1948,6 +1951,7 @@ function complex_print( $val ) {
 
 // 相對獨立的部分。complex parser/complex printer }}}
 // {{{ 相對獨立的部分。machinetext parse/print
+// 註疏系統WIP
 function machinetext_parse( $rawstr ) {
 	global $env_null_v;
 	global $function_builtin_use_systemName;
@@ -2022,6 +2026,7 @@ function machinetext_parse( $rawstr ) {
 	return $result;
 }
 
+// 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
 function machinetext_print( $x ) {
 	$stack = [ $x ];
@@ -2077,6 +2082,70 @@ function new_effect_bind( $monad, $func ) {
 function new_effect_return( $x ) {
 	global $return_effect_systemName;
 	return new_data( $return_effect_systemName, $x );
+}
+
+// 註疏系統WIP
+function run_monad_helper( $return_handler, $op_handler, $code, $state, $next = false ) {
+	global $return_effect_systemName;
+	global $bind_effect_systemName;
+	global $function_symbol;
+	$make_bind = function ( $x, $f ) {
+		throw 'WIP';
+	};
+	$code = force_all( $code );
+	if ( data_p( $code ) ) {
+		$name = data_name( $code );
+		$list = data_list( $code );
+		if ( jsbool_equal_p( $name, $return_effect_systemName ) ) {
+			$list = force_all( $list );
+			if ( construction_p( $list ) ) {
+				$list_a = construction_head( $list );
+				$list_d = force_all( construction_tail( $list ) );
+				if ( null_p( $list_d ) ) {
+					if ( $next === false ) {
+						$upval_v = $list_a; // luaj有BUG，只能這樣寫
+						$upval_st = $state;
+						return function () use ( &$return_handler, &$upval_v, &$upval_st ) {return  $return_handler( $upval_v, $upval_st ); };
+					} else {
+
+						return run_monad_helper( $return_handler, $op_handler, apply( $next, $list_a ), $state );
+					}
+				}
+			}
+		} else
+		if ( jsbool_equal_p( $name, $bind_effect_systemName ) ) {
+			$list = force_all( $list );
+			if ( construction_p( $list ) ) {
+				$list_a = construction_head( $list );
+				$list_d = force_all( construction_tail( $list ) );
+				if ( construction_p( $list_d ) ) {
+					$list_d_a = construction_head( $list_d );
+					$list_d_d = force_all( construction_tail( $list_d ) );
+					if ( null_p( $list_d_d ) ) {
+						if ( $next === false ) {
+							return run_monad_helper( $return_handler, $op_handler, $list_a, $list_d_a );
+						} else {
+
+							$x = new_symbol( "序甲" );
+							return run_monad_helper( $return_handler, $op_handler, $list_a, $state, new_data( $function_symbol, new_list( new_list( $x ), $make_bind( new_list( make_quote( $list_d_a ), $x ), make_quote( $next ) ) ) ) );
+						}
+					}
+				}
+			}
+		}
+	}
+	// op
+	if ( $next === false ) {
+		return function () use ( &$op_handler, &$code, &$state, &$return_handler ) {return  $op_handler( $code, $state, $return_handler ); };
+	} else {
+
+		return function () use ( &$op_handler, &$code, &$state, &$return_handler, &$next ) {return  $op_handler( $code, $state, function ( $val2, $state2 ) use ( &$return_handler, &$op_handler, &$next ) {return  run_monad_helper( $return_handler, $op_handler, apply( $next, [ $val2 ] ), $state2 )(); } ); };
+	}
+}
+// 註疏系統WIP
+function run_monad( $return_handler, $op_handler, $code, $state ) {
+	$c = run_monad_helper( $return_handler, $op_handler, $code, $state );
+	return $c();
 }
 
 //WIP
