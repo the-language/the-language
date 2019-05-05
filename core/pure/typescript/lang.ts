@@ -2251,7 +2251,9 @@ function run_monad_helper<St, T>(
                 const list_d = force_all(construction_tail(list))
                 if (null_p(list_d)) {
                     if (next === false) {
-                        return () => return_handler(list_a, state)
+                        const upval_v = list_a // luaj有BUG，只能這樣寫
+                        const upval_st = state
+                        return () => return_handler(upval_v, upval_st)
                     } else {
                         return run_monad_helper(return_handler, op_handler, apply(next, list_a), state)
                     }
@@ -2281,10 +2283,7 @@ function run_monad_helper<St, T>(
     if (next === false) {
         return () => op_handler(code, state, return_handler)
     } else {
-        return () => op_handler(code, state, (val2, state2) => {
-            const c = run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2)
-            return c()
-        })
+        return () => op_handler(code, state, (val2, state2) => run_monad_helper(return_handler, op_handler, apply(next, [val2]), state2)())
     }
 }
 // 註疏系統WIP

@@ -2259,7 +2259,9 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                 local list_d = force_all(construction_tail(list))
                 if null_p(list_d) then
                     if next == false then
-                        return function() return return_handler(list_a, state) end
+                        local upval_v = list_a
+                        local upval_st = state
+                        return function() return return_handler(upval_v, upval_st) end
                     else
                         return run_monad_helper(return_handler, op_handler, apply(next, list_a), state)
                     end
@@ -2288,11 +2290,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
     if next == false then
         return function() return op_handler(code, state, return_handler) end
     else
-        return function() return op_handler(code, state, function(val2, state2)
-            local c
-            c = run_monad_helper(return_handler, op_handler, apply(next, {val2}), state2)
-            return c()
-        end) end
+        return function() return op_handler(code, state, function(val2, state2) return run_monad_helper(return_handler, op_handler, apply(next, {val2}), state2)() end) end
     end
 end
 local function run_monad(return_handler, op_handler, code, state)

@@ -210,6 +210,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
     final static org.luaj.vm2.LuaValue k206;
     final static org.luaj.vm2.LuaValue k207;
     final static org.luaj.vm2.LuaValue k208;
+    final static org.luaj.vm2.LuaValue k209;
     
     static {
         k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
@@ -421,6 +422,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         k206 = org.luaj.vm2.LuaString.valueOf("bind_effect_systemName");
         k207 = org.luaj.vm2.LuaString.valueOf("new_effect_bind");
         k208 = org.luaj.vm2.LuaString.valueOf("new_effect_return");
+        k209 = org.luaj.vm2.LuaString.valueOf("run_monad");
     }
     
     public Lang$luaj() {
@@ -1629,14 +1631,37 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         Lang$luaj$new_effect_return a262 = new Lang$luaj$new_effect_return();
         a262.u0 = a66;
         a262.u1 = a255;
-        org.luaj.vm2.LuaValue a263 = this.u0.get(k203);
-        ((org.luaj.vm2.LuaValue)a1).set(k203, a263);
+        Lang$luaj$run_monad_helper a263 = new Lang$luaj$run_monad_helper();
+        a263.u0 = this.u0;
+        a263.u1 = a43;
+        a263.u2 = a67;
+        a263.u3 = a68;
+        a263.u4 = a69;
+        a263.u5 = a53;
+        a263.u6 = a255;
+        a263.u7 = a62;
+        a263.u8 = a63;
+        a263.u9 = a64;
+        a263.u10 = a65;
+        a263.u11 = a263;
+        a263.u12 = a89;
+        a263.u13 = a260;
+        a263.u14 = a126;
+        a263.u15 = a66;
+        a263.u16 = a18;
+        a263.u17 = a97;
+        a263.u18 = a113;
+        Lang$luaj$run_monad a264 = new Lang$luaj$run_monad();
+        a264.u0 = a263;
+        org.luaj.vm2.LuaValue a265 = this.u0.get(k203);
+        ((org.luaj.vm2.LuaValue)a1).set(k203, a265);
         ((org.luaj.vm2.LuaValue)a1).set(k204, a255);
-        org.luaj.vm2.LuaValue a264 = this.u0.get(k205);
-        ((org.luaj.vm2.LuaValue)a1).set(k205, a264);
+        org.luaj.vm2.LuaValue a266 = this.u0.get(k205);
+        ((org.luaj.vm2.LuaValue)a1).set(k205, a266);
         ((org.luaj.vm2.LuaValue)a1).set(k206, a260);
         ((org.luaj.vm2.LuaValue)a1).set(k207, (org.luaj.vm2.LuaValue)a261);
         ((org.luaj.vm2.LuaValue)a1).set(k208, (org.luaj.vm2.LuaValue)a262);
+        ((org.luaj.vm2.LuaValue)a1).set(k209, (org.luaj.vm2.LuaValue)a264);
         return a1;
     }
     
