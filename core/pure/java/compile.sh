@@ -9,7 +9,8 @@ py2(){
   #fi
 }
 
-[ -d luaj ] || tar -xJvf luaj.tar.xz
+#[ -d luaj ] ||
+tar -xJvf luaj.tar.xz
 
 [ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git ||exit
 
