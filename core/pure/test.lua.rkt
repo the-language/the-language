@@ -19,6 +19,6 @@
 (define (lua-run x) (system (string-append "./c/lua-5.1.5/src/lua -e 'local L=require(\"./lua/lang\")\n"(assert-safe-string/single-quote x)"'")))
 
 
-echo "--- Lua {{{"
+echo (id "--- Lua {{{")
 (check-equal? (lua-run (lua-test-compile test-main)) #t)
-echo "}}} Lua ---"
+echo (id "}}} Lua ---")

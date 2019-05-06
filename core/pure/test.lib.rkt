@@ -19,6 +19,8 @@
 (require rackunit)
 (provide (all-defined-out) (all-from-out rackunit))
 
+(define (id x) x)
+
 (define (assert-value p? x)
   (match x
     [(? p?) x]))

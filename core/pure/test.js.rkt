@@ -17,6 +17,6 @@
      (apply ++ (map js-test-compile xs))]))
 (define (js-run x) (system (string-append "node -e 'const L=require(\"./ecmascript/lang.js\");\n"(assert-safe-string/single-quote x)"'")))
 
-echo "--- JS {{{"
+echo (id "--- JS {{{")
 (check-equal? (js-run (js-test-compile test-main)) #t)
-echo "}}} JS ---"
+echo (id "}}} JS ---")
