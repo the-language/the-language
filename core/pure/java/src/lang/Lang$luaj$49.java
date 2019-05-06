@@ -1,41 +1,25 @@
 package lang;
-public class Lang$luaj$49 extends org.luaj.vm2.lib.ThreeArgFunction {
+public class Lang$luaj$49 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
+    org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
-    final static org.luaj.vm2.LuaValue k2;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(0);
-        k1 = org.luaj.vm2.LuaValue.valueOf(1);
-        k2 = org.luaj.vm2.LuaValue.valueOf(2);
+        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+        k1 = org.luaj.vm2.LuaValue.valueOf(0);
     }
     
     public Lang$luaj$49() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0, org.luaj.vm2.LuaValue a1) {
-        org.luaj.vm2.LuaTable a2 = org.luaj.vm2.LuaValue.tableOf(0, 0);
-        org.luaj.vm2.LuaValue a3 = k0;
-        while(a3.lt_b(a.len())) {
-            if (this.u0[0].call(a.get(a3.add(k0).add(k1)), a0).toboolean()) {
-                ((org.luaj.vm2.LuaValue)a2).set(a3.add(k0).add(k1), a0);
-                ((org.luaj.vm2.LuaValue)a2).set(a3.add(k1).add(k1), a1);
-                org.luaj.vm2.LuaValue a4 = a3.add(k2);
-                while(a4.lt_b(a.len())) {
-                    ((org.luaj.vm2.LuaValue)a2).set(a4.add(k0).add(k1), a.get(a4.add(k0).add(k1)));
-                    ((org.luaj.vm2.LuaValue)a2).set(a4.add(k1).add(k1), a.get(a4.add(k1).add(k1)));
-                    a4 = a4.add(k2);
-                }
-                return a2;
-            } else {
-                ((org.luaj.vm2.LuaValue)a2).set(a3.add(k0).add(k1), a.get(a3.add(k0).add(k1)));
-                ((org.luaj.vm2.LuaValue)a2).set(a3.add(k1).add(k1), a.get(a3.add(k1).add(k1)));
-                a3 = a3.add(k2);
-            }
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.LuaValue a0 = this.u0[0];
+        org.luaj.vm2.LuaValue a1 = a.len().sub(k0);
+        while(k1.lteq_b(a1)) {
+            a0 = this.u1.call(a.get(a1.add(k0)), a0);
+            a1 = a1.sub(k0);
         }
-        ((org.luaj.vm2.LuaValue)a2).set(a.len().add(k0).add(k1), a0);
-        ((org.luaj.vm2.LuaValue)a2).set(a.len().add(k1).add(k1), a1);
-        return a2;
+        return a0;
     }
 }

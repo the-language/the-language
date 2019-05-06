@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$47$replace_this_with_stopped extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$54$replace_this_with_stopped extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue[] u2;
@@ -9,7 +9,7 @@ public class Lang$luaj$47$replace_this_with_stopped extends org.luaj.vm2.lib.Var
         k0 = org.luaj.vm2.LuaValue.valueOf(2);
     }
     
-    public Lang$luaj$47$replace_this_with_stopped() {
+    public Lang$luaj$54$replace_this_with_stopped() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
