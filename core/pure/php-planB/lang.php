@@ -1,4 +1,111 @@
 <?php
+$LANG_ERROR=function(...$xs){return call_user_func_array(LANG_ERROR,$xs);};
+$LANG_ASSERT=function(...$xs){return call_user_func_array(LANG_ASSERT,$xs);};
+$new_comment=function(...$xs){return call_user_func_array(new_comment,$xs);};
+$comment_p=function(...$xs){return call_user_func_array(comment_p,$xs);};
+$comment_comment=function(...$xs){return call_user_func_array(comment_comment,$xs);};
+$comment_x=function(...$xs){return call_user_func_array(comment_x,$xs);};
+$un_comment_all=function(...$xs){return call_user_func_array(un_comment_all,$xs);};
+$can_new_symbol_unicodechar_p=function(...$xs){return call_user_func_array(can_new_symbol_unicodechar_p,$xs);};
+$new_symbol_unicodechar=function(...$xs){return call_user_func_array(new_symbol_unicodechar,$xs);};
+$symbol_p=function(...$xs){return call_user_func_array(symbol_p,$xs);};
+$un_symbol_unicodechar=function(...$xs){return call_user_func_array(un_symbol_unicodechar,$xs);};
+$can_new_symbol_p=function(...$xs){return call_user_func_array(can_new_symbol_p,$xs);};
+$new_symbol=function(...$xs){return call_user_func_array(new_symbol,$xs);};
+$un_symbol=function(...$xs){return call_user_func_array(un_symbol,$xs);};
+$new_construction=function(...$xs){return call_user_func_array(new_construction,$xs);};
+$construction_p=function(...$xs){return call_user_func_array(construction_p,$xs);};
+$construction_head=function(...$xs){return call_user_func_array(construction_head,$xs);};
+$construction_tail=function(...$xs){return call_user_func_array(construction_tail,$xs);};
+$null_p=function(...$xs){return call_user_func_array(null_p,$xs);};
+$new_data=function(...$xs){return call_user_func_array(new_data,$xs);};
+$data_p=function(...$xs){return call_user_func_array(data_p,$xs);};
+$data_name=function(...$xs){return call_user_func_array(data_name,$xs);};
+$data_list=function(...$xs){return call_user_func_array(data_list,$xs);};
+$new_error=function(...$xs){return call_user_func_array(new_error,$xs);};
+$error_p=function(...$xs){return call_user_func_array(error_p,$xs);};
+$error_name=function(...$xs){return call_user_func_array(error_name,$xs);};
+$error_list=function(...$xs){return call_user_func_array(error_list,$xs);};
+$just_p=function(...$xs){return call_user_func_array(just_p,$xs);};
+$un_just=function(...$xs){return call_user_func_array(un_just,$xs);};
+$evaluate=function(...$xs){return call_user_func_array(evaluate,$xs);};
+$delay_evaluate_p=function(...$xs){return call_user_func_array(delay_evaluate_p,$xs);};
+$delay_evaluate_env=function(...$xs){return call_user_func_array(delay_evaluate_env,$xs);};
+$delay_evaluate_x=function(...$xs){return call_user_func_array(delay_evaluate_x,$xs);};
+$builtin_form_apply=function(...$xs){return call_user_func_array(builtin_form_apply,$xs);};
+$delay_builtin_form_p=function(...$xs){return call_user_func_array(delay_builtin_form_p,$xs);};
+$delay_builtin_form_env=function(...$xs){return call_user_func_array(delay_builtin_form_env,$xs);};
+$delay_builtin_form_f=function(...$xs){return call_user_func_array(delay_builtin_form_f,$xs);};
+$delay_builtin_form_xs=function(...$xs){return call_user_func_array(delay_builtin_form_xs,$xs);};
+$builtin_func_apply=function(...$xs){return call_user_func_array(builtin_func_apply,$xs);};
+$delay_builtin_func_p=function(...$xs){return call_user_func_array(delay_builtin_func_p,$xs);};
+$delay_builtin_func_f=function(...$xs){return call_user_func_array(delay_builtin_func_f,$xs);};
+$delay_builtin_func_xs=function(...$xs){return call_user_func_array(delay_builtin_func_xs,$xs);};
+$apply=function(...$xs){return call_user_func_array(apply,$xs);};
+$delay_apply_p=function(...$xs){return call_user_func_array(delay_apply_p,$xs);};
+$delay_apply_f=function(...$xs){return call_user_func_array(delay_apply_f,$xs);};
+$delay_apply_xs=function(...$xs){return call_user_func_array(delay_apply_xs,$xs);};
+$force_all_rec=function(...$xs){return call_user_func_array(force_all_rec,$xs);};
+$force_uncomment_all_rec=function(...$xs){return call_user_func_array(force_uncomment_all_rec,$xs);};
+$new_hole_do=function(...$xs){return call_user_func_array(new_hole_do,$xs);};
+$hole_p=function(...$xs){return call_user_func_array(hole_p,$xs);};
+$lang_set_do=function(...$xs){return call_user_func_array(lang_set_do,$xs);};
+$hole_set_do=function(...$xs){return call_user_func_array(hole_set_do,$xs);};
+$lang_copy_do=function(...$xs){return call_user_func_array(lang_copy_do,$xs);};
+$systemName_make=function(...$xs){return call_user_func_array(systemName_make,$xs);};
+$make_builtin_f_new_sym_f=function(...$xs){return call_user_func_array(make_builtin_f_new_sym_f,$xs);};
+$make_builtin_f_get_sym_f=function(...$xs){return call_user_func_array(make_builtin_f_get_sym_f,$xs);};
+$make_builtin_f_p_sym_f=function(...$xs){return call_user_func_array(make_builtin_f_p_sym_f,$xs);};
+$symbol_equal_p=function(...$xs){return call_user_func_array(symbol_equal_p,$xs);};
+$jsArray_to_list=function(...$xs){return call_user_func_array(jsArray_to_list,$xs);};
+$list_to_jsArray=function(...$xs){return call_user_func_array(list_to_jsArray,$xs);};
+$maybe_list_to_jsArray=function(...$xs){return call_user_func_array(maybe_list_to_jsArray,$xs);};
+$new_list=function(...$xs){return call_user_func_array(new_list,$xs);};
+$un_just_all=function(...$xs){return call_user_func_array(un_just_all,$xs);};
+$un_just_comment_all=function(...$xs){return call_user_func_array(un_just_comment_all,$xs);};
+$any_delay_p=function(...$xs){return call_user_func_array(any_delay_p,$xs);};
+$any_delay_just_p=function(...$xs){return call_user_func_array(any_delay_just_p,$xs);};
+$any_delay2delay_evaluate=function(...$xs){return call_user_func_array(any_delay2delay_evaluate,$xs);};
+$any_delay_env=function(...$xs){return call_user_func_array(any_delay_env,$xs);};
+$any_delay_x=function(...$xs){return call_user_func_array(any_delay_x,$xs);};
+$force_all=function(...$xs){return call_user_func_array(force_all,$xs);};
+$force1=function(...$xs){return call_user_func_array(force1,$xs);};
+$force_all_export=function(...$xs){return call_user_func_array(force_all_export,$xs);};
+$force_uncomment_all=function(...$xs){return call_user_func_array(force_uncomment_all,$xs);};
+$force_uncomment1=function(...$xs){return call_user_func_array(force_uncomment1,$xs);};
+$env_set=function(...$xs){return call_user_func_array(env_set,$xs);};
+$env_get=function(...$xs){return call_user_func_array(env_get,$xs);};
+$must_env_get=function(...$xs){return call_user_func_array(must_env_get,$xs);};
+$env2val=function(...$xs){return call_user_func_array(env2val,$xs);};
+$env_foreach=function(...$xs){return call_user_func_array(env_foreach,$xs);};
+$val2env=function(...$xs){return call_user_func_array(val2env,$xs);};
+$real_evaluate=function(...$xs){return call_user_func_array(real_evaluate,$xs);};
+$name_p=function(...$xs){return call_user_func_array(name_p,$xs);};
+$make_builtin_p_func=function(...$xs){return call_user_func_array(make_builtin_p_func,$xs);};
+$make_builtin_get_func=function(...$xs){return call_user_func_array(make_builtin_get_func,$xs);};
+$real_apply=function(...$xs){return call_user_func_array(real_apply,$xs);};
+$real_builtin_func_apply=function(...$xs){return call_user_func_array(real_builtin_func_apply,$xs);};
+$real_builtin_form_apply=function(...$xs){return call_user_func_array(real_builtin_form_apply,$xs);};
+$make_quote=function(...$xs){return call_user_func_array(make_quote,$xs);};
+$new_lambda=function(...$xs){return call_user_func_array(new_lambda,$xs);};
+$jsbool_equal_p=function(...$xs){return call_user_func_array(jsbool_equal_p,$xs);};
+$jsbool_no_force_equal_p=function(...$xs){return call_user_func_array(jsbool_no_force_equal_p,$xs);};
+$simple_print=function(...$xs){return call_user_func_array(simple_print,$xs);};
+$simple_print_force_all_rec=function(...$xs){return call_user_func_array(simple_print_force_all_rec,$xs);};
+$complex_parse=function(...$xs){return call_user_func_array(complex_parse,$xs);};
+$complex_print=function(...$xs){return call_user_func_array(complex_print,$xs);};
+$machinetext_parse=function(...$xs){return call_user_func_array(machinetext_parse,$xs);};
+$machinetext_print=function(...$xs){return call_user_func_array(machinetext_print,$xs);};
+$trampoline_return=function(...$xs){return call_user_func_array(trampoline_return,$xs);};
+$trampoline_delay=function(...$xs){return call_user_func_array(trampoline_delay,$xs);};
+$run_trampoline=function(...$xs){return call_user_func_array(run_trampoline,$xs);};
+$new_effect_bind=function(...$xs){return call_user_func_array(new_effect_bind,$xs);};
+$new_effect_return=function(...$xs){return call_user_func_array(new_effect_return,$xs);};
+$run_monad_helper=function(...$xs){return call_user_func_array(run_monad_helper,$xs);};
+$run_monad_trampoline=function(...$xs){return call_user_func_array(run_monad_trampoline,$xs);};
+$run_monad_stackoverflow=function(...$xs){return call_user_func_array(run_monad_stackoverflow,$xs);};
+$symbols_set_init=function(...$xs){return call_user_func_array(symbols_set_init,$xs);};
+$symbols_set_neg_init=function(...$xs){return call_user_func_array(symbols_set_neg_init,$xs);};
 
 
 /*
@@ -27,6 +134,18 @@ function LANG_ASSERT( $x ) {
 		return LANG_ERROR();
 	}
 }
+// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
+// {{{ 相對獨立的部分。UUC
+$symbols_set = function () {
+	$r = symbols_set_init();
+	$symbols_set = function () use ( &$r ) {return  $r; };
+	return $r;
+};
+$symbols_set_neg = function () {
+	$r = symbols_set_neg_init();
+	$symbols_set_neg = function () use ( &$r ) {return  $r; };
+	return $r;
+};
 $symbol_t = 0; /* symbol_t */
 $construction_t = 1; /* construction_t */
 $null_t = 2; /* null_t */
@@ -65,12 +184,16 @@ function comment_x( $x ) {
 	return $x[ 2 ];
 }
 
-$symbols_set = [ '0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H', 'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P', 'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X', 'Y' => 'Y', 'Z' => 'Z', 'a' => 'a', 'b' => 'b', 'c' => 'c', 'd' => 'd', 'e' => 'e', 'f' => 'f', 'g' => 'g', 'h' => 'h', 'i' => 'i', 'j' => 'j', 'k' => 'k', 'l' => 'l', 'm' => 'm', 'n' => 'n', 'o' => 'o', 'p' => 'p', 'q' => 'q', 'r' => 'r', 's' => 's', 't' => 't', 'u' => 'u', 'v' => 'v', 'w' => 'w', 'x' => 'x', 'y' => 'y', 'z' => 'z', "一類何物" => "㝉", "之物" => "𫙦", "其子" => "𦮪", "出入改滅" => "𢒟", "列序" => "𠜺", "化滅" => "𠏁", "參形" => "𠫰", "吾自" => "𦣹", "太始初核" => "𣝗", "如若" => "𦱡", "宇宙亡矣" => "𨹹", "尾末" => "𡲵", "序丁" => "𠆤", "序丙" => "𠇮", "序乙" => "㐈", "序甲" => "𠇚", "式形" => "佱", "引用" => "㧈", "應用" => "𤰆", "效應" => "効", "映表" => "𤅔", "是非" => "欤", "構物" => "𡒫", "為符名連" => "‐", "特定其物" => "亓", "省略一物" => "畧", "符名" => "謼", "等同" => "弌", "解算" => "筭", "註疏" => "疎", "詞素" => "𧥝", "謬誤" => "䥘", "連頸" => "丩", "間空" => "𣣓", "陰" => "侌", "陽" => "𣆄", "首始" => "𩠐" ];
-$symbols_set_neg = [ '0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H', 'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P', 'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X', 'Y' => 'Y', 'Z' => 'Z', 'a' => 'a', 'b' => 'b', 'c' => 'c', 'd' => 'd', 'e' => 'e', 'f' => 'f', 'g' => 'g', 'h' => 'h', 'i' => 'i', 'j' => 'j', 'k' => 'k', 'l' => 'l', 'm' => 'm', 'n' => 'n', 'o' => 'o', 'p' => 'p', 'q' => 'q', 'r' => 'r', 's' => 's', 't' => 't', 'u' => 'u', 'v' => 'v', 'w' => 'w', 'x' => 'x', 'y' => 'y', 'z' => 'z', "㝉" => "一類何物", "𫙦" => "之物", "𦮪" => "其子", "𢒟" => "出入改滅", "𠜺" => "列序", "𠏁" => "化滅", "𠫰" => "參形", "𦣹" => "吾自", "𣝗" => "太始初核", "𦱡" => "如若", "𨹹" => "宇宙亡矣", "𡲵" => "尾末", "𠆤" => "序丁", "𠇮" => "序丙", "㐈" => "序乙", "𠇚" => "序甲", "佱" => "式形", "㧈" => "引用", "𤰆" => "應用", "効" => "效應", "𤅔" => "映表", "欤" => "是非", "𡒫" => "構物", "‐" => "為符名連", "亓" => "特定其物", "畧" => "省略一物", "謼" => "符名", "弌" => "等同", "筭" => "解算", "疎" => "註疏", "𧥝" => "詞素", "䥘" => "謬誤", "丩" => "連頸", "𣣓" => "間空", "侌" => "陰", "𣆄" => "陽", "𩠐" => "首始" ];
-// !!!Generated by Racket!!! !!!END!!!
+function un_comment_all( $x ) {
+	while ( comment_p( $x ) ) {
+		$x = comment_x( $x );
+	}
+	return $x;
+}
+
 function can_new_symbol_unicodechar_p( $x ) {
 	global $symbols_set_neg;
-	return isset( $symbols_set_neg[ $x ] );
+	return isset( $symbols_set_neg()[ $x ] );
 }
 function new_symbol_unicodechar( $x ) {
 	global $symbol_t;
@@ -86,17 +209,17 @@ function un_symbol_unicodechar( $x ) {
 }
 function can_new_symbol_p( $x ) {
 	global $symbols_set;
-	return isset( $symbols_set[ $x ] );
+	return isset( $symbols_set()[ $x ] );
 }
 
 function new_symbol( $x ) {
 	global $symbols_set;
-	return new_symbol_unicodechar( $symbols_set[ $x ] );
+	return new_symbol_unicodechar( $symbols_set()[ $x ] );
 }
 
 function un_symbol( $x ) {
 	global $symbols_set_neg;
-	return $symbols_set_neg[ un_symbol_unicodechar( $x ) ];
+	return $symbols_set_neg()[ un_symbol_unicodechar( $x ) ];
 }
 
 function new_construction( $x, $y ) {
@@ -244,6 +367,40 @@ function force_all_rec( $raw ) {
 	} else
 	if ( construction_p( $x ) ) {
 		return $conslike( $x );
+	} else
+	if ( comment_p( $x ) ) {
+		return $conslike( $x );
+	}
+	return $x;
+}
+
+function force_uncomment_all_rec( $raw ) {
+	$x = force_uncomment_all( $raw );
+	$conslike = function ( $xx ) {
+		$xx[ 1 ] = force_all_rec( $xx[ 1 ] );
+		$xx[ 2 ] = force_all_rec( $xx[ 2 ] );
+		if ( comment_p( $xx[ 1 ] ) || comment_p( $xx[ 2 ] ) ) {
+			$ret = lang_copy_do( $xx );
+			$a = $xx[ 1 ];
+			$d = $xx[ 2 ];
+			$a1 = force_uncomment_all_rec( $a );
+			$d1 = force_uncomment_all_rec( $d );
+			$ret[ 1 ] = $a1;
+			$ret[ 2 ] = $d1;
+			return $ret;
+		} else {
+
+			return $xx;
+		}
+	};
+	if ( data_p( $x ) ) {
+		return $conslike( $x );
+	} else
+	if ( error_p( $x ) ) {
+		return $conslike( $x );
+	} else
+	if ( construction_p( $x ) ) {
+		return $conslike( $x );
 	}
 	return $x;
 }
@@ -275,6 +432,11 @@ function hole_set_do( $rawx, $rawy ) {
 	$x[ 1 ] = $y[ 1 ];
 	$x[ 2 ] = $y[ 2 ];
 	$x[ 3 ] = $y[ 3 ];
+}
+function lang_copy_do( $x ) {
+	$ret = new_hole_do();
+	hole_set_do( $ret, $x );
+	return $ret; // type WIP
 }
 $system_symbol = new_symbol( "太始初核" );
 $name_symbol = new_symbol( "符名" );
@@ -406,6 +568,9 @@ function new_list( ...$xs ) {
 
 // 註疏系統WIP
 function un_just_all( $raw ) {
+	if ( !just_p( $raw ) ) {
+		return $raw;
+	}
 	$x = $raw;
 	$xs = [];
 	while ( just_p( $x ) ) {
@@ -414,6 +579,13 @@ function un_just_all( $raw ) {
 	}
 	foreach ( $xs as $v => $___ ) {
 		lang_set_do( $v, $x );
+	}
+	return $x;
+}
+
+function un_just_comment_all( $x ) {
+	while ( just_p( $x ) || comment_p( $x ) ) {
+		$x = un_just_all( un_comment_all( $x ) );
 	}
 	return $x;
 }
@@ -452,7 +624,6 @@ function any_delay_x( $x ) {
 	return delay_evaluate_x( any_delay2delay_evaluate( $x ) );
 }
 
-// 註疏系統WIP
 function force_all( $raw, $parents_history = [], $ref_novalue_replace = [ false, false ], $xs = [] ) {
 	global $the_world_stopped_v;
 	global $data_name_function_builtin_systemName;
@@ -586,7 +757,6 @@ function force_all( $raw, $parents_history = [], $ref_novalue_replace = [ false,
 	}
 	return $do_rewrite( $x );
 }
-// 註疏系統WIP
 function force1( $raw ) {
 	$x = un_just_all( $raw );
 	$ret = null;
@@ -613,6 +783,22 @@ function force1( $raw ) {
 
 function force_all_export( $raw ) {
 	return force_all( $raw );
+}
+
+function force_uncomment_all( $x ) {
+	while ( any_delay_just_p( $x ) || comment_p( $x ) ) {
+		$x = force_all( un_comment_all( $x ) );
+	}
+	return $x;
+}
+
+function force_uncomment1( $raw ) {
+	if ( comment_p( $raw ) ) {
+		return comment_x( $raw );
+	} else {
+
+		return force1( $raw );
+	}
 }
 
 $env_null_v = [];
@@ -2070,6 +2256,22 @@ function machinetext_print( $x ) {
 	return $result;
 }
 
+function trampoline_return( $x ) {
+	return function () use ( &$x ) {return  [ false, $x ]; };
+}
+
+function trampoline_delay( $x ) {
+	return function () use ( &$x ) {return  [ true, $x() ]; };
+}
+
+function run_trampoline( $x ) {
+	$i = $x();
+	while ( $i[ 0 ] ) {
+		$i = $i[ 1 ]();
+	}
+	return $i[ 1 ];
+}
+
 $return_effect_systemName = systemName_make( new_construction( $sub_symbol, new_construction( new_construction( $effect_symbol, new_construction( new_construction( $typeAnnotation_symbol, new_construction( $thing_symbol, new_construction( $something_symbol, $null_v ) ) ), $null_v ) ), $null_v ) ) );
 
 $bind_effect_systemName = systemName_make( new_construction( $sub_symbol, new_construction( new_construction( $effect_symbol, new_construction( $construction_symbol, $null_v ) ), $null_v ) ) );
@@ -2105,10 +2307,16 @@ function run_monad_helper( $return_handler, $op_handler, $code, $state, $next = 
 					if ( $next === false ) {
 						$upval_v = $list_a; // luaj有BUG，只能這樣寫
 						$upval_st = $state;
-						return function () use ( &$return_handler, &$upval_v, &$upval_st ) {return  $return_handler( $upval_v, $upval_st ); };
+						$r = function () use ( &$return_handler, &$upval_v, &$upval_st ) {return  $return_handler( $upval_v, $upval_st ); };
+						return trampoline_delay( $r );
 					} else {
 
-						return run_monad_helper( $return_handler, $op_handler, apply( $next, $list_a ), $state );
+						$upval_rt = $return_handler; // luaj有BUG，只能這樣寫
+						$upval_op = $op_handler;
+						$upval_v = $list_a;
+						$upval_st = $state;
+						$r = function () use ( &$upval_rt, &$upval_op, &$next, &$upval_v, &$upval_st ) {return  run_monad_helper( $upval_rt, $upval_op, apply( $next, $upval_v ), $upval_st ); };
+						return trampoline_delay( $r );
 					}
 				}
 			}
@@ -2123,11 +2331,24 @@ function run_monad_helper( $return_handler, $op_handler, $code, $state, $next = 
 					$list_d_d = force_all( construction_tail( $list_d ) );
 					if ( null_p( $list_d_d ) ) {
 						if ( $next === false ) {
-							return run_monad_helper( $return_handler, $op_handler, $list_a, $list_d_a );
+							$upval_rt = $return_handler; // luaj有BUG，只能這樣寫
+							$upval_op = $op_handler;
+							$upval_a = $list_a;
+							$upval_b = $list_d_a;
+							$upval_st = $state;
+							$r = function () use ( &$upval_rt, &$upval_op, &$upval_a, &$upval_st, &$upval_b ) {return  run_monad_helper( $upval_rt, $upval_op, $upval_a, $upval_st, $upval_b ); };
+							return trampoline_delay( $r );
 						} else {
 
+							$upval_rt = $return_handler; // luaj有BUG，只能這樣寫
+							$upval_op = $op_handler;
+							$upval_a = $list_a;
+							$upval_b = $list_d_a;
+							$upval_st = $state;
+							$upval_nt = $next;
 							$x = new_symbol( "序甲" );
-							return run_monad_helper( $return_handler, $op_handler, $list_a, $state, new_data( $function_symbol, new_list( new_list( $x ), $make_bind( new_list( make_quote( $list_d_a ), $x ), make_quote( $next ) ) ) ) );
+							$r = function () use ( &$upval_rt, &$upval_op, &$upval_a, &$upval_st, &$function_symbol, &$x, &$make_bind, &$upval_b, &$upval_nt ) {return  run_monad_helper( $upval_rt, $upval_op, $upval_a, $upval_st, new_data( $function_symbol, new_list( new_list( $x ), $make_bind( new_list( make_quote( $upval_b ), $x ), make_quote( $upval_nt ) ) ) ) ); };
+							return trampoline_delay( $r );
 						}
 					}
 				}
@@ -2136,18 +2357,23 @@ function run_monad_helper( $return_handler, $op_handler, $code, $state, $next = 
 	}
 	// op
 	if ( $next === false ) {
-		return function () use ( &$op_handler, &$code, &$state, &$return_handler ) {return  $op_handler( $code, $state, $return_handler ); };
+		return trampoline_delay( function () use ( &$op_handler, &$code, &$state, &$return_handler ) {return  $op_handler( $code, $state, $return_handler ); } );
 	} else {
 
-		return function () use ( &$op_handler, &$code, &$state, &$return_handler, &$next ) {return  $op_handler( $code, $state, function ( $val2, $state2 ) use ( &$return_handler, &$op_handler, &$next ) {return  run_monad_helper( $return_handler, $op_handler, apply( $next, [ $val2 ] ), $state2 )(); } ); };
+		return trampoline_delay( function () use ( &$op_handler, &$code, &$state, &$return_handler, &$next ) {return  $op_handler( $code, $state, function ( $val2, $state2 ) use ( &$return_handler, &$op_handler, &$next ) {return  trampoline_delay( function () use ( &$return_handler, &$op_handler, &$next, &$val2, &$state2 ) {return  run_monad_helper( $return_handler, $op_handler, apply( $next, [ $val2 ] ), $state2 ); } ); } ); } );
 	}
 }
 // 註疏系統WIP
-function run_monad( $return_handler, $op_handler, $code, $state ) {
-	$c = run_monad_helper( $return_handler, $op_handler, $code, $state );
-	return $c();
+function run_monad_trampoline( $return_handler, $op_handler, $code, $state ) {
+	return run_monad_helper( $return_handler, $op_handler, $code, $state );
 }
 
-//WIP
-// 相對獨立的部分。Effect }}}
+function run_monad_stackoverflow( $return_handler, $op_handler, $code, $state ) {
+	return run_trampoline( run_monad_helper( ( function ( $v, $s ) use ( &$return_handler ) {return  trampoline_return( $return_handler( $v, $s ) ); } ), ( function ( $op, $st, $rs ) use ( &$op_handler ) {return  trampoline_return( $op_handler( $op, $st, function ( $v, $s ) use ( &$rs ) {return  run_trampoline( $rs( $v, $s ) ); } ) ); } ), $code, $state ) );
+}
+
+function symbols_set_init() { return [ '0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H', 'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P', 'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X', 'Y' => 'Y', 'Z' => 'Z', 'a' => 'a', 'b' => 'b', 'c' => 'c', 'd' => 'd', 'e' => 'e', 'f' => 'f', 'g' => 'g', 'h' => 'h', 'i' => 'i', 'j' => 'j', 'k' => 'k', 'l' => 'l', 'm' => 'm', 'n' => 'n', 'o' => 'o', 'p' => 'p', 'q' => 'q', 'r' => 'r', 's' => 's', 't' => 't', 'u' => 'u', 'v' => 'v', 'w' => 'w', 'x' => 'x', 'y' => 'y', 'z' => 'z', "一類何物" => "㝉", "之物" => "𫙦", "其子" => "𦮪", "出入改滅" => "𢒟", "列序" => "𠜺", "化滅" => "𠏁", "參形" => "𠫰", "吾自" => "𦣹", "太始初核" => "𣝗", "如若" => "𦱡", "宇宙亡矣" => "𨹹", "尾末" => "𡲵", "序丁" => "𠆤", "序丙" => "𠇮", "序乙" => "㐈", "序甲" => "𠇚", "式形" => "佱", "引用" => "㧈", "應用" => "𤰆", "效應" => "効", "映表" => "𤅔", "是非" => "欤", "構物" => "𡒫", "為符名連" => "‐", "特定其物" => "亓", "省略一物" => "畧", "符名" => "謼", "等同" => "弌", "解算" => "筭", "註疏" => "疎", "詞素" => "𧥝", "謬誤" => "䥘", "連頸" => "丩", "間空" => "𣣓", "陰" => "侌", "陽" => "𣆄", "首始" => "𩠐" ];  }
+function symbols_set_neg_init() { return [ '0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D', 'E' => 'E', 'F' => 'F', 'G' => 'G', 'H' => 'H', 'I' => 'I', 'J' => 'J', 'K' => 'K', 'L' => 'L', 'M' => 'M', 'N' => 'N', 'O' => 'O', 'P' => 'P', 'Q' => 'Q', 'R' => 'R', 'S' => 'S', 'T' => 'T', 'U' => 'U', 'V' => 'V', 'W' => 'W', 'X' => 'X', 'Y' => 'Y', 'Z' => 'Z', 'a' => 'a', 'b' => 'b', 'c' => 'c', 'd' => 'd', 'e' => 'e', 'f' => 'f', 'g' => 'g', 'h' => 'h', 'i' => 'i', 'j' => 'j', 'k' => 'k', 'l' => 'l', 'm' => 'm', 'n' => 'n', 'o' => 'o', 'p' => 'p', 'q' => 'q', 'r' => 'r', 's' => 's', 't' => 't', 'u' => 'u', 'v' => 'v', 'w' => 'w', 'x' => 'x', 'y' => 'y', 'z' => 'z', "㝉" => "一類何物", "𫙦" => "之物", "𦮪" => "其子", "𢒟" => "出入改滅", "𠜺" => "列序", "𠏁" => "化滅", "𠫰" => "參形", "𦣹" => "吾自", "𣝗" => "太始初核", "𦱡" => "如若", "𨹹" => "宇宙亡矣", "𡲵" => "尾末", "𠆤" => "序丁", "𠇮" => "序丙", "㐈" => "序乙", "𠇚" => "序甲", "佱" => "式形", "㧈" => "引用", "𤰆" => "應用", "効" => "效應", "𤅔" => "映表", "欤" => "是非", "𡒫" => "構物", "‐" => "為符名連", "亓" => "特定其物", "畧" => "省略一物", "謼" => "符名", "弌" => "等同", "筭" => "解算", "疎" => "註疏", "𧥝" => "詞素", "䥘" => "謬誤", "丩" => "連頸", "𣣓" => "間空", "侌" => "陰", "𣆄" => "陽", "𩠐" => "首始" ];  }
+// !!!Generated by Racket!!! !!!END!!!
+// 相對獨立的部分。UUC }}}
 
