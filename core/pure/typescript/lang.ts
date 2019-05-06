@@ -151,7 +151,13 @@ function comment_comment<C extends LangVal, X extends LangVal>(x: LangValComment
 function comment_x<C extends LangVal, X extends LangVal>(x: LangValCommentG<C, X>): X {
     return x[2]
 }
-export { new_comment, comment_p, comment_comment, comment_x }
+function un_comment_all(x: LangVal): LangVal {
+    while (comment_p(x)) {
+        x = comment_x(x)
+    }
+    return x
+}
+export { new_comment, comment_p, comment_comment, comment_x, un_comment_all }
 
 function can_new_symbol_unicodechar_p(x: string): x is keyof Symbols_Set_Neg {
     return x in symbols_set_neg()
@@ -304,10 +310,39 @@ function force_all_rec(raw: LangVal): LangVal {
         return conslike(x)
     } else if (construction_p(x)) {
         return conslike(x)
+    } else if (comment_p(x)) {
+        return conslike(x)
     }
     return x
 }
-export { force_all_rec }
+function force_uncomment_all_rec(raw: LangVal): LangVal {
+    const x = force_uncomment_all(raw)
+    function conslike<S, T extends [S, LangVal, LangVal] & LangVal>(xx: T & Array<any>): T & Array<any> {
+        xx[1] = force_all_rec(xx[1])
+        xx[2] = force_all_rec(xx[2])
+        if (comment_p(xx[1]) || comment_p(xx[2])) {
+            const ret: T & Array<any> = lang_copy_do(xx)
+            const a: LangVal = xx[1]
+            const d: LangVal = xx[2]
+            const a1: LangVal = force_uncomment_all_rec(a)
+            const d1: LangVal = force_uncomment_all_rec(d)
+            ret[1] = a1
+            ret[2] = d1
+            return ret
+        } else {
+            return xx
+        }
+    }
+    if (data_p(x)) {
+        return conslike(x)
+    } else if (error_p(x)) {
+        return conslike(x)
+    } else if (construction_p(x)) {
+        return conslike(x)
+    }
+    return x
+}
+export { force_all_rec, force_uncomment_all_rec }
 
 function new_hole_do(): LangValHole {
     return [hole_t]
@@ -333,6 +368,11 @@ function hole_set_do(rawx: LangValHole, rawy: LangVal): void {
     x[1] = y[1]
     x[2] = y[2]
     x[3] = y[3]
+}
+function lang_copy_do<T extends LangVal>(x: T): T {
+    const ret = new_hole_do()
+    hole_set_do(ret, x)
+    return ret as any // type WIP
 }
 // 相對獨立的部分。內建數據結構 }}}
 
@@ -479,7 +519,8 @@ export { jsArray_to_list, maybe_list_to_jsArray, new_list }
 
 // 註疏系統WIP
 function un_just_all(raw: LangVal): LangVal {
-    let x = raw
+    if (!just_p(raw)) { return raw }
+    let x: LangVal = raw
     let xs: Array<LangVal> = []
     while (just_p(x)) {
         xs.push(x)
@@ -492,7 +533,13 @@ function un_just_all(raw: LangVal): LangVal {
 
     return x
 }
-export { un_just_all as un_just }
+function un_just_comment_all(x: LangVal): LangVal {
+    while (just_p(x) || comment_p(x)) {
+        x = un_just_all(un_comment_all(x))
+    }
+    return x
+}
+export { un_just_all as un_just, un_just_comment_all }
 
 function any_delay_p(x: LangVal): x is LangValDelay {
     return delay_evaluate_p(x) ||
@@ -525,7 +572,6 @@ function any_delay_x(x: LangValDelay): LangVal {
 }
 export { any_delay_env as delay_env, any_delay_x as delay_x }
 
-// 註疏系統WIP
 function force_all(
     raw: LangVal,
     parents_history: { [key: string]: true } = {},
@@ -638,8 +684,6 @@ function force_all(
     }
     return do_rewrite(x)
 }
-
-// 註疏系統WIP
 function force1(raw: LangVal): LangVal {
     const x: LangVal = un_just_all(raw)
     let ret: LangVal
@@ -663,7 +707,20 @@ function force1(raw: LangVal): LangVal {
 function force_all_export(raw: LangVal): LangVal {
     return force_all(raw)
 }
-export { force_all_export as force_all, force1 }
+function force_uncomment_all(x: LangVal): LangVal {
+    while (any_delay_just_p(x) || comment_p(x)) {
+        x = force_all(un_comment_all(x))
+    }
+    return x
+}
+function force_uncomment1(raw: LangVal): LangVal {
+    if (comment_p(raw)) {
+        return comment_x(raw)
+    } else {
+        return force1(raw)
+    }
+}
+export { force_all_export as force_all, force1, force_uncomment1, force_uncomment_all }
 
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 

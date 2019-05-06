@@ -69,7 +69,13 @@ function comment_comment(x) {
 function comment_x(x) {
     return x[2];
 }
-export { new_comment, comment_p, comment_comment, comment_x };
+function un_comment_all(x) {
+    while (comment_p(x)) {
+        x = comment_x(x);
+    }
+    return x;
+}
+export { new_comment, comment_p, comment_comment, comment_x, un_comment_all };
 function can_new_symbol_unicodechar_p(x) {
     return x in symbols_set_neg();
 }
@@ -212,9 +218,42 @@ function force_all_rec(raw) {
     else if (construction_p(x)) {
         return conslike(x);
     }
+    else if (comment_p(x)) {
+        return conslike(x);
+    }
     return x;
 }
-export { force_all_rec };
+function force_uncomment_all_rec(raw) {
+    const x = force_uncomment_all(raw);
+    function conslike(xx) {
+        xx[1] = force_all_rec(xx[1]);
+        xx[2] = force_all_rec(xx[2]);
+        if (comment_p(xx[1]) || comment_p(xx[2])) {
+            const ret = lang_copy_do(xx);
+            const a = xx[1];
+            const d = xx[2];
+            const a1 = force_uncomment_all_rec(a);
+            const d1 = force_uncomment_all_rec(d);
+            ret[1] = a1;
+            ret[2] = d1;
+            return ret;
+        }
+        else {
+            return xx;
+        }
+    }
+    if (data_p(x)) {
+        return conslike(x);
+    }
+    else if (error_p(x)) {
+        return conslike(x);
+    }
+    else if (construction_p(x)) {
+        return conslike(x);
+    }
+    return x;
+}
+export { force_all_rec, force_uncomment_all_rec };
 function new_hole_do() {
     return [hole_t];
 }
@@ -239,6 +278,11 @@ function hole_set_do(rawx, rawy) {
     x[1] = y[1];
     x[2] = y[2];
     x[3] = y[3];
+}
+function lang_copy_do(x) {
+    const ret = new_hole_do();
+    hole_set_do(ret, x);
+    return ret; // type WIP
 }
 const system_symbol = new_symbol("太始初核");
 const name_symbol = new_symbol("符名");
@@ -353,6 +397,9 @@ function new_list(...xs) {
 export { jsArray_to_list, maybe_list_to_jsArray, new_list };
 // 註疏系統WIP
 function un_just_all(raw) {
+    if (!just_p(raw)) {
+        return raw;
+    }
     let x = raw;
     let xs = [];
     while (just_p(x)) {
@@ -364,7 +411,13 @@ function un_just_all(raw) {
     }
     return x;
 }
-export { un_just_all as un_just };
+function un_just_comment_all(x) {
+    while (just_p(x) || comment_p(x)) {
+        x = un_just_all(un_comment_all(x));
+    }
+    return x;
+}
+export { un_just_all as un_just, un_just_comment_all };
 function any_delay_p(x) {
     return delay_evaluate_p(x) ||
         delay_builtin_form_p(x) ||
@@ -397,7 +450,6 @@ function any_delay_x(x) {
     return delay_evaluate_x(any_delay2delay_evaluate(x));
 }
 export { any_delay_env as delay_env, any_delay_x as delay_x };
-// 註疏系統WIP
 function force_all(raw, parents_history = {}, ref_novalue_replace = [false, false], xs = []) {
     // ref_novalue_replace : [finding_minimal_novalue : Bool, found_minimal_novalue : Bool]
     let history = {};
@@ -514,7 +566,6 @@ function force_all(raw, parents_history = {}, ref_novalue_replace = [false, fals
     }
     return do_rewrite(x);
 }
-// 註疏系統WIP
 function force1(raw) {
     const x = un_just_all(raw);
     let ret;
@@ -541,7 +592,21 @@ function force1(raw) {
 function force_all_export(raw) {
     return force_all(raw);
 }
-export { force_all_export as force_all, force1 };
+function force_uncomment_all(x) {
+    while (any_delay_just_p(x) || comment_p(x)) {
+        x = force_all(un_comment_all(x));
+    }
+    return x;
+}
+function force_uncomment1(raw) {
+    if (comment_p(raw)) {
+        return comment_x(raw);
+    }
+    else {
+        return force1(raw);
+    }
+}
+export { force_all_export as force_all, force1, force_uncomment1, force_uncomment_all };
 const env_null_v = [];
 function env_set(env, key, val) {
     let ret = [];
