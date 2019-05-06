@@ -1,2 +1,2 @@
 #lang rash
-./transform.sh
+node transform.js
