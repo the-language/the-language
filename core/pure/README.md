@@ -8,8 +8,7 @@ make -j8
 
 ## 測試
 ```bash
-racket test.all.rkt
-./do_testmain.sh
+racket test.rkt
 ```
 
 ## 依賴

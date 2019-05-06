@@ -1,5 +1,5 @@
 #lang racket
-(require "test.rkt")
+(require "test.lib.rkt")
 
 (define (js-expr-compile x)
   (match x

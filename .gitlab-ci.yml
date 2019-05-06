@@ -16,9 +16,6 @@ stages:
 all:
     stage: all
     script:
-      - cd core/pure
-      - touch typescript/lang.ts
-      - racket gen.Makefile.rkt
-      - make -j8
-      - racket test.all.rkt
-      - ./do_testmain.sh
+      - touch core/pure/typescript/lang.ts
+      - racket make.rkt
+      - racket test.rkt

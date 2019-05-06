@@ -1,5 +1,5 @@
 #lang racket
-(require "test.rkt")
+(require "test.lib.rkt")
 
 (define lisp-id->lua-id lisp-id->js-id)
 (define (lua-expr-compile x)
