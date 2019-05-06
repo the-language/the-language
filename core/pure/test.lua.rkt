@@ -1,4 +1,5 @@
-#lang racket
+#lang rash
+(require racket)
 (require "test.lib.rkt")
 
 (define lisp-id->lua-id lisp-id->js-id)
@@ -17,8 +18,7 @@
      (apply ++ (map lua-test-compile xs))]))
 (define (lua-run x) (system (string-append "./c/lua-5.1.5/src/lua -e 'local L=require(\"./lua/lang\")\n"(assert-safe-string/single-quote x)"'")))
 
-(check-equal?
- (begin
-   (displayln "-- Lua --")
-   (lua-run (lua-test-compile test-main)))
- #t)
+
+echo "--- Lua {{{"
+(check-equal? (lua-run (lua-test-compile test-main)) #t)
+echo "}}} Lua ---"
