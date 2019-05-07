@@ -20,5 +20,5 @@
 
 
 echo (id "--- Lua {{{")
-(check-equal? (lua-run (lua-test-compile test-main)) #t)
+(when (not (lua-run (lua-test-compile test-main))) {false})
 echo (id "}}} Lua ---")
