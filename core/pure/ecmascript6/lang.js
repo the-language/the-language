@@ -1716,19 +1716,16 @@ function complex_parse(x) {
 export { complex_parse };
 // 註疏系統WIP
 function complex_print(val) {
-    function print_sys_name(x, where) {
+    function print_sys_name(x, is_inner_bool) {
         // 是 complex_print(systemName_make(x))
-        // x : LangVal
-        // inner : JSBoolean
         if (symbol_p(x)) {
             return un_symbol(x);
         }
         function inner_bracket(vl) {
-            // where: 'inner' | 'top'
-            if (where === 'inner') {
+            if (is_inner_bool) {
                 return '[' + vl + ']';
             }
-            else { // where === 'top'
+            else {
                 return vl;
             }
         }
@@ -1742,34 +1739,34 @@ function complex_print(val) {
                 const maybe_lst_3 = maybe_list_to_jsArray(var_2_1);
                 if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
-                    return inner_bracket(print_sys_name(maybe_lst_3[0], 'inner') + '.' + print_sys_name(maybe_xs[2], 'inner'));
+                    return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true));
                 }
                 else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(var_2_1), something_symbol), something_symbol), maybe_xs[2])
-                    return inner_bracket(print_sys_name(construction_head(var_2_1), 'inner') + '@' + print_sys_name(maybe_xs[2], 'inner'));
+                    return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true));
                 }
                 else if (jsbool_no_force_equal_p(var_2_1, something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
-                    return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], 'inner'));
+                    return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], true));
                 }
             }
             const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2]);
             if (jsbool_no_force_equal_p(maybe_xs[1], function_symbol) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_symbol)) {
                 // new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, maybe_lst_44[1]))
-                return inner_bracket(print_sys_name(maybe_lst_44[1], 'inner') + '?');
+                return inner_bracket(print_sys_name(maybe_lst_44[1], true) + '?');
             }
             if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) && jsbool_no_force_equal_p(maybe_lst_2[0], form_symbol)) {
                 // new_list(typeAnnotation_symbol, new_list(form_symbol, var_2_1), theThing_symbol)
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1]);
                 if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_symbol) && jsbool_no_force_equal_p(maybe_lst_88[1], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, maybe_lst_88[2])), theThing_symbol)
-                    return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], 'inner'));
+                    return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true));
                 }
             }
             const hd = jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '_' :
                 jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) ? '' :
-                    print_sys_name(maybe_xs[2], 'inner');
-            return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], 'inner'));
+                    print_sys_name(maybe_xs[2], true);
+            return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true));
         }
         else if (maybe_xs !== false && maybe_xs.length === 2) {
             if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {
@@ -1777,37 +1774,36 @@ function complex_print(val) {
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1]);
                 if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_symbol)) {
                     // new_list(form_symbol, new_list(system_symbol, maybe_lst_288[1]))
-                    return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], 'inner'));
+                    return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], true));
                 }
-                return inner_bracket('&' + print_sys_name(maybe_xs[1], 'inner'));
+                return inner_bracket('&' + print_sys_name(maybe_xs[1], true));
             }
             else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_symbol)) {
                 // new_list(isOrNot_symbol, maybe_xs[1])
-                return inner_bracket(print_sys_name(maybe_xs[1], 'inner') + '~');
+                return inner_bracket(print_sys_name(maybe_xs[1], true) + '~');
             }
             else if (jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
                 // new_list(system_symbol, maybe_xs[1])
-                return inner_bracket('+' + print_sys_name(maybe_xs[1], 'inner'));
+                return inner_bracket('+' + print_sys_name(maybe_xs[1], true));
             }
             else if (jsbool_no_force_equal_p(maybe_xs[0], sub_symbol)) {
                 // new_list(sub_symbol, maybe_xs[1])
                 const maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1]);
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
-                    let tmp = print_sys_name(maybe_lst_8934[0], 'inner');
+                    let tmp = print_sys_name(maybe_lst_8934[0], true);
                     for (let i = 1; i < maybe_lst_8934.length; i++) {
-                        tmp += '/' + print_sys_name(maybe_lst_8934[i], 'inner');
+                        tmp += '/' + print_sys_name(maybe_lst_8934[i], true);
                     }
                     return inner_bracket(tmp);
                 }
             }
         }
-        if (where === 'inner') {
+        if (is_inner_bool) {
             return simple_print(x);
         }
-        else if (where === 'top') {
+        else {
             return simple_print(systemName_make(x));
         }
-        return LANG_ERROR();
     }
     // [[[ 大量重複代碼 simple_print <-> complex_print
     let x = complex_parse(simple_print(val)); // 去除所有just
@@ -1838,7 +1834,7 @@ function complex_print(val) {
         const maybe_xs = maybe_list_to_jsArray(list);
         if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
             // systemName_make(maybe_xs[1])
-            return print_sys_name(maybe_xs[1], 'top');
+            return print_sys_name(maybe_xs[1], false);
         }
         return "#" + complex_print(new_construction(name, list));
     }

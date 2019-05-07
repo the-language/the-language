@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$w$1 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue u2;
@@ -26,23 +26,23 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
         k0 = org.luaj.vm2.LuaString.valueOf("\u5e8f\u7532");
     }
     
-    public Lang$luaj$f() {
+    public Lang$luaj$w$1() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        Lang$luaj$f.newupn();
+        Lang$luaj$w$1.newupn();
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         org.luaj.vm2.LuaValue a1 = a.arg(2);
         org.luaj.vm2.LuaValue a2 = a.arg(3);
         org.luaj.vm2.LuaValue a3 = a.arg(4);
         org.luaj.vm2.LuaValue a4 = a.arg(5);
-        org.luaj.vm2.LuaValue[] a5 = Lang$luaj$f.newupe();
+        org.luaj.vm2.LuaValue[] a5 = Lang$luaj$w$1.newupe();
         a5[0] = a4;
         a.subargs(6);
         if (a5[0].eq_b(org.luaj.vm2.LuaValue.NIL)) {
             a5[0] = org.luaj.vm2.LuaValue.FALSE;
         }
-        Lang$luaj$f$b a6 = new Lang$luaj$f$b();
+        Lang$luaj$w$1$g a6 = new Lang$luaj$w$1$g();
         a6.u0 = this.u0;
         org.luaj.vm2.LuaValue a7 = this.u1[0].call(a2);
         if (this.u2.call(a7).toboolean()) {
@@ -56,7 +56,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
                     if (this.u10.call(a12).toboolean()) {
                         if (a5[0].eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
                             org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-                            Lang$luaj$f$1 a13 = new Lang$luaj$f$1();
+                            Lang$luaj$w$1$1 a13 = new Lang$luaj$w$1$1();
                             a13.u0 = a0;
                             a13.u1 = a11;
                             a13.u2 = a3;
@@ -65,7 +65,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
                         org.luaj.vm2.LuaValue dummy0 = org.luaj.vm2.LuaValue.NIL;
                         org.luaj.vm2.LuaValue dummy1 = org.luaj.vm2.LuaValue.NIL;
                         org.luaj.vm2.LuaValue dummy2 = org.luaj.vm2.LuaValue.NIL;
-                        Lang$luaj$f$2 a14 = new Lang$luaj$f$2();
+                        Lang$luaj$w$1$2 a14 = new Lang$luaj$w$1$2();
                         a14.u0 = this.u12;
                         a14.u1 = a0;
                         a14.u2 = a1;
@@ -89,7 +89,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
                                 org.luaj.vm2.LuaValue dummy3 = org.luaj.vm2.LuaValue.NIL;
                                 org.luaj.vm2.LuaValue dummy4 = org.luaj.vm2.LuaValue.NIL;
                                 org.luaj.vm2.LuaValue dummy5 = org.luaj.vm2.LuaValue.NIL;
-                                Lang$luaj$f$3 a20 = new Lang$luaj$f$3();
+                                Lang$luaj$w$1$3 a20 = new Lang$luaj$w$1$3();
                                 a20.u0 = this.u12;
                                 a20.u1 = a0;
                                 a20.u2 = a1;
@@ -103,7 +103,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
                             org.luaj.vm2.LuaValue a21 = a5[0];
                             org.luaj.vm2.LuaValue a22 = this.u15.call(k0);
                             org.luaj.vm2.LuaValue dummy8 = org.luaj.vm2.LuaValue.NIL;
-                            Lang$luaj$f$4 a23 = new Lang$luaj$f$4();
+                            Lang$luaj$w$1$4 a23 = new Lang$luaj$w$1$4();
                             a23.u0 = this.u12;
                             a23.u1 = a0;
                             a23.u2 = a1;
@@ -125,7 +125,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
         }
         if (a5[0].eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
             org.luaj.vm2.LuaValue a24 = this.u11;
-            Lang$luaj$f$5 a25 = new Lang$luaj$f$5();
+            Lang$luaj$w$1$5 a25 = new Lang$luaj$w$1$5();
             a25.u0 = a1;
             a25.u1 = a7;
             a25.u2 = a3;
@@ -133,7 +133,7 @@ public class Lang$luaj$f extends org.luaj.vm2.lib.VarArgFunction {
             return org.luaj.vm2.LuaValue.tailcallOf(a24, (org.luaj.vm2.Varargs)a25);
         }
         org.luaj.vm2.LuaValue a26 = this.u11;
-        Lang$luaj$f$6 a27 = new Lang$luaj$f$6();
+        Lang$luaj$w$1$6 a27 = new Lang$luaj$w$1$6();
         a27.u0 = a1;
         a27.u1 = a7;
         a27.u2 = a3;

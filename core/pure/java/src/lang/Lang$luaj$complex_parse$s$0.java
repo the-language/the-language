@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$complex_parse$d$0 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$complex_parse$s$0 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -12,7 +12,7 @@ public class Lang$luaj$complex_parse$d$0 extends org.luaj.vm2.lib.VarArgFunction
     org.luaj.vm2.LuaValue u9;
     org.luaj.vm2.LuaValue u10;
     
-    public Lang$luaj$complex_parse$d$0() {
+    public Lang$luaj$complex_parse$s$0() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
@@ -35,19 +35,13 @@ public class Lang$luaj$complex_parse$d$0 extends org.luaj.vm2.lib.VarArgFunction
             return org.luaj.vm2.LuaValue.tailcallOf(this.u5, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
         }
         org.luaj.vm2.LuaValue a4 = this.u7.call(a3);
-        if (!this.u6.call(a4).toboolean()) {
-            return org.luaj.vm2.LuaValue.tailcallOf(this.u5, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
-        }
-        org.luaj.vm2.LuaValue a5 = this.u7.call(a4);
-        if (this.u6.call(a5).toboolean() && this.u8.invoke(this.u7.invoke((org.luaj.vm2.Varargs)a5).subargs(1)).arg1().toboolean()) {
-            org.luaj.vm2.LuaValue a6 = this.u9;
-            org.luaj.vm2.LuaValue a7 = this.u10.call(a3);
-            org.luaj.vm2.LuaValue a8 = this.u10.call(a4);
-            org.luaj.vm2.Varargs a9 = this.u10.invoke((org.luaj.vm2.Varargs)a5);
-            org.luaj.vm2.LuaValue[] a10 = new org.luaj.vm2.LuaValue[2];
-            a10[0] = a7;
-            a10[1] = a8;
-            return org.luaj.vm2.LuaValue.tailcallOf(a6, org.luaj.vm2.LuaValue.varargsOf(a10, a9));
+        if (this.u6.call(a4).toboolean() && this.u8.invoke(this.u7.invoke((org.luaj.vm2.Varargs)a4).subargs(1)).arg1().toboolean()) {
+            org.luaj.vm2.LuaValue a5 = this.u9;
+            org.luaj.vm2.LuaValue a6 = this.u10.call(a3);
+            org.luaj.vm2.Varargs a7 = this.u10.invoke((org.luaj.vm2.Varargs)a4);
+            org.luaj.vm2.LuaValue[] a8 = new org.luaj.vm2.LuaValue[1];
+            a8[0] = a6;
+            return org.luaj.vm2.LuaValue.tailcallOf(a5, org.luaj.vm2.LuaValue.varargsOf(a8, a7));
         }
         return org.luaj.vm2.LuaValue.tailcallOf(this.u5, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
     }

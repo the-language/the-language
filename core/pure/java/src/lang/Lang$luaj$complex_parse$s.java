@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$complex_parse$d extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$complex_parse$s extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -10,11 +10,11 @@ public class Lang$luaj$complex_parse$d extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u7;
     org.luaj.vm2.LuaValue u8;
     
-    public Lang$luaj$complex_parse$d() {
+    public Lang$luaj$complex_parse$s() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        Lang$luaj$complex_parse$d$0 a1 = new Lang$luaj$complex_parse$d$0();
+        Lang$luaj$complex_parse$s$0 a1 = new Lang$luaj$complex_parse$s$0();
         a1.u0 = this.u0;
         a1.u1 = this.u1;
         a1.u2 = a;

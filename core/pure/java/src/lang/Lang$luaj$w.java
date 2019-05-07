@@ -53,7 +53,7 @@ public class Lang$luaj$w extends org.luaj.vm2.lib.VarArgFunction {
         a4[0] = a3;
         Lang$luaj$w$n a5 = new Lang$luaj$w$n();
         a5.u0 = this.u1;
-        Lang$luaj$w$d a6 = new Lang$luaj$w$d();
+        Lang$luaj$w$s a6 = new Lang$luaj$w$s();
         a6.u0 = a5;
         Lang$luaj$w$r a7 = new Lang$luaj$w$r();
         a7.u0 = a6;

@@ -43,7 +43,7 @@ public class Lang$luaj$96 extends org.luaj.vm2.lib.VarArgFunction {
             Lang$luaj$96$i a6 = new Lang$luaj$96$i();
             a6.u0 = this.u3;
             a6.u1 = this.u5;
-            Lang$luaj$96$n a7 = new Lang$luaj$96$n();
+            Lang$luaj$96$s a7 = new Lang$luaj$96$s();
             a7.u0 = a6;
             a7.u1 = this.u6;
             this.u7.call(this.u2.call(a3).not());

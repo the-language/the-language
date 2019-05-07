@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$64$i extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$64$u extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue u2;
@@ -9,7 +9,7 @@ public class Lang$luaj$64$i extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u6;
     org.luaj.vm2.LuaValue u7;
     
-    public Lang$luaj$64$i() {
+    public Lang$luaj$64$u() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
