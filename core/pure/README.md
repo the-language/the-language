@@ -35,6 +35,8 @@ racket test.rkt
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make`
 * wget | `sudo apt install wget` `sudo pacman -S wget` `sudo apk add wget`
 * golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
+* luarocks | `sudo pacman -S luarocks`
+* `~/.luarocks/bin/luasrcdiet` | `luarocks install luasrcdiet --local` https://github.com/jirutka/luasrcdiet
 
 ### 運行依賴
 

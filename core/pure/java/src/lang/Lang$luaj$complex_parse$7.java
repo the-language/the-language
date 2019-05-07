@@ -39,7 +39,7 @@ public class Lang$luaj$complex_parse$7 extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue[] a4 = Lang$luaj$complex_parse$7.newupe();
         a4[0] = a3;
         org.luaj.vm2.LuaValue a5 = a4[0];
-        Lang$luaj$complex_parse$7$last_add_do a6 = new Lang$luaj$complex_parse$7$last_add_do();
+        Lang$luaj$complex_parse$7$o a6 = new Lang$luaj$complex_parse$7$o();
         a6.u0 = this.u3;
         a6.u1 = this.u4;
         a6.u2 = a4;

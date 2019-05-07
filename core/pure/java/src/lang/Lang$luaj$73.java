@@ -8,7 +8,7 @@ public class Lang$luaj$73 extends org.luaj.vm2.lib.ZeroArgFunction {
     
     final public org.luaj.vm2.LuaValue call() {
         org.luaj.vm2.LuaValue a = this.u0.call();
-        Lang$luaj$73$symbols_set a0 = new Lang$luaj$73$symbols_set();
+        Lang$luaj$73$c a0 = new Lang$luaj$73$c();
         a0.u0 = a;
         this.u1[0] = a0;
         return a;

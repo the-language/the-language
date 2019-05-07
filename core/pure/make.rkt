@@ -151,6 +151,8 @@ in-dir "typescript" {
                  haskell-copyright
                  raw))
              |> id out &>! lang.lua
+             ~/.luarocks/bin/luasrcdiet lang.lua -o lang.lua1
+             mv lang.lua1 lang.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {

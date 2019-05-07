@@ -88,7 +88,7 @@ public class Lang$luaj$complex_print extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         a.subargs(2);
         org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$complex_print$print_sys_name a1 = new Lang$luaj$complex_print$print_sys_name();
+        Lang$luaj$complex_print$i a1 = new Lang$luaj$complex_print$i();
         a1.u0 = this.u0;
         a1.u1 = this.u1;
         a1.u2 = this.u2;
