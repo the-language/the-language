@@ -14,7 +14,7 @@ public class Lang$luaj$42 extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         a.subargs(2);
         org.luaj.vm2.LuaValue a1 = this.u0[0].call(a0);
-        Lang$luaj$42$t a2 = new Lang$luaj$42$t();
+        Lang$luaj$42$conslike a2 = new Lang$luaj$42$conslike();
         a2.u0 = this.u1;
         if (this.u2.call(a1).toboolean()) {
             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);

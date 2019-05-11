@@ -50,7 +50,7 @@ public class Lang$luaj$68 extends org.luaj.vm2.lib.VarArgFunction {
         if (a5[0].eq_b(org.luaj.vm2.LuaValue.NIL)) {
             a5[0] = org.luaj.vm2.LuaValue.FALSE;
         }
-        Lang$luaj$68$f a6 = new Lang$luaj$68$f();
+        Lang$luaj$68$make_error_v a6 = new Lang$luaj$68$make_error_v();
         a6.u0 = a5;
         a6.u1 = this.u0;
         a6.u2 = this.u1;

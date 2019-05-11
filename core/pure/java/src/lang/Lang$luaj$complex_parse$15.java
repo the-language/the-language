@@ -30,7 +30,7 @@ public class Lang$luaj$complex_parse$15 extends org.luaj.vm2.lib.VarArgFunction 
         if (a1.eq_b(org.luaj.vm2.LuaValue.NIL)) {
             a1 = org.luaj.vm2.LuaValue.FALSE;
         }
-        Lang$luaj$complex_parse$15$t a2 = new Lang$luaj$complex_parse$15$t();
+        Lang$luaj$complex_parse$15$readsysname_no_pack_bracket a2 = new Lang$luaj$complex_parse$15$readsysname_no_pack_bracket();
         a2.u0 = this.u0;
         a2.u1 = this.u1;
         boolean b = a1.toboolean();

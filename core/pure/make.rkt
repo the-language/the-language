@@ -116,6 +116,7 @@ in-dir "typescript" {
 }
     (("all" ("ecmascript/lang.js"
              "lua/lang.lua"
+             "lua/lang.min.lua"
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
              ;;"python3/lang.py";;暫停。因爲性能太差。
@@ -138,6 +139,7 @@ in-dir "typescript" {
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
             |> lines->string exports &>! exports.list
      }})
+     ("lua/lang.min.lua" ("lua/lang.lua") (void)) ;; 實現在下面
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
              yarn
@@ -151,8 +153,7 @@ in-dir "typescript" {
                  haskell-copyright
                  raw))
              |> id out &>! lang.lua
-             ~/.luarocks/bin/luasrcdiet lang.lua -o lang.lua1
-             mv lang.lua1 lang.lua
+             ~/.luarocks/bin/luasrcdiet lang.lua -o lang.min.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
