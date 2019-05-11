@@ -12,6 +12,7 @@ $__TS__ArrayPush = (function ($arr, ...$lUa_Vararg_LuA) use (&$lUa_I_LuA) {
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -162,6 +163,7 @@ $un_comment_all = (function ($x) use (&$comment_p, &$comment_x) {
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -365,6 +367,7 @@ $jsArray_to_list = (function ($xs) use (&$new_construction, &$null_v) {
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -396,6 +399,7 @@ $un_just_all = (function ($raw) use (&$__TS__ArrayPush, &$just_p, &$lUa_I_LuA, &
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -413,6 +417,7 @@ $un_just_all = (function ($raw) use (&$__TS__ArrayPush, &$just_p, &$lUa_I_LuA, &
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -462,6 +467,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -499,6 +505,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -513,6 +520,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -534,6 +542,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -593,6 +602,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
                                         })();
                                     } catch (Exception $lUa_E_LuA) {
                                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                            break;
                                         } else {
                                             throw $lUa_E_LuA;
                                         }
@@ -667,6 +677,7 @@ $force_all = (function ($raw, $parents_history, $ref_novalue_replace, $xs) use (
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -718,6 +729,7 @@ $force_uncomment_all = (function ($x) use (&$any_delay_just_p, &$comment_p, &$fo
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -752,6 +764,7 @@ $env_set = (function ($env, $key, $val) use (&$jsbool_equal_p) {
                                                 })();
                                             } catch (Exception $lUa_E_LuA) {
                                                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                                    break;
                                                 } else {
                                                     throw $lUa_E_LuA;
                                                 }
@@ -774,6 +787,7 @@ $env_set = (function ($env, $key, $val) use (&$jsbool_equal_p) {
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -804,6 +818,7 @@ $env_get = (function ($env, $key, $default_v) use (&$jsbool_equal_p) {
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -832,6 +847,7 @@ $must_env_get = (function ($env, $key) use (&$LANG_ERROR, &$jsbool_equal_p) {
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -857,6 +873,7 @@ $env2val = (function ($env) use (&$mapping_symbol, &$new_construction, &$new_dat
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -881,6 +898,7 @@ $env_foreach = (function ($env, $f) {
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -927,6 +945,7 @@ $real_evaluate = (function ($env, $raw, $selfvalraw) use (&$LANG_ERROR, &$__TS__
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -954,6 +973,7 @@ $real_evaluate = (function ($env, $raw, $selfvalraw) use (&$LANG_ERROR, &$__TS__
                                     })();
                                 } catch (Exception $lUa_E_LuA) {
                                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                        break;
                                     } else {
                                         throw $lUa_E_LuA;
                                     }
@@ -1030,6 +1050,7 @@ $real_evaluate = (function ($env, $raw, $selfvalraw) use (&$LANG_ERROR, &$__TS__
                                     })();
                                 } catch (Exception $lUa_E_LuA) {
                                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                        break;
                                     } else {
                                         throw $lUa_E_LuA;
                                     }
@@ -1062,6 +1083,7 @@ $real_evaluate = (function ($env, $raw, $selfvalraw) use (&$LANG_ERROR, &$__TS__
                                     })();
                                 } catch (Exception $lUa_E_LuA) {
                                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                        break;
                                     } else {
                                         throw $lUa_E_LuA;
                                     }
@@ -1089,6 +1111,7 @@ $real_evaluate = (function ($env, $raw, $selfvalraw) use (&$LANG_ERROR, &$__TS__
                                     })();
                                 } catch (Exception $lUa_E_LuA) {
                                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                        break;
                                     } else {
                                         throw $lUa_E_LuA;
                                     }
@@ -1180,6 +1203,7 @@ $real_apply = (function ($f, $xs, $selfvalraw) use (&$any_delay_just_p, &$apply_
                                         })();
                                     } catch (Exception $lUa_E_LuA) {
                                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                            break;
                                         } else {
                                             throw $lUa_E_LuA;
                                         }
@@ -1218,6 +1242,7 @@ $real_apply = (function ($f, $xs, $selfvalraw) use (&$any_delay_just_p, &$apply_
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -1273,6 +1298,7 @@ $real_builtin_func_apply = (function ($f, $xs, $selfvalraw) use (&$LANG_ERROR, &
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -1371,6 +1397,7 @@ $new_lambda = (function ($env, $args_pat, $body, $error_v) use (&$__TS__ArrayPus
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -1404,6 +1431,7 @@ $new_lambda = (function ($env, $args_pat, $body, $error_v) use (&$__TS__ArrayPus
                             })();
                         } catch (Exception $lUa_E_LuA) {
                             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                break;
                             } else {
                                 throw $lUa_E_LuA;
                             }
@@ -1429,6 +1457,7 @@ $new_lambda = (function ($env, $args_pat, $body, $error_v) use (&$__TS__ArrayPus
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -1451,6 +1480,7 @@ $new_lambda = (function ($env, $args_pat, $body, $error_v) use (&$__TS__ArrayPus
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -1563,6 +1593,7 @@ $simple_print = (function ($x) use (&$LANG_ERROR, &$construction_head, &$constru
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -2050,6 +2081,7 @@ $list_to_jsArray = (function ($xs, $k_done, $k_tail) use (&$__TS__ArrayPush, &$c
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -2081,6 +2113,7 @@ $un_just_comment_all = (function ($x) use (&$comment_p, &$just_p, &$un_comment_a
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -2219,6 +2252,7 @@ $val2env = (function ($x) use (&$__TS__ArrayPush, &$construction_head, &$constru
                                 })();
                             } catch (Exception $lUa_E_LuA) {
                                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                    break;
                                 } else {
                                     throw $lUa_E_LuA;
                                 }
@@ -2237,6 +2271,7 @@ $val2env = (function ($x) use (&$__TS__ArrayPush, &$construction_head, &$constru
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -2410,6 +2445,7 @@ $real_builtin_func_apply_s = [
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -2661,6 +2697,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -2696,6 +2733,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -2785,6 +2823,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -2866,6 +2905,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                 })();
             } catch (Exception $lUa_E_LuA) {
                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                    break;
                 } else {
                     throw $lUa_E_LuA;
                 }
@@ -2903,6 +2943,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -2980,6 +3021,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -3052,6 +3094,7 @@ $complex_parse = (function ($x) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, 
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -3423,6 +3466,7 @@ $complex_print = (function ($val) use (&$LANG_ERROR, &$complex_parse, &$complex_
                                                 })();
                                             } catch (Exception $lUa_E_LuA) {
                                                 if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                                    break;
                                                 } else {
                                                     throw $lUa_E_LuA;
                                                 }
@@ -3471,6 +3515,7 @@ $complex_print = (function ($val) use (&$LANG_ERROR, &$complex_parse, &$complex_
                     })();
                 } catch (Exception $lUa_E_LuA) {
                     if ($e->getMessage() == "lUa_bReAk_LuA") {
+                        break;
                     } else {
                         throw $lUa_E_LuA;
                     }
@@ -3601,6 +3646,7 @@ $machinetext_parse = (function ($rawstr) use (&$__TS__ArrayPush, &$can_new_symbo
                                             })();
                                         } catch (Exception $lUa_E_LuA) {
                                             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                                                break;
                                             } else {
                                                 throw $lUa_E_LuA;
                                             }
@@ -3656,6 +3702,7 @@ $machinetext_parse = (function ($rawstr) use (&$__TS__ArrayPush, &$can_new_symbo
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -3666,6 +3713,7 @@ $machinetext_parse = (function ($rawstr) use (&$__TS__ArrayPush, &$can_new_symbo
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -3734,6 +3782,7 @@ $machinetext_print = (function ($x) use (&$LANG_ERROR, &$__TS__ArrayPush, &$any_
                         })();
                     } catch (Exception $lUa_E_LuA) {
                         if ($e->getMessage() == "lUa_bReAk_LuA") {
+                            break;
                         } else {
                             throw $lUa_E_LuA;
                         }
@@ -3744,6 +3793,7 @@ $machinetext_print = (function ($x) use (&$LANG_ERROR, &$__TS__ArrayPush, &$any_
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
@@ -3773,6 +3823,7 @@ $run_trampoline = (function ($x) {
             })();
         } catch (Exception $lUa_E_LuA) {
             if ($e->getMessage() == "lUa_bReAk_LuA") {
+                break;
             } else {
                 throw $lUa_E_LuA;
             }
