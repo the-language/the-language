@@ -23,3 +23,15 @@
 ```
 TODO
 ```
+
+
+### 編譯，運行，測試
+
+
+* 編譯 `racket make.rkt`
+* 測試 `racket test.rkt`
+
+#### 依賴
+
+見[core/pure/README.md](core/pure/README.md)
+
