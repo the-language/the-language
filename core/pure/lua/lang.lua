@@ -1496,7 +1496,11 @@ real_builtin_func_apply_s = {
                 if not symbol_p(y) then
                     return false_v
                 end
-                return symbol_equal_p(x, y) and true_v or false_v
+                if symbol_equal_p(x, y) then
+                    return true_v
+                else
+                    return false_v
+                end
             elseif data_p(x) then
                 if not data_p(y) then
                     return false_v
@@ -1845,14 +1849,11 @@ local function complex_parse(x)
             readformbuiltin,
             readapply,
         }
-        do
-            local i = 0
-            while i < #fs do
-                local x = fs[i + 1]()
-                if x ~= false then
-                    return x
-                end
-                i = i + 1
+        for ____TS_index = 1, #fs do
+            local f = fs[____TS_index]
+            local x = f()
+            if x ~= false then
+                return x
             end
         end
         return parse_error()
@@ -1880,34 +1881,36 @@ local function complex_parse(x)
             assert_get("]")
             return x
         end
-        local fs = strict and {
-            readlist,
-            symbol,
-            readsysname_no_pack_bracket,
-            data,
-            readerror,
-            readeval,
-            readfuncapply,
-            readformbuiltin,
-            readapply,
-        } or {
-            readlist,
-            readsysname_no_pack,
-            data,
-            readerror,
-            readeval,
-            readfuncapply,
-            readformbuiltin,
-            readapply,
-        }
-        do
-            local i = 0
-            while i < #fs do
-                local x = fs[i + 1]()
-                if x ~= false then
-                    return x
-                end
-                i = i + 1
+        local fs
+        if strict then
+            fs = {
+                readlist,
+                symbol,
+                readsysname_no_pack_bracket,
+                data,
+                readerror,
+                readeval,
+                readfuncapply,
+                readformbuiltin,
+                readapply,
+            }
+        else
+            fs = {
+                readlist,
+                readsysname_no_pack,
+                data,
+                readerror,
+                readeval,
+                readfuncapply,
+                readformbuiltin,
+                readapply,
+            }
+        end
+        for ____TS_index = 1, #fs do
+            local f = fs[____TS_index]
+            local x = f()
+            if x ~= false then
+                return x
             end
         end
         return parse_error()

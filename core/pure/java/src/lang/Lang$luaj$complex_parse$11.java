@@ -11,11 +11,9 @@ public class Lang$luaj$complex_parse$11 extends org.luaj.vm2.lib.VarArgFunction 
     org.luaj.vm2.LuaValue[] u8;
     org.luaj.vm2.LuaValue u9;
     final static org.luaj.vm2.LuaValue k0;
-    final static org.luaj.vm2.LuaValue k1;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(0);
-        k1 = org.luaj.vm2.LuaValue.valueOf(1);
+        k0 = org.luaj.vm2.LuaValue.valueOf(1);
     }
     
     public Lang$luaj$complex_parse$11() {
@@ -42,14 +40,19 @@ public class Lang$luaj$complex_parse$11 extends org.luaj.vm2.lib.VarArgFunction 
         ((org.luaj.vm2.LuaValue)a0).rawset(7, a7);
         ((org.luaj.vm2.LuaValue)a0).rawset(8, a8);
         org.luaj.vm2.LuaValue a9 = k0;
-        while(a9.lt_b(((org.luaj.vm2.LuaValue)a0).len())) {
-            org.luaj.vm2.LuaValue a10 = ((org.luaj.vm2.LuaValue)a0).get(a9.add(k1)).call();
-            if (!a10.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
-                org.luaj.vm2.Varargs a11 = a10;
-                return a11;
+        org.luaj.vm2.LuaValue a10 = ((org.luaj.vm2.LuaValue)a0).len();
+        org.luaj.vm2.LuaValue a11 = k0;
+        org.luaj.vm2.LuaValue a12 = a9.sub(a11);
+        while(true) {
+            a12 = a12.add(a11);
+            if (!a12.testfor_b(a10, a11)) {
+                return org.luaj.vm2.LuaValue.tailcallOf(this.u9, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
             }
-            a9 = a9.add(k1);
+            org.luaj.vm2.LuaValue a13 = ((org.luaj.vm2.LuaValue)a0).get(a12).call();
+            if (!a13.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
+                org.luaj.vm2.Varargs a14 = a13;
+                return a14;
+            }
         }
-        return org.luaj.vm2.LuaValue.tailcallOf(this.u9, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
     }
 }

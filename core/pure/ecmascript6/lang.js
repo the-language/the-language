@@ -898,7 +898,12 @@ const real_builtin_func_apply_s = [
                 if (!symbol_p(y)) {
                     return false_v;
                 }
-                return symbol_equal_p(x, y) ? true_v : false_v;
+                if (symbol_equal_p(x, y)) {
+                    return true_v;
+                }
+                else {
+                    return false_v;
+                }
             }
             else if (data_p(x)) {
                 if (!data_p(y)) {
@@ -1557,8 +1562,8 @@ function complex_parse(x) {
     function val() {
         space();
         const fs = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
-        for (let i = 0; i < fs.length; i++) {
-            const x = fs[i]();
+        for (const f of fs) {
+            const x = f();
             if (x !== false) {
                 return x;
             }
@@ -1587,12 +1592,17 @@ function complex_parse(x) {
             return x;
         }
         // 重複自val()
-        const fs = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
-            readerror, readeval, readfuncapply, readformbuiltin, readapply] :
-            [readlist, readsysname_no_pack, data,
+        let fs;
+        if (strict) {
+            fs = [readlist, symbol, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply];
-        for (let i = 0; i < fs.length; i++) {
-            const x = fs[i]();
+        }
+        else {
+            fs = [readlist, readsysname_no_pack, data,
+                readerror, readeval, readfuncapply, readformbuiltin, readapply];
+        }
+        for (const f of fs) {
+            const x = f();
             if (x !== false) {
                 return x;
             }

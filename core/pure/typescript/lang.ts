@@ -1041,7 +1041,11 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
             return true_v
         } else if (symbol_p(x)) {
             if (!symbol_p(y)) { return false_v }
-            return symbol_equal_p(x, y) ? true_v : false_v
+            if (symbol_equal_p(x, y)) {
+                return true_v
+            } else {
+                return false_v
+            }
         } else if (data_p(x)) {
             if (!data_p(y)) { return false_v }
             return end_2(x, y, data_name, data_list)
@@ -1669,8 +1673,8 @@ function complex_parse(x: string): LangVal {
     function val(): LangVal {
         space()
         const fs: Array<() => false | LangVal> = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply]
-        for (let i = 0; i < fs.length; i++) {
-            const x: false | LangVal = fs[i]()
+        for (const f of fs) {
+            const x: false | LangVal = f()
             if (x !== false) {
                 return x
             }
@@ -1691,7 +1695,7 @@ function complex_parse(x: string): LangVal {
         un_maybe(not_eof())
         un_maybe(get() === c)
     }
-    function readsysname_no_pack_inner_must(strict = false): LangVal {
+    function readsysname_no_pack_inner_must(strict: boolean = false): LangVal {
         function readsysname_no_pack_bracket() {
             assert_get('[')
             const x = readsysname_no_pack_inner_must()
@@ -1699,12 +1703,16 @@ function complex_parse(x: string): LangVal {
             return x
         }
         // 重複自val()
-        const fs: Array<() => false | LangVal> = strict ? [readlist, symbol, readsysname_no_pack_bracket, data,
-            readerror, readeval, readfuncapply, readformbuiltin, readapply] :
-            [readlist, readsysname_no_pack, data,
+        let fs: Array<() => false | LangVal>
+        if (strict) {
+            fs = [readlist, symbol, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply]
-        for (let i = 0; i < fs.length; i++) {
-            const x: false | LangVal = fs[i]()
+        } else {
+            fs = [readlist, readsysname_no_pack, data,
+                readerror, readeval, readfuncapply, readformbuiltin, readapply]
+        }
+        for (const f of fs) {
+            const x: false | LangVal = f()
             if (x !== false) {
                 return x
             }

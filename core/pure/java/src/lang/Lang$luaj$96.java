@@ -59,28 +59,15 @@ public class Lang$luaj$96 extends org.luaj.vm2.lib.VarArgFunction {
                 org.luaj.vm2.Varargs a10 = this.u0;
                 return a10;
             } else if (this.u9.call(a3).toboolean()) {
-                org.luaj.vm2.LuaValue a11 = null;
                 if (!this.u9.call(a4).toboolean()) {
-                    org.luaj.vm2.Varargs a12 = this.u6;
+                    org.luaj.vm2.Varargs a11 = this.u6;
+                    return a11;
+                }
+                if (this.u10.call(a3, a4).toboolean()) {
+                    org.luaj.vm2.Varargs a12 = this.u0;
                     return a12;
                 }
-                boolean b = this.u10.call(a3, a4).toboolean();
-                label0: {
-                    label2: {
-                        label1: {
-                            if (b) {
-                                break label1;
-                            }
-                            break label2;
-                        }
-                        a11 = this.u0;
-                        if (a11.toboolean()) {
-                            break label0;
-                        }
-                    }
-                    a11 = this.u6;
-                }
-                org.luaj.vm2.Varargs a13 = a11;
+                org.luaj.vm2.Varargs a13 = this.u6;
                 return a13;
             } else if (this.u11.call(a3).toboolean()) {
                 if (!this.u11.call(a4).toboolean()) {
