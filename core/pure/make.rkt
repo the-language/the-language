@@ -120,7 +120,7 @@ in-dir "typescript" {
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
              ;;"python3/lang.py";;暫停。因爲性能太差。
-             ;;"php/lang.php";;WIP
+             "php/lang.php"
              "java/src"
              "c/lang.h"
              "c/lang.c"
@@ -267,22 +267,11 @@ in-dir "typescript" {
 
              clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c
      }})
-     ("php/lang.php" ("typescript/lang.ts") {
+     ("php/lang.php" ("lua/lang.lua") {
          in-dir "php" {
              yarn
-             |> ++ "function _TS_THROW(x:string):never{throw x}\n" #{sed (id "s|throw\\([^;]*\\)|return _TS_THROW(\\1)|g") ../typescript/lang.ts} &>! lang.ts
-             (define raw #{npx ts2php lang.ts})
-             (define lang.php
-                 (match (string->lines raw)
-                     [(list "<?php" (regexp #rx"^namespace (.*)$") "function _TS_THROW($x) {  }" lines ...)
-                         (string-append
-                             "<?php\n"
-                             c-generatedby
-                             c-copyright
-                             "function _TS_THROW($x) {throw new Exception($x);}\n"
-                             (lines->string lines))]))
-             |> id lang.php &>! lang.php
-	     sed -i (id "s|&\\$|$|g") lang.php
+             |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
+             |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
      }})
      ;; 以下爲停止支持的
      ("python3/lang.py" ("python2/lang.py") {

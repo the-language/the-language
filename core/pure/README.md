@@ -40,4 +40,4 @@ racket test.rkt
 
 ### 運行依賴
 
-* php+mbstring | `sudo apt install php php7.0-mbstring` `sudo pacman -S php`
+* php | `sudo apt install php` `sudo pacman -S php`
