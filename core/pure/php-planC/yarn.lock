@@ -138,10 +138,10 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lua2php@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/lua2php/-/lua2php-0.1.0.tgz#dd9671cc22eb0c49e7fa49c431d517f3aaac112e"
-  integrity sha512-RVRytkfcfadWiW9p8kwuBCUrcHpO5oROUpunolbk09P8ISaadzhsPUhLqXYuS3Hocgf+SWFaXf4EWcJMoCJH+g==
+lua2php@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/lua2php/-/lua2php-0.1.1.tgz#61cc76838fc682ace4c2553e7736199d971b85b7"
+  integrity sha512-Yq9U9xFwV4DAYTm40vfNnDUjLaVf+7WQ7HTtR2fygVhG6pVRzqhbuGeBS39cVBY/pxBqvRIJ3TU1UzWXN1yn/w==
   dependencies:
     luaparse "^0.2.1"
     php-unparse "^0.2.9-zaoqi-4-3ad1f406283c42fe89f4e1a1d97a4c40ff0108fe"

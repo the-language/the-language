@@ -1,2 +1,3 @@
 #!/bin/sh
-npx lua2php lang.lua > lang.php
+yarn
+npx lua2php lang.lua | sed 's|^return .*$||' > lang.php
