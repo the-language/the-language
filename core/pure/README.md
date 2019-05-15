@@ -20,7 +20,7 @@ racket test.rkt
 
 ### 編譯依賴
 
-* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk`
+* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix`
 * NodeJS NPM | `sudo apt install nodejs npm` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn`

@@ -3,5 +3,7 @@
         "target": "esnext",
         "strict": true
     },
-    "luaTarget": "5.1"
+    "tstl": {
+	"luaTarget": "5.1"
+    }
 }
