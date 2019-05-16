@@ -7611,6 +7611,8 @@ static inline int lcf1_symbols_set_init(lua_State *L) {
    *         ["是非"] = "欤",
    *         ["構物"] = "𡒫",
    *         ["為符名連"] = "‐",
+   *         ["爻陰"] = "侌",
+   *         ["爻陽"] = "𣆄",
    *         ["特定其物"] = "亓",
    *         ["省略一物"] = "畧",
    *         ["符名"] = "謼",
@@ -7621,8 +7623,6 @@ static inline int lcf1_symbols_set_init(lua_State *L) {
    *         ["謬誤"] = "䥘",
    *         ["連頸"] = "丩",
    *         ["間空"] = "𣣓",
-   *         ["陰"] = "侌",
-   *         ["陽"] = "𣆄",
    *         ["首始"] = "𩠐",
    *     } */
   lua_createtable(L, 0, 99);
@@ -7884,6 +7884,12 @@ static inline int lcf1_symbols_set_init(lua_State *L) {
   lua_pushliteral(L, "為符名連");
   lua_pushliteral(L, "‐");
   lua_rawset(L, -3);
+  lua_pushliteral(L, "爻陰");
+  lua_pushliteral(L, "侌");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "爻陽");
+  lua_pushliteral(L, "𣆄");
+  lua_rawset(L, -3);
   lua_pushliteral(L, "特定其物");
   lua_pushliteral(L, "亓");
   lua_rawset(L, -3);
@@ -7913,12 +7919,6 @@ static inline int lcf1_symbols_set_init(lua_State *L) {
   lua_rawset(L, -3);
   lua_pushliteral(L, "間空");
   lua_pushliteral(L, "𣣓");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "陰");
-  lua_pushliteral(L, "侌");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "陽");
-  lua_pushliteral(L, "𣆄");
   lua_rawset(L, -3);
   lua_pushliteral(L, "首始");
   lua_pushliteral(L, "𩠐");
@@ -8020,6 +8020,8 @@ static inline int lcf1_symbols_set_neg_init(lua_State *L) {
    *         ["欤"] = "是非",
    *         ["𡒫"] = "構物",
    *         ["‐"] = "為符名連",
+   *         ["侌"] = "爻陰",
+   *         ["𣆄"] = "爻陽",
    *         ["亓"] = "特定其物",
    *         ["畧"] = "省略一物",
    *         ["謼"] = "符名",
@@ -8030,8 +8032,6 @@ static inline int lcf1_symbols_set_neg_init(lua_State *L) {
    *         ["䥘"] = "謬誤",
    *         ["丩"] = "連頸",
    *         ["𣣓"] = "間空",
-   *         ["侌"] = "陰",
-   *         ["𣆄"] = "陽",
    *         ["𩠐"] = "首始",
    *     } */
   lua_createtable(L, 0, 99);
@@ -8293,6 +8293,12 @@ static inline int lcf1_symbols_set_neg_init(lua_State *L) {
   lua_pushliteral(L, "‐");
   lua_pushliteral(L, "為符名連");
   lua_rawset(L, -3);
+  lua_pushliteral(L, "侌");
+  lua_pushliteral(L, "爻陰");
+  lua_rawset(L, -3);
+  lua_pushliteral(L, "𣆄");
+  lua_pushliteral(L, "爻陽");
+  lua_rawset(L, -3);
   lua_pushliteral(L, "亓");
   lua_pushliteral(L, "特定其物");
   lua_rawset(L, -3);
@@ -8322,12 +8328,6 @@ static inline int lcf1_symbols_set_neg_init(lua_State *L) {
   lua_rawset(L, -3);
   lua_pushliteral(L, "𣣓");
   lua_pushliteral(L, "間空");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "侌");
-  lua_pushliteral(L, "陰");
-  lua_rawset(L, -3);
-  lua_pushliteral(L, "𣆄");
-  lua_pushliteral(L, "陽");
   lua_rawset(L, -3);
   lua_pushliteral(L, "𩠐");
   lua_pushliteral(L, "首始");
@@ -19134,6 +19134,8 @@ static inline int lcf_main(lua_State *L) {
    *         ["是非"] = "欤",
    *         ["構物"] = "𡒫",
    *         ["為符名連"] = "‐",
+   *         ["爻陰"] = "侌",
+   *         ["爻陽"] = "𣆄",
    *         ["特定其物"] = "亓",
    *         ["省略一物"] = "畧",
    *         ["符名"] = "謼",
@@ -19144,8 +19146,6 @@ static inline int lcf_main(lua_State *L) {
    *         ["謬誤"] = "䥘",
    *         ["連頸"] = "丩",
    *         ["間空"] = "𣣓",
-   *         ["陰"] = "侌",
-   *         ["陽"] = "𣆄",
    *         ["首始"] = "𩠐",
    *     }
    * end */
@@ -19241,6 +19241,8 @@ static inline int lcf_main(lua_State *L) {
    *         ["欤"] = "是非",
    *         ["𡒫"] = "構物",
    *         ["‐"] = "為符名連",
+   *         ["侌"] = "爻陰",
+   *         ["𣆄"] = "爻陽",
    *         ["亓"] = "特定其物",
    *         ["畧"] = "省略一物",
    *         ["謼"] = "符名",
@@ -19251,8 +19253,6 @@ static inline int lcf_main(lua_State *L) {
    *         ["䥘"] = "謬誤",
    *         ["丩"] = "連頸",
    *         ["𣣓"] = "間空",
-   *         ["侌"] = "陰",
-   *         ["𣆄"] = "陽",
    *         ["𩠐"] = "首始",
    *     }
    * end */
@@ -19780,22 +19780,22 @@ static inline int lcf_main(lua_State *L) {
   lua_rawseti(L, (lc512 + lc_nextra), 143);
   assert(lua_gettop(L) - lc_nextra == 18);
 
-  /* local true_symbol = new_symbol("陽") */
+  /* local true_symbol = new_symbol("爻陽") */
   lc_newclosuretable(L, (lc512 + lc_nextra));
   enum { lc513 = 19 };
   assert((lua_gettop(L) == (lc513 + lc_nextra)));
   lc_getupvalue(L, (lc512 + lc_nextra), 7, 136);
-  lua_pushliteral(L, "陽");
+  lua_pushliteral(L, "爻陽");
   lua_call(L, 1, 1);
   lua_rawseti(L, (lc513 + lc_nextra), 144);
   assert(lua_gettop(L) - lc_nextra == 19);
 
-  /* local false_symbol = new_symbol("陰") */
+  /* local false_symbol = new_symbol("爻陰") */
   lc_newclosuretable(L, (lc513 + lc_nextra));
   enum { lc514 = 20 };
   assert((lua_gettop(L) == (lc514 + lc_nextra)));
   lc_getupvalue(L, (lc513 + lc_nextra), 8, 136);
-  lua_pushliteral(L, "陰");
+  lua_pushliteral(L, "爻陰");
   lua_call(L, 1, 1);
   lua_rawseti(L, (lc514 + lc_nextra), 145);
   assert(lua_gettop(L) - lc_nextra == 20);

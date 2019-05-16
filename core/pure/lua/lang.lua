@@ -975,6 +975,8 @@ function symbols_set_init()
         ["是非"] = "欤",
         ["構物"] = "𡒫",
         ["為符名連"] = "‐",
+        ["爻陰"] = "侌",
+        ["爻陽"] = "𣆄",
         ["特定其物"] = "亓",
         ["省略一物"] = "畧",
         ["符名"] = "謼",
@@ -985,8 +987,6 @@ function symbols_set_init()
         ["謬誤"] = "䥘",
         ["連頸"] = "丩",
         ["間空"] = "𣣓",
-        ["陰"] = "侌",
-        ["陽"] = "𣆄",
         ["首始"] = "𩠐",
     }
 end
@@ -1078,6 +1078,8 @@ function symbols_set_neg_init()
         ["欤"] = "是非",
         ["𡒫"] = "構物",
         ["‐"] = "為符名連",
+        ["侌"] = "爻陰",
+        ["𣆄"] = "爻陽",
         ["亓"] = "特定其物",
         ["畧"] = "省略一物",
         ["謼"] = "符名",
@@ -1088,8 +1090,6 @@ function symbols_set_neg_init()
         ["䥘"] = "謬誤",
         ["丩"] = "連頸",
         ["𣣓"] = "間空",
-        ["侌"] = "陰",
-        ["𣆄"] = "陽",
         ["𩠐"] = "首始",
     }
 end
@@ -1208,8 +1208,8 @@ local if_symbol = new_symbol("如若")
 local typeAnnotation_symbol = new_symbol("一類何物")
 local isOrNot_symbol = new_symbol("是非")
 local sub_symbol = new_symbol("其子")
-local true_symbol = new_symbol("陽")
-local false_symbol = new_symbol("陰")
+local true_symbol = new_symbol("爻陽")
+local false_symbol = new_symbol("爻陰")
 local quote_symbol = new_symbol("引用")
 local apply_symbol = new_symbol("應用")
 local null_symbol = new_symbol("間空")

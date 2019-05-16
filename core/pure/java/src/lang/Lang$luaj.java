@@ -174,8 +174,8 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         k56 = org.luaj.vm2.LuaString.valueOf("\u4e00\u985e\u4f55\u7269");
         k57 = org.luaj.vm2.LuaString.valueOf("\u662f\u975e");
         k58 = org.luaj.vm2.LuaString.valueOf("\u5176\u5b50");
-        k59 = org.luaj.vm2.LuaString.valueOf("\u967d");
-        k60 = org.luaj.vm2.LuaString.valueOf("\u9670");
+        k59 = org.luaj.vm2.LuaString.valueOf("\u723b\u967d");
+        k60 = org.luaj.vm2.LuaString.valueOf("\u723b\u9670");
         k61 = org.luaj.vm2.LuaString.valueOf("\u5f15\u7528");
         k62 = org.luaj.vm2.LuaString.valueOf("\u61c9\u7528");
         k63 = org.luaj.vm2.LuaString.valueOf("\u9593\u7a7a");
