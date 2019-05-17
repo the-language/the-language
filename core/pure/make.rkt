@@ -120,11 +120,11 @@ in-dir "typescript" {
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
              ;;"python3/lang.py";;暫停。因爲性能太差。
+             ;;"go/src";;暫停。因爲Lua解釋器的BUG。
              "php/lang.php"
              "java/src"
              "c/lang.h"
-             "c/lang.c"
-             "go/src")
+             "c/lang.c")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
@@ -168,64 +168,6 @@ in-dir "typescript" {
          ;; TODO rewrite in rash
          in-dir "java" {
              ./compile.sh
-     }})
-     ("go/src" ("lua/lang.lua") {
-         in-dir "go" {
-           mkdir -p deps
-           bash -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"
-           bash -c (id "GOPATH=\"$PWD/deps\" go get github.com/yuin/gopher-lua")
-           (define lang.go
-               (++
-                   c-generatedby
-                   c-copyright
-                   "package lang\n"
-                   "import ( \"github.com/yuin/gopher-lua\" )\n"
-                   "type Value lua.LValue\n"
-                   "var exports *lua.LTable\n"
-                   "var ls *lua.LState\n"
-                   "func assertstateempty() {if ls.GetTop() != 0 {panic(\"ls.GetTop() != 0\")}}\n"
-                   "func init() {\n"
-                   "ls = lua.NewState()\n"
-                   "ls.OpenLibs()\n"
-                   "defer ls.Close()\n"
-                   "if err := ls.DoString(`"#{cat ../lua/lang.lua}"`); err != nil {panic(err)}\n"
-                   "exports = ls.Get(-1).(*lua.LTable)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "}\n"
-                   "func ComplexParse(x string) Value {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_parse`), NRet: 1, Protect: true}, lua.LString(x))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return ret.(Value)\n"
-                   "}\n"
-                   "func ComplexPrint(x Value) string {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return string(ret.(lua.LString))\n"
-                   "}\n"
-                   "func SimplePrint(x Value) string {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`simple_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return string(ret.(lua.LString))\n"
-                   "}\n"
-               ))
-           rm -fr src
-           mkdir -p src/lang
-           |> id lang.go &>! src/lang/lang.go
-           (define package.go
-               (++
-                 "package lang\n"
-                 "const PackageName = `The Language`\n"
-                 "const PackageVersion = `0.1`\n"
-                 "const PackageAuthors = `Zaoqi`\n"
-                 "const PackageCopyRight = PackageName + ` ` + PackageVersion + ` Copyright (C) 2018-2019 ` + PackageAuthors\n"))
-           |> id package.go &>! src/lang/package.go
      }})
      ("c/lua-5.1.5" () {in-dir "c" {
          |> id "wget -O - http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd .." | sh
@@ -306,5 +248,63 @@ in-dir "typescript" {
                  "\n"
                  (match py-raw-tail ["lang = var.to_python()" exports-py])))
              |> id py &>! lang.py
+     }})
+     ("go/src" ("lua/lang.lua") {
+         in-dir "go" {
+           mkdir -p deps
+           bash -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"
+           bash -c (id "GOPATH=\"$PWD/deps\" go get github.com/yuin/gopher-lua")
+           (define lang.go
+               (++
+                   c-generatedby
+                   c-copyright
+                   "package lang\n"
+                   "import ( \"github.com/yuin/gopher-lua\" )\n"
+                   "type Value lua.LValue\n"
+                   "var exports *lua.LTable\n"
+                   "var ls *lua.LState\n"
+                   "func assertstateempty() {if ls.GetTop() != 0 {panic(\"ls.GetTop() != 0\")}}\n"
+                   "func init() {\n"
+                   "ls = lua.NewState()\n"
+                   "ls.OpenLibs()\n"
+                   "defer ls.Close()\n"
+                   "if err := ls.DoString(`"#{cat ../lua/lang.lua}"`); err != nil {panic(err)}\n"
+                   "exports = ls.Get(-1).(*lua.LTable)\n"
+                   "ls.Pop(1)\n"
+                   "assertstateempty()\n"
+                   "}\n"
+                   "func ComplexParse(x string) Value {\n"
+                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_parse`), NRet: 1, Protect: true}, lua.LString(x))\n"
+                   "ret := ls.Get(-1)\n"
+                   "ls.Pop(1)\n"
+                   "assertstateempty()\n"
+                   "return ret.(Value)\n"
+                   "}\n"
+                   "func ComplexPrint(x Value) string {\n"
+                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
+                   "ret := ls.Get(-1)\n"
+                   "ls.Pop(1)\n"
+                   "assertstateempty()\n"
+                   "return string(ret.(lua.LString))\n"
+                   "}\n"
+                   "func SimplePrint(x Value) string {\n"
+                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`simple_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
+                   "ret := ls.Get(-1)\n"
+                   "ls.Pop(1)\n"
+                   "assertstateempty()\n"
+                   "return string(ret.(lua.LString))\n"
+                   "}\n"
+               ))
+           rm -fr src
+           mkdir -p src/lang
+           |> id lang.go &>! src/lang/lang.go
+           (define package.go
+               (++
+                 "package lang\n"
+                 "const PackageName = `The Language`\n"
+                 "const PackageVersion = `0.1`\n"
+                 "const PackageAuthors = `Zaoqi`\n"
+                 "const PackageCopyRight = PackageName + ` ` + PackageVersion + ` Copyright (C) 2018-2019 ` + PackageAuthors\n"))
+           |> id package.go &>! src/lang/package.go
      }})
      ))
