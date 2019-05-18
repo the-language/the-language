@@ -2216,7 +2216,7 @@ end
 ____exports.complex_print = complex_print
 local function machinetext_parse(rawstr)
     local result = new_hole_do()
-    local stack = {result}
+    local stack = {function(x) return hole_set_do(result, x) end}
     local state = 0
     local function parse_error()
         error("MT parse ERROR")
@@ -2241,9 +2241,9 @@ local function machinetext_parse(rawstr)
             conslike = function(c)
                 local hol1 = new_hole_do()
                 local hol2 = new_hole_do()
-                __TS__ArrayPush(new_stack, hol1)
-                __TS__ArrayPush(new_stack, hol2)
-                hole_set_do(hol, c(hol1, hol2))
+                __TS__ArrayPush(new_stack, function(x) return hole_set_do(hol1, x) end)
+                __TS__ArrayPush(new_stack, function(x) return hole_set_do(hol2, x) end)
+                hol(c(hol1, hol2))
             end
             if chr == "^" then
                 local tmp = ""
@@ -2255,7 +2255,7 @@ local function machinetext_parse(rawstr)
                     tmp = tostring(tmp) .. tostring(chr)
                 end
                 if can_new_symbol_unicodechar_p(tmp) then
-                    hole_set_do(hol, new_symbol_unicodechar(tmp))
+                    hol(new_symbol_unicodechar(tmp))
                 else
                     return parse_error()
                 end
@@ -2268,7 +2268,7 @@ local function machinetext_parse(rawstr)
             elseif chr == "$" then
                 conslike(function(x, y) return evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))) end)
             elseif chr == "_" then
-                hole_set_do(hol, null_v)
+                hol(null_v)
             else
                 return parse_error()
             end

@@ -1957,7 +1957,7 @@ export { complex_print }
 // 註疏系統WIP
 function machinetext_parse(rawstr: string): LangVal {
     const result = new_hole_do()
-    let stack: Array<LangValHole> = [result]
+    let stack: Array<(x: LangVal) => void> = [(x) => hole_set_do(result, x)]
     let state = 0
     function parse_error(): never {
         throw 'MT parse ERROR'
@@ -1972,15 +1972,15 @@ function machinetext_parse(rawstr: string): LangVal {
         return result
     }
     while (stack.length !== 0) {
-        const new_stack: Array<LangValHole> = []
+        const new_stack: Array<(x: LangVal) => void> = []
         for (const hol of stack) {
             const chr: string = get_do()
             const conslike = (c: (x: LangVal, y: LangVal) => LangVal) => {
                 const hol1 = new_hole_do()
                 const hol2 = new_hole_do()
-                new_stack.push(hol1)
-                new_stack.push(hol2)
-                hole_set_do(hol, c(hol1, hol2))
+                new_stack.push((x) => hole_set_do(hol1, x))
+                new_stack.push((x) => hole_set_do(hol2, x))
+                hol(c(hol1, hol2))
             }
             if (chr === '^') {
                 let tmp: string = ''
@@ -1990,7 +1990,7 @@ function machinetext_parse(rawstr: string): LangVal {
                     tmp += chr
                 }
                 if (can_new_symbol_unicodechar_p(tmp)) {
-                    hole_set_do(hol, new_symbol_unicodechar(tmp))
+                    hol(new_symbol_unicodechar(tmp))
                 } else {
                     return parse_error()
                 }
@@ -2003,7 +2003,7 @@ function machinetext_parse(rawstr: string): LangVal {
             } else if (chr === '$') {
                 conslike((x, y) => evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))))
             } else if (chr === '_') {
-                hole_set_do(hol, null_v)
+                hol(null_v)
             } else {
                 return parse_error()
             }

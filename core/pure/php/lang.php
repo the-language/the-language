@@ -2535,7 +2535,11 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
 $____exports["complex_print"] = $complex_print;
 $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodechar_p, &$env_null_v, &$evaluate, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$hole_set_do, &$make_quote, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol_unicodechar, &$null_v) {
     $result = $new_hole_do();
-    $stack = [$result];
+    $stack = [
+        (function ($x = NULL) use (&$hole_set_do, &$result) {
+            return $hole_set_do($result, $x);
+        })
+    ];
     $state = 0;
     $parse_error = (function () {
         throw new Exception("MT parse ERROR");
@@ -2564,9 +2568,13 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
             $conslike = (function ($c = NULL) use (&$hol, &$hole_set_do, &$new_hole_do, &$new_stack) {
                 $hol1 = $new_hole_do();
                 $hol2 = $new_hole_do();
-                $GLOBALS["__TS__ArrayPush"]($new_stack, $hol1);
-                $GLOBALS["__TS__ArrayPush"]($new_stack, $hol2);
-                $hole_set_do($hol, $c($hol1, $hol2));
+                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$hol1, &$hole_set_do) {
+                    return $hole_set_do($hol1, $x);
+                }));
+                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$hol2, &$hole_set_do) {
+                    return $hole_set_do($hol2, $x);
+                }));
+                $hol($c($hol1, $hol2));
             });
             if (($chr == "^")) {
                 $tmp = "";
@@ -2578,7 +2586,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
                     $tmp = ((string)$tmp . (string)$chr_1);
                 }
                 if ($can_new_symbol_unicodechar_p($tmp)) {
-                    $hole_set_do($hol, $new_symbol_unicodechar($tmp));
+                    $hol($new_symbol_unicodechar($tmp));
                 } else {
                     return $parse_error();
                 }
@@ -2601,7 +2609,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
                     })
                 );
             } elseif (($chr == "_")) {
-                $hole_set_do($hol, $null_v);
+                $hol($null_v);
             } else {
                 return $parse_error();
             }

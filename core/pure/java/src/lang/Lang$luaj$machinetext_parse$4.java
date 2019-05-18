@@ -1,33 +1,35 @@
 package lang;
-public class Lang$luaj$machinetext_parse$4 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$machinetext_parse$4 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
-    org.luaj.vm2.LuaValue[] u1;
+    org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
-    org.luaj.vm2.LuaValue[] u3;
-    org.luaj.vm2.LuaValue[] u4;
-    org.luaj.vm2.LuaValue u5;
+    org.luaj.vm2.LuaValue u3;
+    org.luaj.vm2.LuaValue u4;
+    final static org.luaj.vm2.LuaValue k0;
+    
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
+    }
     
     public Lang$luaj$machinetext_parse$4() {
     }
     
-    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        org.luaj.vm2.LuaValue a0 = a.arg(1);
-        org.luaj.vm2.LuaValue a1 = a.arg(2);
-        a.subargs(3);
-        org.luaj.vm2.LuaValue a2 = this.u0;
-        org.luaj.vm2.LuaValue a3 = this.u1[0];
-        org.luaj.vm2.LuaValue a4 = this.u2;
-        org.luaj.vm2.LuaValue a5 = this.u3[0];
-        org.luaj.vm2.LuaValue a6 = this.u4[0];
-        org.luaj.vm2.LuaValue a7 = this.u5.call(a0);
-        org.luaj.vm2.Varargs a8 = this.u5.invoke((org.luaj.vm2.Varargs)a1);
-        org.luaj.vm2.LuaValue[] a9 = new org.luaj.vm2.LuaValue[3];
-        a9[0] = a5;
-        a9[1] = a6;
-        a9[2] = a7;
-        org.luaj.vm2.Varargs a10 = a4.invoke(org.luaj.vm2.LuaValue.varargsOf(a9, a8));
-        org.luaj.vm2.LuaValue[] a11 = new org.luaj.vm2.LuaValue[1];
-        a11[0] = a3;
-        return org.luaj.vm2.LuaValue.tailcallOf(a2, org.luaj.vm2.LuaValue.varargsOf(a11, a10));
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.LuaValue a0 = this.u0.call();
+        org.luaj.vm2.LuaValue a1 = this.u0.call();
+        org.luaj.vm2.LuaValue a2 = this.u1.get(k0);
+        org.luaj.vm2.LuaValue a3 = this.u2;
+        Lang$luaj$machinetext_parse$4$0 a4 = new Lang$luaj$machinetext_parse$4$0();
+        a4.u0 = this.u3;
+        a4.u1 = a0;
+        a2.call(a3, (org.luaj.vm2.LuaValue)a4);
+        org.luaj.vm2.LuaValue a5 = this.u1.get(k0);
+        org.luaj.vm2.LuaValue a6 = this.u2;
+        Lang$luaj$machinetext_parse$4$1 a7 = new Lang$luaj$machinetext_parse$4$1();
+        a7.u0 = this.u3;
+        a7.u1 = a1;
+        a5.call(a6, (org.luaj.vm2.LuaValue)a7);
+        this.u4.invoke(a.invoke(a0, (org.luaj.vm2.Varargs)a1).subargs(1));
+        return org.luaj.vm2.LuaValue.NONE;
     }
 }
