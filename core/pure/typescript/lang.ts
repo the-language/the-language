@@ -517,7 +517,6 @@ function new_list(...xs: Array<LangVal>): LangVal {
 }
 export { jsArray_to_list, maybe_list_to_jsArray, new_list }
 
-// 註疏系統WIP
 function un_just_all(raw: LangVal): LangVal {
     if (!just_p(raw)) { return raw }
     let x: LangVal = raw
@@ -986,12 +985,9 @@ function make_builtin_get_func<T extends LangVal>(f_sym: LangValSysName, p_jsfun
         }]
 }
 type real_builtin_func_apply_T =
-    [LangValSysName, 1, (x: LangVal) => LangVal] |
-    [LangValSysName, 2, (x: LangVal, y: LangVal) => LangVal] |
-    [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal) => LangVal] |
-    [LangValSysName, 1, (x: LangVal, error_v: LangVal) => LangVal] |
-    [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal) => LangVal] |
-    [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal]
+    [LangValSysName, 1, (x: LangVal, error_v: LangVal, self_v: LangVal) => LangVal] |
+    [LangValSysName, 2, (x: LangVal, y: LangVal, error_v: LangVal, self_v: LangVal) => LangVal] |
+    [LangValSysName, 3, (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal, self_v: LangVal) => LangVal]
 
 // 註疏系統WIP
 const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
@@ -1095,7 +1091,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         return construction_head(xs)
     }],
 
-    [if_function_builtin_systemName, 3, (b, x, y, error_v) => {
+    [if_function_builtin_systemName, 3, (b: LangVal, x: LangVal, y: LangVal, error_v: LangVal) => {
         b = force1(b)
         if (any_delay_just_p(b)) {
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
@@ -1187,21 +1183,18 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: Lan
     const error_v = new_error(system_symbol,
         new_list(function_builtin_use_systemName,
             new_list(f, jsArray_to_list(xs))))
-    for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
+    for (const xx of real_builtin_func_apply_s) {
         // WIP delay未正確處理(影響較小)
-        if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
-            const actually_length = real_builtin_func_apply_s[i][1]
-            if (xs.length !== actually_length) {
+        if (jsbool_equal_p(f, xx[0])) {
+            if (xs.length !== xx[1]) {
                 return error_v
             }
-            const f = real_builtin_func_apply_s[i][2]
-            // type WIP
-            if (actually_length === 1) {
-                return (f as (x: LangVal, error_v: LangVal) => LangVal)(xs[0], error_v)
-            } else if (actually_length === 2) {
-                return (f as (x: LangVal, y: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], error_v)
-            } else if (actually_length === 3) {
-                return (f as (x: LangVal, y: LangVal, z: LangVal, error_v: LangVal) => LangVal)(xs[0], xs[1], xs[2], error_v)
+            if (xx[1] === 1) {
+                return xx[2](xs[0], error_v, selfvalraw)
+            } else if (xx[1] === 2) {
+                return xx[2](xs[0], xs[1], error_v, selfvalraw)
+            } else if (xx[1] === 3) {
+                return xx[2](xs[0], xs[1], xs[2], error_v, selfvalraw)
             }
             return LANG_ERROR()
         }

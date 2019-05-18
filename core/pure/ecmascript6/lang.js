@@ -395,7 +395,6 @@ function new_list(...xs) {
     return jsArray_to_list(xs);
 }
 export { jsArray_to_list, maybe_list_to_jsArray, new_list };
-// 註疏系統WIP
 function un_just_all(raw) {
     if (!just_p(raw)) {
         return raw;
@@ -1044,23 +1043,20 @@ function real_apply(f, xs, selfvalraw) {
 // 註疏系統WIP
 function real_builtin_func_apply(f, xs, selfvalraw) {
     const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
-    for (let i = 0; i < real_builtin_func_apply_s.length; i++) {
+    for (const xx of real_builtin_func_apply_s) {
         // WIP delay未正確處理(影響較小)
-        if (jsbool_equal_p(f, real_builtin_func_apply_s[i][0])) {
-            const actually_length = real_builtin_func_apply_s[i][1];
-            if (xs.length !== actually_length) {
+        if (jsbool_equal_p(f, xx[0])) {
+            if (xs.length !== xx[1]) {
                 return error_v;
             }
-            const f = real_builtin_func_apply_s[i][2];
-            // type WIP
-            if (actually_length === 1) {
-                return f(xs[0], error_v);
+            if (xx[1] === 1) {
+                return xx[2](xs[0], error_v, selfvalraw);
             }
-            else if (actually_length === 2) {
-                return f(xs[0], xs[1], error_v);
+            else if (xx[1] === 2) {
+                return xx[2](xs[0], xs[1], error_v, selfvalraw);
             }
-            else if (actually_length === 3) {
-                return f(xs[0], xs[1], xs[2], error_v);
+            else if (xx[1] === 3) {
+                return xx[2](xs[0], xs[1], xs[2], error_v, selfvalraw);
             }
             return LANG_ERROR();
         }
