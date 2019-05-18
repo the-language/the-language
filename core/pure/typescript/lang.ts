@@ -1405,6 +1405,8 @@ function simple_print(x: LangVal): string {
         return "!" + simple_print(new_construction(error_name(x), error_list(x)))
     } else if (symbol_p(x)) {
         return un_symbol(x)
+    } else if (comment_p(x)) {
+        //WIP//free(): invalid pointer//return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
     } else if (delay_evaluate_p(x)) {
         return "$(" + simple_print(env2val(delay_evaluate_env(x))) + " " + simple_print(delay_evaluate_x(x)) + ")"
     } else if (delay_builtin_func_p(x)) {
@@ -1417,8 +1419,6 @@ function simple_print(x: LangVal): string {
             ")"
     } else if (delay_apply_p(x)) {
         return "^(" + simple_print(delay_apply_f(x)) + " " + simple_print(jsArray_to_list(delay_apply_xs(x))) + ")"
-    } else if (comment_p(x)) {
-        return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
     }
     return LANG_ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
@@ -1936,6 +1936,8 @@ function complex_print(val: LangVal): string {
         return "!" + complex_print(new_construction(error_name(x), error_list(x)))
     } else if (symbol_p(x)) {
         return un_symbol(x)
+    } else if (comment_p(x)) {
+        return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
     } else if (delay_evaluate_p(x)) {
         return "$(" + complex_print(env2val(delay_evaluate_env(x))) + " " + complex_print(delay_evaluate_x(x)) + ")"
     } else if (delay_builtin_func_p(x)) {
@@ -1948,8 +1950,6 @@ function complex_print(val: LangVal): string {
             ")"
     } else if (delay_apply_p(x)) {
         return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")"
-    } else if (comment_p(x)) {
-        return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
     }
     return LANG_ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }

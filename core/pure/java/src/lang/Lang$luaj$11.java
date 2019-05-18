@@ -1,11 +1,16 @@
 package lang;
 public class Lang$luaj$11 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
+    final static org.luaj.vm2.LuaValue k0;
+    
+    static {
+        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+    }
     
     public Lang$luaj$11() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        return (this.u0[0].call().get(a).eq_b(org.luaj.vm2.LuaValue.NIL)) ? org.luaj.vm2.LuaValue.FALSE : org.luaj.vm2.LuaValue.TRUE;
+        return (a.get(k0).eq_b(this.u0[0])) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE;
     }
 }

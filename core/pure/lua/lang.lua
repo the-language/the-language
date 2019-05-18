@@ -28,7 +28,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbols_set, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, can_new_symbol_p, new_symbol, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, name_symbol, function_symbol, form_symbol, theThing_symbol, something_symbol, mapping_symbol, typeAnnotation_symbol, isOrNot_symbol, sub_symbol, the_world_stopped_v, systemName_make, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, list_to_jsArray, maybe_list_to_jsArray, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, val2env, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, jsbool_no_force_equal_p, simple_print, complex_parse, complex_print, symbols_set_init, symbols_set_neg_init
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -47,9 +47,6 @@ end
 function comment_p(x)
     return x[0 + 1] == comment_t
 end
-function comment_comment(x)
-    return x[1 + 1]
-end
 function comment_x(x)
     return x[2 + 1]
 end
@@ -59,23 +56,11 @@ function un_comment_all(x)
     end
     return x
 end
-function new_symbol_unicodechar(x)
-    return {
-        symbol_t,
-        x,
-    }
-end
 function symbol_p(x)
     return x[0 + 1] == symbol_t
 end
 function un_symbol_unicodechar(x)
     return x[1 + 1]
-end
-function can_new_symbol_p(x)
-    return symbols_set()[x] ~= nil
-end
-function new_symbol(x)
-    return new_symbol_unicodechar(symbols_set()[x])
 end
 function un_symbol(x)
     return symbols_set_neg()[un_symbol_unicodechar(x)]
@@ -252,9 +237,6 @@ function lang_copy_do(x)
     hole_set_do(ret, x)
     return ret
 end
-function systemName_make(x)
-    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
-end
 function symbol_equal_p(x, y)
     if x == y then
         return true
@@ -276,20 +258,6 @@ function jsArray_to_list(xs)
         end
     end
     return ret
-end
-function list_to_jsArray(xs, k_done, k_tail)
-    local ret = {}
-    while construction_p(xs) do
-        __TS__ArrayPush(ret, construction_head(xs))
-        xs = construction_tail(xs)
-    end
-    if null_p(xs) then
-        return k_done(ret)
-    end
-    return k_tail(ret, xs)
-end
-function maybe_list_to_jsArray(xs)
-    return list_to_jsArray(xs, function(x) return x end, function(_1, _2) return false end)
 end
 function new_list(...)
     local xs = ({...})
@@ -550,64 +518,6 @@ function env_foreach(env, f)
             i = i + 2
         end
     end
-end
-function val2env(x)
-    x = force_all(x)
-    if not data_p(x) then
-        return false
-    end
-    local s = force_all(data_name(x))
-    if not symbol_p(s) then
-        return false
-    end
-    if not symbol_equal_p(s, mapping_symbol) then
-        return false
-    end
-    s = force_all(data_list(x))
-    if not construction_p(s) then
-        return false
-    end
-    if not null_p(force_all(construction_tail(s))) then
-        return false
-    end
-    local ret = {}
-    local xs = force_all(construction_head(s))
-    while not null_p(xs) do
-        if not construction_p(xs) then
-            return false
-        end
-        local x = force_all(construction_head(xs))
-        xs = force_all(construction_tail(xs))
-        if not construction_p(x) then
-            return false
-        end
-        local k = construction_head(x)
-        x = force_all(construction_tail(x))
-        if not construction_p(x) then
-            return false
-        end
-        local v = construction_head(x)
-        if not null_p(force_all(construction_tail(x))) then
-            return false
-        end
-        local not_breaked = true
-        do
-            local i = 0
-            while i < #ret do
-                if jsbool_equal_p(ret[(i + 0) + 1], k) then
-                    ret[(i + 1) + 1] = v
-                    not_breaked = false
-                    break
-                end
-                i = i + 2
-            end
-        end
-        if not_breaked then
-            __TS__ArrayPush(ret, k)
-            __TS__ArrayPush(ret, v)
-        end
-    end
-    return ret
 end
 function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
@@ -935,7 +845,755 @@ function jsbool_equal_p(x, y)
     end
     return LANG_ERROR()
 end
-function jsbool_no_force_equal_p(x, y)
+function simple_print(x)
+    x = un_just_all(x)
+    local temp = ""
+    local prefix = ""
+    if null_p(x) then
+        return "()"
+    elseif construction_p(x) then
+        temp = "("
+        prefix = ""
+        while construction_p(x) do
+            temp = tostring(temp) .. tostring(prefix) .. tostring(simple_print(construction_head(x)))
+            prefix = " "
+            x = un_just_all(construction_tail(x))
+        end
+        if null_p(x) then
+            temp = tostring(temp) .. ")"
+        else
+            temp = tostring(temp) .. " . " .. tostring(simple_print(x)) .. ")"
+        end
+        return temp
+    elseif data_p(x) then
+        return "#" .. tostring(simple_print(new_construction(data_name(x), data_list(x))))
+    elseif error_p(x) then
+        return "!" .. tostring(simple_print(new_construction(error_name(x), error_list(x))))
+    elseif symbol_p(x) then
+        return un_symbol(x)
+    elseif comment_p(x) then
+    elseif delay_evaluate_p(x) then
+        return "$(" .. tostring(simple_print(env2val(delay_evaluate_env(x)))) .. " " .. tostring(simple_print(delay_evaluate_x(x))) .. ")"
+    elseif delay_builtin_func_p(x) then
+        return "%(" .. tostring(simple_print(delay_builtin_func_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"
+    elseif delay_builtin_form_p(x) then
+        return "@(" .. tostring(simple_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(simple_print(delay_builtin_form_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
+    elseif delay_apply_p(x) then
+        return "^(" .. tostring(simple_print(delay_apply_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
+    end
+    return LANG_ERROR()
+end
+function symbols_set_init()
+    return {
+        ["0"] = "0",
+        ["1"] = "1",
+        ["2"] = "2",
+        ["3"] = "3",
+        ["4"] = "4",
+        ["5"] = "5",
+        ["6"] = "6",
+        ["7"] = "7",
+        ["8"] = "8",
+        ["9"] = "9",
+        A = "A",
+        B = "B",
+        C = "C",
+        D = "D",
+        E = "E",
+        F = "F",
+        G = "G",
+        H = "H",
+        I = "I",
+        J = "J",
+        K = "K",
+        L = "L",
+        M = "M",
+        N = "N",
+        O = "O",
+        P = "P",
+        Q = "Q",
+        R = "R",
+        S = "S",
+        T = "T",
+        U = "U",
+        V = "V",
+        W = "W",
+        X = "X",
+        Y = "Y",
+        Z = "Z",
+        a = "a",
+        b = "b",
+        c = "c",
+        d = "d",
+        e = "e",
+        f = "f",
+        g = "g",
+        h = "h",
+        i = "i",
+        j = "j",
+        k = "k",
+        l = "l",
+        m = "m",
+        n = "n",
+        o = "o",
+        p = "p",
+        q = "q",
+        r = "r",
+        s = "s",
+        t = "t",
+        u = "u",
+        v = "v",
+        w = "w",
+        x = "x",
+        y = "y",
+        z = "z",
+        ["一類何物"] = "㝉",
+        ["之物"] = "𫙦",
+        ["其子"] = "𦮪",
+        ["出入改滅"] = "𢒟",
+        ["列序"] = "𠜺",
+        ["化滅"] = "𠏁",
+        ["參形"] = "𠫰",
+        ["吾自"] = "𦣹",
+        ["太始初核"] = "𣝗",
+        ["如若"] = "𦱡",
+        ["宇宙亡矣"] = "𨹹",
+        ["尾末"] = "𡲵",
+        ["序丁"] = "𠆤",
+        ["序丙"] = "𠇮",
+        ["序乙"] = "㐈",
+        ["序甲"] = "𠇚",
+        ["式形"] = "佱",
+        ["引用"] = "㧈",
+        ["應用"] = "𤰆",
+        ["效應"] = "効",
+        ["映表"] = "𤅔",
+        ["是非"] = "欤",
+        ["構物"] = "𡒫",
+        ["為符名連"] = "‐",
+        ["爻陰"] = "侌",
+        ["爻陽"] = "𣆄",
+        ["特定其物"] = "亓",
+        ["省略一物"] = "畧",
+        ["符名"] = "謼",
+        ["等同"] = "弌",
+        ["解算"] = "筭",
+        ["註疏"] = "疎",
+        ["詞素"] = "𧥝",
+        ["謬誤"] = "䥘",
+        ["連頸"] = "丩",
+        ["間空"] = "𣣓",
+        ["首始"] = "𩠐",
+    }
+end
+function symbols_set_neg_init()
+    return {
+        ["0"] = "0",
+        ["1"] = "1",
+        ["2"] = "2",
+        ["3"] = "3",
+        ["4"] = "4",
+        ["5"] = "5",
+        ["6"] = "6",
+        ["7"] = "7",
+        ["8"] = "8",
+        ["9"] = "9",
+        A = "A",
+        B = "B",
+        C = "C",
+        D = "D",
+        E = "E",
+        F = "F",
+        G = "G",
+        H = "H",
+        I = "I",
+        J = "J",
+        K = "K",
+        L = "L",
+        M = "M",
+        N = "N",
+        O = "O",
+        P = "P",
+        Q = "Q",
+        R = "R",
+        S = "S",
+        T = "T",
+        U = "U",
+        V = "V",
+        W = "W",
+        X = "X",
+        Y = "Y",
+        Z = "Z",
+        a = "a",
+        b = "b",
+        c = "c",
+        d = "d",
+        e = "e",
+        f = "f",
+        g = "g",
+        h = "h",
+        i = "i",
+        j = "j",
+        k = "k",
+        l = "l",
+        m = "m",
+        n = "n",
+        o = "o",
+        p = "p",
+        q = "q",
+        r = "r",
+        s = "s",
+        t = "t",
+        u = "u",
+        v = "v",
+        w = "w",
+        x = "x",
+        y = "y",
+        z = "z",
+        ["㝉"] = "一類何物",
+        ["𫙦"] = "之物",
+        ["𦮪"] = "其子",
+        ["𢒟"] = "出入改滅",
+        ["𠜺"] = "列序",
+        ["𠏁"] = "化滅",
+        ["𠫰"] = "參形",
+        ["𦣹"] = "吾自",
+        ["𣝗"] = "太始初核",
+        ["𦱡"] = "如若",
+        ["𨹹"] = "宇宙亡矣",
+        ["𡲵"] = "尾末",
+        ["𠆤"] = "序丁",
+        ["𠇮"] = "序丙",
+        ["㐈"] = "序乙",
+        ["𠇚"] = "序甲",
+        ["佱"] = "式形",
+        ["㧈"] = "引用",
+        ["𤰆"] = "應用",
+        ["効"] = "效應",
+        ["𤅔"] = "映表",
+        ["欤"] = "是非",
+        ["𡒫"] = "構物",
+        ["‐"] = "為符名連",
+        ["侌"] = "爻陰",
+        ["𣆄"] = "爻陽",
+        ["亓"] = "特定其物",
+        ["畧"] = "省略一物",
+        ["謼"] = "符名",
+        ["弌"] = "等同",
+        ["筭"] = "解算",
+        ["疎"] = "註疏",
+        ["𧥝"] = "詞素",
+        ["䥘"] = "謬誤",
+        ["丩"] = "連頸",
+        ["𣣓"] = "間空",
+        ["𩠐"] = "首始",
+    }
+end
+local symbols_set
+symbols_set = function()
+    local r = symbols_set_init()
+    symbols_set = function() return r end
+    return r
+end
+symbols_set_neg = function()
+    local r = symbols_set_neg_init()
+    symbols_set_neg = function() return r end
+    return r
+end
+symbol_t = 0
+construction_t = 1
+null_t = 2
+data_t = 3
+error_t = 4
+just_t = 5
+delay_evaluate_t = 6
+delay_builtin_func_t = 7
+delay_builtin_form_t = 8
+delay_apply_t = 9
+comment_t = 11
+hole_t = 10
+local function comment_comment(x)
+    return x[1 + 1]
+end
+____exports.new_comment = new_comment
+____exports.comment_p = comment_p
+____exports.comment_comment = comment_comment
+____exports.comment_x = comment_x
+____exports.un_comment_all = un_comment_all
+local function can_new_symbol_unicodechar_p(x)
+    return symbols_set_neg()[x] ~= nil
+end
+local function new_symbol_unicodechar(x)
+    return {
+        symbol_t,
+        x,
+    }
+end
+local function can_new_symbol_p(x)
+    return symbols_set()[x] ~= nil
+end
+local function new_symbol(x)
+    return new_symbol_unicodechar(symbols_set()[x])
+end
+____exports.can_new_symbol_p = can_new_symbol_p
+____exports.New_Symbol = New_Symbol
+____exports.new_symbol = new_symbol
+____exports.symbol_p = symbol_p
+____exports.un_symbol = un_symbol
+____exports.New_Construction = New_Construction
+____exports.new_construction = new_construction
+____exports.construction_p = construction_p
+____exports.construction_head = construction_head
+____exports.construction_tail = construction_tail
+null_v = {null_t}
+____exports.Null_V = Null_V
+____exports.null_v = null_v
+____exports.null_p = null_p
+____exports.New_Data = New_Data
+____exports.new_data = new_data
+____exports.data_p = data_p
+____exports.data_name = data_name
+____exports.data_list = data_list
+____exports.New_Error = New_Error
+____exports.new_error = new_error
+____exports.error_p = error_p
+____exports.error_name = error_name
+____exports.error_list = error_list
+____exports.just_p = just_p
+____exports.evaluate = evaluate
+____exports.apply = apply
+local function force_uncomment_all_rec(raw)
+    local x = force_uncomment_all(raw)
+    local function conslike(xx)
+        xx[1 + 1] = force_all_rec(xx[1 + 1])
+        xx[2 + 1] = force_all_rec(xx[2 + 1])
+        if comment_p(xx[1 + 1]) or comment_p(xx[2 + 1]) then
+            local ret = lang_copy_do(xx)
+            local a = xx[1 + 1]
+            local d = xx[2 + 1]
+            local a1 = force_uncomment_all_rec(a)
+            local d1 = force_uncomment_all_rec(d)
+            ret[1 + 1] = a1
+            ret[2 + 1] = d1
+            return ret
+        else
+            return xx
+        end
+    end
+    if data_p(x) then
+        return conslike(x)
+    elseif error_p(x) then
+        return conslike(x)
+    elseif construction_p(x) then
+        return conslike(x)
+    end
+    return x
+end
+____exports.force_all_rec = force_all_rec
+____exports.force_uncomment_all_rec = force_uncomment_all_rec
+system_symbol = new_symbol("太始初核")
+local name_symbol = new_symbol("符名")
+function_symbol = new_symbol("化滅")
+form_symbol = new_symbol("式形")
+local equal_symbol = new_symbol("等同")
+local evaluate_sym = new_symbol("解算")
+local theThing_symbol = new_symbol("特定其物")
+local something_symbol = new_symbol("省略一物")
+mapping_symbol = new_symbol("映表")
+local if_symbol = new_symbol("如若")
+local typeAnnotation_symbol = new_symbol("一類何物")
+local isOrNot_symbol = new_symbol("是非")
+local sub_symbol = new_symbol("其子")
+local true_symbol = new_symbol("爻陽")
+local false_symbol = new_symbol("爻陰")
+local quote_symbol = new_symbol("引用")
+local apply_symbol = new_symbol("應用")
+local null_symbol = new_symbol("間空")
+local construction_symbol = new_symbol("連頸")
+local data_symbol = new_symbol("構物")
+local error_symbol = new_symbol("謬誤")
+local symbol_symbol = new_symbol("詞素")
+local list_symbol = new_symbol("列序")
+local head_symbol = new_symbol("首始")
+local tail_symbol = new_symbol("尾末")
+local thing_symbol = new_symbol("之物")
+local theWorldStopped_symbol = new_symbol("宇宙亡矣")
+local effect_symbol = new_symbol("效應")
+local comment_symbol = new_symbol("註疏")
+the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
+local function systemName_make(x)
+    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
+end
+local function make_builtin_f_new_sym_f(x_sym)
+    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
+end
+local function make_builtin_f_get_sym_f(t_sym, x_sym)
+    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
+end
+local function make_builtin_f_p_sym_f(t_sym)
+    return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
+end
+local new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
+data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
+data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol)
+data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol)
+local new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol)
+error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol)
+error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol)
+error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol)
+local new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol)
+construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol)
+construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol)
+construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol)
+symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol)
+null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
+equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
+apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(function_symbol, something_symbol), something_symbol), apply_symbol))
+evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
+local list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
+if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
+quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
+lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
+function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
+form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
+form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
+local comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol))
+comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol))
+local false_v = new_data(false_symbol, new_list())
+local true_v = new_data(true_symbol, new_list())
+local function list_to_jsArray(xs, k_done, k_tail)
+    local ret = {}
+    while construction_p(xs) do
+        __TS__ArrayPush(ret, construction_head(xs))
+        xs = construction_tail(xs)
+    end
+    if null_p(xs) then
+        return k_done(ret)
+    end
+    return k_tail(ret, xs)
+end
+local function maybe_list_to_jsArray(xs)
+    return list_to_jsArray(xs, function(x) return x end, function(_1, _2) return false end)
+end
+____exports.jsArray_to_list = jsArray_to_list
+____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
+____exports.new_list = new_list
+local function un_just_comment_all(x)
+    while just_p(x) or comment_p(x) do
+        x = un_just_all(un_comment_all(x))
+    end
+    return x
+end
+____exports.un_just = un_just_all
+____exports.un_just_comment_all = un_just_comment_all
+____exports.delay_p = any_delay_p
+____exports.delay_just_p = any_delay_just_p
+local function any_delay2delay_evaluate(x)
+    if delay_evaluate_p(x) then
+        return x
+    elseif delay_builtin_form_p(x) then
+        error("WIP")
+    elseif delay_builtin_func_p(x) then
+        error("WIP")
+    elseif delay_apply_p(x) then
+        error("WIP")
+    end
+    return LANG_ERROR()
+end
+local function any_delay_env(x)
+    return delay_evaluate_env(any_delay2delay_evaluate(x))
+end
+local function any_delay_x(x)
+    return delay_evaluate_x(any_delay2delay_evaluate(x))
+end
+____exports.delay_env = any_delay_env
+____exports.delay_x = any_delay_x
+local function force_all_export(raw)
+    return force_all(raw)
+end
+local function force_uncomment1(raw)
+    if comment_p(raw) then
+        return comment_x(raw)
+    else
+        return force1(raw)
+    end
+end
+____exports.force_all = force_all_export
+____exports.force1 = force1
+____exports.force_uncomment1 = force_uncomment1
+____exports.force_uncomment_all = force_uncomment_all
+env_null_v = {}
+local function val2env(x)
+    x = force_all(x)
+    if not data_p(x) then
+        return false
+    end
+    local s = force_all(data_name(x))
+    if not symbol_p(s) then
+        return false
+    end
+    if not symbol_equal_p(s, mapping_symbol) then
+        return false
+    end
+    s = force_all(data_list(x))
+    if not construction_p(s) then
+        return false
+    end
+    if not null_p(force_all(construction_tail(s))) then
+        return false
+    end
+    local ret = {}
+    local xs = force_all(construction_head(s))
+    while not null_p(xs) do
+        if not construction_p(xs) then
+            return false
+        end
+        local x = force_all(construction_head(xs))
+        xs = force_all(construction_tail(xs))
+        if not construction_p(x) then
+            return false
+        end
+        local k = construction_head(x)
+        x = force_all(construction_tail(x))
+        if not construction_p(x) then
+            return false
+        end
+        local v = construction_head(x)
+        if not null_p(force_all(construction_tail(x))) then
+            return false
+        end
+        local not_breaked = true
+        do
+            local i = 0
+            while i < #ret do
+                if jsbool_equal_p(ret[(i + 0) + 1], k) then
+                    ret[(i + 1) + 1] = v
+                    not_breaked = false
+                    break
+                end
+                i = i + 2
+            end
+        end
+        if not_breaked then
+            __TS__ArrayPush(ret, k)
+            __TS__ArrayPush(ret, v)
+        end
+    end
+    return ret
+end
+____exports.env_null_v = env_null_v
+____exports.env_set = env_set
+____exports.env_get = env_get
+____exports.env2val = env2val
+____exports.env_foreach = env_foreach
+____exports.val2env = val2env
+local function make_builtin_p_func(p_sym, p_jsfunc)
+    return {
+        p_sym,
+        1,
+        function(x, error_v)
+            x = force1(x)
+            if any_delay_just_p(x) then
+                return builtin_func_apply(p_sym, {x})
+            end
+            if p_jsfunc(x) then
+                return true_v
+            end
+            return false_v
+        end,
+    }
+end
+local function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc)
+    return {
+        f_sym,
+        1,
+        function(x, error_v)
+            x = force1(x)
+            if any_delay_just_p(x) then
+                return builtin_func_apply(f_sym, {x})
+            end
+            if p_jsfunc(x) then
+                return f_jsfunc(x)
+            end
+            return error_v
+        end,
+    }
+end
+real_builtin_func_apply_s = {
+    make_builtin_p_func(data_p_function_builtin_systemName, data_p),
+    {
+        new_data_function_builtin_systemName,
+        2,
+        new_data,
+    },
+    make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
+    make_builtin_get_func(data_list_function_builtin_systemName, data_p, data_list),
+    make_builtin_p_func(error_p_function_builtin_systemName, error_p),
+    {
+        new_error_function_builtin_systemName,
+        2,
+        new_error,
+    },
+    make_builtin_get_func(error_name_function_builtin_systemName, error_p, error_name),
+    make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
+    make_builtin_p_func(null_p_function_builtin_systemName, null_p),
+    {
+        new_construction_function_builtin_systemName,
+        2,
+        new_construction,
+    },
+    make_builtin_p_func(construction_p_function_builtin_systemName, construction_p),
+    make_builtin_get_func(construction_head_function_builtin_systemName, construction_p, construction_head),
+    make_builtin_get_func(construction_tail_function_builtin_systemName, construction_p, construction_tail),
+    {
+        equal_p_function_builtin_systemName,
+        2,
+        function(x, y, error_v)
+            if x == y then
+                return true_v
+            end
+            x = force1(x)
+            y = force1(y)
+            if any_delay_just_p(x) or any_delay_just_p(y) then
+                return builtin_func_apply(equal_p_function_builtin_systemName, {
+                    x,
+                    y,
+                })
+            end
+            if x == y then
+                return true_v
+            end
+            local function H_if(b, xx, yy)
+                return builtin_func_apply(if_function_builtin_systemName, {
+                    b,
+                    xx,
+                    yy,
+                })
+            end
+            local function H_and(xx, yy)
+                return H_if(xx, yy, false_v)
+            end
+            LANG_ASSERT(not any_delay_just_p(x))
+            local function end_2(xx, yy, f1, f2)
+                return H_and(builtin_func_apply(equal_p_function_builtin_systemName, {
+                    f1(xx),
+                    f1(yy),
+                }), builtin_func_apply(equal_p_function_builtin_systemName, {
+                    f2(xx),
+                    f2(yy),
+                }))
+            end
+            if null_p(x) then
+                if not null_p(x) then
+                    return false_v
+                end
+                return true_v
+            elseif symbol_p(x) then
+                if not symbol_p(y) then
+                    return false_v
+                end
+                if symbol_equal_p(x, y) then
+                    return true_v
+                else
+                    return false_v
+                end
+            elseif data_p(x) then
+                if not data_p(y) then
+                    return false_v
+                end
+                return end_2(x, y, data_name, data_list)
+            elseif construction_p(x) then
+                if not construction_p(y) then
+                    return false_v
+                end
+                return end_2(x, y, construction_head, construction_tail)
+            elseif error_p(x) then
+                if not error_p(y) then
+                    return false_v
+                end
+                return end_2(x, y, error_name, error_list)
+            end
+            return LANG_ERROR()
+        end,
+    },
+    {
+        apply_function_builtin_systemName,
+        2,
+        function(f, xs, error_v)
+            local jslist = {}
+            local iter = force_all(xs)
+            while construction_p(iter) do
+                __TS__ArrayPush(jslist, construction_head(iter))
+                iter = force_all(construction_tail(iter))
+            end
+            if not null_p(iter) then
+                return error_v
+            end
+            return apply(f, jslist)
+        end,
+    },
+    {
+        evaluate_function_builtin_systemName,
+        2,
+        function(env, x, error_v)
+            local maybeenv = val2env(env)
+            if maybeenv == false then
+                return error_v
+            end
+            return evaluate(maybeenv, x)
+        end,
+    },
+    make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
+    {
+        list_chooseOne_function_builtin_systemName,
+        1,
+        function(xs, error_v)
+            xs = force1(xs)
+            if any_delay_just_p(xs) then
+                return builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs})
+            end
+            if not construction_p(xs) then
+                return error_v
+            end
+            return construction_head(xs)
+        end,
+    },
+    {
+        if_function_builtin_systemName,
+        3,
+        function(b, x, y, error_v)
+            b = force1(b)
+            if any_delay_just_p(b) then
+                return builtin_func_apply(if_function_builtin_systemName, {
+                    b,
+                    x,
+                    y,
+                })
+            end
+            if not data_p(b) then
+                return error_v
+            end
+            local nam = force_all(data_name(b))
+            if not symbol_p(nam) then
+                return error_v
+            end
+            if symbol_equal_p(nam, true_symbol) then
+                return x
+            end
+            if symbol_equal_p(nam, false_symbol) then
+                return y
+            end
+            return error_v
+        end,
+    },
+    {
+        comment_function_builtin_systemName,
+        2,
+        new_comment,
+    },
+}
+____exports.equal_p = jsbool_equal_p
+local function jsbool_no_force_equal_p(x, y)
     if x == y then
         return true
     end
@@ -990,46 +1648,12 @@ function jsbool_no_force_equal_p(x, y)
     end
     return LANG_ERROR()
 end
-function simple_print(x)
-    x = un_just_all(x)
-    local temp = ""
-    local prefix = ""
-    if null_p(x) then
-        return "()"
-    elseif construction_p(x) then
-        temp = "("
-        prefix = ""
-        while construction_p(x) do
-            temp = tostring(temp) .. tostring(prefix) .. tostring(simple_print(construction_head(x)))
-            prefix = " "
-            x = un_just_all(construction_tail(x))
-        end
-        if null_p(x) then
-            temp = tostring(temp) .. ")"
-        else
-            temp = tostring(temp) .. " . " .. tostring(simple_print(x)) .. ")"
-        end
-        return temp
-    elseif data_p(x) then
-        return "#" .. tostring(simple_print(new_construction(data_name(x), data_list(x))))
-    elseif error_p(x) then
-        return "!" .. tostring(simple_print(new_construction(error_name(x), error_list(x))))
-    elseif symbol_p(x) then
-        return un_symbol(x)
-    elseif delay_evaluate_p(x) then
-        return "$(" .. tostring(simple_print(env2val(delay_evaluate_env(x)))) .. " " .. tostring(simple_print(delay_evaluate_x(x))) .. ")"
-    elseif delay_builtin_func_p(x) then
-        return "%(" .. tostring(simple_print(delay_builtin_func_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"
-    elseif delay_builtin_form_p(x) then
-        return "@(" .. tostring(simple_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(simple_print(delay_builtin_form_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
-    elseif delay_apply_p(x) then
-        return "^(" .. tostring(simple_print(delay_apply_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
-    elseif comment_p(x) then
-        return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
-    end
-    return LANG_ERROR()
+local function simple_print_force_all_rec(x)
+    return simple_print(force_all_rec(x))
 end
-function complex_parse(x)
+____exports.simple_print = simple_print
+____exports.simple_print_force_all_rec = simple_print_force_all_rec
+local function complex_parse(x)
     local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
     function eof()
         return #state_const == state
@@ -1470,7 +2094,8 @@ function complex_parse(x)
     readcomment = make_read_two(";", function(comment, x) return new_comment(comment, x) end)
     return val()
 end
-function complex_print(val)
+____exports.complex_parse = complex_parse
+local function complex_print(val)
     local function print_sys_name(x, is_inner_bool)
         if symbol_p(x) then
             return un_symbol(x)
@@ -1571,6 +2196,8 @@ function complex_print(val)
         return "!" .. tostring(complex_print(new_construction(error_name(x), error_list(x))))
     elseif symbol_p(x) then
         return un_symbol(x)
+    elseif comment_p(x) then
+        return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
     elseif delay_evaluate_p(x) then
         return "$(" .. tostring(complex_print(env2val(delay_evaluate_env(x)))) .. " " .. tostring(complex_print(delay_evaluate_x(x))) .. ")"
     elseif delay_builtin_func_p(x) then
@@ -1579,636 +2206,9 @@ function complex_print(val)
         return "@(" .. tostring(complex_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(complex_print(delay_builtin_form_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
     elseif delay_apply_p(x) then
         return "^(" .. tostring(complex_print(delay_apply_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
-    elseif comment_p(x) then
-        return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
     end
     return LANG_ERROR()
 end
-function symbols_set_init()
-    return {
-        ["0"] = "0",
-        ["1"] = "1",
-        ["2"] = "2",
-        ["3"] = "3",
-        ["4"] = "4",
-        ["5"] = "5",
-        ["6"] = "6",
-        ["7"] = "7",
-        ["8"] = "8",
-        ["9"] = "9",
-        A = "A",
-        B = "B",
-        C = "C",
-        D = "D",
-        E = "E",
-        F = "F",
-        G = "G",
-        H = "H",
-        I = "I",
-        J = "J",
-        K = "K",
-        L = "L",
-        M = "M",
-        N = "N",
-        O = "O",
-        P = "P",
-        Q = "Q",
-        R = "R",
-        S = "S",
-        T = "T",
-        U = "U",
-        V = "V",
-        W = "W",
-        X = "X",
-        Y = "Y",
-        Z = "Z",
-        a = "a",
-        b = "b",
-        c = "c",
-        d = "d",
-        e = "e",
-        f = "f",
-        g = "g",
-        h = "h",
-        i = "i",
-        j = "j",
-        k = "k",
-        l = "l",
-        m = "m",
-        n = "n",
-        o = "o",
-        p = "p",
-        q = "q",
-        r = "r",
-        s = "s",
-        t = "t",
-        u = "u",
-        v = "v",
-        w = "w",
-        x = "x",
-        y = "y",
-        z = "z",
-        ["一類何物"] = "㝉",
-        ["之物"] = "𫙦",
-        ["其子"] = "𦮪",
-        ["出入改滅"] = "𢒟",
-        ["列序"] = "𠜺",
-        ["化滅"] = "𠏁",
-        ["參形"] = "𠫰",
-        ["吾自"] = "𦣹",
-        ["太始初核"] = "𣝗",
-        ["如若"] = "𦱡",
-        ["宇宙亡矣"] = "𨹹",
-        ["尾末"] = "𡲵",
-        ["序丁"] = "𠆤",
-        ["序丙"] = "𠇮",
-        ["序乙"] = "㐈",
-        ["序甲"] = "𠇚",
-        ["式形"] = "佱",
-        ["引用"] = "㧈",
-        ["應用"] = "𤰆",
-        ["效應"] = "効",
-        ["映表"] = "𤅔",
-        ["是非"] = "欤",
-        ["構物"] = "𡒫",
-        ["為符名連"] = "‐",
-        ["爻陰"] = "侌",
-        ["爻陽"] = "𣆄",
-        ["特定其物"] = "亓",
-        ["省略一物"] = "畧",
-        ["符名"] = "謼",
-        ["等同"] = "弌",
-        ["解算"] = "筭",
-        ["註疏"] = "疎",
-        ["詞素"] = "𧥝",
-        ["謬誤"] = "䥘",
-        ["連頸"] = "丩",
-        ["間空"] = "𣣓",
-        ["首始"] = "𩠐",
-    }
-end
-function symbols_set_neg_init()
-    return {
-        ["0"] = "0",
-        ["1"] = "1",
-        ["2"] = "2",
-        ["3"] = "3",
-        ["4"] = "4",
-        ["5"] = "5",
-        ["6"] = "6",
-        ["7"] = "7",
-        ["8"] = "8",
-        ["9"] = "9",
-        A = "A",
-        B = "B",
-        C = "C",
-        D = "D",
-        E = "E",
-        F = "F",
-        G = "G",
-        H = "H",
-        I = "I",
-        J = "J",
-        K = "K",
-        L = "L",
-        M = "M",
-        N = "N",
-        O = "O",
-        P = "P",
-        Q = "Q",
-        R = "R",
-        S = "S",
-        T = "T",
-        U = "U",
-        V = "V",
-        W = "W",
-        X = "X",
-        Y = "Y",
-        Z = "Z",
-        a = "a",
-        b = "b",
-        c = "c",
-        d = "d",
-        e = "e",
-        f = "f",
-        g = "g",
-        h = "h",
-        i = "i",
-        j = "j",
-        k = "k",
-        l = "l",
-        m = "m",
-        n = "n",
-        o = "o",
-        p = "p",
-        q = "q",
-        r = "r",
-        s = "s",
-        t = "t",
-        u = "u",
-        v = "v",
-        w = "w",
-        x = "x",
-        y = "y",
-        z = "z",
-        ["㝉"] = "一類何物",
-        ["𫙦"] = "之物",
-        ["𦮪"] = "其子",
-        ["𢒟"] = "出入改滅",
-        ["𠜺"] = "列序",
-        ["𠏁"] = "化滅",
-        ["𠫰"] = "參形",
-        ["𦣹"] = "吾自",
-        ["𣝗"] = "太始初核",
-        ["𦱡"] = "如若",
-        ["𨹹"] = "宇宙亡矣",
-        ["𡲵"] = "尾末",
-        ["𠆤"] = "序丁",
-        ["𠇮"] = "序丙",
-        ["㐈"] = "序乙",
-        ["𠇚"] = "序甲",
-        ["佱"] = "式形",
-        ["㧈"] = "引用",
-        ["𤰆"] = "應用",
-        ["効"] = "效應",
-        ["𤅔"] = "映表",
-        ["欤"] = "是非",
-        ["𡒫"] = "構物",
-        ["‐"] = "為符名連",
-        ["侌"] = "爻陰",
-        ["𣆄"] = "爻陽",
-        ["亓"] = "特定其物",
-        ["畧"] = "省略一物",
-        ["謼"] = "符名",
-        ["弌"] = "等同",
-        ["筭"] = "解算",
-        ["疎"] = "註疏",
-        ["𧥝"] = "詞素",
-        ["䥘"] = "謬誤",
-        ["丩"] = "連頸",
-        ["𣣓"] = "間空",
-        ["𩠐"] = "首始",
-    }
-end
-symbols_set = function()
-    local r = symbols_set_init()
-    symbols_set = function() return r end
-    return r
-end
-symbols_set_neg = function()
-    local r = symbols_set_neg_init()
-    symbols_set_neg = function() return r end
-    return r
-end
-symbol_t = 0
-construction_t = 1
-null_t = 2
-data_t = 3
-error_t = 4
-just_t = 5
-delay_evaluate_t = 6
-delay_builtin_func_t = 7
-delay_builtin_form_t = 8
-delay_apply_t = 9
-comment_t = 11
-hole_t = 10
-____exports.new_comment = new_comment
-____exports.comment_p = comment_p
-____exports.comment_comment = comment_comment
-____exports.comment_x = comment_x
-____exports.un_comment_all = un_comment_all
-local function can_new_symbol_unicodechar_p(x)
-    return symbols_set_neg()[x] ~= nil
-end
-____exports.can_new_symbol_p = can_new_symbol_p
-____exports.New_Symbol = New_Symbol
-____exports.new_symbol = new_symbol
-____exports.symbol_p = symbol_p
-____exports.un_symbol = un_symbol
-____exports.New_Construction = New_Construction
-____exports.new_construction = new_construction
-____exports.construction_p = construction_p
-____exports.construction_head = construction_head
-____exports.construction_tail = construction_tail
-null_v = {null_t}
-____exports.Null_V = Null_V
-____exports.null_v = null_v
-____exports.null_p = null_p
-____exports.New_Data = New_Data
-____exports.new_data = new_data
-____exports.data_p = data_p
-____exports.data_name = data_name
-____exports.data_list = data_list
-____exports.New_Error = New_Error
-____exports.new_error = new_error
-____exports.error_p = error_p
-____exports.error_name = error_name
-____exports.error_list = error_list
-____exports.just_p = just_p
-____exports.evaluate = evaluate
-____exports.apply = apply
-local function force_uncomment_all_rec(raw)
-    local x = force_uncomment_all(raw)
-    local function conslike(xx)
-        xx[1 + 1] = force_all_rec(xx[1 + 1])
-        xx[2 + 1] = force_all_rec(xx[2 + 1])
-        if comment_p(xx[1 + 1]) or comment_p(xx[2 + 1]) then
-            local ret = lang_copy_do(xx)
-            local a = xx[1 + 1]
-            local d = xx[2 + 1]
-            local a1 = force_uncomment_all_rec(a)
-            local d1 = force_uncomment_all_rec(d)
-            ret[1 + 1] = a1
-            ret[2 + 1] = d1
-            return ret
-        else
-            return xx
-        end
-    end
-    if data_p(x) then
-        return conslike(x)
-    elseif error_p(x) then
-        return conslike(x)
-    elseif construction_p(x) then
-        return conslike(x)
-    end
-    return x
-end
-____exports.force_all_rec = force_all_rec
-____exports.force_uncomment_all_rec = force_uncomment_all_rec
-system_symbol = new_symbol("太始初核")
-name_symbol = new_symbol("符名")
-function_symbol = new_symbol("化滅")
-form_symbol = new_symbol("式形")
-local equal_symbol = new_symbol("等同")
-local evaluate_sym = new_symbol("解算")
-theThing_symbol = new_symbol("特定其物")
-something_symbol = new_symbol("省略一物")
-mapping_symbol = new_symbol("映表")
-local if_symbol = new_symbol("如若")
-typeAnnotation_symbol = new_symbol("一類何物")
-isOrNot_symbol = new_symbol("是非")
-sub_symbol = new_symbol("其子")
-local true_symbol = new_symbol("爻陽")
-local false_symbol = new_symbol("爻陰")
-local quote_symbol = new_symbol("引用")
-local apply_symbol = new_symbol("應用")
-local null_symbol = new_symbol("間空")
-local construction_symbol = new_symbol("連頸")
-local data_symbol = new_symbol("構物")
-local error_symbol = new_symbol("謬誤")
-local symbol_symbol = new_symbol("詞素")
-local list_symbol = new_symbol("列序")
-local head_symbol = new_symbol("首始")
-local tail_symbol = new_symbol("尾末")
-local thing_symbol = new_symbol("之物")
-local theWorldStopped_symbol = new_symbol("宇宙亡矣")
-local effect_symbol = new_symbol("效應")
-local comment_symbol = new_symbol("註疏")
-the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
-local function make_builtin_f_new_sym_f(x_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
-end
-local function make_builtin_f_get_sym_f(t_sym, x_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
-end
-local function make_builtin_f_p_sym_f(t_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
-end
-local new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
-data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
-data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol)
-data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol)
-local new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol)
-error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol)
-error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol)
-error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol)
-local new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol)
-construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol)
-construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol)
-construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol)
-symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol)
-null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
-equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
-apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(function_symbol, something_symbol), something_symbol), apply_symbol))
-evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
-local list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
-if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
-quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
-lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
-function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
-form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
-form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
-local comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol))
-comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol))
-local false_v = new_data(false_symbol, new_list())
-local true_v = new_data(true_symbol, new_list())
-____exports.jsArray_to_list = jsArray_to_list
-____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
-____exports.new_list = new_list
-local function un_just_comment_all(x)
-    while just_p(x) or comment_p(x) do
-        x = un_just_all(un_comment_all(x))
-    end
-    return x
-end
-____exports.un_just = un_just_all
-____exports.un_just_comment_all = un_just_comment_all
-____exports.delay_p = any_delay_p
-____exports.delay_just_p = any_delay_just_p
-local function any_delay2delay_evaluate(x)
-    if delay_evaluate_p(x) then
-        return x
-    elseif delay_builtin_form_p(x) then
-        error("WIP")
-    elseif delay_builtin_func_p(x) then
-        error("WIP")
-    elseif delay_apply_p(x) then
-        error("WIP")
-    end
-    return LANG_ERROR()
-end
-local function any_delay_env(x)
-    return delay_evaluate_env(any_delay2delay_evaluate(x))
-end
-local function any_delay_x(x)
-    return delay_evaluate_x(any_delay2delay_evaluate(x))
-end
-____exports.delay_env = any_delay_env
-____exports.delay_x = any_delay_x
-local function force_all_export(raw)
-    return force_all(raw)
-end
-local function force_uncomment1(raw)
-    if comment_p(raw) then
-        return comment_x(raw)
-    else
-        return force1(raw)
-    end
-end
-____exports.force_all = force_all_export
-____exports.force1 = force1
-____exports.force_uncomment1 = force_uncomment1
-____exports.force_uncomment_all = force_uncomment_all
-env_null_v = {}
-____exports.env_null_v = env_null_v
-____exports.env_set = env_set
-____exports.env_get = env_get
-____exports.env2val = env2val
-____exports.env_foreach = env_foreach
-____exports.val2env = val2env
-local function make_builtin_p_func(p_sym, p_jsfunc)
-    return {
-        p_sym,
-        1,
-        function(x, error_v)
-            x = force1(x)
-            if any_delay_just_p(x) then
-                return builtin_func_apply(p_sym, {x})
-            end
-            if p_jsfunc(x) then
-                return true_v
-            end
-            return false_v
-        end,
-    }
-end
-local function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc)
-    return {
-        f_sym,
-        1,
-        function(x, error_v)
-            x = force1(x)
-            if any_delay_just_p(x) then
-                return builtin_func_apply(f_sym, {x})
-            end
-            if p_jsfunc(x) then
-                return f_jsfunc(x)
-            end
-            return error_v
-        end,
-    }
-end
-real_builtin_func_apply_s = {
-    make_builtin_p_func(data_p_function_builtin_systemName, data_p),
-    {
-        new_data_function_builtin_systemName,
-        2,
-        new_data,
-    },
-    make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
-    make_builtin_get_func(data_list_function_builtin_systemName, data_p, data_list),
-    make_builtin_p_func(error_p_function_builtin_systemName, error_p),
-    {
-        new_error_function_builtin_systemName,
-        2,
-        new_error,
-    },
-    make_builtin_get_func(error_name_function_builtin_systemName, error_p, error_name),
-    make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
-    make_builtin_p_func(null_p_function_builtin_systemName, null_p),
-    {
-        new_construction_function_builtin_systemName,
-        2,
-        new_construction,
-    },
-    make_builtin_p_func(construction_p_function_builtin_systemName, construction_p),
-    make_builtin_get_func(construction_head_function_builtin_systemName, construction_p, construction_head),
-    make_builtin_get_func(construction_tail_function_builtin_systemName, construction_p, construction_tail),
-    {
-        equal_p_function_builtin_systemName,
-        2,
-        function(x, y, error_v)
-            if x == y then
-                return true_v
-            end
-            x = force1(x)
-            y = force1(y)
-            if any_delay_just_p(x) or any_delay_just_p(y) then
-                return builtin_func_apply(equal_p_function_builtin_systemName, {
-                    x,
-                    y,
-                })
-            end
-            if x == y then
-                return true_v
-            end
-            local function H_if(b, xx, yy)
-                return builtin_func_apply(if_function_builtin_systemName, {
-                    b,
-                    xx,
-                    yy,
-                })
-            end
-            local function H_and(xx, yy)
-                return H_if(xx, yy, false_v)
-            end
-            LANG_ASSERT(not any_delay_just_p(x))
-            local function end_2(xx, yy, f1, f2)
-                return H_and(builtin_func_apply(equal_p_function_builtin_systemName, {
-                    f1(xx),
-                    f1(yy),
-                }), builtin_func_apply(equal_p_function_builtin_systemName, {
-                    f2(xx),
-                    f2(yy),
-                }))
-            end
-            if null_p(x) then
-                if not null_p(x) then
-                    return false_v
-                end
-                return true_v
-            elseif symbol_p(x) then
-                if not symbol_p(y) then
-                    return false_v
-                end
-                if symbol_equal_p(x, y) then
-                    return true_v
-                else
-                    return false_v
-                end
-            elseif data_p(x) then
-                if not data_p(y) then
-                    return false_v
-                end
-                return end_2(x, y, data_name, data_list)
-            elseif construction_p(x) then
-                if not construction_p(y) then
-                    return false_v
-                end
-                return end_2(x, y, construction_head, construction_tail)
-            elseif error_p(x) then
-                if not error_p(y) then
-                    return false_v
-                end
-                return end_2(x, y, error_name, error_list)
-            end
-            return LANG_ERROR()
-        end,
-    },
-    {
-        apply_function_builtin_systemName,
-        2,
-        function(f, xs, error_v)
-            local jslist = {}
-            local iter = force_all(xs)
-            while construction_p(iter) do
-                __TS__ArrayPush(jslist, construction_head(iter))
-                iter = force_all(construction_tail(iter))
-            end
-            if not null_p(iter) then
-                return error_v
-            end
-            return apply(f, jslist)
-        end,
-    },
-    {
-        evaluate_function_builtin_systemName,
-        2,
-        function(env, x, error_v)
-            local maybeenv = val2env(env)
-            if maybeenv == false then
-                return error_v
-            end
-            return evaluate(maybeenv, x)
-        end,
-    },
-    make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
-    {
-        list_chooseOne_function_builtin_systemName,
-        1,
-        function(xs, error_v)
-            xs = force1(xs)
-            if any_delay_just_p(xs) then
-                return builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs})
-            end
-            if not construction_p(xs) then
-                return error_v
-            end
-            return construction_head(xs)
-        end,
-    },
-    {
-        if_function_builtin_systemName,
-        3,
-        function(b, x, y, error_v)
-            b = force1(b)
-            if any_delay_just_p(b) then
-                return builtin_func_apply(if_function_builtin_systemName, {
-                    b,
-                    x,
-                    y,
-                })
-            end
-            if not data_p(b) then
-                return error_v
-            end
-            local nam = force_all(data_name(b))
-            if not symbol_p(nam) then
-                return error_v
-            end
-            if symbol_equal_p(nam, true_symbol) then
-                return x
-            end
-            if symbol_equal_p(nam, false_symbol) then
-                return y
-            end
-            return error_v
-        end,
-    },
-    {
-        comment_function_builtin_systemName,
-        2,
-        new_comment,
-    },
-}
-____exports.equal_p = jsbool_equal_p
-local function simple_print_force_all_rec(x)
-    return simple_print(force_all_rec(x))
-end
-____exports.simple_print = simple_print
-____exports.simple_print_force_all_rec = simple_print_force_all_rec
-____exports.complex_parse = complex_parse
 ____exports.complex_print = complex_print
 local function machinetext_parse(rawstr)
     local result = new_hole_do()

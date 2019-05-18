@@ -1,4 +1,4 @@
-all: ecmascript/lang.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c go/src
+all: ecmascript/lang.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.js
@@ -18,9 +18,6 @@ ecmascript6/lang.js: typescript/lang.ts typescript/.done.racket.code.generator
 
 java/src: lua/lang.lua java/real-src/lang/Lang.java java/real-src/lang/LangValue.java
 	racket Makefile.domake.rkt java/src
-
-go/src: lua/lang.lua
-	racket Makefile.domake.rkt go/src
 
 c/lua-5.1.5:
 	racket Makefile.domake.rkt c/lua-5.1.5
@@ -45,6 +42,9 @@ python3/lang.py: python2/lang.py
 
 python2/lang.py: ecmascript/lang.js ecmascript/exports.list
 	racket Makefile.domake.rkt python2/lang.py
+
+go/src: lua/lang.lua
+	racket Makefile.domake.rkt go/src
 
 typescript/.done.racket.code.generator: typescript/lang.ts
 	racket Makefile.premake.rkt

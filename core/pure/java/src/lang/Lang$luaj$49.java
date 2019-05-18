@@ -1,30 +1,25 @@
 package lang;
-public class Lang$luaj$49 extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$49 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
+    org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
-    final static org.luaj.vm2.LuaValue k2;
-    final static org.luaj.vm2.LuaValue k3;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(1);
-        k1 = org.luaj.vm2.LuaValue.valueOf(2);
-        k2 = org.luaj.vm2.LuaValue.valueOf(3);
-        k3 = org.luaj.vm2.LuaValue.valueOf(4);
+        k1 = org.luaj.vm2.LuaValue.valueOf(0);
     }
     
     public Lang$luaj$49() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        if (a.eq_b(a0)) {
-            return org.luaj.vm2.LuaValue.NONE;
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.LuaValue a0 = this.u0[0];
+        org.luaj.vm2.LuaValue a1 = a.len().sub(k0);
+        while(k1.lteq_b(a1)) {
+            a0 = this.u1.call(a.get(a1.add(k0)), a0);
+            a1 = a1.sub(k0);
         }
-        org.luaj.vm2.LuaValue a1 = this.u0[0];
-        a.set(k0, a1);
-        a.set(k1, a0);
-        a.set(k2, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE);
-        a.set(k3, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE);
-        return org.luaj.vm2.LuaValue.NONE;
+        return a0;
     }
 }

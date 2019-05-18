@@ -1,14 +1,15 @@
 package lang;
 public class Lang$luaj$8 extends org.luaj.vm2.lib.OneArgFunction {
-    org.luaj.vm2.LuaValue[] u0;
+    final static org.luaj.vm2.LuaValue k0;
+    
+    static {
+        k0 = org.luaj.vm2.LuaValue.valueOf(2);
+    }
     
     public Lang$luaj$8() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        org.luaj.vm2.LuaTable a0 = org.luaj.vm2.LuaValue.tableOf(2, 0);
-        ((org.luaj.vm2.LuaValue)a0).rawset(1, this.u0[0]);
-        ((org.luaj.vm2.LuaValue)a0).rawset(2, a);
-        return a0;
+        return a.get(k0);
     }
 }
