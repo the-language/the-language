@@ -32,6 +32,7 @@ $GLOBALS["__TS__ArrayPush"] = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
 $____exports = [];
 $LANG_ERROR = NULL;
 $LANG_ASSERT = NULL;
+$symbols_set = NULL;
 $symbols_set_neg = NULL;
 $symbol_t = NULL;
 $construction_t = NULL;
@@ -47,10 +48,14 @@ $comment_t = NULL;
 $hole_t = NULL;
 $new_comment = NULL;
 $comment_p = NULL;
+$comment_comment = NULL;
 $comment_x = NULL;
 $un_comment_all = NULL;
+$new_symbol_unicodechar = NULL;
 $symbol_p = NULL;
 $un_symbol_unicodechar = NULL;
+$can_new_symbol_p = NULL;
+$new_symbol = NULL;
 $un_symbol = NULL;
 $new_construction = NULL;
 $construction_p = NULL;
@@ -92,10 +97,17 @@ $lang_set_do = NULL;
 $hole_set_do = NULL;
 $lang_copy_do = NULL;
 $system_symbol = NULL;
+$name_symbol = NULL;
 $function_symbol = NULL;
 $form_symbol = NULL;
+$theThing_symbol = NULL;
+$something_symbol = NULL;
 $mapping_symbol = NULL;
+$typeAnnotation_symbol = NULL;
+$isOrNot_symbol = NULL;
+$sub_symbol = NULL;
 $the_world_stopped_v = NULL;
+$systemName_make = NULL;
 $data_name_function_builtin_systemName = NULL;
 $data_list_function_builtin_systemName = NULL;
 $data_p_function_builtin_systemName = NULL;
@@ -119,6 +131,8 @@ $form_use_systemName = NULL;
 $comment_form_builtin_systemName = NULL;
 $symbol_equal_p = NULL;
 $jsArray_to_list = NULL;
+$list_to_jsArray = NULL;
+$maybe_list_to_jsArray = NULL;
 $new_list = NULL;
 $un_just_all = NULL;
 $any_delay_p = NULL;
@@ -132,6 +146,7 @@ $env_get = NULL;
 $must_env_get = NULL;
 $env2val = NULL;
 $env_foreach = NULL;
+$val2env = NULL;
 $real_evaluate = NULL;
 $name_p = NULL;
 $real_builtin_func_apply_s = NULL;
@@ -141,7 +156,10 @@ $real_builtin_form_apply = NULL;
 $make_quote = NULL;
 $new_lambda = NULL;
 $jsbool_equal_p = NULL;
+$jsbool_no_force_equal_p = NULL;
 $simple_print = NULL;
+$complex_parse = NULL;
+$complex_print = NULL;
 $symbols_set_init = NULL;
 $symbols_set_neg_init = NULL;
 $LANG_ERROR = (function () {
@@ -158,6 +176,9 @@ $new_comment = (function ($comment = NULL, $x = NULL) use (&$comment_t) {
 $comment_p = (function ($x = NULL) use (&$comment_t) {
     return ($x[(-1 + 1)] == $comment_t);
 });
+$comment_comment = (function ($x = NULL) {
+    return $x[(0 + 1)];
+});
 $comment_x = (function ($x = NULL) {
     return $x[(1 + 1)];
 });
@@ -167,11 +188,20 @@ $un_comment_all = (function ($x = NULL) use (&$comment_p, &$comment_x) {
     }
     return $x;
 });
+$new_symbol_unicodechar = (function ($x = NULL) use (&$symbol_t) {
+    return [$symbol_t, $x];
+});
 $symbol_p = (function ($x = NULL) use (&$symbol_t) {
     return ($x[(-1 + 1)] == $symbol_t);
 });
 $un_symbol_unicodechar = (function ($x = NULL) {
     return $x[(0 + 1)];
+});
+$can_new_symbol_p = (function ($x = NULL) use (&$symbols_set) {
+    return ($symbols_set()[(is_int($x) ? $x - 1 : $x)] != NULL);
+});
+$new_symbol = (function ($x = NULL) use (&$new_symbol_unicodechar, &$symbols_set) {
+    return $new_symbol_unicodechar($symbols_set()[(is_int($x) ? $x - 1 : $x)]);
 });
 $un_symbol = (function ($x = NULL) use (&$symbols_set_neg, &$un_symbol_unicodechar) {
     $lUaTmP_3_LuAtMp = $un_symbol_unicodechar($x);
@@ -320,6 +350,9 @@ $lang_copy_do = (function ($x = NULL) use (&$hole_set_do, &$new_hole_do) {
     $hole_set_do($ret, $x);
     return $ret;
 });
+$systemName_make = (function ($x = NULL) use (&$name_symbol, &$new_construction, &$new_data, &$null_v, &$system_symbol) {
+    return $new_data($name_symbol, $new_construction($system_symbol, $new_construction($x, $null_v)));
+});
 $symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symbol_unicodechar) {
     if (($x == $y)) {
         return true;
@@ -344,6 +377,24 @@ $jsArray_to_list = (function ($xs = NULL) use (&$new_construction, &$null_v) {
     }
 
     return $ret;
+});
+$list_to_jsArray = (function ($xs = NULL, $k_done = NULL, $k_tail = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$null_p) {
+    $ret = [];
+    while ($construction_p($xs)) {
+        $GLOBALS["__TS__ArrayPush"]($ret, $construction_head($xs));
+        $xs = $construction_tail($xs);
+    }
+    if ($null_p($xs)) {
+        return $k_done($ret);
+    }
+    return $k_tail($ret, $xs);
+});
+$maybe_list_to_jsArray = (function ($xs = NULL) use (&$list_to_jsArray) {
+    return $list_to_jsArray($xs, (function ($x = NULL) {
+        return $x;
+    }), (function ($_1 = NULL, $_2 = NULL) {
+        return false;
+    }));
 });
 $new_list = (function (...$lUa_Vararg_LuA) use (&$jsArray_to_list) {
     $xs = $lUa_Vararg_LuA;
@@ -633,6 +684,66 @@ $env_foreach = (function ($env = NULL, $f = NULL) {
         }
     }
 
+});
+$val2env = (function ($x = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_symbol, &$null_p, &$symbol_equal_p, &$symbol_p) {
+    $x = $force_all($x);
+    if (!($data_p($x))) {
+        return false;
+    }
+    $s = $force_all($data_name($x));
+    if (!($symbol_p($s))) {
+        return false;
+    }
+    if (!($symbol_equal_p($s, $mapping_symbol))) {
+        return false;
+    }
+    $s = $force_all($data_list($x));
+    if (!($construction_p($s))) {
+        return false;
+    }
+    if (!($null_p($force_all($construction_tail($s))))) {
+        return false;
+    }
+    $ret = [];
+    $xs = $force_all($construction_head($s));
+    while (!($null_p($xs))) {
+        if (!($construction_p($xs))) {
+            return false;
+        }
+        $x_1 = $force_all($construction_head($xs));
+        $xs = $force_all($construction_tail($xs));
+        if (!($construction_p($x_1))) {
+            return false;
+        }
+        $k = $construction_head($x_1);
+        $x_1 = $force_all($construction_tail($x_1));
+        if (!($construction_p($x_1))) {
+            return false;
+        }
+        $v = $construction_head($x_1);
+        if (!($null_p($force_all($construction_tail($x_1))))) {
+            return false;
+        }
+        $not_breaked = true;
+        
+        {
+            $i = 0;
+            while (($i < (is_string($ret) ? strlen($ret) : count($ret)))) {
+                if ($jsbool_equal_p($ret[(($i + 0) + 0)], $k)) {
+                    $ret[(($i + 1) + 0)] = $v;
+                    $not_breaked = false;
+                    break;
+                }
+                $i = ($i + 2);
+            }
+        }
+
+        if ($not_breaked) {
+            $GLOBALS["__TS__ArrayPush"]($ret, $k);
+            $GLOBALS["__TS__ArrayPush"]($ret, $v);
+        }
+    }
+    return $ret;
 });
 $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$any_delay_just_p, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
     $x = $force1($raw);
@@ -1007,779 +1118,6 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construc
     }
     return $LANG_ERROR();
 });
-$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$symbol_p, &$un_just_all, &$un_symbol) {
-    $x = $un_just_all($x);
-    $temp = "";
-    $prefix = "";
-    if ($null_p($x)) {
-        return "()";
-    } elseif ($construction_p($x)) {
-        $temp = "(";
-        $prefix = "";
-        while ($construction_p($x)) {
-            $temp = ((string)$temp .
-                ((string)$prefix . (string)$simple_print($construction_head($x))));
-            $prefix = " ";
-            $x = $un_just_all($construction_tail($x));
-        }
-        if ($null_p($x)) {
-            $temp = ((string)$temp . ")");
-        } else {
-            $temp = ((string)$temp . (" . " . ((string)$simple_print($x) . ")")));
-        }
-
-        return $temp;
-    } elseif ($data_p($x)) {
-        return ("#" . (string)$simple_print($new_construction($data_name($x), $data_list($x))));
-    } elseif ($error_p($x)) {
-        return ("!" . (string)$simple_print($new_construction($error_name($x), $error_list($x))));
-    } elseif ($symbol_p($x)) {
-        return $un_symbol($x);
-    } elseif ($delay_evaluate_p($x)) {
-        return ("\$(" .
-            ((string)$simple_print($env2val($delay_evaluate_env($x))) .
-            (" " . ((string)$simple_print($delay_evaluate_x($x)) . ")"))));
-    } elseif ($delay_builtin_func_p($x)) {
-        return ("%(" .
-            ((string)$simple_print($delay_builtin_func_f($x)) .
-            (" " .
-            ((string)$simple_print($jsArray_to_list($delay_builtin_func_xs($x))) . ")"))));
-    } elseif ($delay_builtin_form_p($x)) {
-        return ("@(" .
-            ((string)$simple_print($env2val($delay_builtin_form_env($x))) .
-            (" " .
-            ((string)$simple_print($delay_builtin_form_f($x)) .
-            (" " .
-            ((string)$simple_print($jsArray_to_list($delay_builtin_form_xs($x))) . ")"))))));
-    } elseif ($delay_apply_p($x)) {
-        return ("^(" .
-            ((string)$simple_print($delay_apply_f($x)) .
-            (" " . ((string)$simple_print($jsArray_to_list($delay_apply_xs($x))) . ")"))));
-    }
-    return $LANG_ERROR();
-});
-$symbols_set_init = (function () {
-    return [
-        "0" => "0",
-        "1" => "1",
-        "2" => "2",
-        "3" => "3",
-        "4" => "4",
-        "5" => "5",
-        "6" => "6",
-        "7" => "7",
-        "8" => "8",
-        "9" => "9",
-        "A" => "A",
-        "B" => "B",
-        "C" => "C",
-        "D" => "D",
-        "E" => "E",
-        "F" => "F",
-        "G" => "G",
-        "H" => "H",
-        "I" => "I",
-        "J" => "J",
-        "K" => "K",
-        "L" => "L",
-        "M" => "M",
-        "N" => "N",
-        "O" => "O",
-        "P" => "P",
-        "Q" => "Q",
-        "R" => "R",
-        "S" => "S",
-        "T" => "T",
-        "U" => "U",
-        "V" => "V",
-        "W" => "W",
-        "X" => "X",
-        "Y" => "Y",
-        "Z" => "Z",
-        "a" => "a",
-        "b" => "b",
-        "c" => "c",
-        "d" => "d",
-        "e" => "e",
-        "f" => "f",
-        "g" => "g",
-        "h" => "h",
-        "i" => "i",
-        "j" => "j",
-        "k" => "k",
-        "l" => "l",
-        "m" => "m",
-        "n" => "n",
-        "o" => "o",
-        "p" => "p",
-        "q" => "q",
-        "r" => "r",
-        "s" => "s",
-        "t" => "t",
-        "u" => "u",
-        "v" => "v",
-        "w" => "w",
-        "x" => "x",
-        "y" => "y",
-        "z" => "z",
-        "一類何物" => "㝉",
-        "之物" => "𫙦",
-        "其子" => "𦮪",
-        "出入改滅" => "𢒟",
-        "列序" => "𠜺",
-        "化滅" => "𠏁",
-        "參形" => "𠫰",
-        "吾自" => "𦣹",
-        "太始初核" => "𣝗",
-        "如若" => "𦱡",
-        "宇宙亡矣" => "𨹹",
-        "尾末" => "𡲵",
-        "序丁" => "𠆤",
-        "序丙" => "𠇮",
-        "序乙" => "㐈",
-        "序甲" => "𠇚",
-        "式形" => "佱",
-        "引用" => "㧈",
-        "應用" => "𤰆",
-        "效應" => "効",
-        "映表" => "𤅔",
-        "是非" => "欤",
-        "構物" => "𡒫",
-        "為符名連" => "‐",
-        "爻陰" => "侌",
-        "爻陽" => "𣆄",
-        "特定其物" => "亓",
-        "省略一物" => "畧",
-        "符名" => "謼",
-        "等同" => "弌",
-        "解算" => "筭",
-        "註疏" => "疎",
-        "詞素" => "𧥝",
-        "謬誤" => "䥘",
-        "連頸" => "丩",
-        "間空" => "𣣓",
-        "首始" => "𩠐"
-    ];
-});
-$symbols_set_neg_init = (function () {
-    return [
-        "0" => "0",
-        "1" => "1",
-        "2" => "2",
-        "3" => "3",
-        "4" => "4",
-        "5" => "5",
-        "6" => "6",
-        "7" => "7",
-        "8" => "8",
-        "9" => "9",
-        "A" => "A",
-        "B" => "B",
-        "C" => "C",
-        "D" => "D",
-        "E" => "E",
-        "F" => "F",
-        "G" => "G",
-        "H" => "H",
-        "I" => "I",
-        "J" => "J",
-        "K" => "K",
-        "L" => "L",
-        "M" => "M",
-        "N" => "N",
-        "O" => "O",
-        "P" => "P",
-        "Q" => "Q",
-        "R" => "R",
-        "S" => "S",
-        "T" => "T",
-        "U" => "U",
-        "V" => "V",
-        "W" => "W",
-        "X" => "X",
-        "Y" => "Y",
-        "Z" => "Z",
-        "a" => "a",
-        "b" => "b",
-        "c" => "c",
-        "d" => "d",
-        "e" => "e",
-        "f" => "f",
-        "g" => "g",
-        "h" => "h",
-        "i" => "i",
-        "j" => "j",
-        "k" => "k",
-        "l" => "l",
-        "m" => "m",
-        "n" => "n",
-        "o" => "o",
-        "p" => "p",
-        "q" => "q",
-        "r" => "r",
-        "s" => "s",
-        "t" => "t",
-        "u" => "u",
-        "v" => "v",
-        "w" => "w",
-        "x" => "x",
-        "y" => "y",
-        "z" => "z",
-        "㝉" => "一類何物",
-        "𫙦" => "之物",
-        "𦮪" => "其子",
-        "𢒟" => "出入改滅",
-        "𠜺" => "列序",
-        "𠏁" => "化滅",
-        "𠫰" => "參形",
-        "𦣹" => "吾自",
-        "𣝗" => "太始初核",
-        "𦱡" => "如若",
-        "𨹹" => "宇宙亡矣",
-        "𡲵" => "尾末",
-        "𠆤" => "序丁",
-        "𠇮" => "序丙",
-        "㐈" => "序乙",
-        "𠇚" => "序甲",
-        "佱" => "式形",
-        "㧈" => "引用",
-        "𤰆" => "應用",
-        "効" => "效應",
-        "𤅔" => "映表",
-        "欤" => "是非",
-        "𡒫" => "構物",
-        "‐" => "為符名連",
-        "侌" => "爻陰",
-        "𣆄" => "爻陽",
-        "亓" => "特定其物",
-        "畧" => "省略一物",
-        "謼" => "符名",
-        "弌" => "等同",
-        "筭" => "解算",
-        "疎" => "註疏",
-        "𧥝" => "詞素",
-        "䥘" => "謬誤",
-        "丩" => "連頸",
-        "𣣓" => "間空",
-        "𩠐" => "首始"
-    ];
-});
-$symbols_set = NULL;
-$symbols_set = (function () use (&$symbols_set, &$symbols_set_init) {
-    $r = $symbols_set_init();
-    $symbols_set = (function () use (&$r) {
-        return $r;
-    });
-    return $r;
-});
-$symbols_set_neg = (function () use (&$symbols_set_neg, &$symbols_set_neg_init) {
-    $r = $symbols_set_neg_init();
-    $symbols_set_neg = (function () use (&$r) {
-        return $r;
-    });
-    return $r;
-});
-$symbol_t = 0;
-$construction_t = 1;
-$null_t = 2;
-$data_t = 3;
-$error_t = 4;
-$just_t = 5;
-$delay_evaluate_t = 6;
-$delay_builtin_func_t = 7;
-$delay_builtin_form_t = 8;
-$delay_apply_t = 9;
-$comment_t = 11;
-$hole_t = 10;
-$comment_comment = (function ($x = NULL) {
-    return $x[(0 + 1)];
-});
-$____exports["new_comment"] = $new_comment;
-$____exports["comment_p"] = $comment_p;
-$____exports["comment_comment"] = $comment_comment;
-$____exports["comment_x"] = $comment_x;
-$____exports["un_comment_all"] = $un_comment_all;
-$can_new_symbol_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
-    return ($symbols_set_neg()[(is_int($x) ? $x - 1 : $x)] != NULL);
-});
-$new_symbol_unicodechar = (function ($x = NULL) use (&$symbol_t) {
-    return [$symbol_t, $x];
-});
-$can_new_symbol_p = (function ($x = NULL) use (&$symbols_set) {
-    return ($symbols_set()[(is_int($x) ? $x - 1 : $x)] != NULL);
-});
-$new_symbol = (function ($x = NULL) use (&$new_symbol_unicodechar, &$symbols_set) {
-    return $new_symbol_unicodechar($symbols_set()[(is_int($x) ? $x - 1 : $x)]);
-});
-$____exports["can_new_symbol_p"] = $can_new_symbol_p;
-$____exports["New_Symbol"] = $GLOBALS["New_Symbol"];
-$____exports["new_symbol"] = $new_symbol;
-$____exports["symbol_p"] = $symbol_p;
-$____exports["un_symbol"] = $un_symbol;
-$____exports["New_Construction"] = $GLOBALS["New_Construction"];
-$____exports["new_construction"] = $new_construction;
-$____exports["construction_p"] = $construction_p;
-$____exports["construction_head"] = $construction_head;
-$____exports["construction_tail"] = $construction_tail;
-$null_v = [$null_t];
-$____exports["Null_V"] = $GLOBALS["Null_V"];
-$____exports["null_v"] = $null_v;
-$____exports["null_p"] = $null_p;
-$____exports["New_Data"] = $GLOBALS["New_Data"];
-$____exports["new_data"] = $new_data;
-$____exports["data_p"] = $data_p;
-$____exports["data_name"] = $data_name;
-$____exports["data_list"] = $data_list;
-$____exports["New_Error"] = $GLOBALS["New_Error"];
-$____exports["new_error"] = $new_error;
-$____exports["error_p"] = $error_p;
-$____exports["error_name"] = $error_name;
-$____exports["error_list"] = $error_list;
-$____exports["just_p"] = $just_p;
-$____exports["evaluate"] = $evaluate;
-$____exports["apply"] = $apply;
-$force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all_rec, &$force_uncomment_all, &$force_uncomment_all_rec, &$lang_copy_do) {
-    $x = $force_uncomment_all($raw);
-    $conslike = (function ($xx = NULL) use (&$comment_p, &$force_all_rec, &$force_uncomment_all_rec, &$lang_copy_do) {
-        $xx[(0 + 1)] = $force_all_rec($xx[(0 + 1)]);
-        $xx[(1 + 1)] = $force_all_rec($xx[(1 + 1)]);
-        if (($comment_p($xx[(0 + 1)]) || $comment_p($xx[(1 + 1)]))) {
-            $ret = $lang_copy_do($xx);
-            $a = $xx[(0 + 1)];
-            $d = $xx[(1 + 1)];
-            $a1 = $force_uncomment_all_rec($a);
-            $d1 = $force_uncomment_all_rec($d);
-            $ret[(0 + 1)] = $a1;
-            $ret[(1 + 1)] = $d1;
-            return $ret;
-        } else {
-            return $xx;
-        }
-
-    });
-    if ($data_p($x)) {
-        return $conslike($x);
-    } elseif ($error_p($x)) {
-        return $conslike($x);
-    } elseif ($construction_p($x)) {
-        return $conslike($x);
-    }
-    return $x;
-});
-$____exports["force_all_rec"] = $force_all_rec;
-$____exports["force_uncomment_all_rec"] = $force_uncomment_all_rec;
-$system_symbol = $new_symbol("太始初核");
-$name_symbol = $new_symbol("符名");
-$function_symbol = $new_symbol("化滅");
-$form_symbol = $new_symbol("式形");
-$equal_symbol = $new_symbol("等同");
-$evaluate_sym = $new_symbol("解算");
-$theThing_symbol = $new_symbol("特定其物");
-$something_symbol = $new_symbol("省略一物");
-$mapping_symbol = $new_symbol("映表");
-$if_symbol = $new_symbol("如若");
-$typeAnnotation_symbol = $new_symbol("一類何物");
-$isOrNot_symbol = $new_symbol("是非");
-$sub_symbol = $new_symbol("其子");
-$true_symbol = $new_symbol("爻陽");
-$false_symbol = $new_symbol("爻陰");
-$quote_symbol = $new_symbol("引用");
-$apply_symbol = $new_symbol("應用");
-$null_symbol = $new_symbol("間空");
-$construction_symbol = $new_symbol("連頸");
-$data_symbol = $new_symbol("構物");
-$error_symbol = $new_symbol("謬誤");
-$symbol_symbol = $new_symbol("詞素");
-$list_symbol = $new_symbol("列序");
-$head_symbol = $new_symbol("首始");
-$tail_symbol = $new_symbol("尾末");
-$thing_symbol = $new_symbol("之物");
-$theWorldStopped_symbol = $new_symbol("宇宙亡矣");
-$effect_symbol = $new_symbol("效應");
-$comment_symbol = $new_symbol("註疏");
-$the_world_stopped_v = $new_error($system_symbol, $new_list($theWorldStopped_symbol, $something_symbol));
-$systemName_make = (function ($x = NULL) use (&$name_symbol, &$new_construction, &$new_data, &$null_v, &$system_symbol) {
-    return $new_data($name_symbol, $new_construction($system_symbol, $new_construction($x, $null_v)));
-});
-$make_builtin_f_new_sym_f = (function ($x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$theThing_symbol, &$typeAnnotation_symbol) {
-    return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $new_list($function_symbol, $something_symbol, $x_sym),
-        $theThing_symbol
-    ));
-});
-$make_builtin_f_get_sym_f = (function ($t_sym = NULL, $x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
-    return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $new_list($function_symbol, $new_list($t_sym), $something_symbol),
-        $x_sym
-    ));
-});
-$make_builtin_f_p_sym_f = (function ($t_sym = NULL) use (&$function_symbol, &$isOrNot_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
-    return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $function_symbol,
-        $new_list($isOrNot_symbol, $new_list($typeAnnotation_symbol, $t_sym, $something_symbol))
-    ));
-});
-$new_data_function_builtin_systemName = $make_builtin_f_new_sym_f($data_symbol);
-$data_name_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $name_symbol);
-$data_list_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $list_symbol);
-$data_p_function_builtin_systemName = $make_builtin_f_p_sym_f($data_symbol);
-$new_error_function_builtin_systemName = $make_builtin_f_new_sym_f($error_symbol);
-$error_name_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $name_symbol);
-$error_list_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $list_symbol);
-$error_p_function_builtin_systemName = $make_builtin_f_p_sym_f($error_symbol);
-$new_construction_function_builtin_systemName = $make_builtin_f_new_sym_f($construction_symbol);
-$construction_p_function_builtin_systemName = $make_builtin_f_p_sym_f($construction_symbol);
-$construction_head_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $head_symbol);
-$construction_tail_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $tail_symbol);
-$symbol_p_function_builtin_systemName = $make_builtin_f_p_sym_f($symbol_symbol);
-$null_p_function_builtin_systemName = $make_builtin_f_p_sym_f($null_symbol);
-$equal_p_function_builtin_systemName = $systemName_make($new_list(
-    $typeAnnotation_symbol,
-    $function_symbol,
-    $new_list($isOrNot_symbol, $equal_symbol)
-));
-$apply_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $new_list(
-    $function_symbol,
-    $new_construction($function_symbol, $something_symbol),
-    $something_symbol
-), $apply_symbol));
-$evaluate_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $evaluate_sym));
-$list_chooseOne_function_builtin_systemName = $make_builtin_f_get_sym_f($list_symbol, $new_list($typeAnnotation_symbol, $thing_symbol, $something_symbol));
-$if_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $if_symbol));
-$quote_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $quote_symbol));
-$lambda_form_builtin_systemName = $systemName_make($new_list(
-    $typeAnnotation_symbol,
-    $new_list($form_symbol, $new_list($function_symbol, $something_symbol, $function_symbol)),
-    $theThing_symbol
-));
-$function_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $function_symbol)));
-$form_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $form_symbol)));
-$form_use_systemName = $systemName_make($new_list($form_symbol, $form_symbol));
-$comment_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $comment_symbol));
-$comment_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $comment_symbol));
-$false_v = $new_data($false_symbol, $new_list());
-$true_v = $new_data($true_symbol, $new_list());
-$list_to_jsArray = (function ($xs = NULL, $k_done = NULL, $k_tail = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$null_p) {
-    $ret = [];
-    while ($construction_p($xs)) {
-        $GLOBALS["__TS__ArrayPush"]($ret, $construction_head($xs));
-        $xs = $construction_tail($xs);
-    }
-    if ($null_p($xs)) {
-        return $k_done($ret);
-    }
-    return $k_tail($ret, $xs);
-});
-$maybe_list_to_jsArray = (function ($xs = NULL) use (&$list_to_jsArray) {
-    return $list_to_jsArray($xs, (function ($x = NULL) {
-        return $x;
-    }), (function ($_1 = NULL, $_2 = NULL) {
-        return false;
-    }));
-});
-$____exports["jsArray_to_list"] = $jsArray_to_list;
-$____exports["maybe_list_to_jsArray"] = $maybe_list_to_jsArray;
-$____exports["new_list"] = $new_list;
-$un_just_comment_all = (function ($x = NULL) use (&$comment_p, &$just_p, &$un_comment_all, &$un_just_all) {
-    while (($just_p($x) || $comment_p($x))) {
-        $x = $un_just_all($un_comment_all($x));
-    }
-    return $x;
-});
-$____exports["un_just"] = $un_just_all;
-$____exports["un_just_comment_all"] = $un_just_comment_all;
-$____exports["delay_p"] = $any_delay_p;
-$____exports["delay_just_p"] = $any_delay_just_p;
-$any_delay2delay_evaluate = (function ($x = NULL) use (&$LANG_ERROR, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_evaluate_p) {
-    if ($delay_evaluate_p($x)) {
-        return $x;
-    } elseif ($delay_builtin_form_p($x)) {
-        throw new Exception("WIP");
-    } elseif ($delay_builtin_func_p($x)) {
-        throw new Exception("WIP");
-    } elseif ($delay_apply_p($x)) {
-        throw new Exception("WIP");
-    }
-    return $LANG_ERROR();
-});
-$any_delay_env = (function ($x = NULL) use (&$any_delay2delay_evaluate, &$delay_evaluate_env) {
-    return $delay_evaluate_env($any_delay2delay_evaluate($x));
-});
-$any_delay_x = (function ($x = NULL) use (&$any_delay2delay_evaluate, &$delay_evaluate_x) {
-    return $delay_evaluate_x($any_delay2delay_evaluate($x));
-});
-$____exports["delay_env"] = $any_delay_env;
-$____exports["delay_x"] = $any_delay_x;
-$force_all_export = (function ($raw = NULL) use (&$force_all) {
-    return $force_all($raw);
-});
-$force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$force1) {
-    if ($comment_p($raw)) {
-        return $comment_x($raw);
-    } else {
-        return $force1($raw);
-    }
-
-});
-$____exports["force_all"] = $force_all_export;
-$____exports["force1"] = $force1;
-$____exports["force_uncomment1"] = $force_uncomment1;
-$____exports["force_uncomment_all"] = $force_uncomment_all;
-$env_null_v = [];
-$val2env = (function ($x = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_symbol, &$null_p, &$symbol_equal_p, &$symbol_p) {
-    $x = $force_all($x);
-    if (!($data_p($x))) {
-        return false;
-    }
-    $s = $force_all($data_name($x));
-    if (!($symbol_p($s))) {
-        return false;
-    }
-    if (!($symbol_equal_p($s, $mapping_symbol))) {
-        return false;
-    }
-    $s = $force_all($data_list($x));
-    if (!($construction_p($s))) {
-        return false;
-    }
-    if (!($null_p($force_all($construction_tail($s))))) {
-        return false;
-    }
-    $ret = [];
-    $xs = $force_all($construction_head($s));
-    while (!($null_p($xs))) {
-        if (!($construction_p($xs))) {
-            return false;
-        }
-        $x_1 = $force_all($construction_head($xs));
-        $xs = $force_all($construction_tail($xs));
-        if (!($construction_p($x_1))) {
-            return false;
-        }
-        $k = $construction_head($x_1);
-        $x_1 = $force_all($construction_tail($x_1));
-        if (!($construction_p($x_1))) {
-            return false;
-        }
-        $v = $construction_head($x_1);
-        if (!($null_p($force_all($construction_tail($x_1))))) {
-            return false;
-        }
-        $not_breaked = true;
-        
-        {
-            $i = 0;
-            while (($i < (is_string($ret) ? strlen($ret) : count($ret)))) {
-                if ($jsbool_equal_p($ret[(($i + 0) + 0)], $k)) {
-                    $ret[(($i + 1) + 0)] = $v;
-                    $not_breaked = false;
-                    break;
-                }
-                $i = ($i + 2);
-            }
-        }
-
-        if ($not_breaked) {
-            $GLOBALS["__TS__ArrayPush"]($ret, $k);
-            $GLOBALS["__TS__ArrayPush"]($ret, $v);
-        }
-    }
-    return $ret;
-});
-$____exports["env_null_v"] = $env_null_v;
-$____exports["env_set"] = $env_set;
-$____exports["env_get"] = $env_get;
-$____exports["env2val"] = $env2val;
-$____exports["env_foreach"] = $env_foreach;
-$____exports["val2env"] = $val2env;
-$make_builtin_p_func = (function ($p_sym = NULL, $p_jsfunc = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$false_v, &$force1, &$true_v) {
-    return [
-        $p_sym,
-        1,
-        (function ($x = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$false_v, &$force1, &$p_jsfunc, &$p_sym, &$true_v) {
-            $x = $force1($x);
-            if ($any_delay_just_p($x)) {
-                return $builtin_func_apply($p_sym, [$x]);
-            }
-            if ($p_jsfunc($x)) {
-                return $true_v;
-            }
-            return $false_v;
-        })
-    ];
-});
-$make_builtin_get_func = (function ($f_sym = NULL, $p_jsfunc = NULL, $f_jsfunc = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$force1) {
-    return [
-        $f_sym,
-        1,
-        (function ($x = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$f_jsfunc, &$f_sym, &$force1, &$p_jsfunc) {
-            $x = $force1($x);
-            if ($any_delay_just_p($x)) {
-                return $builtin_func_apply($f_sym, [$x]);
-            }
-            if ($p_jsfunc($x)) {
-                return $f_jsfunc($x);
-            }
-            return $error_v;
-        })
-    ];
-});
-$real_builtin_func_apply_s = [
-    $make_builtin_p_func($data_p_function_builtin_systemName, $data_p),
-    [$new_data_function_builtin_systemName, 2, $new_data],
-    $make_builtin_get_func($data_name_function_builtin_systemName, $data_p, $data_name),
-    $make_builtin_get_func($data_list_function_builtin_systemName, $data_p, $data_list),
-    $make_builtin_p_func($error_p_function_builtin_systemName, $error_p),
-    [$new_error_function_builtin_systemName, 2, $new_error],
-    $make_builtin_get_func($error_name_function_builtin_systemName, $error_p, $error_name),
-    $make_builtin_get_func($error_list_function_builtin_systemName, $error_p, $error_list),
-    $make_builtin_p_func($null_p_function_builtin_systemName, $null_p),
-    [$new_construction_function_builtin_systemName, 2, $new_construction],
-    $make_builtin_p_func($construction_p_function_builtin_systemName, $construction_p),
-    $make_builtin_get_func(
-        $construction_head_function_builtin_systemName,
-        $construction_p,
-        $construction_head
-    ),
-    $make_builtin_get_func(
-        $construction_tail_function_builtin_systemName,
-        $construction_p,
-        $construction_tail
-    ),
-    [
-        $equal_p_function_builtin_systemName,
-        2,
-        (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$any_delay_just_p, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$symbol_equal_p, &$symbol_p, &$true_v) {
-            if (($x == $y)) {
-                return $true_v;
-            }
-            $x = $force1($x);
-            $y = $force1($y);
-            if (($any_delay_just_p($x) || $any_delay_just_p($y))) {
-                return $builtin_func_apply($equal_p_function_builtin_systemName, [$x, $y]);
-            }
-            if (($x == $y)) {
-                return $true_v;
-            }
-            $H_if = (function ($b = NULL, $xx = NULL, $yy = NULL) use (&$builtin_func_apply, &$if_function_builtin_systemName) {
-                return $builtin_func_apply($if_function_builtin_systemName, [$b, $xx, $yy]);
-            });
-            $H_and = (function ($xx = NULL, $yy = NULL) use (&$H_if, &$false_v) {
-                return $H_if($xx, $yy, $false_v);
-            });
-            $LANG_ASSERT(!($any_delay_just_p($x)));
-            $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$H_and, &$builtin_func_apply, &$equal_p_function_builtin_systemName) {
-                return $H_and(
-                    $builtin_func_apply($equal_p_function_builtin_systemName, [$f1($xx), $f1($yy)]),
-                    $builtin_func_apply($equal_p_function_builtin_systemName, [$f2($xx), $f2($yy)])
-                );
-            });
-            if ($null_p($x)) {
-                if (!($null_p($x))) {
-                    return $false_v;
-                }
-                return $true_v;
-            } elseif ($symbol_p($x)) {
-                if (!($symbol_p($y))) {
-                    return $false_v;
-                }
-                if ($symbol_equal_p($x, $y)) {
-                    return $true_v;
-                } else {
-                    return $false_v;
-                }
-
-            } elseif ($data_p($x)) {
-                if (!($data_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $data_name, $data_list);
-            } elseif ($construction_p($x)) {
-                if (!($construction_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $construction_head, $construction_tail);
-            } elseif ($error_p($x)) {
-                if (!($error_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $error_name, $error_list);
-            }
-            return $LANG_ERROR();
-        })
-    ],
-    [
-        $apply_function_builtin_systemName,
-        2,
-        (function ($f = NULL, $xs = NULL, $error_v = NULL) use (&$apply, &$construction_head, &$construction_p, &$construction_tail, &$force_all, &$null_p) {
-            $jslist = [];
-            $iter = $force_all($xs);
-            while ($construction_p($iter)) {
-                $GLOBALS["__TS__ArrayPush"]($jslist, $construction_head($iter));
-                $iter = $force_all($construction_tail($iter));
-            }
-            if (!($null_p($iter))) {
-                return $error_v;
-            }
-            return $apply($f, $jslist);
-        })
-    ],
-    [
-        $evaluate_function_builtin_systemName,
-        2,
-        (function ($env = NULL, $x = NULL, $error_v = NULL) use (&$evaluate, &$val2env) {
-            $maybeenv = $val2env($env);
-            if (($maybeenv == false)) {
-                return $error_v;
-            }
-            return $evaluate($maybeenv, $x);
-        })
-    ],
-    $make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
-    [
-        $list_chooseOne_function_builtin_systemName,
-        1,
-        (function ($xs = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$construction_head, &$construction_p, &$force1, &$list_chooseOne_function_builtin_systemName) {
-            $xs = $force1($xs);
-            if ($any_delay_just_p($xs)) {
-                return $builtin_func_apply($list_chooseOne_function_builtin_systemName, [$xs]);
-            }
-            if (!($construction_p($xs))) {
-                return $error_v;
-            }
-            return $construction_head($xs);
-        })
-    ],
-    [
-        $if_function_builtin_systemName,
-        3,
-        (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$data_name, &$data_p, &$false_symbol, &$force1, &$force_all, &$if_function_builtin_systemName, &$symbol_equal_p, &$symbol_p, &$true_symbol) {
-            $b = $force1($b);
-            if ($any_delay_just_p($b)) {
-                return $builtin_func_apply($if_function_builtin_systemName, [$b, $x, $y]);
-            }
-            if (!($data_p($b))) {
-                return $error_v;
-            }
-            $nam = $force_all($data_name($b));
-            if (!($symbol_p($nam))) {
-                return $error_v;
-            }
-            if ($symbol_equal_p($nam, $true_symbol)) {
-                return $x;
-            }
-            if ($symbol_equal_p($nam, $false_symbol)) {
-                return $y;
-            }
-            return $error_v;
-        })
-    ],
-    [$comment_function_builtin_systemName, 2, $new_comment]
-];
-$____exports["equal_p"] = $jsbool_equal_p;
 $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_evaluate_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_set_do, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$un_just_all) {
     if (($x == $y)) {
         return true;
@@ -1837,12 +1175,62 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
     }
     return $LANG_ERROR();
 });
-$simple_print_force_all_rec = (function ($x = NULL) use (&$force_all_rec, &$simple_print) {
-    return $simple_print($force_all_rec($x));
+$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$symbol_p, &$un_just_all, &$un_symbol) {
+    $x = $un_just_all($x);
+    $temp = "";
+    $prefix = "";
+    if ($null_p($x)) {
+        return "()";
+    } elseif ($construction_p($x)) {
+        $temp = "(";
+        $prefix = "";
+        while ($construction_p($x)) {
+            $temp = ((string)$temp .
+                ((string)$prefix . (string)$simple_print($construction_head($x))));
+            $prefix = " ";
+            $x = $un_just_all($construction_tail($x));
+        }
+        if ($null_p($x)) {
+            $temp = ((string)$temp . ")");
+        } else {
+            $temp = ((string)$temp . (" . " . ((string)$simple_print($x) . ")")));
+        }
+
+        return $temp;
+    } elseif ($data_p($x)) {
+        return ("#" . (string)$simple_print($new_construction($data_name($x), $data_list($x))));
+    } elseif ($error_p($x)) {
+        return ("!" . (string)$simple_print($new_construction($error_name($x), $error_list($x))));
+    } elseif ($symbol_p($x)) {
+        return $un_symbol($x);
+    } elseif ($delay_evaluate_p($x)) {
+        return ("\$(" .
+            ((string)$simple_print($env2val($delay_evaluate_env($x))) .
+            (" " . ((string)$simple_print($delay_evaluate_x($x)) . ")"))));
+    } elseif ($delay_builtin_func_p($x)) {
+        return ("%(" .
+            ((string)$simple_print($delay_builtin_func_f($x)) .
+            (" " .
+            ((string)$simple_print($jsArray_to_list($delay_builtin_func_xs($x))) . ")"))));
+    } elseif ($delay_builtin_form_p($x)) {
+        return ("@(" .
+            ((string)$simple_print($env2val($delay_builtin_form_env($x))) .
+            (" " .
+            ((string)$simple_print($delay_builtin_form_f($x)) .
+            (" " .
+            ((string)$simple_print($jsArray_to_list($delay_builtin_form_xs($x))) . ")"))))));
+    } elseif ($delay_apply_p($x)) {
+        return ("^(" .
+            ((string)$simple_print($delay_apply_f($x)) .
+            (" " . ((string)$simple_print($jsArray_to_list($delay_apply_xs($x))) . ")"))));
+    } elseif ($comment_p($x)) {
+        return (";(" .
+            ((string)$complex_print($comment_comment($x)) .
+            (" " . ((string)$complex_print($comment_x($x)) . ")"))));
+    }
+    return $LANG_ERROR();
 });
-$____exports["simple_print"] = $simple_print;
-$____exports["simple_print_force_all_rec"] = $simple_print_force_all_rec;
-$complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$can_new_symbol_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_symbol, &$function_symbol, &$hole_set_do, &$isOrNot_symbol, &$jsArray_to_list, &$list_to_jsArray, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol, &$null_p, &$null_v, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$val2env) {
+$complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$can_new_symbol_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_symbol, &$function_symbol, &$hole_set_do, &$isOrNot_symbol, &$jsArray_to_list, &$list_to_jsArray, &$new_comment, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol, &$null_p, &$null_v, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$val2env) {
     $state_const = NULL;
     $state = NULL;
     $eof = NULL;
@@ -1859,6 +1247,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
     $readfuncapply = NULL;
     $readformbuiltin = NULL;
     $readapply = NULL;
+    $readcomment = NULL;
     $a_symbol_p = NULL;
     $val = NULL;
     $un_maybe = NULL;
@@ -2024,7 +1413,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
         if ($a_space_p($chr)) {
             return false;
         }
-        $____TS_array = ["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&"];
+        $____TS_array = ["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"];
         $lUaTmP_12_LuAtMp = (is_string($____TS_array) ? strlen($____TS_array) : count($____TS_array));
         $lUaTmP_13_LuAtMp = 1;
         for ($lUa_I_LuA = 1; $lUaTmP_13_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_12_LuAtMp : $lUa_I_LuA >= $lUaTmP_12_LuAtMp; $lUa_I_LuA += $lUaTmP_13_LuAtMp) {
@@ -2036,7 +1425,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
         }
         return true;
     });
-    $val = (function () use (&$data, &$parse_error, &$readapply, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname, &$space) {
+    $val = (function () use (&$data, &$parse_error, &$readapply, &$readcomment, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname, &$space) {
         $space();
         $fs = [
             $readlist,
@@ -2046,7 +1435,8 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
             $readeval,
             $readfuncapply,
             $readformbuiltin,
-            $readapply
+            $readapply,
+            $readcomment
         ];
         $lUaTmP_14_LuAtMp = (is_string($fs) ? strlen($fs) : count($fs));
         $lUaTmP_15_LuAtMp = 1;
@@ -2073,7 +1463,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
         $un_maybe($not_eof());
         $un_maybe(($get() == $c));
     });
-    $readsysname_no_pack_inner_must = (function ($strict = NULL) use (&$assert_get, &$data, &$parse_error, &$readapply, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname_no_pack, &$readsysname_no_pack_inner_must, &$symbol) {
+    $readsysname_no_pack_inner_must = (function ($strict = NULL) use (&$assert_get, &$data, &$parse_error, &$readapply, &$readcomment, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname_no_pack, &$readsysname_no_pack_inner_must, &$symbol) {
         if (($strict == NULL)) {
             $strict = false;
         }
@@ -2094,7 +1484,8 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
                 $readeval,
                 $readfuncapply,
                 $readformbuiltin,
-                $readapply
+                $readapply,
+                $readcomment
             ];
         } else {
             $fs = [
@@ -2105,7 +1496,8 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
                 $readeval,
                 $readfuncapply,
                 $readformbuiltin,
-                $readapply
+                $readapply,
+                $readcomment
             ];
         }
 
@@ -2341,10 +1733,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$apply, &$builtin_fo
             return $apply($f, $jsxs);
         })
     );
+    $readcomment = $make_read_two(";", (function ($comment = NULL, $x_1 = NULL) use (&$new_comment) {
+        return $new_comment($comment, $x_1);
+    }));
     return $val();
 });
-$____exports["complex_parse"] = $complex_parse;
-$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_symbol, &$new_construction, &$null_p, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
+$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_symbol, &$new_construction, &$null_p, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
     $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
         if ($symbol_p($x)) {
             return $un_symbol($x);
@@ -2504,9 +1898,647 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$complex_parse, &$c
         return ("^(" .
             ((string)$complex_print($delay_apply_f($x)) .
             (" " . ((string)$complex_print($jsArray_to_list($delay_apply_xs($x))) . ")"))));
+    } elseif ($comment_p($x)) {
+        return (";(" .
+            ((string)$complex_print($comment_comment($x)) .
+            (" " . ((string)$complex_print($comment_x($x)) . ")"))));
     }
     return $LANG_ERROR();
 });
+$symbols_set_init = (function () {
+    return [
+        "0" => "0",
+        "1" => "1",
+        "2" => "2",
+        "3" => "3",
+        "4" => "4",
+        "5" => "5",
+        "6" => "6",
+        "7" => "7",
+        "8" => "8",
+        "9" => "9",
+        "A" => "A",
+        "B" => "B",
+        "C" => "C",
+        "D" => "D",
+        "E" => "E",
+        "F" => "F",
+        "G" => "G",
+        "H" => "H",
+        "I" => "I",
+        "J" => "J",
+        "K" => "K",
+        "L" => "L",
+        "M" => "M",
+        "N" => "N",
+        "O" => "O",
+        "P" => "P",
+        "Q" => "Q",
+        "R" => "R",
+        "S" => "S",
+        "T" => "T",
+        "U" => "U",
+        "V" => "V",
+        "W" => "W",
+        "X" => "X",
+        "Y" => "Y",
+        "Z" => "Z",
+        "a" => "a",
+        "b" => "b",
+        "c" => "c",
+        "d" => "d",
+        "e" => "e",
+        "f" => "f",
+        "g" => "g",
+        "h" => "h",
+        "i" => "i",
+        "j" => "j",
+        "k" => "k",
+        "l" => "l",
+        "m" => "m",
+        "n" => "n",
+        "o" => "o",
+        "p" => "p",
+        "q" => "q",
+        "r" => "r",
+        "s" => "s",
+        "t" => "t",
+        "u" => "u",
+        "v" => "v",
+        "w" => "w",
+        "x" => "x",
+        "y" => "y",
+        "z" => "z",
+        "一類何物" => "㝉",
+        "之物" => "𫙦",
+        "其子" => "𦮪",
+        "出入改滅" => "𢒟",
+        "列序" => "𠜺",
+        "化滅" => "𠏁",
+        "參形" => "𠫰",
+        "吾自" => "𦣹",
+        "太始初核" => "𣝗",
+        "如若" => "𦱡",
+        "宇宙亡矣" => "𨹹",
+        "尾末" => "𡲵",
+        "序丁" => "𠆤",
+        "序丙" => "𠇮",
+        "序乙" => "㐈",
+        "序甲" => "𠇚",
+        "式形" => "佱",
+        "引用" => "㧈",
+        "應用" => "𤰆",
+        "效應" => "効",
+        "映表" => "𤅔",
+        "是非" => "欤",
+        "構物" => "𡒫",
+        "為符名連" => "‐",
+        "爻陰" => "侌",
+        "爻陽" => "𣆄",
+        "特定其物" => "亓",
+        "省略一物" => "畧",
+        "符名" => "謼",
+        "等同" => "弌",
+        "解算" => "筭",
+        "註疏" => "疎",
+        "詞素" => "𧥝",
+        "謬誤" => "䥘",
+        "連頸" => "丩",
+        "間空" => "𣣓",
+        "首始" => "𩠐"
+    ];
+});
+$symbols_set_neg_init = (function () {
+    return [
+        "0" => "0",
+        "1" => "1",
+        "2" => "2",
+        "3" => "3",
+        "4" => "4",
+        "5" => "5",
+        "6" => "6",
+        "7" => "7",
+        "8" => "8",
+        "9" => "9",
+        "A" => "A",
+        "B" => "B",
+        "C" => "C",
+        "D" => "D",
+        "E" => "E",
+        "F" => "F",
+        "G" => "G",
+        "H" => "H",
+        "I" => "I",
+        "J" => "J",
+        "K" => "K",
+        "L" => "L",
+        "M" => "M",
+        "N" => "N",
+        "O" => "O",
+        "P" => "P",
+        "Q" => "Q",
+        "R" => "R",
+        "S" => "S",
+        "T" => "T",
+        "U" => "U",
+        "V" => "V",
+        "W" => "W",
+        "X" => "X",
+        "Y" => "Y",
+        "Z" => "Z",
+        "a" => "a",
+        "b" => "b",
+        "c" => "c",
+        "d" => "d",
+        "e" => "e",
+        "f" => "f",
+        "g" => "g",
+        "h" => "h",
+        "i" => "i",
+        "j" => "j",
+        "k" => "k",
+        "l" => "l",
+        "m" => "m",
+        "n" => "n",
+        "o" => "o",
+        "p" => "p",
+        "q" => "q",
+        "r" => "r",
+        "s" => "s",
+        "t" => "t",
+        "u" => "u",
+        "v" => "v",
+        "w" => "w",
+        "x" => "x",
+        "y" => "y",
+        "z" => "z",
+        "㝉" => "一類何物",
+        "𫙦" => "之物",
+        "𦮪" => "其子",
+        "𢒟" => "出入改滅",
+        "𠜺" => "列序",
+        "𠏁" => "化滅",
+        "𠫰" => "參形",
+        "𦣹" => "吾自",
+        "𣝗" => "太始初核",
+        "𦱡" => "如若",
+        "𨹹" => "宇宙亡矣",
+        "𡲵" => "尾末",
+        "𠆤" => "序丁",
+        "𠇮" => "序丙",
+        "㐈" => "序乙",
+        "𠇚" => "序甲",
+        "佱" => "式形",
+        "㧈" => "引用",
+        "𤰆" => "應用",
+        "効" => "效應",
+        "𤅔" => "映表",
+        "欤" => "是非",
+        "𡒫" => "構物",
+        "‐" => "為符名連",
+        "侌" => "爻陰",
+        "𣆄" => "爻陽",
+        "亓" => "特定其物",
+        "畧" => "省略一物",
+        "謼" => "符名",
+        "弌" => "等同",
+        "筭" => "解算",
+        "疎" => "註疏",
+        "𧥝" => "詞素",
+        "䥘" => "謬誤",
+        "丩" => "連頸",
+        "𣣓" => "間空",
+        "𩠐" => "首始"
+    ];
+});
+$symbols_set = (function () use (&$symbols_set, &$symbols_set_init) {
+    $r = $symbols_set_init();
+    $symbols_set = (function () use (&$r) {
+        return $r;
+    });
+    return $r;
+});
+$symbols_set_neg = (function () use (&$symbols_set_neg, &$symbols_set_neg_init) {
+    $r = $symbols_set_neg_init();
+    $symbols_set_neg = (function () use (&$r) {
+        return $r;
+    });
+    return $r;
+});
+$symbol_t = 0;
+$construction_t = 1;
+$null_t = 2;
+$data_t = 3;
+$error_t = 4;
+$just_t = 5;
+$delay_evaluate_t = 6;
+$delay_builtin_func_t = 7;
+$delay_builtin_form_t = 8;
+$delay_apply_t = 9;
+$comment_t = 11;
+$hole_t = 10;
+$____exports["new_comment"] = $new_comment;
+$____exports["comment_p"] = $comment_p;
+$____exports["comment_comment"] = $comment_comment;
+$____exports["comment_x"] = $comment_x;
+$____exports["un_comment_all"] = $un_comment_all;
+$can_new_symbol_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
+    return ($symbols_set_neg()[(is_int($x) ? $x - 1 : $x)] != NULL);
+});
+$____exports["can_new_symbol_p"] = $can_new_symbol_p;
+$____exports["New_Symbol"] = $GLOBALS["New_Symbol"];
+$____exports["new_symbol"] = $new_symbol;
+$____exports["symbol_p"] = $symbol_p;
+$____exports["un_symbol"] = $un_symbol;
+$____exports["New_Construction"] = $GLOBALS["New_Construction"];
+$____exports["new_construction"] = $new_construction;
+$____exports["construction_p"] = $construction_p;
+$____exports["construction_head"] = $construction_head;
+$____exports["construction_tail"] = $construction_tail;
+$null_v = [$null_t];
+$____exports["Null_V"] = $GLOBALS["Null_V"];
+$____exports["null_v"] = $null_v;
+$____exports["null_p"] = $null_p;
+$____exports["New_Data"] = $GLOBALS["New_Data"];
+$____exports["new_data"] = $new_data;
+$____exports["data_p"] = $data_p;
+$____exports["data_name"] = $data_name;
+$____exports["data_list"] = $data_list;
+$____exports["New_Error"] = $GLOBALS["New_Error"];
+$____exports["new_error"] = $new_error;
+$____exports["error_p"] = $error_p;
+$____exports["error_name"] = $error_name;
+$____exports["error_list"] = $error_list;
+$____exports["just_p"] = $just_p;
+$____exports["evaluate"] = $evaluate;
+$____exports["apply"] = $apply;
+$force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all_rec, &$force_uncomment_all, &$force_uncomment_all_rec, &$lang_copy_do) {
+    $x = $force_uncomment_all($raw);
+    $conslike = (function ($xx = NULL) use (&$comment_p, &$force_all_rec, &$force_uncomment_all_rec, &$lang_copy_do) {
+        $xx[(0 + 1)] = $force_all_rec($xx[(0 + 1)]);
+        $xx[(1 + 1)] = $force_all_rec($xx[(1 + 1)]);
+        if (($comment_p($xx[(0 + 1)]) || $comment_p($xx[(1 + 1)]))) {
+            $ret = $lang_copy_do($xx);
+            $a = $xx[(0 + 1)];
+            $d = $xx[(1 + 1)];
+            $a1 = $force_uncomment_all_rec($a);
+            $d1 = $force_uncomment_all_rec($d);
+            $ret[(0 + 1)] = $a1;
+            $ret[(1 + 1)] = $d1;
+            return $ret;
+        } else {
+            return $xx;
+        }
+
+    });
+    if ($data_p($x)) {
+        return $conslike($x);
+    } elseif ($error_p($x)) {
+        return $conslike($x);
+    } elseif ($construction_p($x)) {
+        return $conslike($x);
+    }
+    return $x;
+});
+$____exports["force_all_rec"] = $force_all_rec;
+$____exports["force_uncomment_all_rec"] = $force_uncomment_all_rec;
+$system_symbol = $new_symbol("太始初核");
+$name_symbol = $new_symbol("符名");
+$function_symbol = $new_symbol("化滅");
+$form_symbol = $new_symbol("式形");
+$equal_symbol = $new_symbol("等同");
+$evaluate_sym = $new_symbol("解算");
+$theThing_symbol = $new_symbol("特定其物");
+$something_symbol = $new_symbol("省略一物");
+$mapping_symbol = $new_symbol("映表");
+$if_symbol = $new_symbol("如若");
+$typeAnnotation_symbol = $new_symbol("一類何物");
+$isOrNot_symbol = $new_symbol("是非");
+$sub_symbol = $new_symbol("其子");
+$true_symbol = $new_symbol("爻陽");
+$false_symbol = $new_symbol("爻陰");
+$quote_symbol = $new_symbol("引用");
+$apply_symbol = $new_symbol("應用");
+$null_symbol = $new_symbol("間空");
+$construction_symbol = $new_symbol("連頸");
+$data_symbol = $new_symbol("構物");
+$error_symbol = $new_symbol("謬誤");
+$symbol_symbol = $new_symbol("詞素");
+$list_symbol = $new_symbol("列序");
+$head_symbol = $new_symbol("首始");
+$tail_symbol = $new_symbol("尾末");
+$thing_symbol = $new_symbol("之物");
+$theWorldStopped_symbol = $new_symbol("宇宙亡矣");
+$effect_symbol = $new_symbol("效應");
+$comment_symbol = $new_symbol("註疏");
+$the_world_stopped_v = $new_error($system_symbol, $new_list($theWorldStopped_symbol, $something_symbol));
+$make_builtin_f_new_sym_f = (function ($x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$theThing_symbol, &$typeAnnotation_symbol) {
+    return $systemName_make($new_list(
+        $typeAnnotation_symbol,
+        $new_list($function_symbol, $something_symbol, $x_sym),
+        $theThing_symbol
+    ));
+});
+$make_builtin_f_get_sym_f = (function ($t_sym = NULL, $x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
+    return $systemName_make($new_list(
+        $typeAnnotation_symbol,
+        $new_list($function_symbol, $new_list($t_sym), $something_symbol),
+        $x_sym
+    ));
+});
+$make_builtin_f_p_sym_f = (function ($t_sym = NULL) use (&$function_symbol, &$isOrNot_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
+    return $systemName_make($new_list(
+        $typeAnnotation_symbol,
+        $function_symbol,
+        $new_list($isOrNot_symbol, $new_list($typeAnnotation_symbol, $t_sym, $something_symbol))
+    ));
+});
+$new_data_function_builtin_systemName = $make_builtin_f_new_sym_f($data_symbol);
+$data_name_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $name_symbol);
+$data_list_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $list_symbol);
+$data_p_function_builtin_systemName = $make_builtin_f_p_sym_f($data_symbol);
+$new_error_function_builtin_systemName = $make_builtin_f_new_sym_f($error_symbol);
+$error_name_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $name_symbol);
+$error_list_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $list_symbol);
+$error_p_function_builtin_systemName = $make_builtin_f_p_sym_f($error_symbol);
+$new_construction_function_builtin_systemName = $make_builtin_f_new_sym_f($construction_symbol);
+$construction_p_function_builtin_systemName = $make_builtin_f_p_sym_f($construction_symbol);
+$construction_head_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $head_symbol);
+$construction_tail_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $tail_symbol);
+$symbol_p_function_builtin_systemName = $make_builtin_f_p_sym_f($symbol_symbol);
+$null_p_function_builtin_systemName = $make_builtin_f_p_sym_f($null_symbol);
+$equal_p_function_builtin_systemName = $systemName_make($new_list(
+    $typeAnnotation_symbol,
+    $function_symbol,
+    $new_list($isOrNot_symbol, $equal_symbol)
+));
+$apply_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $new_list(
+    $function_symbol,
+    $new_construction($function_symbol, $something_symbol),
+    $something_symbol
+), $apply_symbol));
+$evaluate_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $evaluate_sym));
+$list_chooseOne_function_builtin_systemName = $make_builtin_f_get_sym_f($list_symbol, $new_list($typeAnnotation_symbol, $thing_symbol, $something_symbol));
+$if_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $if_symbol));
+$quote_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $quote_symbol));
+$lambda_form_builtin_systemName = $systemName_make($new_list(
+    $typeAnnotation_symbol,
+    $new_list($form_symbol, $new_list($function_symbol, $something_symbol, $function_symbol)),
+    $theThing_symbol
+));
+$function_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $function_symbol)));
+$form_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $form_symbol)));
+$form_use_systemName = $systemName_make($new_list($form_symbol, $form_symbol));
+$comment_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $comment_symbol));
+$comment_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $comment_symbol));
+$false_v = $new_data($false_symbol, $new_list());
+$true_v = $new_data($true_symbol, $new_list());
+$____exports["jsArray_to_list"] = $jsArray_to_list;
+$____exports["maybe_list_to_jsArray"] = $maybe_list_to_jsArray;
+$____exports["new_list"] = $new_list;
+$un_just_comment_all = (function ($x = NULL) use (&$comment_p, &$just_p, &$un_comment_all, &$un_just_all) {
+    while (($just_p($x) || $comment_p($x))) {
+        $x = $un_just_all($un_comment_all($x));
+    }
+    return $x;
+});
+$____exports["un_just"] = $un_just_all;
+$____exports["un_just_comment_all"] = $un_just_comment_all;
+$____exports["delay_p"] = $any_delay_p;
+$____exports["delay_just_p"] = $any_delay_just_p;
+$any_delay2delay_evaluate = (function ($x = NULL) use (&$LANG_ERROR, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_evaluate_p) {
+    if ($delay_evaluate_p($x)) {
+        return $x;
+    } elseif ($delay_builtin_form_p($x)) {
+        throw new Exception("WIP");
+    } elseif ($delay_builtin_func_p($x)) {
+        throw new Exception("WIP");
+    } elseif ($delay_apply_p($x)) {
+        throw new Exception("WIP");
+    }
+    return $LANG_ERROR();
+});
+$any_delay_env = (function ($x = NULL) use (&$any_delay2delay_evaluate, &$delay_evaluate_env) {
+    return $delay_evaluate_env($any_delay2delay_evaluate($x));
+});
+$any_delay_x = (function ($x = NULL) use (&$any_delay2delay_evaluate, &$delay_evaluate_x) {
+    return $delay_evaluate_x($any_delay2delay_evaluate($x));
+});
+$____exports["delay_env"] = $any_delay_env;
+$____exports["delay_x"] = $any_delay_x;
+$force_all_export = (function ($raw = NULL) use (&$force_all) {
+    return $force_all($raw);
+});
+$force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$force1) {
+    if ($comment_p($raw)) {
+        return $comment_x($raw);
+    } else {
+        return $force1($raw);
+    }
+
+});
+$____exports["force_all"] = $force_all_export;
+$____exports["force1"] = $force1;
+$____exports["force_uncomment1"] = $force_uncomment1;
+$____exports["force_uncomment_all"] = $force_uncomment_all;
+$env_null_v = [];
+$____exports["env_null_v"] = $env_null_v;
+$____exports["env_set"] = $env_set;
+$____exports["env_get"] = $env_get;
+$____exports["env2val"] = $env2val;
+$____exports["env_foreach"] = $env_foreach;
+$____exports["val2env"] = $val2env;
+$make_builtin_p_func = (function ($p_sym = NULL, $p_jsfunc = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$false_v, &$force1, &$true_v) {
+    return [
+        $p_sym,
+        1,
+        (function ($x = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$false_v, &$force1, &$p_jsfunc, &$p_sym, &$true_v) {
+            $x = $force1($x);
+            if ($any_delay_just_p($x)) {
+                return $builtin_func_apply($p_sym, [$x]);
+            }
+            if ($p_jsfunc($x)) {
+                return $true_v;
+            }
+            return $false_v;
+        })
+    ];
+});
+$make_builtin_get_func = (function ($f_sym = NULL, $p_jsfunc = NULL, $f_jsfunc = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$force1) {
+    return [
+        $f_sym,
+        1,
+        (function ($x = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$f_jsfunc, &$f_sym, &$force1, &$p_jsfunc) {
+            $x = $force1($x);
+            if ($any_delay_just_p($x)) {
+                return $builtin_func_apply($f_sym, [$x]);
+            }
+            if ($p_jsfunc($x)) {
+                return $f_jsfunc($x);
+            }
+            return $error_v;
+        })
+    ];
+});
+$real_builtin_func_apply_s = [
+    $make_builtin_p_func($data_p_function_builtin_systemName, $data_p),
+    [$new_data_function_builtin_systemName, 2, $new_data],
+    $make_builtin_get_func($data_name_function_builtin_systemName, $data_p, $data_name),
+    $make_builtin_get_func($data_list_function_builtin_systemName, $data_p, $data_list),
+    $make_builtin_p_func($error_p_function_builtin_systemName, $error_p),
+    [$new_error_function_builtin_systemName, 2, $new_error],
+    $make_builtin_get_func($error_name_function_builtin_systemName, $error_p, $error_name),
+    $make_builtin_get_func($error_list_function_builtin_systemName, $error_p, $error_list),
+    $make_builtin_p_func($null_p_function_builtin_systemName, $null_p),
+    [$new_construction_function_builtin_systemName, 2, $new_construction],
+    $make_builtin_p_func($construction_p_function_builtin_systemName, $construction_p),
+    $make_builtin_get_func(
+        $construction_head_function_builtin_systemName,
+        $construction_p,
+        $construction_head
+    ),
+    $make_builtin_get_func(
+        $construction_tail_function_builtin_systemName,
+        $construction_p,
+        $construction_tail
+    ),
+    [
+        $equal_p_function_builtin_systemName,
+        2,
+        (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$any_delay_just_p, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$symbol_equal_p, &$symbol_p, &$true_v) {
+            if (($x == $y)) {
+                return $true_v;
+            }
+            $x = $force1($x);
+            $y = $force1($y);
+            if (($any_delay_just_p($x) || $any_delay_just_p($y))) {
+                return $builtin_func_apply($equal_p_function_builtin_systemName, [$x, $y]);
+            }
+            if (($x == $y)) {
+                return $true_v;
+            }
+            $H_if = (function ($b = NULL, $xx = NULL, $yy = NULL) use (&$builtin_func_apply, &$if_function_builtin_systemName) {
+                return $builtin_func_apply($if_function_builtin_systemName, [$b, $xx, $yy]);
+            });
+            $H_and = (function ($xx = NULL, $yy = NULL) use (&$H_if, &$false_v) {
+                return $H_if($xx, $yy, $false_v);
+            });
+            $LANG_ASSERT(!($any_delay_just_p($x)));
+            $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$H_and, &$builtin_func_apply, &$equal_p_function_builtin_systemName) {
+                return $H_and(
+                    $builtin_func_apply($equal_p_function_builtin_systemName, [$f1($xx), $f1($yy)]),
+                    $builtin_func_apply($equal_p_function_builtin_systemName, [$f2($xx), $f2($yy)])
+                );
+            });
+            if ($null_p($x)) {
+                if (!($null_p($x))) {
+                    return $false_v;
+                }
+                return $true_v;
+            } elseif ($symbol_p($x)) {
+                if (!($symbol_p($y))) {
+                    return $false_v;
+                }
+                if ($symbol_equal_p($x, $y)) {
+                    return $true_v;
+                } else {
+                    return $false_v;
+                }
+
+            } elseif ($data_p($x)) {
+                if (!($data_p($y))) {
+                    return $false_v;
+                }
+                return $end_2($x, $y, $data_name, $data_list);
+            } elseif ($construction_p($x)) {
+                if (!($construction_p($y))) {
+                    return $false_v;
+                }
+                return $end_2($x, $y, $construction_head, $construction_tail);
+            } elseif ($error_p($x)) {
+                if (!($error_p($y))) {
+                    return $false_v;
+                }
+                return $end_2($x, $y, $error_name, $error_list);
+            }
+            return $LANG_ERROR();
+        })
+    ],
+    [
+        $apply_function_builtin_systemName,
+        2,
+        (function ($f = NULL, $xs = NULL, $error_v = NULL) use (&$apply, &$construction_head, &$construction_p, &$construction_tail, &$force_all, &$null_p) {
+            $jslist = [];
+            $iter = $force_all($xs);
+            while ($construction_p($iter)) {
+                $GLOBALS["__TS__ArrayPush"]($jslist, $construction_head($iter));
+                $iter = $force_all($construction_tail($iter));
+            }
+            if (!($null_p($iter))) {
+                return $error_v;
+            }
+            return $apply($f, $jslist);
+        })
+    ],
+    [
+        $evaluate_function_builtin_systemName,
+        2,
+        (function ($env = NULL, $x = NULL, $error_v = NULL) use (&$evaluate, &$val2env) {
+            $maybeenv = $val2env($env);
+            if (($maybeenv == false)) {
+                return $error_v;
+            }
+            return $evaluate($maybeenv, $x);
+        })
+    ],
+    $make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
+    [
+        $list_chooseOne_function_builtin_systemName,
+        1,
+        (function ($xs = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$construction_head, &$construction_p, &$force1, &$list_chooseOne_function_builtin_systemName) {
+            $xs = $force1($xs);
+            if ($any_delay_just_p($xs)) {
+                return $builtin_func_apply($list_chooseOne_function_builtin_systemName, [$xs]);
+            }
+            if (!($construction_p($xs))) {
+                return $error_v;
+            }
+            return $construction_head($xs);
+        })
+    ],
+    [
+        $if_function_builtin_systemName,
+        3,
+        (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$any_delay_just_p, &$builtin_func_apply, &$data_name, &$data_p, &$false_symbol, &$force1, &$force_all, &$if_function_builtin_systemName, &$symbol_equal_p, &$symbol_p, &$true_symbol) {
+            $b = $force1($b);
+            if ($any_delay_just_p($b)) {
+                return $builtin_func_apply($if_function_builtin_systemName, [$b, $x, $y]);
+            }
+            if (!($data_p($b))) {
+                return $error_v;
+            }
+            $nam = $force_all($data_name($b));
+            if (!($symbol_p($nam))) {
+                return $error_v;
+            }
+            if ($symbol_equal_p($nam, $true_symbol)) {
+                return $x;
+            }
+            if ($symbol_equal_p($nam, $false_symbol)) {
+                return $y;
+            }
+            return $error_v;
+        })
+    ],
+    [$comment_function_builtin_systemName, 2, $new_comment]
+];
+$____exports["equal_p"] = $jsbool_equal_p;
+$simple_print_force_all_rec = (function ($x = NULL) use (&$force_all_rec, &$simple_print) {
+    return $simple_print($force_all_rec($x));
+});
+$____exports["simple_print"] = $simple_print;
+$____exports["simple_print_force_all_rec"] = $simple_print_force_all_rec;
+$____exports["complex_parse"] = $complex_parse;
 $____exports["complex_print"] = $complex_print;
 $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodechar_p, &$env_null_v, &$evaluate, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$hole_set_do, &$make_quote, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol_unicodechar, &$null_v) {
     $result = $new_hole_do();

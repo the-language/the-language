@@ -1261,7 +1261,6 @@ function jsbool_no_force_equal_p(x, y) {
     return LANG_ERROR();
 }
 // {{{ 相對獨立的部分。simple printer
-// 註疏系統WIP
 function simple_print(x) {
     // [[[ 大量重複代碼 simple_print <-> complex_print
     x = un_just_all(x);
@@ -1311,6 +1310,9 @@ function simple_print(x) {
     else if (delay_apply_p(x)) {
         return "^(" + simple_print(delay_apply_f(x)) + " " + simple_print(jsArray_to_list(delay_apply_xs(x))) + ")";
     }
+    else if (comment_p(x)) {
+        return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")";
+    }
     return LANG_ERROR(); // 大量重複代碼 simple_print <-> complex_print ]]]
 }
 function simple_print_force_all_rec(x) {
@@ -1319,7 +1321,6 @@ function simple_print_force_all_rec(x) {
 export { simple_print, simple_print_force_all_rec };
 // 相對獨立的部分。simple printer }}}
 // {{{ 相對獨立的部分。complex parser/complex printer
-// 註疏系統WIP
 function complex_parse(x) {
     const state_const = x; // TODO 修復UTF8處理（現在只支持UTF16中的字符）（typescript-to-lua只正確支持ASCII）
     let state = 0;
@@ -1542,12 +1543,13 @@ function complex_parse(x) {
         const jsxs = list_to_jsArray(xs, (v) => v, (_1, _2) => parse_error());
         return apply(f, jsxs);
     });
+    const readcomment = make_read_two(";", (comment, x) => new_comment(comment, x));
     function a_symbol_p(chr) {
         if (a_space_p(chr)) {
             return false;
         }
         for (const v of ["(", ")", "!", "#", ".", "$", "%", "^", "@",
-            '~', '/', '-', '>', '_', ':', '?', '[', ']', '&'
+            '~', '/', '-', '>', '_', ':', '?', '[', ']', '&', ';'
         ]) {
             if (v === chr) {
                 return false;
@@ -1557,7 +1559,7 @@ function complex_parse(x) {
     }
     function val() {
         space();
-        const fs = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply];
+        const fs = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         for (const f of fs) {
             const x = f();
             if (x !== false) {
@@ -1591,11 +1593,11 @@ function complex_parse(x) {
         let fs;
         if (strict) {
             fs = [readlist, symbol, readsysname_no_pack_bracket, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply];
+                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         }
         else {
             fs = [readlist, readsysname_no_pack, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply];
+                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         }
         for (const f of fs) {
             const x = f();
@@ -1720,7 +1722,6 @@ function complex_parse(x) {
     }
 }
 export { complex_parse };
-// 註疏系統WIP
 function complex_print(val) {
     function print_sys_name(x, is_inner_bool) {
         // 是 complex_print(systemName_make(x))
@@ -1865,6 +1866,9 @@ function complex_print(val) {
     }
     else if (delay_apply_p(x)) {
         return "^(" + complex_print(delay_apply_f(x)) + " " + complex_print(jsArray_to_list(delay_apply_xs(x))) + ")";
+    }
+    else if (comment_p(x)) {
+        return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")";
     }
     return LANG_ERROR(); // 大量重複代碼 simple_print <-> complex_print ]]]
 }

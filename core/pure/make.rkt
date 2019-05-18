@@ -207,7 +207,7 @@ in-dir "typescript" {
                    #{cat lang.c}))
              |> id single &>! lang.c
 
-             clang -Wl,-s -DNDEBUG -Ofast -Oz -o testmain testmain.c lang.c
+             clang -o testmain testmain.c lang.c ;; -Wl,-s -DNDEBUG -Ofast -Oz
      }})
      ("php/lang.php" ("lua/lang.lua") {
          in-dir "php" {

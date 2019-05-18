@@ -57,7 +57,7 @@ function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
+local LANG_ERROR, LANG_ASSERT, symbols_set, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, new_symbol_unicodechar, symbol_p, un_symbol_unicodechar, can_new_symbol_p, new_symbol, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, name_symbol, function_symbol, form_symbol, theThing_symbol, something_symbol, mapping_symbol, typeAnnotation_symbol, isOrNot_symbol, sub_symbol, the_world_stopped_v, systemName_make, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, list_to_jsArray, maybe_list_to_jsArray, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, val2env, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, jsbool_no_force_equal_p, simple_print, complex_parse, complex_print, symbols_set_init, symbols_set_neg_init
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -76,6 +76,9 @@ end
 function comment_p(x)
     return x[0 + 1] == comment_t
 end
+function comment_comment(x)
+    return x[1 + 1]
+end
 function comment_x(x)
     return x[2 + 1]
 end
@@ -85,11 +88,23 @@ function un_comment_all(x)
     end
     return x
 end
+function new_symbol_unicodechar(x)
+    return {
+        symbol_t,
+        x,
+    }
+end
 function symbol_p(x)
     return x[0 + 1] == symbol_t
 end
 function un_symbol_unicodechar(x)
     return x[1 + 1]
+end
+function can_new_symbol_p(x)
+    return symbols_set()[x] ~= nil
+end
+function new_symbol(x)
+    return new_symbol_unicodechar(symbols_set()[x])
 end
 function un_symbol(x)
     return symbols_set_neg()[un_symbol_unicodechar(x)]
@@ -266,6 +281,9 @@ function lang_copy_do(x)
     hole_set_do(ret, x)
     return ret
 end
+function systemName_make(x)
+    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
+end
 function symbol_equal_p(x, y)
     if x == y then
         return true
@@ -287,6 +305,20 @@ function jsArray_to_list(xs)
         end
     end
     return ret
+end
+function list_to_jsArray(xs, k_done, k_tail)
+    local ret = {}
+    while construction_p(xs) do
+        __TS__ArrayPush(ret, construction_head(xs))
+        xs = construction_tail(xs)
+    end
+    if null_p(xs) then
+        return k_done(ret)
+    end
+    return k_tail(ret, xs)
+end
+function maybe_list_to_jsArray(xs)
+    return list_to_jsArray(xs, function(x) return x end, function(_1, _2) return false end)
 end
 function new_list(...)
     local xs = ({...})
@@ -547,6 +579,64 @@ function env_foreach(env, f)
             i = i + 2
         end
     end
+end
+function val2env(x)
+    x = force_all(x)
+    if not data_p(x) then
+        return false
+    end
+    local s = force_all(data_name(x))
+    if not symbol_p(s) then
+        return false
+    end
+    if not symbol_equal_p(s, mapping_symbol) then
+        return false
+    end
+    s = force_all(data_list(x))
+    if not construction_p(s) then
+        return false
+    end
+    if not null_p(force_all(construction_tail(s))) then
+        return false
+    end
+    local ret = {}
+    local xs = force_all(construction_head(s))
+    while not null_p(xs) do
+        if not construction_p(xs) then
+            return false
+        end
+        local x = force_all(construction_head(xs))
+        xs = force_all(construction_tail(xs))
+        if not construction_p(x) then
+            return false
+        end
+        local k = construction_head(x)
+        x = force_all(construction_tail(x))
+        if not construction_p(x) then
+            return false
+        end
+        local v = construction_head(x)
+        if not null_p(force_all(construction_tail(x))) then
+            return false
+        end
+        local not_breaked = true
+        do
+            local i = 0
+            while i < #ret do
+                if jsbool_equal_p(ret[(i + 0) + 1], k) then
+                    ret[(i + 1) + 1] = v
+                    not_breaked = false
+                    break
+                end
+                i = i + 2
+            end
+        end
+        if not_breaked then
+            __TS__ArrayPush(ret, k)
+            __TS__ArrayPush(ret, v)
+        end
+    end
+    return ret
 end
 function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
@@ -874,6 +964,61 @@ function jsbool_equal_p(x, y)
     end
     return LANG_ERROR()
 end
+function jsbool_no_force_equal_p(x, y)
+    if x == y then
+        return true
+    end
+    x = un_just_all(x)
+    y = un_just_all(y)
+    if x == y then
+        return true
+    end
+    local function end_2(xx, yy, f1, f2)
+        if jsbool_no_force_equal_p(f1(xx), f1(yy)) and jsbool_no_force_equal_p(f2(xx), f2(yy)) then
+            lang_set_do(xx, yy)
+            return true
+        else
+            return false
+        end
+    end
+    if null_p(x) then
+        if not null_p(y) then
+            return false
+        end
+        lang_set_do(x, null_v)
+        lang_set_do(y, null_v)
+        return true
+    elseif symbol_p(x) then
+        if not symbol_p(y) then
+            return false
+        end
+        return symbol_equal_p(x, y)
+    elseif construction_p(x) then
+        if not construction_p(y) then
+            return false
+        end
+        return end_2(x, y, construction_head, construction_tail)
+    elseif error_p(x) then
+        if not error_p(y) then
+            return false
+        end
+        return end_2(x, y, error_name, error_list)
+    elseif data_p(x) then
+        if not data_p(y) then
+            return false
+        end
+        return end_2(x, y, data_name, data_list)
+    elseif delay_evaluate_p(x) then
+        error("WIP")
+    elseif delay_builtin_func_p(x) then
+        error("WIP")
+    elseif delay_builtin_form_p(x) then
+        error("WIP")
+    elseif delay_apply_p(x) then
+        error("WIP")
+    end
+    return LANG_ERROR()
+end
 function simple_print(x)
     x = un_just_all(x)
     local temp = ""
@@ -908,6 +1053,563 @@ function simple_print(x)
         return "@(" .. tostring(simple_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(simple_print(delay_builtin_form_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
     elseif delay_apply_p(x) then
         return "^(" .. tostring(simple_print(delay_apply_f(x))) .. " " .. tostring(simple_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
+    elseif comment_p(x) then
+        return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
+    end
+    return LANG_ERROR()
+end
+function complex_parse(x)
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
+    function eof()
+        return #state_const == state
+    end
+    function get()
+        LANG_ASSERT(not eof())
+        local ret = string.sub(state_const, state + 1, state + 1)
+        state = state + 1
+        return ret
+    end
+    function put(chr)
+        LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == chr)
+        state = state - 1
+    end
+    function parse_error(x)
+        if x == nil then
+            x = ""
+        end
+        error("TheLanguage parse ERROR!" .. tostring(x))
+    end
+    function a_space_p(chr)
+        return chr == " " or chr == "\n" or chr == "\t" or chr == "\r"
+    end
+    function space()
+        if eof() then
+            return false
+        end
+        local x = get()
+        if not a_space_p(x) then
+            put(x)
+            return false
+        end
+        while a_space_p(x) and not eof() do
+            x = get()
+        end
+        if not a_space_p(x) then
+            put(x)
+        end
+        return true
+    end
+    function symbol()
+        if eof() then
+            return false
+        end
+        local x = get()
+        local ret = ""
+        if not a_symbol_p(x) then
+            put(x)
+            return false
+        end
+        while a_symbol_p(x) and not eof() do
+            ret = tostring(ret) .. tostring(x)
+            x = get()
+        end
+        if a_symbol_p(x) then
+            ret = tostring(ret) .. tostring(x)
+        else
+            put(x)
+        end
+        if can_new_symbol_p(ret) then
+            return new_symbol(ret)
+        else
+            return parse_error("Not Symbol" .. tostring(ret))
+        end
+    end
+    function readlist()
+        if eof() then
+            return false
+        end
+        local x = get()
+        if x ~= "(" then
+            put(x)
+            return false
+        end
+        local ret_last = new_hole_do()
+        local ret = ret_last
+        local function last_add_do(val)
+            local ret_last2 = new_hole_do()
+            hole_set_do(ret_last, new_construction(val, ret_last2))
+            ret_last = ret_last2
+        end
+        while true do
+            space()
+            if eof() then
+                return parse_error()
+            end
+            x = get()
+            if x == ")" then
+                hole_set_do(ret_last, null_v)
+                return ret
+            end
+            if x == "." then
+                space()
+                local e = val()
+                hole_set_do(ret_last, e)
+                space()
+                if eof() then
+                    return parse_error()
+                end
+                x = get()
+                if x ~= ")" then
+                    return parse_error()
+                end
+                return ret
+            end
+            put(x)
+            local e = val()
+            last_add_do(e)
+        end
+    end
+    function data()
+        if eof() then
+            return false
+        end
+        local x = get()
+        if x ~= "#" then
+            put(x)
+            return false
+        end
+        local xs = readlist()
+        if xs == false then
+            return parse_error()
+        end
+        if not construction_p(xs) then
+            return parse_error()
+        end
+        return new_data(construction_head(xs), construction_tail(xs))
+    end
+    function readerror()
+        if eof() then
+            return false
+        end
+        local x = get()
+        if x ~= "!" then
+            put(x)
+            return false
+        end
+        local xs = readlist()
+        if xs == false then
+            return parse_error()
+        end
+        if not construction_p(xs) then
+            return parse_error()
+        end
+        return new_error(construction_head(xs), construction_tail(xs))
+    end
+    function a_symbol_p(chr)
+        if a_space_p(chr) then
+            return false
+        end
+        local ____TS_array = {
+            "(",
+            ")",
+            "!",
+            "#",
+            ".",
+            "$",
+            "%",
+            "^",
+            "@",
+            "~",
+            "/",
+            "-",
+            ">",
+            "_",
+            ":",
+            "?",
+            "[",
+            "]",
+            "&",
+            ";",
+        }
+        for ____TS_index = 1, #____TS_array do
+            local v = ____TS_array[____TS_index]
+            if v == chr then
+                return false
+            end
+        end
+        return true
+    end
+    function val()
+        space()
+        local fs = {
+            readlist,
+            readsysname,
+            data,
+            readerror,
+            readeval,
+            readfuncapply,
+            readformbuiltin,
+            readapply,
+            readcomment,
+        }
+        for ____TS_index = 1, #fs do
+            local f = fs[____TS_index]
+            local x = f()
+            if x ~= false then
+                return x
+            end
+        end
+        return parse_error()
+    end
+    function un_maybe(vl)
+        if vl == false then
+            return parse_error()
+        end
+        return vl
+    end
+    function not_eof()
+        return not eof()
+    end
+    function assert_get(c)
+        un_maybe(not_eof())
+        un_maybe(get() == c)
+    end
+    function readsysname_no_pack_inner_must(strict)
+        if strict == nil then
+            strict = false
+        end
+        local function readsysname_no_pack_bracket()
+            assert_get("[")
+            local x = readsysname_no_pack_inner_must()
+            assert_get("]")
+            return x
+        end
+        local fs
+        if strict then
+            fs = {
+                readlist,
+                symbol,
+                readsysname_no_pack_bracket,
+                data,
+                readerror,
+                readeval,
+                readfuncapply,
+                readformbuiltin,
+                readapply,
+                readcomment,
+            }
+        else
+            fs = {
+                readlist,
+                readsysname_no_pack,
+                data,
+                readerror,
+                readeval,
+                readfuncapply,
+                readformbuiltin,
+                readapply,
+                readcomment,
+            }
+        end
+        for ____TS_index = 1, #fs do
+            local f = fs[____TS_index]
+            local x = f()
+            if x ~= false then
+                return x
+            end
+        end
+        return parse_error()
+    end
+    function may_xfx_xf(vl)
+        if eof() then
+            return vl
+        end
+        local head = get()
+        if head == "." then
+            local y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y)
+        elseif head == ":" then
+            local y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, y, vl)
+        elseif head == "~" then
+            return new_list(isOrNot_symbol, vl)
+        elseif head == "@" then
+            local y = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y)
+        elseif head == "?" then
+            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl))
+        elseif head == "/" then
+            local ys = {vl}
+            while true do
+                local y = readsysname_no_pack_inner_must(true)
+                __TS__ArrayPush(ys, y)
+                if eof() then
+                    break
+                end
+                local c0 = get()
+                if c0 ~= "/" then
+                    put(c0)
+                    break
+                end
+            end
+            return new_list(sub_symbol, jsArray_to_list(ys))
+        else
+            put(head)
+            return vl
+        end
+    end
+    function readsysname_no_pack()
+        if eof() then
+            return false
+        end
+        local head = get()
+        if head == "&" then
+            un_maybe(not_eof())
+            local c0 = get()
+            if c0 == "+" then
+                local x = readsysname_no_pack_inner_must()
+                return new_list(form_symbol, new_list(system_symbol, x))
+            else
+                put(c0)
+            end
+            local x = readsysname_no_pack_inner_must()
+            return new_list(form_symbol, x)
+        elseif head == ":" then
+            un_maybe(not_eof())
+            local c0 = get()
+            if c0 == "&" then
+                assert_get(">")
+                local x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x)), theThing_symbol)
+            elseif c0 == ">" then
+                local x = readsysname_no_pack_inner_must()
+                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x), theThing_symbol)
+            else
+                put(c0)
+            end
+            local x = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, x, theThing_symbol)
+        elseif head == "+" then
+            local x = readsysname_no_pack_inner_must()
+            return new_list(system_symbol, x)
+        elseif head == "[" then
+            local x = readsysname_no_pack_inner_must()
+            assert_get("]")
+            return may_xfx_xf(x)
+        elseif head == "_" then
+            assert_get(":")
+            local x = readsysname_no_pack_inner_must()
+            return new_list(typeAnnotation_symbol, x, something_symbol)
+        else
+            put(head)
+            local x = symbol()
+            if x == false then
+                return false
+            end
+            return may_xfx_xf(x)
+        end
+    end
+    function readsysname()
+        local x = readsysname_no_pack()
+        if x == false then
+            return false
+        end
+        if symbol_p(x) then
+            return x
+        end
+        return systemName_make(x)
+    end
+    state_const = x
+    state = 0
+    local function make_read_two(prefix, k)
+        return function()
+            if eof() then
+                return false
+            end
+            local c = get()
+            if c ~= prefix then
+                put(c)
+                return false
+            end
+            local xs = readlist()
+            if xs == false then
+                return parse_error()
+            end
+            if not construction_p(xs) then
+                return parse_error()
+            end
+            local x = construction_tail(xs)
+            if not (construction_p(x) and null_p(construction_tail(x))) then
+                return parse_error()
+            end
+            return k(construction_head(xs), construction_head(x))
+        end
+    end
+    local function make_read_three(prefix, k)
+        return function()
+            if eof() then
+                return false
+            end
+            local c = get()
+            if c ~= prefix then
+                put(c)
+                return false
+            end
+            local xs = readlist()
+            if xs == false then
+                return parse_error()
+            end
+            if not construction_p(xs) then
+                return parse_error()
+            end
+            local x = construction_tail(xs)
+            if not construction_p(x) then
+                return parse_error()
+            end
+            local x_d = construction_tail(x)
+            if not (construction_p(x_d) and null_p(construction_tail(x_d))) then
+                return parse_error()
+            end
+            return k(construction_head(xs), construction_head(x), construction_head(x_d))
+        end
+    end
+    readeval = make_read_two("$", function(ev, val)
+        local env = val2env(ev)
+        if env == false then
+            return parse_error()
+        end
+        return evaluate(env, val)
+    end)
+    readfuncapply = make_read_two("%", function(f, xs)
+        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
+        return builtin_func_apply(f, jsxs)
+    end)
+    readformbuiltin = make_read_three("@", function(e, f, xs)
+        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
+        local env = val2env(e)
+        if env == false then
+            return parse_error()
+        end
+        return builtin_form_apply(env, f, jsxs)
+    end)
+    readapply = make_read_two("^", function(f, xs)
+        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
+        return apply(f, jsxs)
+    end)
+    readcomment = make_read_two(";", function(comment, x) return new_comment(comment, x) end)
+    return val()
+end
+function complex_print(val)
+    local function print_sys_name(x, is_inner_bool)
+        if symbol_p(x) then
+            return un_symbol(x)
+        end
+        local function inner_bracket(vl)
+            if is_inner_bool then
+                return "[" .. tostring(vl) .. "]"
+            else
+                return vl
+            end
+        end
+        local maybe_xs = maybe_list_to_jsArray(x)
+        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
+            local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1])
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], function_symbol) then
+                local var_2_1 = maybe_lst_2[1 + 1]
+                local maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
+                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
+                    return inner_bracket(tostring(print_sys_name(maybe_lst_3[0 + 1], true)) .. "." .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
+                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
+                    return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
+                elseif jsbool_no_force_equal_p(var_2_1, something_symbol) and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then
+                    return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[2 + 1], true)))
+                end
+            end
+            local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2 + 1])
+            if jsbool_no_force_equal_p(maybe_xs[1 + 1], function_symbol) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then
+                return inner_bracket(tostring(print_sys_name(maybe_lst_44[1 + 1], true)) .. "?")
+            end
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then
+                local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 + 1])
+                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol) and jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then
+                    return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[2 + 1], true)))
+                end
+            end
+            local hd = jsbool_no_force_equal_p(maybe_xs[2 + 1], something_symbol) and "_" or jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and "" or print_sys_name(maybe_xs[2 + 1], true)
+            return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
+        elseif maybe_xs ~= false and #maybe_xs == 2 then
+            if jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then
+                local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 + 1])
+                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then
+                    return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[1 + 1], true)))
+                end
+                return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
+            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol) then
+                return inner_bracket(tostring(print_sys_name(maybe_xs[1 + 1], true)) .. "~")
+            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
+                return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
+            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol) then
+                local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1])
+                if maybe_lst_8934 ~= false and #maybe_lst_8934 > 1 then
+                    local tmp = print_sys_name(maybe_lst_8934[0 + 1], true)
+                    do
+                        local i = 1
+                        while i < #maybe_lst_8934 do
+                            tmp = tostring(tmp) .. "/" .. tostring(print_sys_name(maybe_lst_8934[i + 1], true))
+                            i = i + 1
+                        end
+                    end
+                    return inner_bracket(tmp)
+                end
+            end
+        end
+        if is_inner_bool then
+            return simple_print(x)
+        else
+            return simple_print(systemName_make(x))
+        end
+    end
+    local x = complex_parse(simple_print(val))
+    local temp = ""
+    local prefix = ""
+    if null_p(x) then
+        return "()"
+    elseif construction_p(x) then
+        temp = "("
+        prefix = ""
+        while construction_p(x) do
+            temp = tostring(temp) .. tostring(prefix) .. tostring(complex_print(construction_head(x)))
+            prefix = " "
+            x = construction_tail(x)
+        end
+        if null_p(x) then
+            temp = tostring(temp) .. ")"
+        else
+            temp = tostring(temp) .. " . " .. tostring(complex_print(x)) .. ")"
+        end
+        return temp
+    elseif data_p(x) then
+        local name = data_name(x)
+        local list = data_list(x)
+        local maybe_xs = maybe_list_to_jsArray(list)
+        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_symbol) and jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
+            return print_sys_name(maybe_xs[1 + 1], false)
+        end
+        return "#" .. tostring(complex_print(new_construction(name, list)))
+    elseif error_p(x) then
+        return "!" .. tostring(complex_print(new_construction(error_name(x), error_list(x))))
+    elseif symbol_p(x) then
+        return un_symbol(x)
+    elseif delay_evaluate_p(x) then
+        return "$(" .. tostring(complex_print(env2val(delay_evaluate_env(x)))) .. " " .. tostring(complex_print(delay_evaluate_x(x))) .. ")"
+    elseif delay_builtin_func_p(x) then
+        return "%(" .. tostring(complex_print(delay_builtin_func_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"
+    elseif delay_builtin_form_p(x) then
+        return "@(" .. tostring(complex_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(complex_print(delay_builtin_form_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
+    elseif delay_apply_p(x) then
+        return "^(" .. tostring(complex_print(delay_apply_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
+    elseif comment_p(x) then
+        return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
     end
     return LANG_ERROR()
 end
@@ -1117,7 +1819,6 @@ function symbols_set_neg_init()
         ["𩠐"] = "首始",
     }
 end
-local symbols_set
 symbols_set = function()
     local r = symbols_set_init()
     symbols_set = function() return r end
@@ -1140,9 +1841,6 @@ delay_builtin_form_t = 8
 delay_apply_t = 9
 comment_t = 11
 hole_t = 10
-local function comment_comment(x)
-    return x[1 + 1]
-end
 ____exports.new_comment = new_comment
 ____exports.comment_p = comment_p
 ____exports.comment_comment = comment_comment
@@ -1150,18 +1848,6 @@ ____exports.comment_x = comment_x
 ____exports.un_comment_all = un_comment_all
 local function can_new_symbol_unicodechar_p(x)
     return symbols_set_neg()[x] ~= nil
-end
-local function new_symbol_unicodechar(x)
-    return {
-        symbol_t,
-        x,
-    }
-end
-local function can_new_symbol_p(x)
-    return symbols_set()[x] ~= nil
-end
-local function new_symbol(x)
-    return new_symbol_unicodechar(symbols_set()[x])
 end
 ____exports.can_new_symbol_p = can_new_symbol_p
 ____exports.New_Symbol = New_Symbol
@@ -1220,18 +1906,18 @@ end
 ____exports.force_all_rec = force_all_rec
 ____exports.force_uncomment_all_rec = force_uncomment_all_rec
 system_symbol = new_symbol("太始初核")
-local name_symbol = new_symbol("符名")
+name_symbol = new_symbol("符名")
 function_symbol = new_symbol("化滅")
 form_symbol = new_symbol("式形")
 local equal_symbol = new_symbol("等同")
 local evaluate_sym = new_symbol("解算")
-local theThing_symbol = new_symbol("特定其物")
-local something_symbol = new_symbol("省略一物")
+theThing_symbol = new_symbol("特定其物")
+something_symbol = new_symbol("省略一物")
 mapping_symbol = new_symbol("映表")
 local if_symbol = new_symbol("如若")
-local typeAnnotation_symbol = new_symbol("一類何物")
-local isOrNot_symbol = new_symbol("是非")
-local sub_symbol = new_symbol("其子")
+typeAnnotation_symbol = new_symbol("一類何物")
+isOrNot_symbol = new_symbol("是非")
+sub_symbol = new_symbol("其子")
 local true_symbol = new_symbol("爻陽")
 local false_symbol = new_symbol("爻陰")
 local quote_symbol = new_symbol("引用")
@@ -1249,9 +1935,6 @@ local theWorldStopped_symbol = new_symbol("宇宙亡矣")
 local effect_symbol = new_symbol("效應")
 local comment_symbol = new_symbol("註疏")
 the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
-local function systemName_make(x)
-    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
-end
 local function make_builtin_f_new_sym_f(x_sym)
     return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
 end
@@ -1289,20 +1972,6 @@ local comment_function_builtin_systemName = systemName_make(new_list(typeAnnotat
 comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol))
 local false_v = new_data(false_symbol, new_list())
 local true_v = new_data(true_symbol, new_list())
-local function list_to_jsArray(xs, k_done, k_tail)
-    local ret = {}
-    while construction_p(xs) do
-        __TS__ArrayPush(ret, construction_head(xs))
-        xs = construction_tail(xs)
-    end
-    if null_p(xs) then
-        return k_done(ret)
-    end
-    return k_tail(ret, xs)
-end
-local function maybe_list_to_jsArray(xs)
-    return list_to_jsArray(xs, function(x) return x end, function(_1, _2) return false end)
-end
 ____exports.jsArray_to_list = jsArray_to_list
 ____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
 ____exports.new_list = new_list
@@ -1351,64 +2020,6 @@ ____exports.force1 = force1
 ____exports.force_uncomment1 = force_uncomment1
 ____exports.force_uncomment_all = force_uncomment_all
 env_null_v = {}
-local function val2env(x)
-    x = force_all(x)
-    if not data_p(x) then
-        return false
-    end
-    local s = force_all(data_name(x))
-    if not symbol_p(s) then
-        return false
-    end
-    if not symbol_equal_p(s, mapping_symbol) then
-        return false
-    end
-    s = force_all(data_list(x))
-    if not construction_p(s) then
-        return false
-    end
-    if not null_p(force_all(construction_tail(s))) then
-        return false
-    end
-    local ret = {}
-    local xs = force_all(construction_head(s))
-    while not null_p(xs) do
-        if not construction_p(xs) then
-            return false
-        end
-        local x = force_all(construction_head(xs))
-        xs = force_all(construction_tail(xs))
-        if not construction_p(x) then
-            return false
-        end
-        local k = construction_head(x)
-        x = force_all(construction_tail(x))
-        if not construction_p(x) then
-            return false
-        end
-        local v = construction_head(x)
-        if not null_p(force_all(construction_tail(x))) then
-            return false
-        end
-        local not_breaked = true
-        do
-            local i = 0
-            while i < #ret do
-                if jsbool_equal_p(ret[(i + 0) + 1], k) then
-                    ret[(i + 1) + 1] = v
-                    not_breaked = false
-                    break
-                end
-                i = i + 2
-            end
-        end
-        if not_breaked then
-            __TS__ArrayPush(ret, k)
-            __TS__ArrayPush(ret, v)
-        end
-    end
-    return ret
-end
 ____exports.env_null_v = env_null_v
 ____exports.env_set = env_set
 ____exports.env_get = env_get
@@ -1621,615 +2232,12 @@ real_builtin_func_apply_s = {
     },
 }
 ____exports.equal_p = jsbool_equal_p
-local function jsbool_no_force_equal_p(x, y)
-    if x == y then
-        return true
-    end
-    x = un_just_all(x)
-    y = un_just_all(y)
-    if x == y then
-        return true
-    end
-    local function end_2(xx, yy, f1, f2)
-        if jsbool_no_force_equal_p(f1(xx), f1(yy)) and jsbool_no_force_equal_p(f2(xx), f2(yy)) then
-            lang_set_do(xx, yy)
-            return true
-        else
-            return false
-        end
-    end
-    if null_p(x) then
-        if not null_p(y) then
-            return false
-        end
-        lang_set_do(x, null_v)
-        lang_set_do(y, null_v)
-        return true
-    elseif symbol_p(x) then
-        if not symbol_p(y) then
-            return false
-        end
-        return symbol_equal_p(x, y)
-    elseif construction_p(x) then
-        if not construction_p(y) then
-            return false
-        end
-        return end_2(x, y, construction_head, construction_tail)
-    elseif error_p(x) then
-        if not error_p(y) then
-            return false
-        end
-        return end_2(x, y, error_name, error_list)
-    elseif data_p(x) then
-        if not data_p(y) then
-            return false
-        end
-        return end_2(x, y, data_name, data_list)
-    elseif delay_evaluate_p(x) then
-        error("WIP")
-    elseif delay_builtin_func_p(x) then
-        error("WIP")
-    elseif delay_builtin_form_p(x) then
-        error("WIP")
-    elseif delay_apply_p(x) then
-        error("WIP")
-    end
-    return LANG_ERROR()
-end
 local function simple_print_force_all_rec(x)
     return simple_print(force_all_rec(x))
 end
 ____exports.simple_print = simple_print
 ____exports.simple_print_force_all_rec = simple_print_force_all_rec
-local function complex_parse(x)
-    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
-    function eof()
-        return #state_const == state
-    end
-    function get()
-        LANG_ASSERT(not eof())
-        local ret = string.sub(state_const, state + 1, state + 1)
-        state = state + 1
-        return ret
-    end
-    function put(chr)
-        LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == chr)
-        state = state - 1
-    end
-    function parse_error(x)
-        if x == nil then
-            x = ""
-        end
-        error("TheLanguage parse ERROR!" .. tostring(x))
-    end
-    function a_space_p(chr)
-        return chr == " " or chr == "\n" or chr == "\t" or chr == "\r"
-    end
-    function space()
-        if eof() then
-            return false
-        end
-        local x = get()
-        if not a_space_p(x) then
-            put(x)
-            return false
-        end
-        while a_space_p(x) and not eof() do
-            x = get()
-        end
-        if not a_space_p(x) then
-            put(x)
-        end
-        return true
-    end
-    function symbol()
-        if eof() then
-            return false
-        end
-        local x = get()
-        local ret = ""
-        if not a_symbol_p(x) then
-            put(x)
-            return false
-        end
-        while a_symbol_p(x) and not eof() do
-            ret = tostring(ret) .. tostring(x)
-            x = get()
-        end
-        if a_symbol_p(x) then
-            ret = tostring(ret) .. tostring(x)
-        else
-            put(x)
-        end
-        if can_new_symbol_p(ret) then
-            return new_symbol(ret)
-        else
-            return parse_error("Not Symbol" .. tostring(ret))
-        end
-    end
-    function readlist()
-        if eof() then
-            return false
-        end
-        local x = get()
-        if x ~= "(" then
-            put(x)
-            return false
-        end
-        local ret_last = new_hole_do()
-        local ret = ret_last
-        local function last_add_do(val)
-            local ret_last2 = new_hole_do()
-            hole_set_do(ret_last, new_construction(val, ret_last2))
-            ret_last = ret_last2
-        end
-        while true do
-            space()
-            if eof() then
-                return parse_error()
-            end
-            x = get()
-            if x == ")" then
-                hole_set_do(ret_last, null_v)
-                return ret
-            end
-            if x == "." then
-                space()
-                local e = val()
-                hole_set_do(ret_last, e)
-                space()
-                if eof() then
-                    return parse_error()
-                end
-                x = get()
-                if x ~= ")" then
-                    return parse_error()
-                end
-                return ret
-            end
-            put(x)
-            local e = val()
-            last_add_do(e)
-        end
-    end
-    function data()
-        if eof() then
-            return false
-        end
-        local x = get()
-        if x ~= "#" then
-            put(x)
-            return false
-        end
-        local xs = readlist()
-        if xs == false then
-            return parse_error()
-        end
-        if not construction_p(xs) then
-            return parse_error()
-        end
-        return new_data(construction_head(xs), construction_tail(xs))
-    end
-    function readerror()
-        if eof() then
-            return false
-        end
-        local x = get()
-        if x ~= "!" then
-            put(x)
-            return false
-        end
-        local xs = readlist()
-        if xs == false then
-            return parse_error()
-        end
-        if not construction_p(xs) then
-            return parse_error()
-        end
-        return new_error(construction_head(xs), construction_tail(xs))
-    end
-    function a_symbol_p(chr)
-        if a_space_p(chr) then
-            return false
-        end
-        local ____TS_array = {
-            "(",
-            ")",
-            "!",
-            "#",
-            ".",
-            "$",
-            "%",
-            "^",
-            "@",
-            "~",
-            "/",
-            "-",
-            ">",
-            "_",
-            ":",
-            "?",
-            "[",
-            "]",
-            "&",
-        }
-        for ____TS_index = 1, #____TS_array do
-            local v = ____TS_array[____TS_index]
-            if v == chr then
-                return false
-            end
-        end
-        return true
-    end
-    function val()
-        space()
-        local fs = {
-            readlist,
-            readsysname,
-            data,
-            readerror,
-            readeval,
-            readfuncapply,
-            readformbuiltin,
-            readapply,
-        }
-        for ____TS_index = 1, #fs do
-            local f = fs[____TS_index]
-            local x = f()
-            if x ~= false then
-                return x
-            end
-        end
-        return parse_error()
-    end
-    function un_maybe(vl)
-        if vl == false then
-            return parse_error()
-        end
-        return vl
-    end
-    function not_eof()
-        return not eof()
-    end
-    function assert_get(c)
-        un_maybe(not_eof())
-        un_maybe(get() == c)
-    end
-    function readsysname_no_pack_inner_must(strict)
-        if strict == nil then
-            strict = false
-        end
-        local function readsysname_no_pack_bracket()
-            assert_get("[")
-            local x = readsysname_no_pack_inner_must()
-            assert_get("]")
-            return x
-        end
-        local fs
-        if strict then
-            fs = {
-                readlist,
-                symbol,
-                readsysname_no_pack_bracket,
-                data,
-                readerror,
-                readeval,
-                readfuncapply,
-                readformbuiltin,
-                readapply,
-            }
-        else
-            fs = {
-                readlist,
-                readsysname_no_pack,
-                data,
-                readerror,
-                readeval,
-                readfuncapply,
-                readformbuiltin,
-                readapply,
-            }
-        end
-        for ____TS_index = 1, #fs do
-            local f = fs[____TS_index]
-            local x = f()
-            if x ~= false then
-                return x
-            end
-        end
-        return parse_error()
-    end
-    function may_xfx_xf(vl)
-        if eof() then
-            return vl
-        end
-        local head = get()
-        if head == "." then
-            local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y)
-        elseif head == ":" then
-            local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, y, vl)
-        elseif head == "~" then
-            return new_list(isOrNot_symbol, vl)
-        elseif head == "@" then
-            local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y)
-        elseif head == "?" then
-            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl))
-        elseif head == "/" then
-            local ys = {vl}
-            while true do
-                local y = readsysname_no_pack_inner_must(true)
-                __TS__ArrayPush(ys, y)
-                if eof() then
-                    break
-                end
-                local c0 = get()
-                if c0 ~= "/" then
-                    put(c0)
-                    break
-                end
-            end
-            return new_list(sub_symbol, jsArray_to_list(ys))
-        else
-            put(head)
-            return vl
-        end
-    end
-    function readsysname_no_pack()
-        if eof() then
-            return false
-        end
-        local head = get()
-        if head == "&" then
-            un_maybe(not_eof())
-            local c0 = get()
-            if c0 == "+" then
-                local x = readsysname_no_pack_inner_must()
-                return new_list(form_symbol, new_list(system_symbol, x))
-            else
-                put(c0)
-            end
-            local x = readsysname_no_pack_inner_must()
-            return new_list(form_symbol, x)
-        elseif head == ":" then
-            un_maybe(not_eof())
-            local c0 = get()
-            if c0 == "&" then
-                assert_get(">")
-                local x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x)), theThing_symbol)
-            elseif c0 == ">" then
-                local x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x), theThing_symbol)
-            else
-                put(c0)
-            end
-            local x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, theThing_symbol)
-        elseif head == "+" then
-            local x = readsysname_no_pack_inner_must()
-            return new_list(system_symbol, x)
-        elseif head == "[" then
-            local x = readsysname_no_pack_inner_must()
-            assert_get("]")
-            return may_xfx_xf(x)
-        elseif head == "_" then
-            assert_get(":")
-            local x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, something_symbol)
-        else
-            put(head)
-            local x = symbol()
-            if x == false then
-                return false
-            end
-            return may_xfx_xf(x)
-        end
-    end
-    function readsysname()
-        local x = readsysname_no_pack()
-        if x == false then
-            return false
-        end
-        if symbol_p(x) then
-            return x
-        end
-        return systemName_make(x)
-    end
-    state_const = x
-    state = 0
-    local function make_read_two(prefix, k)
-        return function()
-            if eof() then
-                return false
-            end
-            local c = get()
-            if c ~= prefix then
-                put(c)
-                return false
-            end
-            local xs = readlist()
-            if xs == false then
-                return parse_error()
-            end
-            if not construction_p(xs) then
-                return parse_error()
-            end
-            local x = construction_tail(xs)
-            if not (construction_p(x) and null_p(construction_tail(x))) then
-                return parse_error()
-            end
-            return k(construction_head(xs), construction_head(x))
-        end
-    end
-    local function make_read_three(prefix, k)
-        return function()
-            if eof() then
-                return false
-            end
-            local c = get()
-            if c ~= prefix then
-                put(c)
-                return false
-            end
-            local xs = readlist()
-            if xs == false then
-                return parse_error()
-            end
-            if not construction_p(xs) then
-                return parse_error()
-            end
-            local x = construction_tail(xs)
-            if not construction_p(x) then
-                return parse_error()
-            end
-            local x_d = construction_tail(x)
-            if not (construction_p(x_d) and null_p(construction_tail(x_d))) then
-                return parse_error()
-            end
-            return k(construction_head(xs), construction_head(x), construction_head(x_d))
-        end
-    end
-    readeval = make_read_two("$", function(ev, val)
-        local env = val2env(ev)
-        if env == false then
-            return parse_error()
-        end
-        return evaluate(env, val)
-    end)
-    readfuncapply = make_read_two("%", function(f, xs)
-        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
-        return builtin_func_apply(f, jsxs)
-    end)
-    readformbuiltin = make_read_three("@", function(e, f, xs)
-        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
-        local env = val2env(e)
-        if env == false then
-            return parse_error()
-        end
-        return builtin_form_apply(env, f, jsxs)
-    end)
-    readapply = make_read_two("^", function(f, xs)
-        local jsxs = list_to_jsArray(xs, function(v) return v end, function(_1, _2) return parse_error() end)
-        return apply(f, jsxs)
-    end)
-    return val()
-end
 ____exports.complex_parse = complex_parse
-local function complex_print(val)
-    local function print_sys_name(x, is_inner_bool)
-        if symbol_p(x) then
-            return un_symbol(x)
-        end
-        local function inner_bracket(vl)
-            if is_inner_bool then
-                return "[" .. tostring(vl) .. "]"
-            else
-                return vl
-            end
-        end
-        local maybe_xs = maybe_list_to_jsArray(x)
-        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
-            local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1])
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], function_symbol) then
-                local var_2_1 = maybe_lst_2[1 + 1]
-                local maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-                    return inner_bracket(tostring(print_sys_name(maybe_lst_3[0 + 1], true)) .. "." .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
-                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-                    return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
-                elseif jsbool_no_force_equal_p(var_2_1, something_symbol) and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then
-                    return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[2 + 1], true)))
-                end
-            end
-            local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2 + 1])
-            if jsbool_no_force_equal_p(maybe_xs[1 + 1], function_symbol) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then
-                return inner_bracket(tostring(print_sys_name(maybe_lst_44[1 + 1], true)) .. "?")
-            end
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then
-                local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 + 1])
-                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol) and jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then
-                    return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[2 + 1], true)))
-                end
-            end
-            local hd = jsbool_no_force_equal_p(maybe_xs[2 + 1], something_symbol) and "_" or jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and "" or print_sys_name(maybe_xs[2 + 1], true)
-            return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
-        elseif maybe_xs ~= false and #maybe_xs == 2 then
-            if jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then
-                local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 + 1])
-                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then
-                    return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[1 + 1], true)))
-                end
-                return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol) then
-                return inner_bracket(tostring(print_sys_name(maybe_xs[1 + 1], true)) .. "~")
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
-                return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol) then
-                local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1])
-                if maybe_lst_8934 ~= false and #maybe_lst_8934 > 1 then
-                    local tmp = print_sys_name(maybe_lst_8934[0 + 1], true)
-                    do
-                        local i = 1
-                        while i < #maybe_lst_8934 do
-                            tmp = tostring(tmp) .. "/" .. tostring(print_sys_name(maybe_lst_8934[i + 1], true))
-                            i = i + 1
-                        end
-                    end
-                    return inner_bracket(tmp)
-                end
-            end
-        end
-        if is_inner_bool then
-            return simple_print(x)
-        else
-            return simple_print(systemName_make(x))
-        end
-    end
-    local x = complex_parse(simple_print(val))
-    local temp = ""
-    local prefix = ""
-    if null_p(x) then
-        return "()"
-    elseif construction_p(x) then
-        temp = "("
-        prefix = ""
-        while construction_p(x) do
-            temp = tostring(temp) .. tostring(prefix) .. tostring(complex_print(construction_head(x)))
-            prefix = " "
-            x = construction_tail(x)
-        end
-        if null_p(x) then
-            temp = tostring(temp) .. ")"
-        else
-            temp = tostring(temp) .. " . " .. tostring(complex_print(x)) .. ")"
-        end
-        return temp
-    elseif data_p(x) then
-        local name = data_name(x)
-        local list = data_list(x)
-        local maybe_xs = maybe_list_to_jsArray(list)
-        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_symbol) and jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
-            return print_sys_name(maybe_xs[1 + 1], false)
-        end
-        return "#" .. tostring(complex_print(new_construction(name, list)))
-    elseif error_p(x) then
-        return "!" .. tostring(complex_print(new_construction(error_name(x), error_list(x))))
-    elseif symbol_p(x) then
-        return un_symbol(x)
-    elseif delay_evaluate_p(x) then
-        return "$(" .. tostring(complex_print(env2val(delay_evaluate_env(x)))) .. " " .. tostring(complex_print(delay_evaluate_x(x))) .. ")"
-    elseif delay_builtin_func_p(x) then
-        return "%(" .. tostring(complex_print(delay_builtin_func_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_builtin_func_xs(x)))) .. ")"
-    elseif delay_builtin_form_p(x) then
-        return "@(" .. tostring(complex_print(env2val(delay_builtin_form_env(x)))) .. " " .. tostring(complex_print(delay_builtin_form_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_builtin_form_xs(x)))) .. ")"
-    elseif delay_apply_p(x) then
-        return "^(" .. tostring(complex_print(delay_apply_f(x))) .. " " .. tostring(complex_print(jsArray_to_list(delay_apply_xs(x)))) .. ")"
-    end
-    return LANG_ERROR()
-end
 ____exports.complex_print = complex_print
 local function machinetext_parse(rawstr)
     local result = new_hole_do()

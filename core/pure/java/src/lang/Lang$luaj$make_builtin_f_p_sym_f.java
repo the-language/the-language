@@ -2,10 +2,10 @@ package lang;
 public class Lang$luaj$make_builtin_f_p_sym_f extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
-    org.luaj.vm2.LuaValue u2;
+    org.luaj.vm2.LuaValue[] u2;
     org.luaj.vm2.LuaValue[] u3;
-    org.luaj.vm2.LuaValue u4;
-    org.luaj.vm2.LuaValue u5;
+    org.luaj.vm2.LuaValue[] u4;
+    org.luaj.vm2.LuaValue[] u5;
     
     public Lang$luaj$make_builtin_f_p_sym_f() {
     }
@@ -15,11 +15,11 @@ public class Lang$luaj$make_builtin_f_p_sym_f extends org.luaj.vm2.lib.VarArgFun
         a.subargs(2);
         org.luaj.vm2.LuaValue a1 = this.u0;
         org.luaj.vm2.LuaValue a2 = this.u1;
-        org.luaj.vm2.LuaValue a3 = this.u2;
+        org.luaj.vm2.LuaValue a3 = this.u2[0];
         org.luaj.vm2.LuaValue a4 = this.u3[0];
         org.luaj.vm2.LuaValue a5 = this.u1;
-        org.luaj.vm2.LuaValue a6 = this.u4;
-        org.luaj.vm2.Varargs a7 = this.u1.invoke(this.u2, a0, (org.luaj.vm2.Varargs)this.u5);
+        org.luaj.vm2.LuaValue a6 = this.u4[0];
+        org.luaj.vm2.Varargs a7 = this.u1.invoke(this.u2[0], a0, (org.luaj.vm2.Varargs)this.u5[0]);
         org.luaj.vm2.LuaValue[] a8 = new org.luaj.vm2.LuaValue[1];
         a8[0] = a6;
         org.luaj.vm2.Varargs a9 = a5.invoke(org.luaj.vm2.LuaValue.varargsOf(a8, a7));
