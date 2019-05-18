@@ -181,9 +181,9 @@ in-dir "typescript" {
            touch lua2c
      }})
      ("c/lang.h" () (void))
-     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.lua" "c/patch/lang.tail.c" "c/lang.h" "c/testmain.c") {
+     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.min.lua" "c/patch/lang.tail.c" "c/lang.h" "c/testmain.c") {
        in-dir "c" {
-             (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
+             (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.min.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
 
              |> id raw &>! lang.lua2c.out.c
 
