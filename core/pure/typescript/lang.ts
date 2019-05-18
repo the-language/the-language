@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+
+// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
+
 function LANG_ERROR(): never {
     throw "TheLanguage PANIC"
 }
@@ -24,8 +27,6 @@ function LANG_ASSERT(x: boolean): void {
         return LANG_ERROR()
     }
 }
-// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
-
 
 // {{{ 相對獨立的部分。UUC
 let symbols_set: (() => Symbols_Set) = () => {
@@ -689,8 +690,7 @@ function force1(raw: LangVal): LangVal {
     LANG_ASSERT(!just_p(x))
     if (delay_evaluate_p(x)) {
         ret = real_evaluate(delay_evaluate_env(x), delay_evaluate_x(x), raw)
-    }
-    else if (delay_builtin_form_p(x)) {
+    } else if (delay_builtin_form_p(x)) {
         ret = real_builtin_form_apply(delay_builtin_form_env(x), delay_builtin_form_f(x), delay_builtin_form_xs(x), raw)
     } else if (delay_builtin_func_p(x)) {
         ret = real_builtin_func_apply(delay_builtin_func_f(x), delay_builtin_func_xs(x), raw)
@@ -866,7 +866,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
             if (any_delay_just_p(rest)) {
                 return selfvalraw
             } else if (construction_p(rest)) {
-                xs.push(construction_head(rest)) // WIP delay未正確處理(影響較小)
+                xs.push(construction_head(rest))
                 rest = force1(construction_tail(rest))
             } else {
                 return error_v
@@ -1761,8 +1761,7 @@ function complex_parse(x: string): LangVal {
             if (c0 === '+') {
                 const x = readsysname_no_pack_inner_must()
                 return new_list(form_symbol, new_list(system_symbol, x))
-            }
-            else {
+            } else {
                 put(c0)
             }
             const x = readsysname_no_pack_inner_must()
@@ -1777,8 +1776,7 @@ function complex_parse(x: string): LangVal {
                     new_list(form_symbol,
                         new_list(function_symbol, something_symbol, x)),
                     theThing_symbol)
-            }
-            else if (c0 === '>') {
+            } else if (c0 === '>') {
                 const x = readsysname_no_pack_inner_must()
                 return new_list(typeAnnotation_symbol,
                     new_list(function_symbol, something_symbol, x),
@@ -1844,8 +1842,7 @@ function complex_print(val: LangVal): string {
                 if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true))
-                }
-                else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
+                } else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
                     // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(var_2_1), something_symbol), something_symbol), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true))
                 } else if (jsbool_no_force_equal_p(var_2_1, something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
@@ -1869,8 +1866,7 @@ function complex_print(val: LangVal): string {
                 jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) ? '' :
                     print_sys_name(maybe_xs[2], true)
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true))
-        }
-        else if (maybe_xs !== false && maybe_xs.length === 2) {
+        } else if (maybe_xs !== false && maybe_xs.length === 2) {
             if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {
                 // new_list(form_symbol, maybe_xs[1])
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1])

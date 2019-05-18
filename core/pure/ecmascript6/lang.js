@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
+// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
 function LANG_ERROR() {
     throw "TheLanguage PANIC";
 }
@@ -25,7 +26,6 @@ function LANG_ASSERT(x) {
         return LANG_ERROR();
     }
 }
-// 用export{}，不用export const .../export function...，否則生成的ES3代碼內部使用exports，使其他代碼有能力破壞，而且性能不夠好
 // {{{ 相對獨立的部分。UUC
 let symbols_set = () => {
     const r = symbols_set_init();
@@ -728,7 +728,7 @@ function real_evaluate(env, raw, selfvalraw) {
                 return selfvalraw;
             }
             else if (construction_p(rest)) {
-                xs.push(construction_head(rest)); // WIP delay未正確處理(影響較小)
+                xs.push(construction_head(rest));
                 rest = force1(construction_tail(rest));
             }
             else {
