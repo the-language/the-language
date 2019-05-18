@@ -527,7 +527,8 @@ function real_evaluate(env, raw, selfvalraw)
     if any_delay_just_p(x) then
         return selfvalraw
     end
-    local error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))))
+    local error_v
+    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
     if construction_p(x) then
         local xs = {}
         local rest = x
@@ -538,12 +539,12 @@ function real_evaluate(env, raw, selfvalraw)
                 __TS__ArrayPush(xs, construction_head(rest))
                 rest = force1(construction_tail(rest))
             else
-                return error_v
+                return error_v()
             end
         end
         if jsbool_equal_p(xs[0 + 1], form_builtin_use_systemName) then
             if #xs == 1 then
-                return error_v
+                return error_v()
             end
             local f = xs[1 + 1]
             local args = {}
@@ -557,28 +558,28 @@ function real_evaluate(env, raw, selfvalraw)
             return builtin_form_apply(env, f, args)
         elseif jsbool_equal_p(xs[0 + 1], form_use_systemName) then
             if #xs == 1 then
-                return error_v
+                return error_v()
             end
             local f = force_all(evaluate(env, xs[1 + 1]))
             if not data_p(f) then
-                return error_v
+                return error_v()
             end
             local f_type = force1(data_name(f))
             if any_delay_just_p(f_type) then
                 return selfvalraw
             end
             if not symbol_p(f_type) then
-                return error_v
+                return error_v()
             end
             if not symbol_equal_p(f_type, form_symbol) then
-                return error_v
+                return error_v()
             end
             local f_list = force1(data_list(f))
             if any_delay_just_p(f_list) then
                 return selfvalraw
             end
             if not construction_p(f_list) then
-                return error_v
+                return error_v()
             end
             local f_x = construction_head(f_list)
             local f_list_cdr = force1(construction_tail(f_list))
@@ -586,7 +587,7 @@ function real_evaluate(env, raw, selfvalraw)
                 return selfvalraw
             end
             if not null_p(f_list_cdr) then
-                return error_v
+                return error_v()
             end
             local args = {env2val(env)}
             do
@@ -599,7 +600,7 @@ function real_evaluate(env, raw, selfvalraw)
             return apply(f_x, args)
         elseif jsbool_equal_p(xs[0 + 1], function_builtin_use_systemName) then
             if #xs == 1 then
-                return error_v
+                return error_v()
             end
             local f = xs[1 + 1]
             local args = {}
@@ -626,9 +627,9 @@ function real_evaluate(env, raw, selfvalraw)
     elseif null_p(x) then
         return x
     elseif name_p(x) then
-        return env_get(env, x, error_v)
+        return env_get(env, x, error_v())
     elseif error_p(x) then
-        return error_v
+        return error_v()
     end
     return LANG_ERROR()
 end
@@ -694,12 +695,13 @@ function real_apply(f, xs, selfvalraw)
     return evaluate(env, f_code)
 end
 function real_builtin_func_apply(f, xs, selfvalraw)
-    local error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))))
+    local error_v
+    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
     for ____TS_index = 1, #real_builtin_func_apply_s do
         local xx = real_builtin_func_apply_s[____TS_index]
         if jsbool_equal_p(f, xx[0 + 1]) then
             if #xs ~= xx[1 + 1] then
-                return error_v
+                return error_v()
             end
             if xx[1 + 1] == 1 then
                 return xx[2 + 1](xs[0 + 1], error_v, selfvalraw)
@@ -711,27 +713,28 @@ function real_builtin_func_apply(f, xs, selfvalraw)
             return LANG_ERROR()
         end
     end
-    return error_v
+    return error_v()
 end
 function real_builtin_form_apply(env, f, xs, selfvalraw)
-    local error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs))))
+    local error_v
+    error_v = function() return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
     if jsbool_equal_p(f, quote_form_builtin_systemName) then
         if #xs ~= 1 then
-            return error_v
+            return error_v()
         end
         return xs[0 + 1]
     elseif jsbool_equal_p(f, lambda_form_builtin_systemName) then
         if #xs ~= 2 then
-            return error_v
+            return error_v()
         end
         return new_lambda(env, xs[0 + 1], xs[1 + 1], error_v)
     elseif jsbool_equal_p(f, comment_form_builtin_systemName) then
         if #xs ~= 2 then
-            return error_v
+            return error_v()
         end
         return new_comment(xs[0 + 1], evaluate(env, xs[1 + 1]))
     end
-    return error_v
+    return error_v()
 end
 function make_quote(x)
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
@@ -747,7 +750,7 @@ function new_lambda(env, args_pat, body, error_v)
                 body,
             }))))
         else
-            return error_v
+            return error_v()
         end
     end
     args_pat = force_all_rec(args_pat)
@@ -1392,7 +1395,7 @@ local function make_builtin_p_func(p_sym, p_jsfunc)
     return {
         p_sym,
         1,
-        function(x, error_v)
+        function(x)
             x = force1(x)
             if any_delay_just_p(x) then
                 return builtin_func_apply(p_sym, {x})
@@ -1416,7 +1419,7 @@ local function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc)
             if p_jsfunc(x) then
                 return f_jsfunc(x)
             end
-            return error_v
+            return error_v()
         end,
     }
 end
@@ -1528,7 +1531,7 @@ real_builtin_func_apply_s = {
                 iter = force_all(construction_tail(iter))
             end
             if not null_p(iter) then
-                return error_v
+                return error_v()
             end
             return apply(f, jslist)
         end,
@@ -1539,7 +1542,7 @@ real_builtin_func_apply_s = {
         function(env, x, error_v)
             local maybeenv = val2env(env)
             if maybeenv == false then
-                return error_v
+                return error_v()
             end
             return evaluate(maybeenv, x)
         end,
@@ -1554,7 +1557,7 @@ real_builtin_func_apply_s = {
                 return builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs})
             end
             if not construction_p(xs) then
-                return error_v
+                return error_v()
             end
             return construction_head(xs)
         end,
@@ -1572,11 +1575,11 @@ real_builtin_func_apply_s = {
                 })
             end
             if not data_p(b) then
-                return error_v
+                return error_v()
             end
             local nam = force_all(data_name(b))
             if not symbol_p(nam) then
-                return error_v
+                return error_v()
             end
             if symbol_equal_p(nam, true_symbol) then
                 return x
@@ -1584,7 +1587,7 @@ real_builtin_func_apply_s = {
             if symbol_equal_p(nam, false_symbol) then
                 return y
             end
-            return error_v
+            return error_v()
         end,
     },
     {

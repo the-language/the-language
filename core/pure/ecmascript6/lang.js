@@ -719,7 +719,7 @@ function real_evaluate(env, raw, selfvalraw) {
     if (any_delay_just_p(x)) {
         return selfvalraw;
     }
-    const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))));
+    const error_v = () => new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))));
     if (construction_p(x)) {
         let xs = [];
         let rest = x;
@@ -732,13 +732,13 @@ function real_evaluate(env, raw, selfvalraw) {
                 rest = force1(construction_tail(rest));
             }
             else {
-                return error_v;
+                return error_v();
             }
         }
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
             if (xs.length === 1) {
-                return error_v;
+                return error_v();
             }
             const f = xs[1];
             let args = [];
@@ -749,29 +749,29 @@ function real_evaluate(env, raw, selfvalraw) {
         }
         else if (jsbool_equal_p(xs[0], form_use_systemName)) {
             if (xs.length === 1) {
-                return error_v;
+                return error_v();
             }
             // WIP delay未正確處理(影響較小)
             const f = force_all(evaluate(env, xs[1]));
             if (!data_p(f)) {
-                return error_v;
+                return error_v();
             }
             const f_type = force1(data_name(f));
             if (any_delay_just_p(f_type)) {
                 return selfvalraw;
             }
             if (!symbol_p(f_type)) {
-                return error_v;
+                return error_v();
             }
             if (!symbol_equal_p(f_type, form_symbol)) {
-                return error_v;
+                return error_v();
             }
             const f_list = force1(data_list(f));
             if (any_delay_just_p(f_list)) {
                 return selfvalraw;
             }
             if (!construction_p(f_list)) {
-                return error_v;
+                return error_v();
             }
             const f_x = construction_head(f_list);
             const f_list_cdr = force1(construction_tail(f_list));
@@ -779,7 +779,7 @@ function real_evaluate(env, raw, selfvalraw) {
                 return selfvalraw;
             }
             if (!null_p(f_list_cdr)) {
-                return error_v;
+                return error_v();
             }
             const args = [env2val(env)];
             for (let i = 2; i < xs.length; i++) {
@@ -789,7 +789,7 @@ function real_evaluate(env, raw, selfvalraw) {
         }
         else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
             if (xs.length === 1) {
-                return error_v;
+                return error_v();
             }
             const f = xs[1];
             let args = [];
@@ -811,10 +811,10 @@ function real_evaluate(env, raw, selfvalraw) {
         return x;
     }
     else if (name_p(x)) {
-        return env_get(env, x, error_v);
+        return env_get(env, x, error_v());
     }
     else if (error_p(x)) {
-        return error_v;
+        return error_v();
     }
     return LANG_ERROR();
 }
@@ -824,7 +824,7 @@ function name_p(x) {
 function make_builtin_p_func(p_sym, p_jsfunc) {
     return [p_sym,
         1,
-        (x, error_v) => {
+        (x) => {
             x = force1(x);
             if (any_delay_just_p(x)) {
                 return builtin_func_apply(p_sym, [x]);
@@ -846,7 +846,7 @@ function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc) {
             if (p_jsfunc(x)) {
                 return f_jsfunc(x);
             }
-            return error_v;
+            return error_v();
         }];
 }
 // 註疏系統WIP
@@ -933,7 +933,7 @@ const real_builtin_func_apply_s = [
                 iter = force_all(construction_tail(iter));
             }
             if (!null_p(iter)) {
-                return error_v;
+                return error_v();
             }
             return apply(f, jslist);
         }],
@@ -941,7 +941,7 @@ const real_builtin_func_apply_s = [
             // WIP delay未正確處理(影響較小)
             const maybeenv = val2env(env);
             if (maybeenv === false) {
-                return error_v;
+                return error_v();
             }
             return evaluate(maybeenv, x);
         }],
@@ -954,7 +954,7 @@ const real_builtin_func_apply_s = [
                 return builtin_func_apply(list_chooseOne_function_builtin_systemName, [xs]);
             }
             if (!construction_p(xs)) {
-                return error_v;
+                return error_v();
             }
             return construction_head(xs);
         }],
@@ -964,12 +964,12 @@ const real_builtin_func_apply_s = [
                 return builtin_func_apply(if_function_builtin_systemName, [b, x, y]);
             }
             if (!data_p(b)) {
-                return error_v;
+                return error_v();
             }
             // WIP delay未正確處理(影響較小)
             const nam = force_all(data_name(b));
             if (!symbol_p(nam)) {
-                return error_v;
+                return error_v();
             }
             if (symbol_equal_p(nam, true_symbol)) {
                 return x;
@@ -977,7 +977,7 @@ const real_builtin_func_apply_s = [
             if (symbol_equal_p(nam, false_symbol)) {
                 return y;
             }
-            return error_v;
+            return error_v();
         }],
     [comment_function_builtin_systemName, 2, new_comment],
 ];
@@ -1042,12 +1042,12 @@ function real_apply(f, xs, selfvalraw) {
 }
 // 註疏系統WIP
 function real_builtin_func_apply(f, xs, selfvalraw) {
-    const error_v = new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
+    const error_v = () => new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
     for (const xx of real_builtin_func_apply_s) {
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, xx[0])) {
             if (xs.length !== xx[1]) {
-                return error_v;
+                return error_v();
             }
             if (xx[1] === 1) {
                 return xx[2](xs[0], error_v, selfvalraw);
@@ -1061,30 +1061,30 @@ function real_builtin_func_apply(f, xs, selfvalraw) {
             return LANG_ERROR();
         }
     }
-    return error_v;
+    return error_v();
 }
 // 註疏系統WIP
 function real_builtin_form_apply(env, f, xs, selfvalraw) {
-    const error_v = new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
+    const error_v = () => new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
     if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {
-            return error_v;
+            return error_v();
         }
         return xs[0];
     }
     else if (jsbool_equal_p(f, lambda_form_builtin_systemName)) {
         if (xs.length !== 2) {
-            return error_v;
+            return error_v();
         }
         return new_lambda(env, xs[0], xs[1], error_v);
     }
     else if (jsbool_equal_p(f, comment_form_builtin_systemName)) {
         if (xs.length !== 2) {
-            return error_v;
+            return error_v();
         }
         return new_comment(xs[0], evaluate(env, xs[1]));
     }
-    return error_v;
+    return error_v();
 }
 function make_quote(x) {
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x);
@@ -1097,7 +1097,7 @@ function new_lambda(env, args_pat, body, error_v = false) {
             return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), lambda_form_builtin_systemName, jsArray_to_list([args_pat, body]))));
         }
         else {
-            return error_v;
+            return error_v();
         }
     }
     args_pat = force_all_rec(args_pat); // WIP delay未正確處理(影響較小)

@@ -32,23 +32,20 @@ public class Lang$luaj$100 extends org.luaj.vm2.lib.VarArgFunction {
             return org.luaj.vm2.LuaValue.tailcallOf(a5, org.luaj.vm2.LuaValue.varargsOf(a6, (org.luaj.vm2.Varargs)a7));
         }
         if (!this.u4.call(a4).toboolean()) {
-            org.luaj.vm2.Varargs a8 = a3;
-            return a8;
+            return org.luaj.vm2.LuaValue.tailcallOf(a3, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
         }
-        org.luaj.vm2.LuaValue a9 = this.u5[0].invoke(this.u6.invoke((org.luaj.vm2.Varargs)a4).subargs(1)).arg1();
-        if (!this.u7.call(a9).toboolean()) {
-            org.luaj.vm2.Varargs a10 = a3;
+        org.luaj.vm2.LuaValue a8 = this.u5[0].invoke(this.u6.invoke((org.luaj.vm2.Varargs)a4).subargs(1)).arg1();
+        if (!this.u7.call(a8).toboolean()) {
+            return org.luaj.vm2.LuaValue.tailcallOf(a3, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
+        }
+        if (this.u8.call(a8, this.u9).toboolean()) {
+            org.luaj.vm2.Varargs a9 = a1;
+            return a9;
+        }
+        if (this.u8.call(a8, this.u10).toboolean()) {
+            org.luaj.vm2.Varargs a10 = a2;
             return a10;
         }
-        if (this.u8.call(a9, this.u9).toboolean()) {
-            org.luaj.vm2.Varargs a11 = a1;
-            return a11;
-        }
-        if (this.u8.call(a9, this.u10).toboolean()) {
-            org.luaj.vm2.Varargs a12 = a2;
-            return a12;
-        }
-        org.luaj.vm2.Varargs a13 = a3;
-        return a13;
+        return org.luaj.vm2.LuaValue.tailcallOf(a3, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
     }
 }

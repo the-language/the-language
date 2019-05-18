@@ -32,8 +32,7 @@ public class Lang$luaj$97 extends org.luaj.vm2.lib.VarArgFunction {
             a4 = this.u0[0].invoke(this.u4.invoke((org.luaj.vm2.Varargs)a4).subargs(1)).arg1();
         }
         if (!this.u5.call(a4).toboolean()) {
-            org.luaj.vm2.Varargs a8 = a2;
-            return a8;
+            return org.luaj.vm2.LuaValue.tailcallOf(a2, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
         }
         return org.luaj.vm2.LuaValue.tailcallOf(this.u6, org.luaj.vm2.LuaValue.varargsOf(a0, (org.luaj.vm2.Varargs)a3));
     }

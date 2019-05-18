@@ -23,8 +23,7 @@ public class Lang$luaj$make_builtin_get_func$0 extends org.luaj.vm2.lib.VarArgFu
             return org.luaj.vm2.LuaValue.tailcallOf(a3, org.luaj.vm2.LuaValue.varargsOf(a4, (org.luaj.vm2.Varargs)a5));
         }
         if (!this.u4.call(a2).toboolean()) {
-            org.luaj.vm2.Varargs a6 = a1;
-            return a6;
+            return org.luaj.vm2.LuaValue.tailcallOf(a1, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
         }
         return org.luaj.vm2.LuaValue.tailcallOf(this.u5, (org.luaj.vm2.Varargs)a2);
     }

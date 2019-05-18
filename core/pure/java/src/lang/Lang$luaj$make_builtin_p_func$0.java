@@ -13,7 +13,7 @@ public class Lang$luaj$make_builtin_p_func$0 extends org.luaj.vm2.lib.VarArgFunc
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
-        a.subargs(3);
+        a.subargs(2);
         org.luaj.vm2.LuaValue a1 = this.u0[0].call(a0);
         if (this.u1.call(a1).toboolean()) {
             org.luaj.vm2.LuaValue a2 = this.u2;
