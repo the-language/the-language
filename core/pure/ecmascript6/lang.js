@@ -1894,6 +1894,7 @@ function machinetext_parse(rawstr) {
         state++;
         return result;
     }
+    let callbacks = [];
     while (stack.length !== 0) {
         const new_stack = [];
         for (const hol of stack) {
@@ -1931,18 +1932,24 @@ function machinetext_parse(rawstr) {
                 conslike(new_error);
             }
             else if (chr === '$') {
-                const result = new_hole_do();
                 let env = false;
-                new_stack.push((x) => { env = val2env(x); });
-                new_stack.push((x) => {
-                    if (env === false) {
-                        return parse_error();
+                let v_x = false;
+                new_stack.push((x) => { env = x; });
+                new_stack.push((x) => { v_x = x; });
+                callbacks.push(() => {
+                    if (env === false || v_x === false) {
+                        return LANG_ERROR();
                     }
                     else {
-                        return hole_set_do(result, evaluate(env, x));
+                        const r_env = val2env(env);
+                        if (r_env === false) {
+                            return parse_error();
+                        }
+                        else {
+                            hol(evaluate(r_env, v_x));
+                        }
                     }
                 });
-                hol(result);
             }
             else if (chr === '_') {
                 hol(null_v);
@@ -1954,6 +1961,9 @@ function machinetext_parse(rawstr) {
         stack = new_stack;
     }
     parse_assert(state == rawstr.length);
+    for (const callback of callbacks) {
+        callback();
+    }
     return result;
 }
 // 註疏系統WIP

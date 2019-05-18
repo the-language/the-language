@@ -2533,7 +2533,7 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
     return $LANG_ERROR();
 });
 $____exports["complex_print"] = $complex_print;
-$machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodechar_p, &$evaluate, &$hole_set_do, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_symbol_unicodechar, &$null_v, &$val2env) {
+$machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$can_new_symbol_unicodechar_p, &$evaluate, &$hole_set_do, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_symbol_unicodechar, &$null_v, &$val2env) {
     $result = $new_hole_do();
     $stack = [
         (function ($x = NULL) use (&$hole_set_do, &$result) {
@@ -2556,6 +2556,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
         $state = ($state + 1);
         return $result_1;
     });
+    $callbacks = [];
     while (((is_string($stack) ? strlen($stack) : count($stack)) != 0)) {
         $new_stack = [];
         $lUaTmP_19_LuAtMp = (is_string($stack) ? strlen($stack) : count($stack));
@@ -2598,23 +2599,31 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
             } elseif (($chr == "!")) {
                 $conslike($new_error);
             } elseif (($chr == "\$")) {
-                $result_1 = $new_hole_do();
                 $env = false;
-                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$env, &$val2env) {
-                    $env = $val2env($x);
+                $v_x = false;
+                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$env) {
+                    $env = $x;
+                }));
+                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$v_x) {
+                    $v_x = $x;
                 }));
                 $GLOBALS["__TS__ArrayPush"](
-                    $new_stack,
-                    (function ($x = NULL) use (&$env, &$evaluate, &$hole_set_do, &$parse_error, &$result_1) {
-                        if (($env == false)) {
-                            return $parse_error();
+                    $callbacks,
+                    (function () use (&$LANG_ERROR, &$env, &$evaluate, &$hol, &$parse_error, &$v_x, &$val2env) {
+                        if ((($env == false) || ($v_x == false))) {
+                            return $LANG_ERROR();
                         } else {
-                            return $hole_set_do($result_1, $evaluate($env, $x));
+                            $r_env = $val2env($env);
+                            if (($r_env == false)) {
+                                return $parse_error();
+                            } else {
+                                $hol($evaluate($r_env, $v_x));
+                            }
+
                         }
 
                     })
                 );
-                $hol($result_1);
             } elseif (($chr == "_")) {
                 $hol($null_v);
             } else {
@@ -2625,6 +2634,13 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
         $stack = $new_stack;
     }
     $parse_assert(($state == (is_string($rawstr) ? strlen($rawstr) : count($rawstr))));
+    $lUaTmP_21_LuAtMp = (is_string($callbacks) ? strlen($callbacks) : count($callbacks));
+    $lUaTmP_22_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_22_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_21_LuAtMp : $lUa_I_LuA >= $lUaTmP_21_LuAtMp; $lUa_I_LuA += $lUaTmP_22_LuAtMp) {
+        $____TS_index_1 = $lUa_I_LuA;
+        $callback = $callbacks[(is_int($____TS_index_1) ? $____TS_index_1 - 1 : $____TS_index_1)];
+        $callback();
+    }
     return $result;
 });
 $machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$any_delay2delay_evaluate, &$any_delay_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_evaluate_env, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
@@ -2632,9 +2648,9 @@ $machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$any_delay2delay_
     $result = "";
     while (((is_string($stack) ? strlen($stack) : count($stack)) != 0)) {
         $new_stack = [];
-        $lUaTmP_21_LuAtMp = (is_string($stack) ? strlen($stack) : count($stack));
-        $lUaTmP_22_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_22_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_21_LuAtMp : $lUa_I_LuA >= $lUaTmP_21_LuAtMp; $lUa_I_LuA += $lUaTmP_22_LuAtMp) {
+        $lUaTmP_23_LuAtMp = (is_string($stack) ? strlen($stack) : count($stack));
+        $lUaTmP_24_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $x_1 = $stack[(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)];
             $x_1 = $un_just_all($x_1);

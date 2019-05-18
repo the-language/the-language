@@ -2232,6 +2232,7 @@ local function machinetext_parse(rawstr)
         state = state + 1
         return result
     end
+    local callbacks = {}
     while #stack ~= 0 do
         local new_stack = {}
         for ____TS_index = 1, #stack do
@@ -2266,19 +2267,26 @@ local function machinetext_parse(rawstr)
             elseif chr == "!" then
                 conslike(new_error)
             elseif chr == "$" then
-                local result = new_hole_do()
                 local env = false
+                local v_x = false
                 __TS__ArrayPush(new_stack, function(x)
-                    env = val2env(x)
+                    env = x
                 end)
                 __TS__ArrayPush(new_stack, function(x)
-                    if env == false then
-                        return parse_error()
+                    v_x = x
+                end)
+                __TS__ArrayPush(callbacks, function()
+                    if env == false or v_x == false then
+                        return LANG_ERROR()
                     else
-                        return hole_set_do(result, evaluate(env, x))
+                        local r_env = val2env(env)
+                        if r_env == false then
+                            return parse_error()
+                        else
+                            hol(evaluate(r_env, v_x))
+                        end
                     end
                 end)
-                hol(result)
             elseif chr == "_" then
                 hol(null_v)
             else
@@ -2288,6 +2296,10 @@ local function machinetext_parse(rawstr)
         stack = new_stack
     end
     parse_assert(state == #rawstr)
+    for ____TS_index = 1, #callbacks do
+        local callback = callbacks[____TS_index]
+        callback()
+    end
     return result
 end
 local function machinetext_print(x)

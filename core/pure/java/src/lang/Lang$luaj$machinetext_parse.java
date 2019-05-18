@@ -10,7 +10,8 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
     org.luaj.vm2.LuaValue u7;
     org.luaj.vm2.LuaValue u8;
     org.luaj.vm2.LuaValue u9;
-    org.luaj.vm2.LuaValue[] u10;
+    org.luaj.vm2.LuaValue u10;
+    org.luaj.vm2.LuaValue[] u11;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
@@ -61,78 +62,95 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
         a8.u1 = a0;
         a8.u2 = a5;
         a8.u3 = this.u2;
+        org.luaj.vm2.LuaTable a9 = org.luaj.vm2.LuaValue.tableOf(0, 0);
         while(!((org.luaj.vm2.LuaValue)a2).len().eq_b(k0)) {
-            org.luaj.vm2.LuaTable a9 = org.luaj.vm2.LuaValue.tableOf(0, 0);
-            org.luaj.vm2.LuaValue a10 = k1;
-            org.luaj.vm2.LuaValue a11 = ((org.luaj.vm2.LuaValue)a2).len();
-            org.luaj.vm2.LuaValue a12 = k1;
-            org.luaj.vm2.LuaValue a13 = a10.sub(a12);
+            org.luaj.vm2.LuaTable a10 = org.luaj.vm2.LuaValue.tableOf(0, 0);
+            org.luaj.vm2.LuaValue a11 = k1;
+            org.luaj.vm2.LuaValue a12 = ((org.luaj.vm2.LuaValue)a2).len();
+            org.luaj.vm2.LuaValue a13 = k1;
+            org.luaj.vm2.LuaValue a14 = a11.sub(a13);
             while(true) {
-                a13 = a13.add(a12);
-                if (a13.testfor_b(a11, a12)) {
-                    org.luaj.vm2.LuaValue a14 = ((org.luaj.vm2.LuaValue)a2).get(a13);
-                    org.luaj.vm2.LuaValue a15 = ((org.luaj.vm2.LuaValue)a8).call();
+                a14 = a14.add(a13);
+                if (a14.testfor_b(a12, a13)) {
+                    org.luaj.vm2.LuaValue a15 = ((org.luaj.vm2.LuaValue)a2).get(a14);
+                    org.luaj.vm2.LuaValue a16 = ((org.luaj.vm2.LuaValue)a8).call();
                     org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-                    Lang$luaj$machinetext_parse$4 a16 = new Lang$luaj$machinetext_parse$4();
-                    a16.u0 = this.u0;
-                    a16.u1 = this.u2;
-                    a16.u2 = a9;
-                    a16.u3 = this.u1;
-                    a16.u4 = a14;
-                    if (a15.eq_b(k2)) {
-                        org.luaj.vm2.LuaValue a17 = k3;
+                    Lang$luaj$machinetext_parse$4 a17 = new Lang$luaj$machinetext_parse$4();
+                    a17.u0 = this.u0;
+                    a17.u1 = this.u2;
+                    a17.u2 = a10;
+                    a17.u3 = this.u1;
+                    a17.u4 = a15;
+                    if (a16.eq_b(k2)) {
+                        org.luaj.vm2.LuaValue a18 = k3;
                         while(true) {
-                            org.luaj.vm2.LuaValue a18 = ((org.luaj.vm2.LuaValue)a8).call();
-                            if (a18.eq_b(k2)) {
-                                if (!this.u3.call(a17).toboolean()) {
+                            org.luaj.vm2.LuaValue a19 = ((org.luaj.vm2.LuaValue)a8).call();
+                            if (a19.eq_b(k2)) {
+                                if (!this.u3.call(a18).toboolean()) {
                                     return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a6, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
                                 }
-                                a14.invoke(this.u4.invoke((org.luaj.vm2.Varargs)a17).subargs(1));
+                                a15.invoke(this.u4.invoke((org.luaj.vm2.Varargs)a18).subargs(1));
                                 break;
                             } else {
-                                a17 = this.u2.get(k4).call(a17).concat(this.u2.get(k4).call(a18));
+                                a18 = this.u2.get(k4).call(a18).concat(this.u2.get(k4).call(a19));
                             }
                         }
-                    } else if (a15.eq_b(k5)) {
-                        ((org.luaj.vm2.LuaValue)a16).call(this.u5);
-                    } else if (a15.eq_b(k6)) {
-                        ((org.luaj.vm2.LuaValue)a16).call(this.u6);
-                    } else if (a15.eq_b(k7)) {
-                        ((org.luaj.vm2.LuaValue)a16).call(this.u7);
-                    } else if (a15.eq_b(k8)) {
-                        org.luaj.vm2.LuaValue a19 = this.u0.call();
+                    } else if (a16.eq_b(k5)) {
+                        ((org.luaj.vm2.LuaValue)a17).call(this.u5);
+                    } else if (a16.eq_b(k6)) {
+                        ((org.luaj.vm2.LuaValue)a17).call(this.u6);
+                    } else if (a16.eq_b(k7)) {
+                        ((org.luaj.vm2.LuaValue)a17).call(this.u7);
+                    } else if (a16.eq_b(k8)) {
                         org.luaj.vm2.LuaBoolean a20 = org.luaj.vm2.LuaValue.FALSE;
                         org.luaj.vm2.LuaValue[] a21 = Lang$luaj$machinetext_parse.newupe();
                         a21[0] = a20;
-                        org.luaj.vm2.LuaValue a22 = this.u2.get(k9);
-                        Lang$luaj$machinetext_parse$5 a23 = new Lang$luaj$machinetext_parse$5();
-                        a23.u0 = a21;
-                        a23.u1 = this.u8;
-                        a22.call((org.luaj.vm2.LuaValue)a9, (org.luaj.vm2.LuaValue)a23);
+                        org.luaj.vm2.LuaBoolean a22 = org.luaj.vm2.LuaValue.FALSE;
+                        org.luaj.vm2.LuaValue[] a23 = Lang$luaj$machinetext_parse.newupe();
+                        a23[0] = a22;
                         org.luaj.vm2.LuaValue a24 = this.u2.get(k9);
-                        Lang$luaj$machinetext_parse$6 a25 = new Lang$luaj$machinetext_parse$6();
+                        Lang$luaj$machinetext_parse$5 a25 = new Lang$luaj$machinetext_parse$5();
                         a25.u0 = a21;
-                        a25.u1 = a6;
-                        a25.u2 = this.u1;
-                        a25.u3 = a19;
-                        a25.u4 = this.u9;
-                        a24.call((org.luaj.vm2.LuaValue)a9, (org.luaj.vm2.LuaValue)a25);
-                        a14.call(a19);
+                        a24.call((org.luaj.vm2.LuaValue)a10, (org.luaj.vm2.LuaValue)a25);
+                        org.luaj.vm2.LuaValue a26 = this.u2.get(k9);
+                        Lang$luaj$machinetext_parse$6 a27 = new Lang$luaj$machinetext_parse$6();
+                        a27.u0 = a23;
+                        a26.call((org.luaj.vm2.LuaValue)a10, (org.luaj.vm2.LuaValue)a27);
+                        org.luaj.vm2.LuaValue a28 = this.u2.get(k9);
+                        Lang$luaj$machinetext_parse$7 a29 = new Lang$luaj$machinetext_parse$7();
+                        a29.u0 = a21;
+                        a29.u1 = a23;
+                        a29.u2 = this.u8;
+                        a29.u3 = this.u9;
+                        a29.u4 = a6;
+                        a29.u5 = a15;
+                        a29.u6 = this.u10;
+                        a28.call((org.luaj.vm2.LuaValue)a9, (org.luaj.vm2.LuaValue)a29);
                     } else {
-                        if (!a15.eq_b(k10)) {
+                        if (!a16.eq_b(k10)) {
                             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a6, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
                         }
-                        a14.call(this.u10[0]);
+                        a15.call(this.u11[0]);
                     }
                 } else {
-                    a2 = a9;
+                    a2 = a10;
                     break;
                 }
             }
         }
-        org.luaj.vm2.LuaValue a26 = a0.len();
-        ((org.luaj.vm2.LuaValue)a7).call((org.luaj.vm2.LuaValue)((a5[0].eq_b(a26)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
-        org.luaj.vm2.Varargs a27 = a1;
-        return a27;
+        org.luaj.vm2.LuaValue a30 = a0.len();
+        ((org.luaj.vm2.LuaValue)a7).call((org.luaj.vm2.LuaValue)((a5[0].eq_b(a30)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
+        org.luaj.vm2.LuaValue a31 = k1;
+        org.luaj.vm2.LuaValue a32 = ((org.luaj.vm2.LuaValue)a9).len();
+        org.luaj.vm2.LuaValue a33 = k1;
+        org.luaj.vm2.LuaValue a34 = a31.sub(a33);
+        while(true) {
+            a34 = a34.add(a33);
+            if (!a34.testfor_b(a32, a33)) {
+                org.luaj.vm2.Varargs a35 = a1;
+                return a35;
+            }
+            ((org.luaj.vm2.LuaValue)a9).get(a34).call();
+        }
     }
 }
