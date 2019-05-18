@@ -2533,7 +2533,7 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
     return $LANG_ERROR();
 });
 $____exports["complex_print"] = $complex_print;
-$machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodechar_p, &$env_null_v, &$evaluate, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$hole_set_do, &$make_quote, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol_unicodechar, &$null_v) {
+$machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodechar_p, &$evaluate, &$hole_set_do, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_symbol_unicodechar, &$null_v, &$val2env) {
     $result = $new_hole_do();
     $stack = [
         (function ($x = NULL) use (&$hole_set_do, &$result) {
@@ -2598,16 +2598,23 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$can_new_symbol_unicodecha
             } elseif (($chr == "!")) {
                 $conslike($new_error);
             } elseif (($chr == "\$")) {
-                $conslike(
-                    (function ($x = NULL, $y = NULL) use (&$env_null_v, &$evaluate, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$make_quote, &$new_list) {
-                        return $evaluate($env_null_v, $new_list(
-                            $function_builtin_use_systemName,
-                            $evaluate_function_builtin_systemName,
-                            $make_quote($x),
-                            $make_quote($y)
-                        ));
+                $result_1 = $new_hole_do();
+                $env = false;
+                $GLOBALS["__TS__ArrayPush"]($new_stack, (function ($x = NULL) use (&$env, &$val2env) {
+                    $env = $val2env($x);
+                }));
+                $GLOBALS["__TS__ArrayPush"](
+                    $new_stack,
+                    (function ($x = NULL) use (&$env, &$evaluate, &$hole_set_do, &$parse_error, &$result_1) {
+                        if (($env == false)) {
+                            return $parse_error();
+                        } else {
+                            return $hole_set_do($result_1, $evaluate($env, $x));
+                        }
+
                     })
                 );
+                $hol($result_1);
             } elseif (($chr == "_")) {
                 $hol($null_v);
             } else {

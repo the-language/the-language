@@ -1233,13 +1233,9 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         a255.u5 = a66;
         a255.u6 = a71;
         a255.u7 = a75;
-        a255.u8 = a81;
-        a255.u9 = a46;
-        a255.u10 = a106;
-        a255.u11 = a40;
-        a255.u12 = a36;
-        a255.u13 = a123;
-        a255.u14 = a16;
+        a255.u8 = a209;
+        a255.u9 = a81;
+        a255.u10 = a16;
         Lang$luaj$machinetext_parse$1 a256 = new Lang$luaj$machinetext_parse$1();
         a256.u0 = a107;
         a256.u1 = this.u0;

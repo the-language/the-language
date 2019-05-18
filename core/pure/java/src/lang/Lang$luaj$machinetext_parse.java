@@ -9,12 +9,8 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
     org.luaj.vm2.LuaValue u6;
     org.luaj.vm2.LuaValue u7;
     org.luaj.vm2.LuaValue u8;
-    org.luaj.vm2.LuaValue[] u9;
-    org.luaj.vm2.LuaValue u10;
-    org.luaj.vm2.LuaValue[] u11;
-    org.luaj.vm2.LuaValue[] u12;
-    org.luaj.vm2.LuaValue u13;
-    org.luaj.vm2.LuaValue[] u14;
+    org.luaj.vm2.LuaValue u9;
+    org.luaj.vm2.LuaValue[] u10;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
@@ -25,6 +21,7 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
     final static org.luaj.vm2.LuaValue k7;
     final static org.luaj.vm2.LuaValue k8;
     final static org.luaj.vm2.LuaValue k9;
+    final static org.luaj.vm2.LuaValue k10;
     
     static {
         k0 = org.luaj.vm2.LuaValue.valueOf(0);
@@ -36,7 +33,8 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
         k6 = org.luaj.vm2.LuaString.valueOf("#");
         k7 = org.luaj.vm2.LuaString.valueOf("!");
         k8 = org.luaj.vm2.LuaString.valueOf("$");
-        k9 = org.luaj.vm2.LuaString.valueOf("_");
+        k9 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
+        k10 = org.luaj.vm2.LuaString.valueOf("_");
     }
     
     public Lang$luaj$machinetext_parse() {
@@ -102,19 +100,29 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
                     } else if (a15.eq_b(k7)) {
                         ((org.luaj.vm2.LuaValue)a16).call(this.u7);
                     } else if (a15.eq_b(k8)) {
-                        Lang$luaj$machinetext_parse$5 a19 = new Lang$luaj$machinetext_parse$5();
-                        a19.u0 = this.u8;
-                        a19.u1 = this.u9;
-                        a19.u2 = this.u10;
-                        a19.u3 = this.u11;
-                        a19.u4 = this.u12;
-                        a19.u5 = this.u13;
-                        ((org.luaj.vm2.LuaValue)a16).call((org.luaj.vm2.LuaValue)a19);
+                        org.luaj.vm2.LuaValue a19 = this.u0.call();
+                        org.luaj.vm2.LuaBoolean a20 = org.luaj.vm2.LuaValue.FALSE;
+                        org.luaj.vm2.LuaValue[] a21 = Lang$luaj$machinetext_parse.newupe();
+                        a21[0] = a20;
+                        org.luaj.vm2.LuaValue a22 = this.u2.get(k9);
+                        Lang$luaj$machinetext_parse$5 a23 = new Lang$luaj$machinetext_parse$5();
+                        a23.u0 = a21;
+                        a23.u1 = this.u8;
+                        a22.call((org.luaj.vm2.LuaValue)a9, (org.luaj.vm2.LuaValue)a23);
+                        org.luaj.vm2.LuaValue a24 = this.u2.get(k9);
+                        Lang$luaj$machinetext_parse$6 a25 = new Lang$luaj$machinetext_parse$6();
+                        a25.u0 = a21;
+                        a25.u1 = a6;
+                        a25.u2 = this.u1;
+                        a25.u3 = a19;
+                        a25.u4 = this.u9;
+                        a24.call((org.luaj.vm2.LuaValue)a9, (org.luaj.vm2.LuaValue)a25);
+                        a14.call(a19);
                     } else {
-                        if (!a15.eq_b(k9)) {
+                        if (!a15.eq_b(k10)) {
                             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a6, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
                         }
-                        a14.call(this.u14[0]);
+                        a14.call(this.u10[0]);
                     }
                 } else {
                     a2 = a9;
@@ -122,9 +130,9 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
                 }
             }
         }
-        org.luaj.vm2.LuaValue a20 = a0.len();
-        ((org.luaj.vm2.LuaValue)a7).call((org.luaj.vm2.LuaValue)((a5[0].eq_b(a20)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
-        org.luaj.vm2.Varargs a21 = a1;
-        return a21;
+        org.luaj.vm2.LuaValue a26 = a0.len();
+        ((org.luaj.vm2.LuaValue)a7).call((org.luaj.vm2.LuaValue)((a5[0].eq_b(a26)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
+        org.luaj.vm2.Varargs a27 = a1;
+        return a27;
     }
 }

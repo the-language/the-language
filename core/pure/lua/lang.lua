@@ -2266,7 +2266,19 @@ local function machinetext_parse(rawstr)
             elseif chr == "!" then
                 conslike(new_error)
             elseif chr == "$" then
-                conslike(function(x, y) return evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))) end)
+                local result = new_hole_do()
+                local env = false
+                __TS__ArrayPush(new_stack, function(x)
+                    env = val2env(x)
+                end)
+                __TS__ArrayPush(new_stack, function(x)
+                    if env == false then
+                        return parse_error()
+                    else
+                        return hole_set_do(result, evaluate(env, x))
+                    end
+                end)
+                hol(result)
             elseif chr == "_" then
                 hol(null_v)
             else

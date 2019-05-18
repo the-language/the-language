@@ -2001,7 +2001,17 @@ function machinetext_parse(rawstr: string): LangVal {
             } else if (chr === '!') {
                 conslike(new_error)
             } else if (chr === '$') {
-                conslike((x, y) => evaluate(env_null_v, new_list(function_builtin_use_systemName, evaluate_function_builtin_systemName, make_quote(x), make_quote(y))))
+                const result = new_hole_do()
+                let env: Env | false = false
+                new_stack.push((x) => { env = val2env(x) })
+                new_stack.push((x) => {
+                    if (env === false) {
+                        return parse_error()
+                    } else {
+                        return hole_set_do(result, evaluate(env, x))
+                    }
+                })
+                hol(result)
             } else if (chr === '_') {
                 hol(null_v)
             } else {
