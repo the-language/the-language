@@ -47,6 +47,7 @@ $comment_t = NULL;
 $hole_t = NULL;
 $new_comment = NULL;
 $comment_p = NULL;
+$comment_comment = NULL;
 $comment_x = NULL;
 $un_comment_all = NULL;
 $symbol_p = NULL;
@@ -157,6 +158,9 @@ $new_comment = (function ($comment = NULL, $x = NULL) use (&$comment_t) {
 });
 $comment_p = (function ($x = NULL) use (&$comment_t) {
     return ($x[(-1 + 1)] == $comment_t);
+});
+$comment_comment = (function ($x = NULL) {
+    return $x[(0 + 1)];
 });
 $comment_x = (function ($x = NULL) {
     return $x[(1 + 1)];
@@ -1007,7 +1011,7 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construc
     }
     return $LANG_ERROR();
 });
-$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$symbol_p, &$un_just_all, &$un_symbol) {
+$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$symbol_p, &$un_just_all, &$un_symbol) {
     $x = $un_just_all($x);
     $temp = "";
     $prefix = "";
@@ -1036,6 +1040,9 @@ $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_p, &$construc
     } elseif ($symbol_p($x)) {
         return $un_symbol($x);
     } elseif ($comment_p($x)) {
+        return (";(" .
+            ((string)$simple_print($comment_comment($x)) .
+            (" " . ((string)$simple_print($comment_x($x)) . ")"))));
     } elseif ($delay_evaluate_p($x)) {
         return ("\$(" .
             ((string)$simple_print($env2val($delay_evaluate_env($x))) .
@@ -1292,9 +1299,6 @@ $delay_builtin_form_t = 8;
 $delay_apply_t = 9;
 $comment_t = 11;
 $hole_t = 10;
-$comment_comment = (function ($x = NULL) {
-    return $x[(0 + 1)];
-});
 $____exports["new_comment"] = $new_comment;
 $____exports["comment_p"] = $comment_p;
 $____exports["comment_comment"] = $comment_comment;

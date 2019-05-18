@@ -1295,7 +1295,7 @@ function simple_print(x) {
         return un_symbol(x);
     }
     else if (comment_p(x)) {
-        //WIP//free(): invalid pointer//return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
+        return ";(" + simple_print(comment_comment(x)) + " " + simple_print(comment_x(x)) + ")";
     }
     else if (delay_evaluate_p(x)) {
         return "$(" + simple_print(env2val(delay_evaluate_env(x))) + " " + simple_print(delay_evaluate_x(x)) + ")";

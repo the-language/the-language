@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$54$0 extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$55$0 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue[] u2;
@@ -11,7 +11,7 @@ public class Lang$luaj$54$0 extends org.luaj.vm2.lib.OneArgFunction {
         k1 = org.luaj.vm2.LuaValue.valueOf(1);
     }
     
-    public Lang$luaj$54$0() {
+    public Lang$luaj$55$0() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
