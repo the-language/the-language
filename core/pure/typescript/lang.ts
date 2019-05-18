@@ -2200,6 +2200,7 @@ export {
 (require (prefix-in uuc: "../../../ununicode/ununicode.rkt"))
 ((lambda ()
 
+;; 字符串(`(symbol->string k)`)在不同平臺中排序是相同的。
 (define all-char (make-immutable-hash (hash-map (uuc:all-char) (lambda (k v) (cons (symbol->string k) v)))))
 (define symbols-set-v (string-append "{ " (apply string-append (add-between (hash-map all-char (lambda (xa xd) (string-append "\"" xa "\": \"" (string xd) "\"")) #t) ", ")) " }"))
 (define symbols-set-neg-v (string-append "{ " (apply string-append (add-between (hash-map all-char (lambda (xa xd) (string-append "\"" (string xd) "\": \"" xa "\"")) #t) ", ")) " }"))

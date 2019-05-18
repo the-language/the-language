@@ -69,13 +69,15 @@
             (not (regexp #rx"!!!Generated +by +Racket!!! +!!!")) ...
             (and tail-g-line (regexp #rx"^ *// *!!!Generated +by +Racket!!! +!!!END!!!$"))
             tail-other-lines ...
-            ) (append
+            )
+         (define code (++ "(begin\n" head-c (lines->string c-lines) tail-c "\n)"))
+         (append
                 (run-racket-code-generators->lines head-other-lines)
                 (list head-c-line)
                 c-lines
                 (list tail-c-line)
                 (list head-g-line)
-                (list (eval-str-sandbox (++ "(begin\n" head-c (apply-++ c-lines) tail-c "\n)")))
+                (list (eval-str-sandbox code))
                 (list tail-g-line)
                 (run-racket-code-generators->lines tail-other-lines)
                 )]

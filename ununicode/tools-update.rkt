@@ -14,16 +14,17 @@
 
 (for ([langcode (all-langcode)])
   (define filename (string-append (symbol->string (car langcode))"-"(symbol->string (cdr langcode))".rkt"))
+  ;; `(symbol->string uuc)`確保所有平臺上順序相同。
   (define context
     (make-immutable-hash
-     (hash-map (all-char) (lambda (uuc utf8c) (cons uuc (hash-ref (hash-ref (l18n) langcode) uuc (symbol->string uuc)))))))
+     (hash-map (all-char) (lambda (uuc utf8c) (cons (symbol->string uuc) (hash-ref (hash-ref (l18n) langcode) uuc (symbol->string uuc)))))))
   (define context-text (apply
                         string-append
                         (cons "#lang racket\n(require \"ununicode.core.rkt\")\n"
                              (hash-map
                               context
                               (lambda (uuc str)
-                                (string-append "(~ '("(symbol->string (car langcode))" . "(symbol->string (cdr langcode))") '|"(symbol->string uuc)"| \""str"\")\n"))
+                                (string-append "(~ '("(symbol->string (car langcode))" . "(symbol->string (cdr langcode))") '|"uuc"| \""str"\")\n"))
                               #t))))
   (display-to-file context-text filename #:exists 'replace)
   )
