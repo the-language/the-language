@@ -2297,9 +2297,12 @@ local function machinetext_parse(rawstr)
         stack = new_stack
     end
     parse_assert(state == #rawstr)
-    for ____TS_index = 1, #callbacks do
-        local callback = callbacks[____TS_index]
-        callback()
+    do
+        local i = #callbacks - 1
+        while i >= 0 do
+            callbacks[i + 1]()
+            i = i - 1
+        end
     end
     return result
 end

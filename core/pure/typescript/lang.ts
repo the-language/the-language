@@ -2027,9 +2027,9 @@ function machinetext_parse(rawstr: string): LangVal {
         }
         stack = new_stack
     }
-    parse_assert(state == rawstr.length)
-    for (const callback of callbacks) {
-        callback()
+    parse_assert(state === rawstr.length)
+    for (let i = callbacks.length - 1; i >= 0; i--) {//順序有關。
+        callbacks[i]()
     }
     return result
 }

@@ -139,17 +139,12 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
         }
         org.luaj.vm2.LuaValue a30 = a0.len();
         ((org.luaj.vm2.LuaValue)a7).call((org.luaj.vm2.LuaValue)((a5[0].eq_b(a30)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
-        org.luaj.vm2.LuaValue a31 = k1;
-        org.luaj.vm2.LuaValue a32 = ((org.luaj.vm2.LuaValue)a9).len();
-        org.luaj.vm2.LuaValue a33 = k1;
-        org.luaj.vm2.LuaValue a34 = a31.sub(a33);
-        while(true) {
-            a34 = a34.add(a33);
-            if (!a34.testfor_b(a32, a33)) {
-                org.luaj.vm2.Varargs a35 = a1;
-                return a35;
-            }
-            ((org.luaj.vm2.LuaValue)a9).get(a34).call();
+        org.luaj.vm2.LuaValue a31 = ((org.luaj.vm2.LuaValue)a9).len().sub(k1);
+        while(k0.lteq_b(a31)) {
+            ((org.luaj.vm2.LuaValue)a9).get(a31.add(k1)).call();
+            a31 = a31.sub(k1);
         }
+        org.luaj.vm2.Varargs a32 = a1;
+        return a32;
     }
 }
