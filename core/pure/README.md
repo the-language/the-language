@@ -27,8 +27,8 @@ racket test.rkt
 * racket | `sudo apt install racket` `sudo pacman -S racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip`
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`
-* racket-rash | `raco pkg install --auto rash`
-* racket-make | `raco pkg install --auto make`
+* racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/77363527621054ca4e64eda4f542a5c45f7b4861
+* racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git`
 * jre, jdk, `/usr/lib/jvm/*/jre/lib/rt.jar` | `sudo pacman -S jdk11-openjdk jre8-openjdk` `sudo apk add openjdk8` [Alpine : Add /usr/lib/jvm/java-1.8-openjdk/bin/ to $PATH] or https://github.com/oracle/graal
 * clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
