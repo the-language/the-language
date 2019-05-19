@@ -75,6 +75,13 @@
      (apply ++ (map php-test-compile xs))]))
 (define (php-run x) (system (string-append "php -r 'require \"./php/lang.php\";\n"(assert-safe-string/single-quote x)"'")))
 
+(define ((make-js-run repl) x)
+  (define tmpfile (make-temporary-file))
+  (display-to-file x tmpfile #:exists 'replace)
+  (define ret (system* repl tmpfile))
+  (delete-file tmpfile)
+  ret)
+
 (define test-main
   `(begin
      ,@(map

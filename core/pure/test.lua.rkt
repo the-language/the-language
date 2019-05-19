@@ -16,8 +16,7 @@
      (++ "print(\""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\")\nassert("(lua-expr-compile v1)" == "(lua-expr-compile v2)")\n")]
     [(list 'begin xs ...)
      (apply ++ (map lua-test-compile xs))]))
-(define (lua-run x) (system (string-append "./c/lua-5.1.5/src/lua -e 'local L=require(\"./lua/lang\")\n"(assert-safe-string/single-quote x)"'")))
-
+(define lua-run (make-js-run "./repl.lua.sh"))
 
 echo (id "--- Lua {{{")
 (when (not (lua-run (lua-test-compile test-main))) {false})
