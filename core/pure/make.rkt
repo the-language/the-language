@@ -155,6 +155,7 @@ in-dir "typescript" {
                  haskell-copyright
                  raw))
              |> id out &>! lang.lua
+             sed -i (id "s|^function __TS__|local function __TS__|g") lang.lua
              ~/.luarocks/bin/luasrcdiet lang.lua -o lang.min.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {

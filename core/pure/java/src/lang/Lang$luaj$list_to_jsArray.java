@@ -5,11 +5,6 @@ public class Lang$luaj$list_to_jsArray extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
     org.luaj.vm2.LuaValue u4;
-    final static org.luaj.vm2.LuaValue k0;
-    
-    static {
-        k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
-    }
     
     public Lang$luaj$list_to_jsArray() {
     }
@@ -21,7 +16,7 @@ public class Lang$luaj$list_to_jsArray extends org.luaj.vm2.lib.VarArgFunction {
         a.subargs(4);
         org.luaj.vm2.LuaTable a3 = org.luaj.vm2.LuaValue.tableOf(0, 0);
         while(this.u0.call(a0).toboolean()) {
-            org.luaj.vm2.LuaValue a4 = this.u1.get(k0);
+            org.luaj.vm2.LuaValue a4 = this.u1;
             org.luaj.vm2.Varargs a5 = this.u2.invoke((org.luaj.vm2.Varargs)a0);
             org.luaj.vm2.LuaValue[] a6 = new org.luaj.vm2.LuaValue[1];
             a6[0] = a3;

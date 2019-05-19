@@ -18,7 +18,7 @@
 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 -- Lua Library inline imports
-function __TS__ArrayPush(arr, ...)
+local function __TS__ArrayPush(arr, ...)
     local items = ({...})
     for ____TS_index = 1, #items do
         local item = items[____TS_index]

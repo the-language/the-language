@@ -5,11 +5,6 @@ public class Lang$luaj$machinetext_parse$4 extends org.luaj.vm2.lib.OneArgFuncti
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
     org.luaj.vm2.LuaValue u4;
-    final static org.luaj.vm2.LuaValue k0;
-    
-    static {
-        k0 = org.luaj.vm2.LuaString.valueOf("__TS__ArrayPush");
-    }
     
     public Lang$luaj$machinetext_parse$4() {
     }
@@ -17,13 +12,13 @@ public class Lang$luaj$machinetext_parse$4 extends org.luaj.vm2.lib.OneArgFuncti
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
         org.luaj.vm2.LuaValue a0 = this.u0.call();
         org.luaj.vm2.LuaValue a1 = this.u0.call();
-        org.luaj.vm2.LuaValue a2 = this.u1.get(k0);
+        org.luaj.vm2.LuaValue a2 = this.u1;
         org.luaj.vm2.LuaValue a3 = this.u2;
         Lang$luaj$machinetext_parse$4$0 a4 = new Lang$luaj$machinetext_parse$4$0();
         a4.u0 = this.u3;
         a4.u1 = a0;
         a2.call(a3, (org.luaj.vm2.LuaValue)a4);
-        org.luaj.vm2.LuaValue a5 = this.u1.get(k0);
+        org.luaj.vm2.LuaValue a5 = this.u1;
         org.luaj.vm2.LuaValue a6 = this.u2;
         Lang$luaj$machinetext_parse$4$1 a7 = new Lang$luaj$machinetext_parse$4$1();
         a7.u0 = this.u3;
