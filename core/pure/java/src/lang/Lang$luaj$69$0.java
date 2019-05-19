@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$69$1 extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$69$0 extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue u2;
@@ -12,7 +12,7 @@ public class Lang$luaj$69$1 extends org.luaj.vm2.lib.TwoArgFunction {
         k1 = org.luaj.vm2.LuaValue.valueOf(1);
     }
     
-    public Lang$luaj$69$1() {
+    public Lang$luaj$69$0() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {

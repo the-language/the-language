@@ -721,7 +721,6 @@ function force_uncomment1(raw: LangVal): LangVal {
     }
 }
 export { force_all_export as force_all, force1, force_uncomment1, force_uncomment_all }
-
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
@@ -879,7 +878,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 return error_v()
             }
             const f = xs[1]
-            let args: Array<LangVal> = []
+            const args: Array<LangVal> = []
             for (let i = 2; i < xs.length; i++) {
                 args.push(xs[i])
             }
@@ -928,14 +927,14 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 return error_v()
             }
             const f = xs[1]
-            let args: Array<LangVal> = []
+            const args: Array<LangVal> = []
             for (let i = 2; i < xs.length; i++) {
                 args.push(evaluate(env, xs[i]))
             }
             return builtin_func_apply(f, args)
         } else {
             const f = evaluate(env, xs[0])
-            let args: Array<LangVal> = []
+            const args: Array<LangVal> = []
             for (let i = 1; i < xs.length; i++) {
                 args.push(evaluate(env, xs[i]))
             }
@@ -1119,33 +1118,31 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
 // 註疏系統WIP
 function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVal {
     // WIP delay未正確處理(影響較小)
-    function make_error_v() {
-        return new_error(system_symbol,
+    const error_v = () => new_error(system_symbol,
+        new_list(
+            function_builtin_use_systemName,
             new_list(
-                function_builtin_use_systemName,
-                new_list(
-                    apply_function_builtin_systemName,
-                    new_list(f, jsArray_to_list(xs)))))
-    }
+                apply_function_builtin_systemName,
+                new_list(f, jsArray_to_list(xs)))))
     f = force1(f)
     if (any_delay_just_p(f)) {
         return selfvalraw
     }
     if (!data_p(f)) {
-        return make_error_v()
+        return error_v()
     }
     const f_type = force_all(data_name(f))
     if (!(symbol_p(f_type) && symbol_equal_p(f_type, function_symbol))) {
-        return make_error_v()
+        return error_v()
     }
     const f_list = force_all(data_list(f))
     if (!construction_p(f_list)) {
-        return make_error_v()
+        return error_v()
     }
     let args_pat = force_all_rec(construction_head(f_list))
     const f_list_cdr = force_all(construction_tail(f_list))
     if (!(construction_p(f_list_cdr) && null_p(force_all(construction_tail(f_list_cdr))))) {
-        return make_error_v()
+        return error_v()
     }
     const f_code = construction_head(f_list_cdr)
     let env: Env = env_null_v
@@ -1167,14 +1164,14 @@ function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVa
                 env = env_set(env, construction_head(args_pat), x)
                 args_pat = construction_tail(args_pat)
             } else {
-                return make_error_v()
+                return error_v()
             }
         } else {
-            return make_error_v()
+            return error_v()
         }
     }
     if (xs.length !== xs_i) {
-        return make_error_v()
+        return error_v()
     }
     return evaluate(env, f_code)
 }
@@ -1237,20 +1234,8 @@ function new_lambda(
     env: Env,
     args_pat: LangVal,
     body: LangVal,
-    error_v: (() => LangVal) | false = false): LangVal {
+    error_v: () => LangVal): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
-    function make_error_v(): LangVal {
-        if (error_v === false) {
-            return new_error(system_symbol,
-                new_list(form_builtin_use_systemName,
-                    new_list(
-                        env2val(env),
-                        lambda_form_builtin_systemName,
-                        jsArray_to_list([args_pat, body]))))
-        } else {
-            return error_v()
-        }
-    }
     args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
     let args_pat_vars: Array<LangVal> = [] // : JSList LangVal/Name 順序有要求
     let args_pat_is_dot: boolean = false
@@ -1264,14 +1249,11 @@ function new_lambda(
             args_pat_vars.push(construction_head(args_pat_iter))
             args_pat_iter = construction_tail(args_pat_iter)
         } else {
-            return make_error_v()
+            return error_v()
         }
     }
-    let args_pat_vars_val = args_pat // 是 jsArray_to_list(args_pat_vars) : LangVal
-    if (args_pat_is_dot) {
-        args_pat_vars_val = jsArray_to_list(args_pat_vars)
-    }
-    let env_vars: Array<LangVal> = [] // : JSList LangVal/Name
+    const args_pat_vars_val = args_pat_is_dot ? jsArray_to_list(args_pat_vars) : args_pat // args_pat_vars_val總是等價與jsArray_to_list(args_pat_vars) : LangVal
+    const env_vars: Array<LangVal> = [] // : JSList LangVal/Name
     env_foreach(env, (k, v) => {
         for (let i = 0; i < args_pat_vars.length; i++) {
             if (jsbool_equal_p(args_pat_vars[i], k)) {

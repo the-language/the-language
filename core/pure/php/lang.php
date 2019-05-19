@@ -769,7 +769,8 @@ $name_p = (function ($x = NULL) use (&$data_p, &$symbol_p) {
     return ($symbol_p($x) || $data_p($x));
 });
 $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$any_delay_just_p, &$apply_function_builtin_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_builtin_use_systemName, &$function_symbol, &$jsArray_to_list, &$name_p, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
-    $make_error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
+    $error_v = NULL;
+    $error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
         return $new_error($system_symbol, $new_list(
             $function_builtin_use_systemName,
             $new_list($apply_function_builtin_systemName, $new_list($f, $jsArray_to_list($xs)))
@@ -780,21 +781,21 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$any_d
         return $selfvalraw;
     }
     if (!($data_p($f))) {
-        return $make_error_v();
+        return $error_v();
     }
     $f_type = $force_all($data_name($f));
     if (!(($symbol_p($f_type) && $symbol_equal_p($f_type, $function_symbol)))) {
-        return $make_error_v();
+        return $error_v();
     }
     $f_list = $force_all($data_list($f));
     if (!($construction_p($f_list))) {
-        return $make_error_v();
+        return $error_v();
     }
     $args_pat = $force_all_rec($construction_head($f_list));
     $f_list_cdr = $force_all($construction_tail($f_list));
     if (!(($construction_p($f_list_cdr) &&
         $null_p($force_all($construction_tail($f_list_cdr)))))) {
-        return $make_error_v();
+        return $error_v();
     }
     $f_code = $construction_head($f_list_cdr);
     $env = $env_null_v;
@@ -821,16 +822,16 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$any_d
                 $env = $env_set($env, $construction_head($args_pat), $x_1);
                 $args_pat = $construction_tail($args_pat);
             } else {
-                return $make_error_v();
+                return $error_v();
             }
 
         } else {
-            return $make_error_v();
+            return $error_v();
         }
 
     }
     if (((is_string($xs) ? strlen($xs) : count($xs)) != $xs_i)) {
-        return $make_error_v();
+        return $error_v();
     }
     return $evaluate($env, $f_code);
 });
@@ -892,22 +893,7 @@ $real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfv
 $make_quote = (function ($x = NULL) use (&$form_builtin_use_systemName, &$new_list, &$quote_form_builtin_systemName) {
     return $new_list($form_builtin_use_systemName, $quote_form_builtin_systemName, $x);
 });
-$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env2val, &$env_foreach, &$force_all_rec, &$form_builtin_use_systemName, &$function_symbol, &$jsArray_to_list, &$jsbool_equal_p, &$lambda_form_builtin_systemName, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_error, &$new_list, &$null_p, &$null_v, &$system_symbol) {
-    if (($error_v == NULL)) {
-        $error_v = false;
-    }
-    $make_error_v = (function () use (&$args_pat, &$body, &$env, &$env2val, &$error_v, &$form_builtin_use_systemName, &$jsArray_to_list, &$lambda_form_builtin_systemName, &$new_error, &$new_list, &$system_symbol) {
-        if (($error_v == false)) {
-            return $new_error($system_symbol, $new_list($form_builtin_use_systemName, $new_list(
-                $env2val($env),
-                $lambda_form_builtin_systemName,
-                $jsArray_to_list([$args_pat, $body])
-            )));
-        } else {
-            return $error_v();
-        }
-
-    });
+$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$force_all_rec, &$function_symbol, &$jsArray_to_list, &$jsbool_equal_p, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v) {
     $args_pat = $force_all_rec($args_pat);
     $args_pat_vars = [];
     $args_pat_is_dot = false;
@@ -921,14 +907,11 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
             $__TS__ArrayPush($args_pat_vars, $construction_head($args_pat_iter));
             $args_pat_iter = $construction_tail($args_pat_iter);
         } else {
-            return $make_error_v();
+            return $error_v();
         }
 
     }
-    $args_pat_vars_val = $args_pat;
-    if ($args_pat_is_dot) {
-        $args_pat_vars_val = $jsArray_to_list($args_pat_vars);
-    }
+    $args_pat_vars_val = (($args_pat_is_dot && $jsArray_to_list($args_pat_vars)) || $args_pat);
     $env_vars = [];
     $env_foreach(
         $env,

@@ -638,28 +638,27 @@ function name_p(x)
     return symbol_p(x) or data_p(x)
 end
 function real_apply(f, xs, selfvalraw)
-    local function make_error_v()
-        return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))))
-    end
+    local error_v
+    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
     f = force1(f)
     if any_delay_just_p(f) then
         return selfvalraw
     end
     if not data_p(f) then
-        return make_error_v()
+        return error_v()
     end
     local f_type = force_all(data_name(f))
     if not (symbol_p(f_type) and symbol_equal_p(f_type, function_symbol)) then
-        return make_error_v()
+        return error_v()
     end
     local f_list = force_all(data_list(f))
     if not construction_p(f_list) then
-        return make_error_v()
+        return error_v()
     end
     local args_pat = force_all_rec(construction_head(f_list))
     local f_list_cdr = force_all(construction_tail(f_list))
     if not (construction_p(f_list_cdr) and null_p(force_all(construction_tail(f_list_cdr)))) then
-        return make_error_v()
+        return error_v()
     end
     local f_code = construction_head(f_list_cdr)
     local env = env_null_v
@@ -684,14 +683,14 @@ function real_apply(f, xs, selfvalraw)
                 env = env_set(env, construction_head(args_pat), x)
                 args_pat = construction_tail(args_pat)
             else
-                return make_error_v()
+                return error_v()
             end
         else
-            return make_error_v()
+            return error_v()
         end
     end
     if #xs ~= xs_i then
-        return make_error_v()
+        return error_v()
     end
     return evaluate(env, f_code)
 end
@@ -741,19 +740,6 @@ function make_quote(x)
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
 end
 function new_lambda(env, args_pat, body, error_v)
-    if error_v == nil then
-        error_v = false
-    end
-    local function make_error_v()
-        if error_v == false then
-            return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), lambda_form_builtin_systemName, jsArray_to_list({
-                args_pat,
-                body,
-            }))))
-        else
-            return error_v()
-        end
-    end
     args_pat = force_all_rec(args_pat)
     local args_pat_vars = {}
     local args_pat_is_dot = false
@@ -767,13 +753,10 @@ function new_lambda(env, args_pat, body, error_v)
             __TS__ArrayPush(args_pat_vars, construction_head(args_pat_iter))
             args_pat_iter = construction_tail(args_pat_iter)
         else
-            return make_error_v()
+            return error_v()
         end
     end
-    local args_pat_vars_val = args_pat
-    if args_pat_is_dot then
-        args_pat_vars_val = jsArray_to_list(args_pat_vars)
-    end
+    local args_pat_vars_val = args_pat_is_dot and jsArray_to_list(args_pat_vars) or args_pat
     local env_vars = {}
     env_foreach(env, function(k, v)
         do
