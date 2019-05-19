@@ -228,6 +228,7 @@ function lang_set_do(x, y)
 end
 function hole_set_do(rawx, rawy)
     LANG_ASSERT(hole_p(rawx))
+    LANG_ASSERT(not hole_p(rawy))
     local x = rawx
     local y = rawy
     x[0 + 1] = y[0 + 1]

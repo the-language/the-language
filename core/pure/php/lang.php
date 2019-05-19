@@ -312,6 +312,7 @@ $lang_set_do = (function ($x = NULL, $y = NULL) use (&$just_t) {
 });
 $hole_set_do = (function ($rawx = NULL, $rawy = NULL) use (&$LANG_ASSERT, &$hole_p) {
     $LANG_ASSERT($hole_p($rawx));
+    $LANG_ASSERT(!($hole_p($rawy)));
     $x = $rawx;
     $y = $rawy;
     $x[(-1 + 1)] = $y[(-1 + 1)];

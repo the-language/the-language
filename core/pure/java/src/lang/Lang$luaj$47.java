@@ -19,6 +19,7 @@ public class Lang$luaj$47 extends org.luaj.vm2.lib.TwoArgFunction {
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
         this.u0.invoke(this.u1.invoke((org.luaj.vm2.Varargs)a).subargs(1));
+        this.u0.call(this.u1.call(a0).not());
         org.luaj.vm2.LuaValue a1 = a0.get(k0);
         a.set(k0, a1);
         org.luaj.vm2.LuaValue a2 = a0.get(k1);

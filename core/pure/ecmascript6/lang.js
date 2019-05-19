@@ -272,6 +272,7 @@ function lang_set_do(x, y) {
 }
 function hole_set_do(rawx, rawy) {
     LANG_ASSERT(hole_p(rawx)); // 可能曾经是hole，现在不是。
+    LANG_ASSERT(!hole_p(rawy)); // 複製hole則意義改變。
     const x = rawx;
     const y = rawy;
     x[0] = y[0];

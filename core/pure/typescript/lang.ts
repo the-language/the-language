@@ -363,6 +363,7 @@ function lang_set_do(x: LangVal, y: LangVal): void {
 }
 function hole_set_do(rawx: LangValHole, rawy: LangVal): void {
     LANG_ASSERT(hole_p(rawx)) // 可能曾经是hole，现在不是。
+    LANG_ASSERT(!hole_p(rawy)) // 複製hole則意義改變。
     const x = rawx as Array<any>
     const y = rawy as Array<any>
     x[0] = y[0]
