@@ -28,6 +28,8 @@ function LANG_ASSERT(x: boolean): void {
     }
 }
 
+type OrFalse<x> = x | false
+
 // {{{ 相對獨立的部分。UUC
 let symbols_set: (() => Symbols_Set) = () => {
     const r = symbols_set_init()
@@ -511,8 +513,8 @@ function list_to_jsArray<T>(
     return k_tail(ret, xs)
 }
 
-function maybe_list_to_jsArray(xs: LangVal): false | Array<LangVal> {
-    return list_to_jsArray<false | Array<LangVal>>(xs, (x) => x, (_1, _2) => false)
+function maybe_list_to_jsArray(xs: LangVal): OrFalse<Array<LangVal>> {
+    return list_to_jsArray<OrFalse<Array<LangVal>>>(xs, (x) => x, (_1, _2) => false)
 }
 function new_list(...xs: Array<LangVal>): LangVal {
     return jsArray_to_list(xs)
@@ -781,7 +783,7 @@ function env_foreach(env: Env, f: (k: LangVal, v: LangVal) => void): void {
     }
 }
 
-function val2env(x: LangVal): false | Env {
+function val2env(x: LangVal): OrFalse<Env> {
     x = force_all(x)
     if (!data_p(x)) {
         return false
@@ -1564,7 +1566,7 @@ function complex_parse(x: string): LangVal {
         }
         return new_error(construction_head(xs), construction_tail(xs))
     }
-    function make_read_two(prefix: string, k: (x: LangVal, y: LangVal) => LangVal): () => false | LangVal {
+    function make_read_two(prefix: string, k: (x: LangVal, y: LangVal) => LangVal): () => OrFalse<LangVal> {
         return () => {
             if (eof()) {
                 return false
@@ -1588,7 +1590,7 @@ function complex_parse(x: string): LangVal {
             return k(construction_head(xs), construction_head(x))
         }
     }
-    function make_read_three(prefix: string, k: (x: LangVal, y: LangVal, z: LangVal) => LangVal): () => false | LangVal {
+    function make_read_three(prefix: string, k: (x: LangVal, y: LangVal, z: LangVal) => LangVal): () => OrFalse<LangVal> {
         return () => {
             if (eof()) {
                 return false
@@ -1655,9 +1657,9 @@ function complex_parse(x: string): LangVal {
     }
     function val(): LangVal {
         space()
-        const fs: Array<() => false | LangVal> = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
+        const fs: Array<() => OrFalse<LangVal>> = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         for (const f of fs) {
-            const x: false | LangVal = f()
+            const x: OrFalse<LangVal> = f()
             if (x !== false) {
                 return x
             }
@@ -1665,7 +1667,7 @@ function complex_parse(x: string): LangVal {
         return parse_error()
     }
     return val()
-    function un_maybe<T>(vl: false | T): T {
+    function un_maybe<T>(vl: OrFalse<T>): T {
         if (vl === false) {
             return parse_error()
         }
@@ -1686,7 +1688,7 @@ function complex_parse(x: string): LangVal {
             return x
         }
         // 重複自val()
-        let fs: Array<() => false | LangVal>
+        let fs: Array<() => OrFalse<LangVal>>
         if (strict) {
             fs = [readlist, symbol, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
@@ -1695,7 +1697,7 @@ function complex_parse(x: string): LangVal {
                 readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         }
         for (const f of fs) {
-            const x: false | LangVal = f()
+            const x: OrFalse<LangVal> = f()
             if (x !== false) {
                 return x
             }
@@ -1739,7 +1741,7 @@ function complex_parse(x: string): LangVal {
             return vl
         }
     }
-    function readsysname_no_pack(): false | LangVal {
+    function readsysname_no_pack(): OrFalse<LangVal> {
         if (eof()) {
             return false
         }
@@ -1991,8 +1993,8 @@ function machinetext_parse(rawstr: string): LangVal {
             } else if (chr === '!') {
                 conslike(new_error)
             } else if (chr === '$') {
-                let env: LangVal | false = false
-                let v_x: LangVal | false = false
+                let env: OrFalse<LangVal> = false
+                let v_x: OrFalse<LangVal> = false
                 new_stack.push((x) => { env = x })
                 new_stack.push((x) => { v_x = x })
                 callbacks.push(() => {
@@ -2097,7 +2099,7 @@ function run_monad_helper<St, T>(
     op_handler: (op: LangVal, state: St, resume: (val: LangVal, state: St) => Trampoline<T>) => Trampoline<T>,
     code: LangVal,
     state: St,
-    next: false | LangVal = false,
+    next: OrFalse<LangVal> = false,
 ): Trampoline<T> {
     function make_bind(x: LangVal, f: LangVal): LangVal {
         throw 'WIP'
