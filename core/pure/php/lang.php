@@ -133,6 +133,7 @@ $env_get = NULL;
 $must_env_get = NULL;
 $env2val = NULL;
 $env_foreach = NULL;
+$force_uncomment_list_1 = NULL;
 $real_evaluate = NULL;
 $name_p = NULL;
 $real_builtin_func_apply_s = NULL;
@@ -637,7 +638,35 @@ $env_foreach = (function ($env = NULL, $f = NULL) {
     }
 
 });
-$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$any_delay_just_p, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
+$force_uncomment_list_1 = (function ($list = NULL, $not_list_k = NULL, $delay_just_k = NULL, $k = NULL) use (&$__TS__ArrayPush, &$any_delay_just_p, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$force1, &$null_p, &$un_just_all) {
+    $ret = [];
+    $comments = [];
+    $i = $un_just_all($list);
+    $not_forced = true;
+    while (true) {
+        if ($null_p($i)) {
+            return $k($comments, $ret);
+        } elseif ($comment_p($i)) {
+            $__TS__ArrayPush($comments, $comment_comment($i));
+            $i = $comment_x($i);
+        } elseif ($construction_p($i)) {
+            $__TS__ArrayPush($ret, $construction_head($i));
+            $i = $construction_tail($i);
+        } elseif ($any_delay_just_p($i)) {
+            if ($not_forced) {
+                $not_forced = false;
+                $i = $force1($i);
+            } else {
+                return $delay_just_k();
+            }
+
+        } else {
+            return $not_list_k();
+        }
+
+    }
+});
+$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$any_delay_just_p, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$force_uncomment_list_1, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
     $x = $force1($raw);
     if ($any_delay_just_p($x)) {
         return $selfvalraw;
@@ -650,110 +679,104 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
         ));
     });
     if ($construction_p($x)) {
-        $xs = [];
-        $rest = $x;
-        while (!($null_p($rest))) {
-            if ($any_delay_just_p($rest)) {
-                return $selfvalraw;
-            } elseif ($construction_p($rest)) {
-                $__TS__ArrayPush($xs, $construction_head($rest));
-                $rest = $force1($construction_tail($rest));
+        return $force_uncomment_list_1($x, $error_v, (function () use (&$selfvalraw) {
+            return $selfvalraw;
+        }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$any_delay_just_p, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$env, &$env2val, &$error_v, &$evaluate, &$force1, &$force_all, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$null_p, &$selfvalraw, &$symbol_equal_p, &$symbol_p) {
+            if (((is_string($comments) ? strlen($comments) : count($comments)) != 0)) {
+                throw new Exception("WIP");
+            }
+            if ($jsbool_equal_p($xs[0], $form_builtin_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
+                    return $error_v();
+                }
+                $f = $xs[1];
+                $args = [];
+                
+                {
+                    $i = 2;
+                    while (($i < (is_string($xs) ? strlen($xs) : count($xs)))) {
+                        $__TS__ArrayPush($args, $xs[($i + 0)]);
+                        $i = ($i + 1);
+                    }
+                }
+
+                return $builtin_form_apply($env, $f, $args);
+            } elseif ($jsbool_equal_p($xs[0], $form_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
+                    return $error_v();
+                }
+                $f_1 = $force_all($evaluate($env, $xs[1]));
+                if (!($data_p($f_1))) {
+                    return $error_v();
+                }
+                $f_type = $force1($data_name($f_1));
+                if ($any_delay_just_p($f_type)) {
+                    return $selfvalraw;
+                }
+                if (!($symbol_p($f_type))) {
+                    return $error_v();
+                }
+                if (!($symbol_equal_p($f_type, $form_symbol))) {
+                    return $error_v();
+                }
+                $f_list = $force1($data_list($f_1));
+                if ($any_delay_just_p($f_list)) {
+                    return $selfvalraw;
+                }
+                if (!($construction_p($f_list))) {
+                    return $error_v();
+                }
+                $f_x = $construction_head($f_list);
+                $f_list_cdr = $force1($construction_tail($f_list));
+                if ($any_delay_just_p($f_list_cdr)) {
+                    return $selfvalraw;
+                }
+                if (!($null_p($f_list_cdr))) {
+                    return $error_v();
+                }
+                $args_1 = [$env2val($env)];
+                
+                {
+                    $i_1 = 2;
+                    while (($i_1 < (is_string($xs) ? strlen($xs) : count($xs)))) {
+                        $__TS__ArrayPush($args_1, $xs[($i_1 + 0)]);
+                        $i_1 = ($i_1 + 1);
+                    }
+                }
+
+                return $apply($f_x, $args_1);
+            } elseif ($jsbool_equal_p($xs[0], $function_builtin_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
+                    return $error_v();
+                }
+                $f_2 = $xs[1];
+                $args_2 = [];
+                
+                {
+                    $i_2 = 2;
+                    while (($i_2 < (is_string($xs) ? strlen($xs) : count($xs)))) {
+                        $__TS__ArrayPush($args_2, $evaluate($env, $xs[($i_2 + 0)]));
+                        $i_2 = ($i_2 + 1);
+                    }
+                }
+
+                return $builtin_func_apply($f_2, $args_2);
             } else {
-                return $error_v();
-            }
-
-        }
-        if ($jsbool_equal_p($xs[0], $form_builtin_use_systemName)) {
-            if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
-                return $error_v();
-            }
-            $f = $xs[1];
-            $args = [];
-            
-            {
-                $i = 2;
-                while (($i < (is_string($xs) ? strlen($xs) : count($xs)))) {
-                    $__TS__ArrayPush($args, $xs[($i + 0)]);
-                    $i = ($i + 1);
+                $f_3 = $evaluate($env, $xs[0]);
+                $args_3 = [];
+                
+                {
+                    $i_3 = 1;
+                    while (($i_3 < (is_string($xs) ? strlen($xs) : count($xs)))) {
+                        $__TS__ArrayPush($args_3, $evaluate($env, $xs[($i_3 + 0)]));
+                        $i_3 = ($i_3 + 1);
+                    }
                 }
+
+                return $apply($f_3, $args_3);
             }
 
-            return $builtin_form_apply($env, $f, $args);
-        } elseif ($jsbool_equal_p($xs[0], $form_use_systemName)) {
-            if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
-                return $error_v();
-            }
-            $f_1 = $force_all($evaluate($env, $xs[1]));
-            if (!($data_p($f_1))) {
-                return $error_v();
-            }
-            $f_type = $force1($data_name($f_1));
-            if ($any_delay_just_p($f_type)) {
-                return $selfvalraw;
-            }
-            if (!($symbol_p($f_type))) {
-                return $error_v();
-            }
-            if (!($symbol_equal_p($f_type, $form_symbol))) {
-                return $error_v();
-            }
-            $f_list = $force1($data_list($f_1));
-            if ($any_delay_just_p($f_list)) {
-                return $selfvalraw;
-            }
-            if (!($construction_p($f_list))) {
-                return $error_v();
-            }
-            $f_x = $construction_head($f_list);
-            $f_list_cdr = $force1($construction_tail($f_list));
-            if ($any_delay_just_p($f_list_cdr)) {
-                return $selfvalraw;
-            }
-            if (!($null_p($f_list_cdr))) {
-                return $error_v();
-            }
-            $args_1 = [$env2val($env)];
-            
-            {
-                $i_1 = 2;
-                while (($i_1 < (is_string($xs) ? strlen($xs) : count($xs)))) {
-                    $__TS__ArrayPush($args_1, $xs[($i_1 + 0)]);
-                    $i_1 = ($i_1 + 1);
-                }
-            }
-
-            return $apply($f_x, $args_1);
-        } elseif ($jsbool_equal_p($xs[0], $function_builtin_use_systemName)) {
-            if (((is_string($xs) ? strlen($xs) : count($xs)) == 1)) {
-                return $error_v();
-            }
-            $f_2 = $xs[1];
-            $args_2 = [];
-            
-            {
-                $i_2 = 2;
-                while (($i_2 < (is_string($xs) ? strlen($xs) : count($xs)))) {
-                    $__TS__ArrayPush($args_2, $evaluate($env, $xs[($i_2 + 0)]));
-                    $i_2 = ($i_2 + 1);
-                }
-            }
-
-            return $builtin_func_apply($f_2, $args_2);
-        } else {
-            $f_3 = $evaluate($env, $xs[0]);
-            $args_3 = [];
-            
-            {
-                $i_3 = 1;
-                while (($i_3 < (is_string($xs) ? strlen($xs) : count($xs)))) {
-                    $__TS__ArrayPush($args_3, $evaluate($env, $xs[($i_3 + 0)]));
-                    $i_3 = ($i_3 + 1);
-                }
-            }
-
-            return $apply($f_3, $args_3);
-        }
-
+        }));
     } elseif ($null_p($x)) {
         return $x;
     } elseif ($name_p($x)) {

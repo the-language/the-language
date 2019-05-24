@@ -29,7 +29,7 @@ local function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -524,6 +524,32 @@ function env_foreach(env, f)
         end
     end
 end
+function force_uncomment_list_1(list, not_list_k, delay_just_k, k)
+    local ret = {}
+    local comments = {}
+    local i = un_just_all(list)
+    local not_forced = true
+    while true do
+        if null_p(i) then
+            return k(comments, ret)
+        elseif comment_p(i) then
+            __TS__ArrayPush(comments, comment_comment(i))
+            i = comment_x(i)
+        elseif construction_p(i) then
+            __TS__ArrayPush(ret, construction_head(i))
+            i = construction_tail(i)
+        elseif any_delay_just_p(i) then
+            if not_forced then
+                not_forced = false
+                i = force1(i)
+            else
+                return delay_just_k()
+            end
+        else
+            return not_list_k()
+        end
+    end
+end
 function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
     if any_delay_just_p(x) then
@@ -532,100 +558,93 @@ function real_evaluate(env, raw, selfvalraw)
     local error_v
     error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
     if construction_p(x) then
-        local xs = {}
-        local rest = x
-        while not null_p(rest) do
-            if any_delay_just_p(rest) then
-                return selfvalraw
-            elseif construction_p(rest) then
-                __TS__ArrayPush(xs, construction_head(rest))
-                rest = force1(construction_tail(rest))
+        return force_uncomment_list_1(x, error_v, function() return selfvalraw end, function(comments, xs)
+            if #comments ~= 0 then
+                error("WIP")
+            end
+            if jsbool_equal_p(xs[1], form_builtin_use_systemName) then
+                if #xs == 1 then
+                    return error_v()
+                end
+                local f = xs[2]
+                local args = {}
+                do
+                    local i = 2
+                    while i < #xs do
+                        __TS__ArrayPush(args, xs[i + 1])
+                        i = i + 1
+                    end
+                end
+                return builtin_form_apply(env, f, args)
+            elseif jsbool_equal_p(xs[1], form_use_systemName) then
+                if #xs == 1 then
+                    return error_v()
+                end
+                local f = force_all(evaluate(env, xs[2]))
+                if not data_p(f) then
+                    return error_v()
+                end
+                local f_type = force1(data_name(f))
+                if any_delay_just_p(f_type) then
+                    return selfvalraw
+                end
+                if not symbol_p(f_type) then
+                    return error_v()
+                end
+                if not symbol_equal_p(f_type, form_symbol) then
+                    return error_v()
+                end
+                local f_list = force1(data_list(f))
+                if any_delay_just_p(f_list) then
+                    return selfvalraw
+                end
+                if not construction_p(f_list) then
+                    return error_v()
+                end
+                local f_x = construction_head(f_list)
+                local f_list_cdr = force1(construction_tail(f_list))
+                if any_delay_just_p(f_list_cdr) then
+                    return selfvalraw
+                end
+                if not null_p(f_list_cdr) then
+                    return error_v()
+                end
+                local args = {env2val(env)}
+                do
+                    local i = 2
+                    while i < #xs do
+                        __TS__ArrayPush(args, xs[i + 1])
+                        i = i + 1
+                    end
+                end
+                return apply(f_x, args)
+            elseif jsbool_equal_p(xs[1], function_builtin_use_systemName) then
+                if #xs == 1 then
+                    return error_v()
+                end
+                local f = xs[2]
+                local args = {}
+                do
+                    local i = 2
+                    while i < #xs do
+                        __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
+                        i = i + 1
+                    end
+                end
+                return builtin_func_apply(f, args)
             else
-                return error_v()
-            end
-        end
-        if jsbool_equal_p(xs[1], form_builtin_use_systemName) then
-            if #xs == 1 then
-                return error_v()
-            end
-            local f = xs[2]
-            local args = {}
-            do
-                local i = 2
-                while i < #xs do
-                    __TS__ArrayPush(args, xs[i + 1])
-                    i = i + 1
+                local f = evaluate(env, xs[1])
+                local args = {}
+                do
+                    local i = 1
+                    while i < #xs do
+                        __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
+                        i = i + 1
+                    end
                 end
+                return apply(f, args)
             end
-            return builtin_form_apply(env, f, args)
-        elseif jsbool_equal_p(xs[1], form_use_systemName) then
-            if #xs == 1 then
-                return error_v()
-            end
-            local f = force_all(evaluate(env, xs[2]))
-            if not data_p(f) then
-                return error_v()
-            end
-            local f_type = force1(data_name(f))
-            if any_delay_just_p(f_type) then
-                return selfvalraw
-            end
-            if not symbol_p(f_type) then
-                return error_v()
-            end
-            if not symbol_equal_p(f_type, form_symbol) then
-                return error_v()
-            end
-            local f_list = force1(data_list(f))
-            if any_delay_just_p(f_list) then
-                return selfvalraw
-            end
-            if not construction_p(f_list) then
-                return error_v()
-            end
-            local f_x = construction_head(f_list)
-            local f_list_cdr = force1(construction_tail(f_list))
-            if any_delay_just_p(f_list_cdr) then
-                return selfvalraw
-            end
-            if not null_p(f_list_cdr) then
-                return error_v()
-            end
-            local args = {env2val(env)}
-            do
-                local i = 2
-                while i < #xs do
-                    __TS__ArrayPush(args, xs[i + 1])
-                    i = i + 1
-                end
-            end
-            return apply(f_x, args)
-        elseif jsbool_equal_p(xs[1], function_builtin_use_systemName) then
-            if #xs == 1 then
-                return error_v()
-            end
-            local f = xs[2]
-            local args = {}
-            do
-                local i = 2
-                while i < #xs do
-                    __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
-                    i = i + 1
-                end
-            end
-            return builtin_func_apply(f, args)
-        else
-            local f = evaluate(env, xs[1])
-            local args = {}
-            do
-                local i = 1
-                while i < #xs do
-                    __TS__ArrayPush(args, evaluate(env, xs[i + 1]))
-                    i = i + 1
-                end
-            end
-            return apply(f, args)
-        end
+        end)
     elseif null_p(x) then
         return x
     elseif name_p(x) then

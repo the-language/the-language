@@ -850,6 +850,32 @@ export {
 // 相對獨立的部分。變量之環境 }}}
 
 // 註疏系統WIP
+function force_uncomment_list_1<T>(list: LangVal, not_list_k: () => T, delay_just_k: () => T, k: (comments: Array<LangVal>, ret: Array<LangVal>) => T): T {
+    let ret: Array<LangVal> = []
+    let comments: Array<LangVal> = []
+    let i: LangVal = un_just_all(list)
+    let not_forced: boolean = true
+    while (true) {
+        if (null_p(i)) {
+            return k(comments, ret)
+        } else if (comment_p(i)) {
+            comments.push(comment_comment(i))
+            i = comment_x(i)
+        } else if (construction_p(i)) {
+            ret.push(construction_head(i))
+            i = construction_tail(i)
+        } else if (any_delay_just_p(i)) {
+            if (not_forced) {
+                not_forced = false
+                i = force1(i)
+            } else {
+                return delay_just_k()
+            }
+        } else {
+            return not_list_k()
+        }
+    }
+}
 function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     const x = force1(raw)
     if (any_delay_just_p(x)) {
@@ -862,86 +888,79 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 evaluate_function_builtin_systemName,
                 new_list(env2val(env), x))))
     if (construction_p(x)) {
-        let xs: Array<LangVal> = []
-        let rest: LangVal = x
-        while (!null_p(rest)) {
-            if (any_delay_just_p(rest)) {
-                return selfvalraw
-            } else if (construction_p(rest)) {
-                xs.push(construction_head(rest))
-                rest = force1(construction_tail(rest))
-            } else {
-                return error_v()
-            }
-        }
-        // WIP delay未正確處理(影響較小)
-        if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
-            if (xs.length === 1) {
-                return error_v()
-            }
-            const f = xs[1]
-            const args: Array<LangVal> = []
-            for (let i = 2; i < xs.length; i++) {
-                args.push(xs[i])
-            }
-            return builtin_form_apply(env, f, args)
-        } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
-            if (xs.length === 1) {
-                return error_v()
+        return force_uncomment_list_1(x, error_v, () => selfvalraw, (comments, xs) => {
+            if (comments.length !== 0) {
+                throw 'WIP'
             }
             // WIP delay未正確處理(影響較小)
-            const f = force_all(evaluate(env, xs[1]))
-            if (!data_p(f)) {
-                return error_v()
+            if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
+                if (xs.length === 1) {
+                    return error_v()
+                }
+                const f = xs[1]
+                const args: Array<LangVal> = []
+                for (let i = 2; i < xs.length; i++) {
+                    args.push(xs[i])
+                }
+                return builtin_form_apply(env, f, args)
+            } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
+                if (xs.length === 1) {
+                    return error_v()
+                }
+                // WIP delay未正確處理(影響較小)
+                const f = force_all(evaluate(env, xs[1]))
+                if (!data_p(f)) {
+                    return error_v()
+                }
+                const f_type = force1(data_name(f))
+                if (any_delay_just_p(f_type)) {
+                    return selfvalraw
+                }
+                if (!symbol_p(f_type)) {
+                    return error_v()
+                }
+                if (!symbol_equal_p(f_type, form_symbol)) {
+                    return error_v()
+                }
+                const f_list = force1(data_list(f))
+                if (any_delay_just_p(f_list)) {
+                    return selfvalraw
+                }
+                if (!construction_p(f_list)) {
+                    return error_v()
+                }
+                const f_x = construction_head(f_list)
+                const f_list_cdr = force1(construction_tail(f_list))
+                if (any_delay_just_p(f_list_cdr)) {
+                    return selfvalraw
+                }
+                if (!null_p(f_list_cdr)) {
+                    return error_v()
+                }
+                const args = [env2val(env)]
+                for (let i = 2; i < xs.length; i++) {
+                    args.push(xs[i])
+                }
+                return apply(f_x, args)
+            } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
+                if (xs.length === 1) {
+                    return error_v()
+                }
+                const f = xs[1]
+                const args: Array<LangVal> = []
+                for (let i = 2; i < xs.length; i++) {
+                    args.push(evaluate(env, xs[i]))
+                }
+                return builtin_func_apply(f, args)
+            } else {
+                const f = evaluate(env, xs[0])
+                const args: Array<LangVal> = []
+                for (let i = 1; i < xs.length; i++) {
+                    args.push(evaluate(env, xs[i]))
+                }
+                return apply(f, args)
             }
-            const f_type = force1(data_name(f))
-            if (any_delay_just_p(f_type)) {
-                return selfvalraw
-            }
-            if (!symbol_p(f_type)) {
-                return error_v()
-            }
-            if (!symbol_equal_p(f_type, form_symbol)) {
-                return error_v()
-            }
-            const f_list = force1(data_list(f))
-            if (any_delay_just_p(f_list)) {
-                return selfvalraw
-            }
-            if (!construction_p(f_list)) {
-                return error_v()
-            }
-            const f_x = construction_head(f_list)
-            const f_list_cdr = force1(construction_tail(f_list))
-            if (any_delay_just_p(f_list_cdr)) {
-                return selfvalraw
-            }
-            if (!null_p(f_list_cdr)) {
-                return error_v()
-            }
-            const args = [env2val(env)]
-            for (let i = 2; i < xs.length; i++) {
-                args.push(xs[i])
-            }
-            return apply(f_x, args)
-        } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
-            if (xs.length === 1) {
-                return error_v()
-            }
-            const f = xs[1]
-            const args: Array<LangVal> = []
-            for (let i = 2; i < xs.length; i++) {
-                args.push(evaluate(env, xs[i]))
-            }
-            return builtin_func_apply(f, args)
-        } else {
-            const f = evaluate(env, xs[0])
-            const args: Array<LangVal> = []
-            for (let i = 1; i < xs.length; i++) {
-                args.push(evaluate(env, xs[i]))
-            }
-            return apply(f, args)
-        }
+        })
     } else if (null_p(x)) {
         return x
     } else if (name_p(x)) {
