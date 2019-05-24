@@ -7,15 +7,15 @@ source-map@^0.7.3:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
-typescript-to-lua@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.19.0.tgz#0f4dcbade77c68b02fda9e241952cdbaa5d798c8"
-  integrity sha512-N4YQOL2gEbAtaNzscvro+RYkGU8Mi1xEUSARSUlocUJLaek0p+TLj7LqaINRlq9jzN4yFFP8Bx+v2hjbcPyOfA==
+typescript-to-lua@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/typescript-to-lua/-/typescript-to-lua-0.20.0.tgz#03bd342e5813eb33678bfd5f502240a7e9dcb36f"
+  integrity sha512-JivMFrRlV1/tpvanh+JJg9YBGx7z02yb0mDPLCNRvMPKXZefLT0HuCHPeKHtbcNsMH5Z2nQdtwlokZKdcXuxJA==
   dependencies:
     source-map "^0.7.3"
-    typescript "^3.3.1"
+    typescript "^3.4.5"
 
-typescript@^3.3.1:
+typescript@^3.4.5:
   version "3.4.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
   integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==

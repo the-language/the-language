@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-google-closure-compiler-java@^20190415.0.0:
-  version "20190415.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20190415.0.0.tgz#21ca28f7961d2cdc1aee16bade823facef426351"
-  integrity sha512-7XpiMW7ltsWbFtPbdGYrTZpgm/hxM9q8uWGwOvPAG0qA2cDFfspuU6L1kauqMvrHZ2ItLH5j6bQXdEmRHC2HwA==
+google-closure-compiler-java@^20190513.0.0:
+  version "20190513.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20190513.0.0.tgz#e78e0878899cfa2ac06b7c586ccdec3c41aa367d"
+  integrity sha512-0dFZwAREck9W780tVW4AW1c4ztrigLXGJ+dLCXFCwVJZS0pmhmZx3YEByl/aFSU9etIjLwYkYo73xjPyZ/AbtA==
 
 minimist@0.0.8:
   version "0.0.8"

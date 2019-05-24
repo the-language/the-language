@@ -18,7 +18,7 @@ public class Lang$luaj$complex_parse$2 extends org.luaj.vm2.lib.OneArgFunction {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        this.u0.call((org.luaj.vm2.LuaValue)((this.u1.get(k0).get(k1).call(this.u2[0], this.u3[0].sub(k2).add(k2), this.u3[0].sub(k2).add(k2)).eq_b(a)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
+        this.u0.call((org.luaj.vm2.LuaValue)((this.u1.get(k0).get(k1).call(this.u2[0], this.u3[0], this.u3[0]).eq_b(a)) ? org.luaj.vm2.LuaValue.TRUE : org.luaj.vm2.LuaValue.FALSE));
         org.luaj.vm2.LuaValue a0 = this.u3[0].sub(k2);
         this.u3[0] = a0;
         return org.luaj.vm2.LuaValue.NONE;

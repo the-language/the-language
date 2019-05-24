@@ -18,6 +18,7 @@
 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 -- Lua Library inline imports
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local function __TS__ArrayPush(arr, ...)
     local items = ({...})
     for ____TS_index = 1, #items do
@@ -45,13 +46,13 @@ function new_comment(comment, x)
     }
 end
 function comment_p(x)
-    return x[0 + 1] == comment_t
+    return x[1] == comment_t
 end
 function comment_comment(x)
-    return x[1 + 1]
+    return x[2]
 end
 function comment_x(x)
-    return x[2 + 1]
+    return x[3]
 end
 function un_comment_all(x)
     while comment_p(x) do
@@ -60,10 +61,10 @@ function un_comment_all(x)
     return x
 end
 function symbol_p(x)
-    return x[0 + 1] == symbol_t
+    return x[1] == symbol_t
 end
 function un_symbol_unicodechar(x)
-    return x[1 + 1]
+    return x[2]
 end
 function un_symbol(x)
     return symbols_set_neg()[un_symbol_unicodechar(x)]
@@ -76,16 +77,16 @@ function new_construction(x, y)
     }
 end
 function construction_p(x)
-    return x[0 + 1] == construction_t
+    return x[1] == construction_t
 end
 function construction_head(x)
-    return x[1 + 1]
+    return x[2]
 end
 function construction_tail(x)
-    return x[2 + 1]
+    return x[3]
 end
 function null_p(x)
-    return x[0 + 1] == null_t
+    return x[1] == null_t
 end
 function new_data(x, y)
     return {
@@ -95,13 +96,13 @@ function new_data(x, y)
     }
 end
 function data_p(x)
-    return x[0 + 1] == data_t
+    return x[1] == data_t
 end
 function data_name(x)
-    return x[1 + 1]
+    return x[2]
 end
 function data_list(x)
-    return x[2 + 1]
+    return x[3]
 end
 function new_error(x, y)
     return {
@@ -111,19 +112,19 @@ function new_error(x, y)
     }
 end
 function error_p(x)
-    return x[0 + 1] == error_t
+    return x[1] == error_t
 end
 function error_name(x)
-    return x[1 + 1]
+    return x[2]
 end
 function error_list(x)
-    return x[2 + 1]
+    return x[3]
 end
 function just_p(x)
-    return x[0 + 1] == just_t
+    return x[1] == just_t
 end
 function un_just(x)
-    return x[1 + 1]
+    return x[2]
 end
 function evaluate(x, y)
     return {
@@ -133,13 +134,13 @@ function evaluate(x, y)
     }
 end
 function delay_evaluate_p(x)
-    return x[0 + 1] == delay_evaluate_t
+    return x[1] == delay_evaluate_t
 end
 function delay_evaluate_env(x)
-    return x[1 + 1]
+    return x[2]
 end
 function delay_evaluate_x(x)
-    return x[2 + 1]
+    return x[3]
 end
 function builtin_form_apply(x, y, z)
     return {
@@ -150,16 +151,16 @@ function builtin_form_apply(x, y, z)
     }
 end
 function delay_builtin_form_p(x)
-    return x[0 + 1] == delay_builtin_form_t
+    return x[1] == delay_builtin_form_t
 end
 function delay_builtin_form_env(x)
-    return x[1 + 1]
+    return x[2]
 end
 function delay_builtin_form_f(x)
-    return x[2 + 1]
+    return x[3]
 end
 function delay_builtin_form_xs(x)
-    return x[3 + 1]
+    return x[4]
 end
 function builtin_func_apply(x, y)
     return {
@@ -169,13 +170,13 @@ function builtin_func_apply(x, y)
     }
 end
 function delay_builtin_func_p(x)
-    return x[0 + 1] == delay_builtin_func_t
+    return x[1] == delay_builtin_func_t
 end
 function delay_builtin_func_f(x)
-    return x[1 + 1]
+    return x[2]
 end
 function delay_builtin_func_xs(x)
-    return x[2 + 1]
+    return x[3]
 end
 function apply(f, xs)
     return {
@@ -185,19 +186,19 @@ function apply(f, xs)
     }
 end
 function delay_apply_p(x)
-    return x[0 + 1] == delay_apply_t
+    return x[1] == delay_apply_t
 end
 function delay_apply_f(x)
-    return x[1 + 1]
+    return x[2]
 end
 function delay_apply_xs(x)
-    return x[2 + 1]
+    return x[3]
 end
 function force_all_rec(raw)
     local x = force_all(raw)
     local function conslike(xx)
-        xx[1 + 1] = force_all_rec(xx[1 + 1])
-        xx[2 + 1] = force_all_rec(xx[2 + 1])
+        xx[2] = force_all_rec(xx[2])
+        xx[3] = force_all_rec(xx[3])
         return xx
     end
     if data_p(x) then
@@ -215,26 +216,26 @@ function new_hole_do()
     return {hole_t}
 end
 function hole_p(x)
-    return x[0 + 1] == hole_t
+    return x[1] == hole_t
 end
 function lang_set_do(x, y)
     if x == y then
         return
     end
-    x[0 + 1] = just_t
-    x[1 + 1] = y
-    x[2 + 1] = false
-    x[3 + 1] = false
+    x[1] = just_t
+    x[2] = y
+    x[3] = false
+    x[4] = false
 end
 function hole_set_do(rawx, rawy)
     LANG_ASSERT(hole_p(rawx))
     LANG_ASSERT(not hole_p(rawy))
     local x = rawx
     local y = rawy
-    x[0 + 1] = y[0 + 1]
-    x[1 + 1] = y[1 + 1]
-    x[2 + 1] = y[2 + 1]
-    x[3 + 1] = y[3 + 1]
+    x[1] = y[1]
+    x[2] = y[2]
+    x[3] = y[3]
+    x[4] = y[4]
 end
 function lang_copy_do(x)
     local ret = new_hole_do()
@@ -328,7 +329,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
     local history = {}
     x = raw
     local function replace_this_with_stopped()
-        ref_novalue_replace[1 + 1] = true
+        ref_novalue_replace[2] = true
         return do_rewrite_force_all(the_world_stopped_v)
     end
     local function make_history()
@@ -355,7 +356,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
             return replace_this_with_stopped()
         end
         if history[x_id] == true then
-            ref_novalue_replace[0 + 1] = true
+            ref_novalue_replace[1] = true
             if delay_evaluate_p(x) then
                 return replace_this_with_stopped()
             elseif delay_builtin_func_p(x) then
@@ -384,9 +385,9 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                 end
                 if is_elim then
                     LANG_ASSERT(#xs == 1)
-                    LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
-                    local inner = force_all(xs[0 + 1], make_history(), ref_novalue_replace)
-                    if ref_novalue_replace[1 + 1] then
+                    LANG_ASSERT(ref_novalue_replace[2] == false)
+                    local inner = force_all(xs[1], make_history(), ref_novalue_replace)
+                    if ref_novalue_replace[2] then
                         return do_rewrite_force_all(builtin_func_apply(f, {inner}))
                     else
                         return LANG_ERROR()
@@ -400,13 +401,13 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                     return replace_this_with_stopped()
                 elseif jsbool_equal_p(f, if_function_builtin_systemName) then
                     LANG_ASSERT(#xs == 3)
-                    LANG_ASSERT(ref_novalue_replace[1 + 1] == false)
-                    local tf = force_all(xs[0 + 1], make_history(), ref_novalue_replace)
-                    if ref_novalue_replace[1 + 1] then
+                    LANG_ASSERT(ref_novalue_replace[2] == false)
+                    local tf = force_all(xs[1], make_history(), ref_novalue_replace)
+                    if ref_novalue_replace[2] then
                         return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, {
                             tf,
-                            xs[1 + 1],
-                            xs[2 + 1],
+                            xs[2],
+                            xs[3],
                         }))
                     else
                         return LANG_ERROR()
@@ -543,11 +544,11 @@ function real_evaluate(env, raw, selfvalraw)
                 return error_v()
             end
         end
-        if jsbool_equal_p(xs[0 + 1], form_builtin_use_systemName) then
+        if jsbool_equal_p(xs[1], form_builtin_use_systemName) then
             if #xs == 1 then
                 return error_v()
             end
-            local f = xs[1 + 1]
+            local f = xs[2]
             local args = {}
             do
                 local i = 2
@@ -557,11 +558,11 @@ function real_evaluate(env, raw, selfvalraw)
                 end
             end
             return builtin_form_apply(env, f, args)
-        elseif jsbool_equal_p(xs[0 + 1], form_use_systemName) then
+        elseif jsbool_equal_p(xs[1], form_use_systemName) then
             if #xs == 1 then
                 return error_v()
             end
-            local f = force_all(evaluate(env, xs[1 + 1]))
+            local f = force_all(evaluate(env, xs[2]))
             if not data_p(f) then
                 return error_v()
             end
@@ -599,11 +600,11 @@ function real_evaluate(env, raw, selfvalraw)
                 end
             end
             return apply(f_x, args)
-        elseif jsbool_equal_p(xs[0 + 1], function_builtin_use_systemName) then
+        elseif jsbool_equal_p(xs[1], function_builtin_use_systemName) then
             if #xs == 1 then
                 return error_v()
             end
-            local f = xs[1 + 1]
+            local f = xs[2]
             local args = {}
             do
                 local i = 2
@@ -614,7 +615,7 @@ function real_evaluate(env, raw, selfvalraw)
             end
             return builtin_func_apply(f, args)
         else
-            local f = evaluate(env, xs[0 + 1])
+            local f = evaluate(env, xs[1])
             local args = {}
             do
                 local i = 1
@@ -699,16 +700,16 @@ function real_builtin_func_apply(f, xs, selfvalraw)
     error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
     for ____TS_index = 1, #real_builtin_func_apply_s do
         local xx = real_builtin_func_apply_s[____TS_index]
-        if jsbool_equal_p(f, xx[0 + 1]) then
-            if #xs ~= xx[1 + 1] then
+        if jsbool_equal_p(f, xx[1]) then
+            if #xs ~= xx[2] then
                 return error_v()
             end
-            if xx[1 + 1] == 1 then
-                return xx[2 + 1](xs[0 + 1], error_v, selfvalraw)
-            elseif xx[1 + 1] == 2 then
-                return xx[2 + 1](xs[0 + 1], xs[1 + 1], error_v, selfvalraw)
-            elseif xx[1 + 1] == 3 then
-                return xx[2 + 1](xs[0 + 1], xs[1 + 1], xs[2 + 1], error_v, selfvalraw)
+            if xx[2] == 1 then
+                return xx[3](xs[1], error_v, selfvalraw)
+            elseif xx[2] == 2 then
+                return xx[3](xs[1], xs[2], error_v, selfvalraw)
+            elseif xx[2] == 3 then
+                return xx[3](xs[1], xs[2], xs[3], error_v, selfvalraw)
             end
             return LANG_ERROR()
         end
@@ -722,17 +723,17 @@ function real_builtin_form_apply(env, f, xs, selfvalraw)
         if #xs ~= 1 then
             return error_v()
         end
-        return xs[0 + 1]
+        return xs[1]
     elseif jsbool_equal_p(f, lambda_form_builtin_systemName) then
         if #xs ~= 2 then
             return error_v()
         end
-        return new_lambda(env, xs[0 + 1], xs[1 + 1], error_v)
+        return new_lambda(env, xs[1], xs[2], error_v)
     elseif jsbool_equal_p(f, comment_form_builtin_systemName) then
         if #xs ~= 2 then
             return error_v()
         end
-        return new_comment(xs[0 + 1], evaluate(env, xs[1 + 1]))
+        return new_comment(xs[1], evaluate(env, xs[2]))
     end
     return error_v()
 end
@@ -1158,16 +1159,16 @@ ____exports.apply = apply
 local function force_uncomment_all_rec(raw)
     local x = force_uncomment_all(raw)
     local function conslike(xx)
-        xx[1 + 1] = force_all_rec(xx[1 + 1])
-        xx[2 + 1] = force_all_rec(xx[2 + 1])
-        if comment_p(xx[1 + 1]) or comment_p(xx[2 + 1]) then
+        xx[2] = force_all_rec(xx[2])
+        xx[3] = force_all_rec(xx[3])
+        if comment_p(xx[2]) or comment_p(xx[3]) then
             local ret = lang_copy_do(xx)
-            local a = xx[1 + 1]
-            local d = xx[2 + 1]
+            local a = xx[2]
+            local d = xx[3]
             local a1 = force_uncomment_all_rec(a)
             local d1 = force_uncomment_all_rec(d)
-            ret[1 + 1] = a1
-            ret[2 + 1] = d1
+            ret[2] = a1
+            ret[3] = d1
             return ret
         else
             return xx
@@ -1658,7 +1659,7 @@ local function complex_parse(x)
         return ret
     end
     function put(chr)
-        LANG_ASSERT(string.sub(state_const, (state - 1) + 1, (state - 1) + 1) == chr)
+        LANG_ASSERT(string.sub(state_const, state, state) == chr)
         state = state - 1
     end
     function parse_error(x)
@@ -2101,46 +2102,46 @@ local function complex_print(val)
             end
         end
         local maybe_xs = maybe_list_to_jsArray(x)
-        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[0 + 1], typeAnnotation_symbol) then
-            local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1 + 1])
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], function_symbol) then
-                local var_2_1 = maybe_lst_2[1 + 1]
+        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[1], typeAnnotation_symbol) then
+            local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[2])
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[1], function_symbol) then
+                local var_2_1 = maybe_lst_2[2]
                 local maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-                    return inner_bracket(tostring(print_sys_name(maybe_lst_3[0 + 1], true)) .. "." .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
-                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) and jsbool_no_force_equal_p(maybe_lst_2[2 + 1], something_symbol) then
-                    return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[2 + 1], true)))
-                elseif jsbool_no_force_equal_p(var_2_1, something_symbol) and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) then
-                    return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[2 + 1], true)))
+                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[3], something_symbol) then
+                    return inner_bracket(tostring(print_sys_name(maybe_lst_3[1], true)) .. "." .. tostring(print_sys_name(maybe_xs[3], true)))
+                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) and jsbool_no_force_equal_p(maybe_lst_2[3], something_symbol) then
+                    return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[3], true)))
+                elseif jsbool_no_force_equal_p(var_2_1, something_symbol) and jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) then
+                    return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[3], true)))
                 end
             end
-            local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2 + 1])
-            if jsbool_no_force_equal_p(maybe_xs[1 + 1], function_symbol) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[0 + 1], isOrNot_symbol) then
-                return inner_bracket(tostring(print_sys_name(maybe_lst_44[1 + 1], true)) .. "?")
+            local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[3])
+            if jsbool_no_force_equal_p(maybe_xs[2], function_symbol) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[1], isOrNot_symbol) then
+                return inner_bracket(tostring(print_sys_name(maybe_lst_44[2], true)) .. "?")
             end
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and jsbool_no_force_equal_p(maybe_lst_2[0 + 1], form_symbol) then
-                local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1 + 1])
-                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[0 + 1], function_symbol) and jsbool_no_force_equal_p(maybe_lst_88[1 + 1], something_symbol) then
-                    return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[2 + 1], true)))
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) and jsbool_no_force_equal_p(maybe_lst_2[1], form_symbol) then
+                local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[2])
+                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[1], function_symbol) and jsbool_no_force_equal_p(maybe_lst_88[2], something_symbol) then
+                    return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[3], true)))
                 end
             end
-            local hd = jsbool_no_force_equal_p(maybe_xs[2 + 1], something_symbol) and "_" or jsbool_no_force_equal_p(maybe_xs[2 + 1], theThing_symbol) and "" or print_sys_name(maybe_xs[2 + 1], true)
-            return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
+            local hd = jsbool_no_force_equal_p(maybe_xs[3], something_symbol) and "_" or jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) and "" or print_sys_name(maybe_xs[3], true)
+            return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[2], true)))
         elseif maybe_xs ~= false and #maybe_xs == 2 then
-            if jsbool_no_force_equal_p(maybe_xs[0 + 1], form_symbol) then
-                local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1 + 1])
-                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[0 + 1], system_symbol) then
-                    return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[1 + 1], true)))
+            if jsbool_no_force_equal_p(maybe_xs[1], form_symbol) then
+                local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[2])
+                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[1], system_symbol) then
+                    return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[2], true)))
                 end
-                return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], isOrNot_symbol) then
-                return inner_bracket(tostring(print_sys_name(maybe_xs[1 + 1], true)) .. "~")
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
-                return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[1 + 1], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[0 + 1], sub_symbol) then
-                local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1 + 1])
+                return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[2], true)))
+            elseif jsbool_no_force_equal_p(maybe_xs[1], isOrNot_symbol) then
+                return inner_bracket(tostring(print_sys_name(maybe_xs[2], true)) .. "~")
+            elseif jsbool_no_force_equal_p(maybe_xs[1], system_symbol) then
+                return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[2], true)))
+            elseif jsbool_no_force_equal_p(maybe_xs[1], sub_symbol) then
+                local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[2])
                 if maybe_lst_8934 ~= false and #maybe_lst_8934 > 1 then
-                    local tmp = print_sys_name(maybe_lst_8934[0 + 1], true)
+                    local tmp = print_sys_name(maybe_lst_8934[1], true)
                     do
                         local i = 1
                         while i < #maybe_lst_8934 do
@@ -2181,8 +2182,8 @@ local function complex_print(val)
         local name = data_name(x)
         local list = data_list(x)
         local maybe_xs = maybe_list_to_jsArray(list)
-        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_symbol) and jsbool_no_force_equal_p(maybe_xs[0 + 1], system_symbol) then
-            return print_sys_name(maybe_xs[1 + 1], false)
+        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_symbol) and jsbool_no_force_equal_p(maybe_xs[1], system_symbol) then
+            return print_sys_name(maybe_xs[2], false)
         end
         return "#" .. tostring(complex_print(new_construction(name, list)))
     elseif error_p(x) then
@@ -2347,10 +2348,10 @@ local function trampoline_delay(x)
 end
 local function run_trampoline(x)
     local i = x()
-    while i[0 + 1] do
-        i = i[1 + 1]()
+    while i[1] do
+        i = i[2]()
     end
-    return i[1 + 1]
+    return i[2]
 end
 ____exports.trampoline_return = trampoline_return
 ____exports.trampoline_delay = trampoline_delay
