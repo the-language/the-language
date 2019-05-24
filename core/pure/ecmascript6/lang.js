@@ -1109,7 +1109,14 @@ function new_lambda(env, args_pat, body, error_v) {
             return error_v();
         }
     }
-    const args_pat_vars_val = args_pat_is_dot ? jsArray_to_list(args_pat_vars) : args_pat; // args_pat_vars_val總是等價與jsArray_to_list(args_pat_vars) : LangVal
+    let args_pat_vars_val;
+    // args_pat_vars_val總是等價與jsArray_to_list(args_pat_vars) : LangVal
+    if (args_pat_is_dot) {
+        args_pat_vars_val = jsArray_to_list(args_pat_vars);
+    }
+    else {
+        args_pat_vars_val = args_pat;
+    }
     const env_vars = []; // : JSList LangVal/Name
     env_foreach(env, (k, v) => {
         for (let i = 0; i < args_pat_vars.length; i++) {

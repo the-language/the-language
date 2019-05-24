@@ -756,7 +756,12 @@ function new_lambda(env, args_pat, body, error_v)
             return error_v()
         end
     end
-    local args_pat_vars_val = args_pat_is_dot and jsArray_to_list(args_pat_vars) or args_pat
+    local args_pat_vars_val
+    if args_pat_is_dot then
+        args_pat_vars_val = jsArray_to_list(args_pat_vars)
+    else
+        args_pat_vars_val = args_pat
+    end
     local env_vars = {}
     env_foreach(env, function(k, v)
         do

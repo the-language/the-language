@@ -911,7 +911,13 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
         }
 
     }
-    $args_pat_vars_val = (($args_pat_is_dot && $jsArray_to_list($args_pat_vars)) || $args_pat);
+    $args_pat_vars_val = NULL;
+    if ($args_pat_is_dot) {
+        $args_pat_vars_val = $jsArray_to_list($args_pat_vars);
+    } else {
+        $args_pat_vars_val = $args_pat;
+    }
+
     $env_vars = [];
     $env_foreach(
         $env,
