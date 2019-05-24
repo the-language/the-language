@@ -542,20 +542,20 @@ function un_just_comment_all(x: LangVal): LangVal {
     }
     return x
 }
-export { un_just_all as un_just, un_just_comment_all }
+export { un_just_all, un_just_comment_all }
 
-function any_delay_p(x: LangVal): x is LangValDelay {
+function delay_p(x: LangVal): x is LangValDelay {
     return delay_evaluate_p(x) ||
         delay_builtin_form_p(x) ||
         delay_builtin_func_p(x) ||
         delay_apply_p(x)
 }
-function any_delay_just_p(x: LangVal): x is LangValJustDelay {
-    return just_p(x) || any_delay_p(x)
+function delay_just_p(x: LangVal): x is LangValJustDelay {
+    return just_p(x) || delay_p(x)
 }
-export { any_delay_p as delay_p, any_delay_just_p as delay_just_p }
+export { delay_p, delay_just_p }
 
-function any_delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
+function delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
     if (delay_evaluate_p(x)) {
         return x
     } else if (delay_builtin_form_p(x)) {
@@ -567,15 +567,15 @@ function any_delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
     }
     return LANG_ERROR()
 }
-function any_delay_env(x: LangValDelay): Env {
-    return delay_evaluate_env(any_delay2delay_evaluate(x))
+function delay_env(x: LangValDelay): Env {
+    return delay_evaluate_env(delay2delay_evaluate(x))
 }
-function any_delay_x(x: LangValDelay): LangVal {
-    return delay_evaluate_x(any_delay2delay_evaluate(x))
+function delay_x(x: LangValDelay): LangVal {
+    return delay_evaluate_x(delay2delay_evaluate(x))
 }
-export { any_delay_env as delay_env, any_delay_x as delay_x }
+export { delay_env, delay_x }
 
-function force_all(
+function force_all_inner(
     raw: LangVal,
     parents_history: { [key: string]: true } = {},
     ref_novalue_replace: [boolean, boolean] = [false, false],
@@ -597,9 +597,9 @@ function force_all(
     }
     function do_rewrite_force_all(newval: LangVal) {
         do_rewrite(newval)
-        if (any_delay_just_p(newval)) {
+        if (delay_just_p(newval)) {
             xs.push(x)
-            return force_all(newval, parents_history, [false, false], xs)
+            return force_all_inner(newval, parents_history, [false, false], xs)
         }
         return newval
     }
@@ -613,11 +613,11 @@ function force_all(
         }
         return ret
     }
-    for (let i = 0; any_delay_just_p(x) && i < 32; i++) { // 一般情況
+    for (let i = 0; delay_just_p(x) && i < 32; i++) { // 一般情況
         xs.push(x)
         x = force1(x)
     }
-    while (any_delay_just_p(x)) {
+    while (delay_just_p(x)) {
         const x_id = simple_print(x)
         if (parents_history[x_id] === true) {
             return replace_this_with_stopped()
@@ -650,7 +650,7 @@ function force_all(
                 if (is_elim) {
                     LANG_ASSERT(xs.length === 1)
                     LANG_ASSERT(ref_novalue_replace[1] === false)
-                    const inner = force_all(xs[0], make_history(), ref_novalue_replace)
+                    const inner = force_all_inner(xs[0], make_history(), ref_novalue_replace)
                     if (ref_novalue_replace[1]) {
                         return do_rewrite_force_all(builtin_func_apply(f, [inner]))
                     } else {
@@ -666,7 +666,7 @@ function force_all(
                 } else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
                     LANG_ASSERT(xs.length === 3)
                     LANG_ASSERT(ref_novalue_replace[1] === false)
-                    const tf = force_all(xs[0], make_history(), ref_novalue_replace)
+                    const tf = force_all_inner(xs[0], make_history(), ref_novalue_replace)
                     if (ref_novalue_replace[1]) {
                         return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, [tf, xs[1], xs[2]]))
                     } else {
@@ -706,11 +706,11 @@ function force1(raw: LangVal): LangVal {
     lang_set_do(x, ret)
     return ret
 }
-function force_all_export(raw: LangVal): LangVal {
-    return force_all(raw)
+function force_all(raw: LangVal): LangVal {
+    return force_all_inner(raw)
 }
 function force_uncomment_all(x: LangVal): LangVal {
-    while (any_delay_just_p(x) || comment_p(x)) {
+    while (delay_just_p(x) || comment_p(x)) {
         x = force_all(un_comment_all(x))
     }
     return x
@@ -722,7 +722,7 @@ function force_uncomment1(raw: LangVal): LangVal {
         return force1(raw)
     }
 }
-export { force_all_export as force_all, force1, force_uncomment1, force_uncomment_all }
+export { force_all, force1, force_uncomment1, force_uncomment_all }
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}
 
 // {{{ 相對獨立的部分。變量之環境
@@ -864,7 +864,7 @@ function force_uncomment_list_1<T>(list: LangVal, not_list_k: () => T, delay_jus
         } else if (construction_p(i)) {
             ret.push(construction_head(i))
             i = construction_tail(i)
-        } else if (any_delay_just_p(i)) {
+        } else if (delay_just_p(i)) {
             if (not_forced) {
                 not_forced = false
                 i = force1(i)
@@ -878,7 +878,7 @@ function force_uncomment_list_1<T>(list: LangVal, not_list_k: () => T, delay_jus
 }
 function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     const x = force1(raw)
-    if (any_delay_just_p(x)) {
+    if (delay_just_p(x)) {
         return selfvalraw
     }
     const error_v = () => new_error(system_symbol,
@@ -913,7 +913,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                     return error_v()
                 }
                 const f_type = force1(data_name(f))
-                if (any_delay_just_p(f_type)) {
+                if (delay_just_p(f_type)) {
                     return selfvalraw
                 }
                 if (!symbol_p(f_type)) {
@@ -923,7 +923,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                     return error_v()
                 }
                 const f_list = force1(data_list(f))
-                if (any_delay_just_p(f_list)) {
+                if (delay_just_p(f_list)) {
                     return selfvalraw
                 }
                 if (!construction_p(f_list)) {
@@ -931,7 +931,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 }
                 const f_x = construction_head(f_list)
                 const f_list_cdr = force1(construction_tail(f_list))
-                if (any_delay_just_p(f_list_cdr)) {
+                if (delay_just_p(f_list_cdr)) {
                     return selfvalraw
                 }
                 if (!null_p(f_list_cdr)) {
@@ -980,7 +980,7 @@ function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => bo
         1,
         (x) => {
             x = force1(x)
-            if (any_delay_just_p(x)) {
+            if (delay_just_p(x)) {
                 return builtin_func_apply(p_sym, [x])
             }
             if (p_jsfunc(x)) {
@@ -996,7 +996,7 @@ function make_builtin_get_func<T extends LangVal>(f_sym: LangValSysName, p_jsfun
         1,
         (x, error_v) => {
             x = force1(x)
-            if (any_delay_just_p(x)) {
+            if (delay_just_p(x)) {
                 return builtin_func_apply(f_sym, [x])
             }
             if (p_jsfunc(x)) {
@@ -1034,7 +1034,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         }
         x = force1(x)
         y = force1(y)
-        if (any_delay_just_p(x) || any_delay_just_p(y)) {
+        if (delay_just_p(x) || delay_just_p(y)) {
             return builtin_func_apply(equal_p_function_builtin_systemName, [x, y]) // not fully implemented -- Halting
         }
         if (x === y) {
@@ -1047,7 +1047,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         function H_and(xx: LangVal, yy: LangVal): LangVal {
             return H_if(xx, yy, false_v)
         }
-        LANG_ASSERT(!any_delay_just_p(x))
+        LANG_ASSERT(!delay_just_p(x))
         function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): LangVal {
             return H_and(
                 builtin_func_apply(equal_p_function_builtin_systemName, [f1(xx), f1(yy)]),
@@ -1103,7 +1103,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         // 一般返回第一个，可以因为优化返回其他的任意一个
         // xs可以無限長，不判斷是否真的是list
         xs = force1(xs)
-        if (any_delay_just_p(xs)) {
+        if (delay_just_p(xs)) {
             return builtin_func_apply(list_chooseOne_function_builtin_systemName, [xs])
         }
         if (!construction_p(xs)) {
@@ -1114,7 +1114,7 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
 
     [if_function_builtin_systemName, 3, (b: LangVal, x: LangVal, y: LangVal, error_v: () => LangVal) => {
         b = force1(b)
-        if (any_delay_just_p(b)) {
+        if (delay_just_p(b)) {
             return builtin_func_apply(if_function_builtin_systemName, [b, x, y])
         }
         if (!data_p(b)) {
@@ -1146,7 +1146,7 @@ function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVa
                 apply_function_builtin_systemName,
                 new_list(f, jsArray_to_list(xs)))))
     f = force1(f)
-    if (any_delay_just_p(f)) {
+    if (delay_just_p(f)) {
         return selfvalraw
     }
     if (!data_p(f)) {
@@ -1339,7 +1339,8 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     }
     return LANG_ERROR()
 }
-export { jsbool_equal_p as equal_p }
+const equal_p = jsbool_equal_p
+export { equal_p }
 
 function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
@@ -1432,10 +1433,7 @@ function simple_print(x: LangVal): string {
     }
     return LANG_ERROR() // 大量重複代碼 simple_print <-> complex_print ]]]
 }
-function simple_print_force_all_rec(x: LangVal): string {
-    return simple_print(force_all_rec(x))
-}
-export { simple_print, simple_print_force_all_rec }
+export { simple_print }
 
 // 相對獨立的部分。simple printer }}}
 
@@ -2068,8 +2066,8 @@ function machinetext_print(x: LangVal): string {
                 conslike(x, '#', data_name, data_list)
             } else if (error_p(x)) {
                 conslike(x, '!', error_name, error_list)
-            } else if (any_delay_p(x)) {
-                const y = any_delay2delay_evaluate(x)
+            } else if (delay_p(x)) {
+                const y = delay2delay_evaluate(x)
                 conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x)
             } else {
                 return LANG_ERROR()

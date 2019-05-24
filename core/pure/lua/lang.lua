@@ -29,7 +29,7 @@ local function __TS__ArrayPush(arr, ...)
 end
 
 local ____exports = {}
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, any_delay_p, any_delay_just_p, force_all, force1, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, symbols_set_init, symbols_set_neg_init
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -284,13 +284,13 @@ function un_just_all(raw)
     end
     return x
 end
-function any_delay_p(x)
+function delay_p(x)
     return delay_evaluate_p(x) or delay_builtin_form_p(x) or delay_builtin_func_p(x) or delay_apply_p(x)
 end
-function any_delay_just_p(x)
-    return just_p(x) or any_delay_p(x)
+function delay_just_p(x)
+    return just_p(x) or delay_p(x)
 end
-function force_all(raw, parents_history, ref_novalue_replace, xs)
+function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
     if parents_history == nil then
         parents_history = {}
     end
@@ -317,9 +317,9 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
     end
     function do_rewrite_force_all(newval)
         do_rewrite(newval)
-        if any_delay_just_p(newval) then
+        if delay_just_p(newval) then
             __TS__ArrayPush(xs, x)
-            return force_all(newval, parents_history, {
+            return force_all_inner(newval, parents_history, {
                 false,
                 false,
             }, xs)
@@ -344,13 +344,13 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
     end
     do
         local i = 0
-        while any_delay_just_p(x) and i < 32 do
+        while delay_just_p(x) and i < 32 do
             __TS__ArrayPush(xs, x)
             x = force1(x)
             i = i + 1
         end
     end
-    while any_delay_just_p(x) do
+    while delay_just_p(x) do
         local x_id = simple_print(x)
         if parents_history[x_id] == true then
             return replace_this_with_stopped()
@@ -386,7 +386,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                 if is_elim then
                     LANG_ASSERT(#xs == 1)
                     LANG_ASSERT(ref_novalue_replace[2] == false)
-                    local inner = force_all(xs[1], make_history(), ref_novalue_replace)
+                    local inner = force_all_inner(xs[1], make_history(), ref_novalue_replace)
                     if ref_novalue_replace[2] then
                         return do_rewrite_force_all(builtin_func_apply(f, {inner}))
                     else
@@ -402,7 +402,7 @@ function force_all(raw, parents_history, ref_novalue_replace, xs)
                 elseif jsbool_equal_p(f, if_function_builtin_systemName) then
                     LANG_ASSERT(#xs == 3)
                     LANG_ASSERT(ref_novalue_replace[2] == false)
-                    local tf = force_all(xs[1], make_history(), ref_novalue_replace)
+                    local tf = force_all_inner(xs[1], make_history(), ref_novalue_replace)
                     if ref_novalue_replace[2] then
                         return do_rewrite_force_all(builtin_func_apply(if_function_builtin_systemName, {
                             tf,
@@ -446,8 +446,11 @@ function force1(raw)
     lang_set_do(x, ret)
     return ret
 end
+function force_all(raw)
+    return force_all_inner(raw)
+end
 function force_uncomment_all(x)
-    while any_delay_just_p(x) or comment_p(x) do
+    while delay_just_p(x) or comment_p(x) do
         x = force_all(un_comment_all(x))
     end
     return x
@@ -538,7 +541,7 @@ function force_uncomment_list_1(list, not_list_k, delay_just_k, k)
         elseif construction_p(i) then
             __TS__ArrayPush(ret, construction_head(i))
             i = construction_tail(i)
-        elseif any_delay_just_p(i) then
+        elseif delay_just_p(i) then
             if not_forced then
                 not_forced = false
                 i = force1(i)
@@ -552,7 +555,7 @@ function force_uncomment_list_1(list, not_list_k, delay_just_k, k)
 end
 function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
-    if any_delay_just_p(x) then
+    if delay_just_p(x) then
         return selfvalraw
     end
     local error_v
@@ -585,7 +588,7 @@ function real_evaluate(env, raw, selfvalraw)
                     return error_v()
                 end
                 local f_type = force1(data_name(f))
-                if any_delay_just_p(f_type) then
+                if delay_just_p(f_type) then
                     return selfvalraw
                 end
                 if not symbol_p(f_type) then
@@ -595,7 +598,7 @@ function real_evaluate(env, raw, selfvalraw)
                     return error_v()
                 end
                 local f_list = force1(data_list(f))
-                if any_delay_just_p(f_list) then
+                if delay_just_p(f_list) then
                     return selfvalraw
                 end
                 if not construction_p(f_list) then
@@ -603,7 +606,7 @@ function real_evaluate(env, raw, selfvalraw)
                 end
                 local f_x = construction_head(f_list)
                 local f_list_cdr = force1(construction_tail(f_list))
-                if any_delay_just_p(f_list_cdr) then
+                if delay_just_p(f_list_cdr) then
                     return selfvalraw
                 end
                 if not null_p(f_list_cdr) then
@@ -661,7 +664,7 @@ function real_apply(f, xs, selfvalraw)
     local error_v
     error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
     f = force1(f)
-    if any_delay_just_p(f) then
+    if delay_just_p(f) then
         return selfvalraw
     end
     if not data_p(f) then
@@ -1297,11 +1300,11 @@ local function un_just_comment_all(x)
     end
     return x
 end
-____exports.un_just = un_just_all
+____exports.un_just_all = un_just_all
 ____exports.un_just_comment_all = un_just_comment_all
-____exports.delay_p = any_delay_p
-____exports.delay_just_p = any_delay_just_p
-local function any_delay2delay_evaluate(x)
+____exports.delay_p = delay_p
+____exports.delay_just_p = delay_just_p
+local function delay2delay_evaluate(x)
     if delay_evaluate_p(x) then
         return x
     elseif delay_builtin_form_p(x) then
@@ -1313,17 +1316,14 @@ local function any_delay2delay_evaluate(x)
     end
     return LANG_ERROR()
 end
-local function any_delay_env(x)
-    return delay_evaluate_env(any_delay2delay_evaluate(x))
+local function delay_env(x)
+    return delay_evaluate_env(delay2delay_evaluate(x))
 end
-local function any_delay_x(x)
-    return delay_evaluate_x(any_delay2delay_evaluate(x))
+local function delay_x(x)
+    return delay_evaluate_x(delay2delay_evaluate(x))
 end
-____exports.delay_env = any_delay_env
-____exports.delay_x = any_delay_x
-local function force_all_export(raw)
-    return force_all(raw)
-end
+____exports.delay_env = delay_env
+____exports.delay_x = delay_x
 local function force_uncomment1(raw)
     if comment_p(raw) then
         return comment_x(raw)
@@ -1331,7 +1331,7 @@ local function force_uncomment1(raw)
         return force1(raw)
     end
 end
-____exports.force_all = force_all_export
+____exports.force_all = force_all
 ____exports.force1 = force1
 ____exports.force_uncomment1 = force_uncomment1
 ____exports.force_uncomment_all = force_uncomment_all
@@ -1406,7 +1406,7 @@ local function make_builtin_p_func(p_sym, p_jsfunc)
         1,
         function(x)
             x = force1(x)
-            if any_delay_just_p(x) then
+            if delay_just_p(x) then
                 return builtin_func_apply(p_sym, {x})
             end
             if p_jsfunc(x) then
@@ -1422,7 +1422,7 @@ local function make_builtin_get_func(f_sym, p_jsfunc, f_jsfunc)
         1,
         function(x, error_v)
             x = force1(x)
-            if any_delay_just_p(x) then
+            if delay_just_p(x) then
                 return builtin_func_apply(f_sym, {x})
             end
             if p_jsfunc(x) then
@@ -1467,7 +1467,7 @@ real_builtin_func_apply_s = {
             end
             x = force1(x)
             y = force1(y)
-            if any_delay_just_p(x) or any_delay_just_p(y) then
+            if delay_just_p(x) or delay_just_p(y) then
                 return builtin_func_apply(equal_p_function_builtin_systemName, {
                     x,
                     y,
@@ -1486,7 +1486,7 @@ real_builtin_func_apply_s = {
             local function H_and(xx, yy)
                 return H_if(xx, yy, false_v)
             end
-            LANG_ASSERT(not any_delay_just_p(x))
+            LANG_ASSERT(not delay_just_p(x))
             local function end_2(xx, yy, f1, f2)
                 return H_and(builtin_func_apply(equal_p_function_builtin_systemName, {
                     f1(xx),
@@ -1562,7 +1562,7 @@ real_builtin_func_apply_s = {
         1,
         function(xs, error_v)
             xs = force1(xs)
-            if any_delay_just_p(xs) then
+            if delay_just_p(xs) then
                 return builtin_func_apply(list_chooseOne_function_builtin_systemName, {xs})
             end
             if not construction_p(xs) then
@@ -1576,7 +1576,7 @@ real_builtin_func_apply_s = {
         3,
         function(b, x, y, error_v)
             b = force1(b)
-            if any_delay_just_p(b) then
+            if delay_just_p(b) then
                 return builtin_func_apply(if_function_builtin_systemName, {
                     b,
                     x,
@@ -1605,7 +1605,9 @@ real_builtin_func_apply_s = {
         new_comment,
     },
 }
-____exports.equal_p = jsbool_equal_p
+local equal_p
+equal_p = jsbool_equal_p
+____exports.equal_p = equal_p
 local function jsbool_no_force_equal_p(x, y)
     if x == y then
         return true
@@ -1661,11 +1663,7 @@ local function jsbool_no_force_equal_p(x, y)
     end
     return LANG_ERROR()
 end
-local function simple_print_force_all_rec(x)
-    return simple_print(force_all_rec(x))
-end
 ____exports.simple_print = simple_print
-____exports.simple_print_force_all_rec = simple_print_force_all_rec
 local function complex_parse(x)
     local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
     function eof()
@@ -2340,8 +2338,8 @@ local function machinetext_print(x)
                 conslike(x, "#", data_name, data_list)
             elseif error_p(x) then
                 conslike(x, "!", error_name, error_list)
-            elseif any_delay_p(x) then
-                local y = any_delay2delay_evaluate(x)
+            elseif delay_p(x) then
+                local y = delay2delay_evaluate(x)
                 conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
             else
                 return LANG_ERROR()

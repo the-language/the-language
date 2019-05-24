@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$any_delay2delay_evaluate extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$delay2delay_evaluate extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -14,7 +14,7 @@ public class Lang$luaj$any_delay2delay_evaluate extends org.luaj.vm2.lib.VarArgF
         k1 = org.luaj.vm2.LuaString.valueOf("WIP");
     }
     
-    public Lang$luaj$any_delay2delay_evaluate() {
+    public Lang$luaj$delay2delay_evaluate() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

@@ -29,7 +29,7 @@ force_uncomment_all_rec
 jsArray_to_list
 maybe_list_to_jsArray
 new_list
-un_just
+un_just_all
 un_just_comment_all
 delay_p
 delay_just_p
@@ -47,7 +47,6 @@ env_foreach
 val2env
 equal_p
 simple_print
-simple_print_force_all_rec
 complex_parse
 complex_print
 machinetext_parse
