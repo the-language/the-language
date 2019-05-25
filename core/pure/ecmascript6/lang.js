@@ -1214,69 +1214,25 @@ function jsbool_equal_p(x, y) {
 }
 const equal_p = jsbool_equal_p;
 export { equal_p };
+// 不允許比較delay。
 function jsbool_no_force_equal_p(x, y) {
-    if (x === y) {
-        return true;
-    }
-    x = un_just_all(x);
-    y = un_just_all(y);
-    if (x === y) {
-        return true;
-    }
-    function end_2(xx, yy, f1, f2) {
-        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
-            lang_set_do(xx, yy);
-            return true;
-        }
-        else {
+    let stack1 = [x];
+    let stack2 = [y];
+    while (stack1.length !== 0) {
+        const [ret1, new_stack1] = machinetext_print_step(stack1);
+        const [ret2, new_stack2] = machinetext_print_step(stack2);
+        if (ret1.length !== ret2.length) {
             return false;
         }
-    }
-    if (null_p(x)) {
-        if (!null_p(y)) {
-            return false;
+        for (let i = 0; i < ret1.length; i++) {
+            if (ret1[i] !== ret2[i]) {
+                return false;
+            }
         }
-        lang_set_do(x, null_v);
-        lang_set_do(y, null_v);
-        return true;
+        stack1 = new_stack1;
+        stack2 = new_stack2;
     }
-    else if (symbol_p(x)) {
-        if (!symbol_p(y)) {
-            return false;
-        }
-        return symbol_equal_p(x, y);
-    }
-    else if (construction_p(x)) {
-        if (!construction_p(y)) {
-            return false;
-        }
-        return end_2(x, y, construction_head, construction_tail);
-    }
-    else if (error_p(x)) {
-        if (!error_p(y)) {
-            return false;
-        }
-        return end_2(x, y, error_name, error_list);
-    }
-    else if (data_p(x)) {
-        if (!data_p(y)) {
-            return false;
-        }
-        return end_2(x, y, data_name, data_list);
-    }
-    else if (delay_evaluate_p(x)) {
-        throw 'WIP';
-    }
-    else if (delay_builtin_func_p(x)) {
-        throw 'WIP';
-    }
-    else if (delay_builtin_form_p(x)) {
-        throw 'WIP';
-    }
-    else if (delay_apply_p(x)) {
-        throw 'WIP';
-    }
-    return LANG_ERROR();
+    return stack2.length === 0;
 }
 // {{{ 相對獨立的部分。simple printer
 function simple_print(x) {
