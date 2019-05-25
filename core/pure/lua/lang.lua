@@ -2312,38 +2312,50 @@ local function machinetext_parse(rawstr)
     end
     return result
 end
+local function machinetext_print_step(stack)
+    local result = {}
+    local new_stack = {}
+    for ____TS_index = 1, #stack do
+        local x = stack[____TS_index]
+        x = un_just_all(x)
+        local conslike
+        conslike = function(xx, s, g1, g2)
+            __TS__ArrayPush(result, s)
+            __TS__ArrayPush(new_stack, g1(xx))
+            __TS__ArrayPush(new_stack, g2(xx))
+        end
+        if symbol_p(x) then
+            __TS__ArrayPush(result, "^")
+            __TS__ArrayPush(result, un_symbol_unicodechar(x))
+            __TS__ArrayPush(result, "^")
+        elseif construction_p(x) then
+            conslike(x, ".", construction_head, construction_tail)
+        elseif null_p(x) then
+            __TS__ArrayPush(result, "_")
+        elseif data_p(x) then
+            conslike(x, "#", data_name, data_list)
+        elseif error_p(x) then
+            conslike(x, "!", error_name, error_list)
+        elseif delay_p(x) then
+            local y = delay2delay_evaluate(x)
+            conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
+        else
+            return LANG_ERROR()
+        end
+    end
+    return {
+        result,
+        new_stack,
+    }
+end
 local function machinetext_print(x)
     local stack = {x}
     local result = ""
     while #stack ~= 0 do
-        local new_stack = {}
-        for ____TS_index = 1, #stack do
-            local x = stack[____TS_index]
-            x = un_just_all(x)
-            local conslike
-            conslike = function(xx, s, g1, g2)
-                result = tostring(result) .. tostring(s)
-                __TS__ArrayPush(new_stack, g1(xx))
-                __TS__ArrayPush(new_stack, g2(xx))
-            end
-            if symbol_p(x) then
-                result = tostring(result) .. "^"
-                result = tostring(result) .. tostring(un_symbol_unicodechar(x))
-                result = tostring(result) .. "^"
-            elseif construction_p(x) then
-                conslike(x, ".", construction_head, construction_tail)
-            elseif null_p(x) then
-                result = tostring(result) .. "_"
-            elseif data_p(x) then
-                conslike(x, "#", data_name, data_list)
-            elseif error_p(x) then
-                conslike(x, "!", error_name, error_list)
-            elseif delay_p(x) then
-                local y = delay2delay_evaluate(x)
-                conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
-            else
-                return LANG_ERROR()
-            end
+        local tmpret, new_stack = unpack(machinetext_print_step(stack))
+        for ____TS_index = 1, #tmpret do
+            local s = tmpret[____TS_index]
+            result = tostring(result) .. tostring(s)
         end
         stack = new_stack
     end

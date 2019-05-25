@@ -712,7 +712,7 @@ function val2env(x) {
     }
     return ret;
 }
-export { env_null_v, env_set, env_get, env2val, env_foreach, val2env };
+export { env_null_v, env_set, env_get, env2val, env_foreach, val2env, };
 // 相對獨立的部分。變量之環境 }}}
 // 註疏系統WIP
 function force_uncomment_list_1(list, not_list_k, delay_just_k, k) {
@@ -1983,42 +1983,50 @@ function machinetext_parse(rawstr) {
 }
 // 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
+function machinetext_print_step(stack) {
+    const result = [];
+    const new_stack = [];
+    for (let x of stack) {
+        x = un_just_all(x);
+        const conslike = function (xx, s, g1, g2) {
+            result.push(s);
+            new_stack.push(g1(xx));
+            new_stack.push(g2(xx));
+        };
+        if (symbol_p(x)) {
+            result.push('^');
+            result.push(un_symbol_unicodechar(x));
+            result.push('^');
+        }
+        else if (construction_p(x)) {
+            conslike(x, '.', construction_head, construction_tail);
+        }
+        else if (null_p(x)) {
+            result.push('_');
+        }
+        else if (data_p(x)) {
+            conslike(x, '#', data_name, data_list);
+        }
+        else if (error_p(x)) {
+            conslike(x, '!', error_name, error_list);
+        }
+        else if (delay_p(x)) {
+            const y = delay2delay_evaluate(x);
+            conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
+        }
+        else {
+            return LANG_ERROR();
+        }
+    }
+    return [result, new_stack];
+}
 function machinetext_print(x) {
     let stack = [x];
     let result = "";
     while (stack.length !== 0) {
-        const new_stack = [];
-        for (let x of stack) {
-            x = un_just_all(x);
-            const conslike = function (xx, s, g1, g2) {
-                result += s;
-                new_stack.push(g1(xx));
-                new_stack.push(g2(xx));
-            };
-            if (symbol_p(x)) {
-                result += '^';
-                result += un_symbol_unicodechar(x);
-                result += '^';
-            }
-            else if (construction_p(x)) {
-                conslike(x, '.', construction_head, construction_tail);
-            }
-            else if (null_p(x)) {
-                result += '_';
-            }
-            else if (data_p(x)) {
-                conslike(x, '#', data_name, data_list);
-            }
-            else if (error_p(x)) {
-                conslike(x, '!', error_name, error_list);
-            }
-            else if (delay_p(x)) {
-                const y = delay2delay_evaluate(x);
-                conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
-            }
-            else {
-                return LANG_ERROR();
-            }
+        const [tmpret, new_stack] = machinetext_print_step(stack);
+        for (const s of tmpret) {
+            result += s;
         }
         stack = new_stack;
     }
