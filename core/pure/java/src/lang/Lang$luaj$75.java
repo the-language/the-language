@@ -61,8 +61,7 @@ public class Lang$luaj$75 extends org.luaj.vm2.lib.VarArgFunction {
             }
             org.luaj.vm2.LuaValue a9 = a0.get(a6);
             org.luaj.vm2.LuaValue a10 = this.u0.call(a9);
-            org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-            Lang$luaj$75$0 a11 = new Lang$luaj$75$0();
+            Lang$luaj$75$conslike a11 = new Lang$luaj$75$conslike();
             a11.u0 = this.u1;
             a11.u1 = a1;
             a11.u2 = a2;

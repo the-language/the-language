@@ -689,7 +689,6 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
     if ($delay_just_p($x)) {
         return $selfvalraw;
     }
-    $error_v = NULL;
     $error_v = (function () use (&$env, &$env2val, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$new_error, &$new_list, &$system_symbol, &$x) {
         return $new_error($system_symbol, $new_list(
             $function_builtin_use_systemName,
@@ -808,7 +807,6 @@ $name_p = (function ($x = NULL) use (&$data_p, &$symbol_p) {
     return ($symbol_p($x) || $data_p($x));
 });
 $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply_function_builtin_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_builtin_use_systemName, &$function_symbol, &$jsArray_to_list, &$name_p, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
-    $error_v = NULL;
     $error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
         return $new_error($system_symbol, $new_list(
             $function_builtin_use_systemName,
@@ -875,7 +873,6 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
     return $evaluate($env, $f_code);
 });
 $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$function_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$new_error, &$new_list, &$real_builtin_func_apply_s, &$system_symbol) {
-    $error_v = NULL;
     $error_v = (function () use (&$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
         return $new_error(
             $system_symbol,
@@ -904,7 +901,6 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
     return $error_v();
 });
 $real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$comment_form_builtin_systemName, &$env2val, &$evaluate, &$form_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$lambda_form_builtin_systemName, &$new_comment, &$new_error, &$new_lambda, &$new_list, &$quote_form_builtin_systemName, &$system_symbol) {
-    $error_v = NULL;
     $error_v = (function () use (&$env, &$env2val, &$f, &$form_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
         return $new_error($system_symbol, $new_list(
             $form_builtin_use_systemName,
@@ -1113,7 +1109,6 @@ $machinetext_print_step = (function ($stack = NULL) use (&$LANG_ERROR, &$__TS__A
         $____TS_index = $lUa_I_LuA;
         $x = $stack[(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)];
         $x = $un_just_all($x);
-        $conslike = NULL;
         $conslike = (function ($xx = NULL, $s = NULL, $g1 = NULL, $g2 = NULL) use (&$__TS__ArrayPush, &$new_stack, &$result) {
             $__TS__ArrayPush($result, $s);
             $__TS__ArrayPush($new_stack, $g1($xx));
@@ -1349,7 +1344,6 @@ $symbols_set_neg_init = (function () {
         "𩠐" => "首始"
     ];
 });
-$symbols_set = NULL;
 $symbols_set = (function () use (&$symbols_set, &$symbols_set_init) {
     $r = $symbols_set_init();
     $symbols_set = (function () use (&$r) {
@@ -2586,7 +2580,6 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
             $____TS_index = $lUa_I_LuA;
             $hol = $stack[(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)];
             $chr = $get_do();
-            $conslike = NULL;
             $conslike = (function ($c = NULL) use (&$__TS__ArrayPush, &$hol, &$hole_set_do, &$new_hole_do, &$new_stack) {
                 $hol1 = $new_hole_do();
                 $hol2 = $new_hole_do();
@@ -2749,7 +2742,6 @@ $run_monad_helper = (function (
                     if (($next == false)) {
                         $upval_v = $list_a;
                         $upval_st = $state;
-                        $r = NULL;
                         $r = (function () use (&$return_handler, &$upval_st, &$upval_v) {
                             return $return_handler($upval_v, $upval_st);
                         });
@@ -2761,7 +2753,6 @@ $run_monad_helper = (function (
                         $upval_op = $op_handler;
                         $upval_v_1 = $list_a;
                         $upval_st_1 = $state;
-                        $r_1 = NULL;
                         $r_1 = (function () use (&$apply, &$next, &$run_monad_helper, &$upval_op, &$upval_rt, &$upval_st_1, &$upval_v_1) {
                             return $run_monad_helper($upval_rt, $upval_op, $apply($next, $upval_v_1), $upval_st_1);
                         });
@@ -2787,7 +2778,6 @@ $run_monad_helper = (function (
                             $upval_a = $list_a_1;
                             $upval_b = $list_d_a;
                             $upval_st_2 = $state;
-                            $r_2 = NULL;
                             $r_2 = (function () use (&$run_monad_helper, &$upval_a, &$upval_b, &$upval_op_1, &$upval_rt_1, &$upval_st_2) {
                                 return $run_monad_helper($upval_rt_1, $upval_op_1, $upval_a, $upval_st_2, $upval_b);
                             });
@@ -2802,7 +2792,6 @@ $run_monad_helper = (function (
                             $upval_st_3 = $state;
                             $upval_nt = $next;
                             $x = $new_symbol("序甲");
-                            $r_3 = NULL;
                             $r_3 = (function () use (&$function_symbol, &$make_bind, &$make_quote, &$new_data, &$new_list, &$run_monad_helper, &$upval_a_1, &$upval_b_1, &$upval_nt, &$upval_op_2, &$upval_rt_2, &$upval_st_3, &$x) {
                                 return $run_monad_helper(
                                     $upval_rt_2,

@@ -73,8 +73,7 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
                 if (a14.testfor_b(a12, a13)) {
                     org.luaj.vm2.LuaValue a15 = ((org.luaj.vm2.LuaValue)a2).get(a14);
                     org.luaj.vm2.LuaValue a16 = ((org.luaj.vm2.LuaValue)a8).call();
-                    org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-                    Lang$luaj$machinetext_parse$4 a17 = new Lang$luaj$machinetext_parse$4();
+                    Lang$luaj$machinetext_parse$conslike a17 = new Lang$luaj$machinetext_parse$conslike();
                     a17.u0 = this.u0;
                     a17.u1 = this.u3;
                     a17.u2 = a10;

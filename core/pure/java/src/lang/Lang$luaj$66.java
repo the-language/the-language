@@ -47,8 +47,7 @@ public class Lang$luaj$66 extends org.luaj.vm2.lib.VarArgFunction {
             org.luaj.vm2.Varargs a4 = a2;
             return a4;
         }
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-        Lang$luaj$66$0 a5 = new Lang$luaj$66$0();
+        Lang$luaj$66$error_v a5 = new Lang$luaj$66$error_v();
         a5.u0 = this.u2;
         a5.u1 = this.u3;
         a5.u2 = this.u4;

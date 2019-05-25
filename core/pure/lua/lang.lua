@@ -570,8 +570,7 @@ function real_evaluate(env, raw, selfvalraw)
     if delay_just_p(x) then
         return selfvalraw
     end
-    local error_v
-    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
+    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
     if construction_p(x) then
         return force_uncomment_list_1(x, error_v, function() return selfvalraw end, function(comments, xs)
             if #comments ~= 0 then
@@ -673,8 +672,7 @@ function name_p(x)
     return symbol_p(x) or data_p(x)
 end
 function real_apply(f, xs, selfvalraw)
-    local error_v
-    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
+    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
     f = force1(f)
     if delay_just_p(f) then
         return selfvalraw
@@ -730,8 +728,7 @@ function real_apply(f, xs, selfvalraw)
     return evaluate(env, f_code)
 end
 function real_builtin_func_apply(f, xs, selfvalraw)
-    local error_v
-    error_v = function() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
+    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
     for ____TS_index = 1, #real_builtin_func_apply_s do
         local xx = real_builtin_func_apply_s[____TS_index]
         if jsbool_equal_p(f, xx[1]) then
@@ -751,8 +748,7 @@ function real_builtin_func_apply(f, xs, selfvalraw)
     return error_v()
 end
 function real_builtin_form_apply(env, f, xs, selfvalraw)
-    local error_v
-    error_v = function() return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
+    local function error_v() return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
     if jsbool_equal_p(f, quote_form_builtin_systemName) then
         if #xs ~= 1 then
             return error_v()
@@ -920,8 +916,7 @@ function machinetext_print_step(stack)
     for ____TS_index = 1, #stack do
         local x = stack[____TS_index]
         x = un_just_all(x)
-        local conslike
-        conslike = function(xx, s, g1, g2)
+        local function conslike(xx, s, g1, g2)
             __TS__ArrayPush(result, s)
             __TS__ArrayPush(new_stack, g1(xx))
             __TS__ArrayPush(new_stack, g2(xx))
@@ -1156,15 +1151,14 @@ function symbols_set_neg_init()
         ["𩠐"] = "首始",
     }
 end
-local symbols_set
-symbols_set = function()
+local function symbols_set()
     local r = symbols_set_init()
-    symbols_set = function() return r end
+    function symbols_set() return r end
     return r
 end
-symbols_set_neg = function()
+function symbols_set_neg()
     local r = symbols_set_neg_init()
-    symbols_set_neg = function() return r end
+    function symbols_set_neg() return r end
     return r
 end
 symbol_t = 0
@@ -2249,8 +2243,7 @@ local function machinetext_parse(rawstr)
         for ____TS_index = 1, #stack do
             local hol = stack[____TS_index]
             local chr = get_do()
-            local conslike
-            conslike = function(c)
+            local function conslike(c)
                 local hol1 = new_hole_do()
                 local hol2 = new_hole_do()
                 __TS__ArrayPush(new_stack, function(x) return hole_set_do(hol1, x) end)
@@ -2381,8 +2374,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                     if next == false then
                         local upval_v = list_a
                         local upval_st = state
-                        local r
-                        r = function() return return_handler(upval_v, upval_st) end
+                        local function r() return return_handler(upval_v, upval_st) end
                         return trampoline_delay(r)
                     else
                         local upval_rt
@@ -2391,8 +2383,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                         upval_op = op_handler
                         local upval_v = list_a
                         local upval_st = state
-                        local r
-                        r = function() return run_monad_helper(upval_rt, upval_op, apply(next, upval_v), upval_st) end
+                        local function r() return run_monad_helper(upval_rt, upval_op, apply(next, upval_v), upval_st) end
                         return trampoline_delay(r)
                     end
                 end
@@ -2414,8 +2405,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                             local upval_a = list_a
                             local upval_b = list_d_a
                             local upval_st = state
-                            local r
-                            r = function() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, upval_b) end
+                            local function r() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, upval_b) end
                             return trampoline_delay(r)
                         else
                             local upval_rt
@@ -2427,8 +2417,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                             local upval_st = state
                             local upval_nt = next
                             local x = new_symbol("序甲")
-                            local r
-                            r = function() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt))))) end
+                            local function r() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt))))) end
                             return trampoline_delay(r)
                         end
                     end
@@ -2457,3 +2446,4 @@ ____exports.new_effect_return = new_effect_return
 ____exports.run_monad_trampoline = run_monad_trampoline
 ____exports.run_monad_stackoverflow = run_monad_stackoverflow
 return ____exports
+

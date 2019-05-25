@@ -1,10 +1,10 @@
 package lang;
-public class Lang$luaj$run_monad_helper$1 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$run_monad_helper$r extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     
-    public Lang$luaj$run_monad_helper$1() {
+    public Lang$luaj$run_monad_helper$r() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
