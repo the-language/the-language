@@ -3,6 +3,4 @@
 (require "test.lib.rkt")
 (require racket)
 
-echo (id "--- JS {{{")
-(when (not (js-run (js-test-compile test-main))) {false})
-echo (id "}}} JS ---")
+|> assert-true-run-test "ecmascript" (delay (js-run (js-test-compile test-main)))

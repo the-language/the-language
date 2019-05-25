@@ -15,7 +15,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 |#
-#lang racket
+#lang rash
+(require racket)
 (require rackunit)
 (provide (all-defined-out) (all-from-out rackunit))
 
@@ -59,28 +60,19 @@
      (apply ++ (map py3-test-compile xs))]))
 (define (py3-run x) (system (string-append "echo 'import python3.lang as L\n"(assert-safe-string/single-quote x)"' | python3")))
 
-(define lisp-id->php-id lisp-id->js-id)
-(define (php-expr-compile x)
-  (match x
-    [(? string?) (with-output-to-string (λ () (write x)))]
-    [(? number?) (number->string x)]
-    [(list (? string? f) xs ...) (++ f"("(apply-++ (add-between (map (λ (x) (php-expr-compile x)) xs) ","))")")]
-    [(list (? symbol? f) xs ...) (php-expr-compile (cons (lisp-id->php-id f) xs))]
-    ))
-(define (php-test-compile code)
-  (match code
-    [(list 'check-equal? v1 v2)
-     (++ "echo \""(make-safe-string/double-quote (with-output-to-string (λ () (write code))))"\\n\";\nif("(php-expr-compile v1)" != "(php-expr-compile v2)") {\nthrow new Exception(\"failed\");\n}\n")]
-    [(list 'begin xs ...)
-     (apply ++ (map php-test-compile xs))]))
-(define (php-run x) (system (string-append "php -r 'require \"./php/lang.php\";\n"(assert-safe-string/single-quote x)"'")))
-
 (define ((make-js-run repl) x)
   (define tmpfile (make-temporary-file))
   (display-to-file x tmpfile #:exists 'replace)
   (define ret (system* repl tmpfile))
   (delete-file tmpfile)
   ret)
+
+(define (assert-true-run-test name x)
+  {
+   echo (string-append "--- "name" {{{")
+   (when (not (force x)) {false})
+   echo (string-append "}}} "name" ---")
+   })
 
 (define test-main
   `(begin

@@ -3,6 +3,4 @@
 (require "test.lib.rkt")
 (require racket)
 
-echo (id "--- TS {{{")
-(when (not (ts-run (js-test-compile test-main))) {false})
-echo (id "}}} TS ---")
+|> assert-true-run-test "typescript" (delay (ts-run (js-test-compile test-main)))

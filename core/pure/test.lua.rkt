@@ -18,6 +18,4 @@
      (apply ++ (map lua-test-compile xs))]))
 (define lua-run (make-js-run "./repl.lua.sh"))
 
-echo (id "--- Lua {{{")
-(when (not (lua-run (lua-test-compile test-main))) {false})
-echo (id "}}} Lua ---")
+|> assert-true-run-test "lua" (delay (lua-run (lua-test-compile test-main)))
