@@ -31,6 +31,10 @@ for f in ./src/lang/*.java ;do
   cp "$f" "$f".1
   echo 'package lang;' > "$f"
   cat "$f".1 >> "$f"
+
+  cat "$f" | sed 's|^ *org.luaj.vm2.LuaValue dummy[0-9]* = org.luaj.vm2.LuaValue.NIL;$||' | sed 's|^ *org.luaj.vm2.LuaValue dummy[0-9]* = k[0-9]*;$||' > "$f".1
+  cat "$f".1 > "$f"
+
   rm "$f".1
 done
 cp -r ./luaj/build/jse/src/* ./src/

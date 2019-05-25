@@ -32,7 +32,7 @@ public class Lang$luaj$complex_parse$15 extends org.luaj.vm2.lib.VarArgFunction 
         Lang$luaj$complex_parse$15$readsysname_no_pack_bracket a2 = new Lang$luaj$complex_parse$15$readsysname_no_pack_bracket();
         a2.u0 = this.u0;
         a2.u1 = this.u1;
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
+
         if (a1.toboolean()) {
             a0 = org.luaj.vm2.LuaValue.tableOf(10, 0);
             org.luaj.vm2.LuaValue a3 = this.u2;

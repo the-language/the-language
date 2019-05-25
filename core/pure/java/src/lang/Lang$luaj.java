@@ -1137,7 +1137,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         ((org.luaj.vm2.LuaValue)a214).rawset(19, (org.luaj.vm2.LuaValue)a247);
         ((org.luaj.vm2.LuaValue)a214).rawset(20, (org.luaj.vm2.LuaValue)a251);
         a50[0] = a214;
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
+
         org.luaj.vm2.LuaValue a253 = a55[0];
         ((org.luaj.vm2.LuaValue)a1).set(k93, a253);
         Lang$luaj$simple_print a254 = new Lang$luaj$simple_print();

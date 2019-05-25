@@ -55,7 +55,7 @@ public class Lang$luaj$72 extends org.luaj.vm2.lib.VarArgFunction {
                 a7 = this.u7.call(a7);
             }
         }
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
+
         org.luaj.vm2.LuaValue a11 = (((org.luaj.vm2.LuaValue)a6).toboolean()) ? this.u8.call((org.luaj.vm2.LuaValue)a5) : a4;
         org.luaj.vm2.LuaTable a12 = org.luaj.vm2.LuaValue.tableOf(0, 0);
         org.luaj.vm2.LuaValue a13 = this.u9;

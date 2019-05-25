@@ -28,7 +28,7 @@ public class Lang$luaj$57 extends org.luaj.vm2.lib.OneArgFunction {
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
         org.luaj.vm2.LuaValue a0 = null;
         org.luaj.vm2.LuaValue a1 = this.u0.call(a);
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
+
         this.u1.call(this.u2.call(a1).not());
         if (this.u3.call(a1).toboolean()) {
             a0 = this.u4[0].call(this.u5.call(a1), this.u6.call(a1), a);

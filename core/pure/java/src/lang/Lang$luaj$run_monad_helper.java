@@ -61,8 +61,8 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                             a13.u2 = a3;
                             return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a13);
                         }
-                        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
-                        org.luaj.vm2.LuaValue dummy0 = org.luaj.vm2.LuaValue.NIL;
+
+
                         Lang$luaj$run_monad_helper$r$1 a14 = new Lang$luaj$run_monad_helper$r$1();
                         a14.u0 = this.u12;
                         a14.u1 = a0;
@@ -84,8 +84,8 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                         org.luaj.vm2.LuaValue a19 = this.u1[0].invoke(this.u9.invoke((org.luaj.vm2.Varargs)a17).subargs(1)).arg1();
                         if (this.u10.call(a19).toboolean()) {
                             if (a5[0].eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
-                                org.luaj.vm2.LuaValue dummy1 = org.luaj.vm2.LuaValue.NIL;
-                                org.luaj.vm2.LuaValue dummy2 = org.luaj.vm2.LuaValue.NIL;
+
+
                                 Lang$luaj$run_monad_helper$r$2 a20 = new Lang$luaj$run_monad_helper$r$2();
                                 a20.u0 = this.u12;
                                 a20.u1 = a0;
@@ -95,8 +95,8 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                                 a20.u5 = a18;
                                 return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a20);
                             }
-                            org.luaj.vm2.LuaValue dummy3 = org.luaj.vm2.LuaValue.NIL;
-                            org.luaj.vm2.LuaValue dummy4 = org.luaj.vm2.LuaValue.NIL;
+
+
                             org.luaj.vm2.LuaValue a21 = a5[0];
                             org.luaj.vm2.LuaValue a22 = this.u15.call(k0);
                             Lang$luaj$run_monad_helper$r$3 a23 = new Lang$luaj$run_monad_helper$r$3();

@@ -74,8 +74,8 @@ public class Lang$luaj$74 extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         a.subargs(2);
         org.luaj.vm2.LuaValue a1 = this.u0.call(a0);
-        org.luaj.vm2.LuaValue dummy = k0;
-        org.luaj.vm2.LuaValue dummy0 = k0;
+
+
         if (this.u1.call(a1).toboolean()) {
             org.luaj.vm2.Varargs a2 = k1;
             return a2;

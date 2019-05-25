@@ -90,7 +90,7 @@ public class Lang$luaj$complex_print extends org.luaj.vm2.lib.VarArgFunction {
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
         org.luaj.vm2.LuaValue a0 = a.arg(1);
         a.subargs(2);
-        org.luaj.vm2.LuaValue dummy = org.luaj.vm2.LuaValue.NIL;
+
         Lang$luaj$complex_print$print_sys_name a1 = new Lang$luaj$complex_print$print_sys_name();
         a1.u0 = this.u0;
         a1.u1 = this.u1;
@@ -112,8 +112,8 @@ public class Lang$luaj$complex_print extends org.luaj.vm2.lib.VarArgFunction {
         a1.u17 = this.u16;
         a1.u18 = this.u17;
         org.luaj.vm2.LuaValue a2 = this.u18.invoke(this.u16[0].invoke((org.luaj.vm2.Varargs)a0).subargs(1)).arg1();
-        org.luaj.vm2.LuaValue dummy0 = k0;
-        org.luaj.vm2.LuaValue dummy1 = k0;
+
+
         if (this.u19.call(a2).toboolean()) {
             org.luaj.vm2.Varargs a3 = k1;
             return a3;
