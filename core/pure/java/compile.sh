@@ -26,7 +26,8 @@ jar cf lang.jar *
 cd -
 
 rm -fr src
-py2 -OO ./Krakatau/decompile.py -nauto -path "$(echo /usr/lib/jvm/*/jre/lib/rt.jar | awk '{print $1}');./$LUAJ/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
+./get-rt-jar.sh
+py2 -OO ./Krakatau/decompile.py -nauto -path "./rt.jar;./$LUAJ/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
 for f in ./src/lang/*.java ;do
   cp "$f" "$f".1
   echo 'package lang;' > "$f"
