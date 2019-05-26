@@ -1346,8 +1346,12 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     let stack1 = [x]
     let stack2 = [y]
     while (stack1.length !== 0) {
-        const [ret1, new_stack1] = machinetext_print_step(stack1)
-        const [ret2, new_stack2] = machinetext_print_step(stack2)
+        const ret1__new_stack1 = machinetext_print_step(stack1)
+        const ret1 = ret1__new_stack1[0]
+        const new_stack1 = ret1__new_stack1[1]
+        const ret2__new_stack2 = machinetext_print_step(stack2)
+        const ret2 = ret2__new_stack2[0]
+        const new_stack2 = ret2__new_stack2[1]
         if (ret1.length !== ret2.length) { return false }
         for (let i = 0; i < ret1.length; i++) {
             if (ret1[i] !== ret2[i]) { return false }
@@ -2047,7 +2051,9 @@ function machinetext_print(x: LangVal): string {
     let stack: Array<LangVal> = [x]
     let result: string = ""
     while (stack.length !== 0) {
-        const [tmpret, new_stack] = machinetext_print_step(stack)
+        const tmpret__new_stack = machinetext_print_step(stack)
+        const tmpret = tmpret__new_stack[0]
+        const new_stack = tmpret__new_stack[1]
         for (const s of tmpret) {
             result += s
         }

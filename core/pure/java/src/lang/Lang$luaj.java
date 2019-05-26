@@ -1082,8 +1082,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
 
         org.luaj.vm2.LuaValue a247 = a54[0];
         Lang$luaj$jsbool_no_force_equal_p a248 = new Lang$luaj$jsbool_no_force_equal_p();
-        a248.u0 = this.u0;
-        a248.u1 = a130;
+        a248.u0 = a130;
         Lang$luaj$complex_parse a249 = new Lang$luaj$complex_parse();
         a249.u0 = a57;
         a249.u1 = this.u0;
@@ -1183,8 +1182,8 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         a251.u11 = a81;
         a251.u12 = a15;
         Lang$luaj$machinetext_print a252 = new Lang$luaj$machinetext_print();
-        a252.u0 = this.u0;
-        a252.u1 = a130;
+        a252.u0 = a130;
+        a252.u1 = this.u0;
         Lang$luaj$trampoline_return a253 = new Lang$luaj$trampoline_return();
         Lang$luaj$trampoline_delay a254 = new Lang$luaj$trampoline_delay();
         Lang$luaj$run_trampoline a255 = new Lang$luaj$run_trampoline();

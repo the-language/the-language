@@ -1796,12 +1796,12 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$machinetext_p
     $stack1 = ((object)[$x]);
     $stack2 = ((object)[$y]);
     while (((is_string($stack1) ? strlen($stack1) : count((array)$stack1)) != 0)) {
-        $lUaTmP_12_LuAtMp = $machinetext_print_step($stack1);
-        $ret1 = ($lUaTmP_12_LuAtMp->{0});
-        $new_stack1 = ($lUaTmP_12_LuAtMp->{1});
-        $lUaTmP_13_LuAtMp = $machinetext_print_step($stack2);
-        $ret2 = ($lUaTmP_13_LuAtMp->{0});
-        $new_stack2 = ($lUaTmP_13_LuAtMp->{1});
+        $ret1__new_stack1 = $machinetext_print_step($stack1);
+        $ret1 = ($ret1__new_stack1->{0});
+        $new_stack1 = ($ret1__new_stack1->{1});
+        $ret2__new_stack2 = $machinetext_print_step($stack2);
+        $ret2 = ($ret2__new_stack2->{0});
+        $new_stack2 = ($ret2__new_stack2->{1});
         if (((is_string($ret1) ? strlen($ret1) : count((array)$ret1)) !=
             (is_string($ret2) ? strlen($ret2) : count((array)$ret2)))) {
             return false;
@@ -1855,14 +1855,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     });
     $get = (function () use (&$LANG_ASSERT, &$eof, &$state, &$state_const) {
         $LANG_ASSERT(!($eof()));
-        $lUaTmP_14_LuAtMp = ($state + 0);
-        $ret = substr($state_const, $lUaTmP_14_LuAtMp, ($state + 1) - $lUaTmP_14_LuAtMp);
+        $lUaTmP_12_LuAtMp = ($state + 0);
+        $ret = substr($state_const, $lUaTmP_12_LuAtMp, ($state + 1) - $lUaTmP_12_LuAtMp);
         $state = ($state + 1);
         return $ret;
     });
     $put = (function ($chr = NULL) use (&$LANG_ASSERT, &$state, &$state_const) {
-        $lUaTmP_15_LuAtMp = ($state - 1);
-        $LANG_ASSERT((substr($state_const, $lUaTmP_15_LuAtMp, $state - $lUaTmP_15_LuAtMp) == $chr));
+        $lUaTmP_13_LuAtMp = ($state - 1);
+        $LANG_ASSERT((substr($state_const, $lUaTmP_13_LuAtMp, $state - $lUaTmP_13_LuAtMp) == $chr));
         $state = ($state - 1);
     });
     $parse_error = (function ($x_1 = NULL) {
@@ -2004,9 +2004,9 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             return false;
         }
         $____TS_array = ((object)["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]);
-        $lUaTmP_16_LuAtMp = (is_string($____TS_array) ? strlen($____TS_array) : count((array)$____TS_array));
-        $lUaTmP_17_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_17_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_16_LuAtMp : $lUa_I_LuA >= $lUaTmP_16_LuAtMp; $lUa_I_LuA += $lUaTmP_17_LuAtMp) {
+        $lUaTmP_14_LuAtMp = (is_string($____TS_array) ? strlen($____TS_array) : count((array)$____TS_array));
+        $lUaTmP_15_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_15_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_14_LuAtMp : $lUa_I_LuA >= $lUaTmP_14_LuAtMp; $lUa_I_LuA += $lUaTmP_15_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $v = ($____TS_array->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
             if (($v == $chr)) {
@@ -2028,9 +2028,9 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             $readapply,
             $readcomment
         ]);
-        $lUaTmP_18_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
-        $lUaTmP_19_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_19_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_18_LuAtMp : $lUa_I_LuA >= $lUaTmP_18_LuAtMp; $lUa_I_LuA += $lUaTmP_19_LuAtMp) {
+        $lUaTmP_16_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
+        $lUaTmP_17_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_17_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_16_LuAtMp : $lUa_I_LuA >= $lUaTmP_16_LuAtMp; $lUa_I_LuA += $lUaTmP_17_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $f = ($fs->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
             $x_1 = $f();
@@ -2091,9 +2091,9 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             ]);
         }
 
-        $lUaTmP_20_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
-        $lUaTmP_21_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_21_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_20_LuAtMp : $lUa_I_LuA >= $lUaTmP_20_LuAtMp; $lUa_I_LuA += $lUaTmP_21_LuAtMp) {
+        $lUaTmP_18_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
+        $lUaTmP_19_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_19_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_18_LuAtMp : $lUa_I_LuA >= $lUaTmP_18_LuAtMp; $lUa_I_LuA += $lUaTmP_19_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $f = ($fs->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
             $x_1 = $f();
@@ -2519,17 +2519,17 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
     });
     $get_do = (function () use (&$parse_assert, &$rawstr, &$state) {
         $parse_assert(((is_string($rawstr) ? strlen($rawstr) : count((array)$rawstr)) > $state));
-        $lUaTmP_22_LuAtMp = ($state + 0);
-        $result_1 = substr($rawstr, $lUaTmP_22_LuAtMp, ($state + 1) - $lUaTmP_22_LuAtMp);
+        $lUaTmP_20_LuAtMp = ($state + 0);
+        $result_1 = substr($rawstr, $lUaTmP_20_LuAtMp, ($state + 1) - $lUaTmP_20_LuAtMp);
         $state = ($state + 1);
         return $result_1;
     });
     $callbacks = ((object)[]);
     while (((is_string($stack) ? strlen($stack) : count((array)$stack)) != 0)) {
         $new_stack = ((object)[]);
-        $lUaTmP_23_LuAtMp = (is_string($stack) ? strlen($stack) : count((array)$stack));
-        $lUaTmP_24_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
+        $lUaTmP_21_LuAtMp = (is_string($stack) ? strlen($stack) : count((array)$stack));
+        $lUaTmP_22_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_22_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_21_LuAtMp : $lUa_I_LuA >= $lUaTmP_21_LuAtMp; $lUa_I_LuA += $lUaTmP_22_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $hol = ($stack->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
             $chr = $get_do();
@@ -2616,12 +2616,12 @@ $machinetext_print = (function ($x = NULL) use (&$machinetext_print_step) {
     $stack = ((object)[$x]);
     $result = "";
     while (((is_string($stack) ? strlen($stack) : count((array)$stack)) != 0)) {
-        $lUaTmP_25_LuAtMp = $machinetext_print_step($stack);
-        $tmpret = ($lUaTmP_25_LuAtMp->{0});
-        $new_stack = ($lUaTmP_25_LuAtMp->{1});
-        $lUaTmP_26_LuAtMp = (is_string($tmpret) ? strlen($tmpret) : count((array)$tmpret));
-        $lUaTmP_27_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_27_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_26_LuAtMp : $lUa_I_LuA >= $lUaTmP_26_LuAtMp; $lUa_I_LuA += $lUaTmP_27_LuAtMp) {
+        $tmpret__new_stack = $machinetext_print_step($stack);
+        $tmpret = ($tmpret__new_stack->{0});
+        $new_stack = ($tmpret__new_stack->{1});
+        $lUaTmP_23_LuAtMp = (is_string($tmpret) ? strlen($tmpret) : count((array)$tmpret));
+        $lUaTmP_24_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
             $____TS_index = $lUa_I_LuA;
             $s = ($tmpret->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
             $result = (((string)$result) . ((string)$s));

@@ -1588,8 +1588,12 @@ local function jsbool_no_force_equal_p(x, y)
     local stack1 = {x}
     local stack2 = {y}
     while #stack1 ~= 0 do
-        local ret1, new_stack1 = unpack(machinetext_print_step(stack1))
-        local ret2, new_stack2 = unpack(machinetext_print_step(stack2))
+        local ret1__new_stack1 = machinetext_print_step(stack1)
+        local ret1 = ret1__new_stack1[1]
+        local new_stack1 = ret1__new_stack1[2]
+        local ret2__new_stack2 = machinetext_print_step(stack2)
+        local ret2 = ret2__new_stack2[1]
+        local new_stack2 = ret2__new_stack2[2]
         if #ret1 ~= #ret2 then
             return false
         end
@@ -2256,7 +2260,9 @@ local function machinetext_print(x)
     local stack = {x}
     local result = ""
     while #stack ~= 0 do
-        local tmpret, new_stack = unpack(machinetext_print_step(stack))
+        local tmpret__new_stack = machinetext_print_step(stack)
+        local tmpret = tmpret__new_stack[1]
+        local new_stack = tmpret__new_stack[2]
         for ____TS_index = 1, #tmpret do
             local s = tmpret[____TS_index]
             result = tostring(result) .. tostring(s)
