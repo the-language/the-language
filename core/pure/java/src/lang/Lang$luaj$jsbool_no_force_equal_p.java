@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$simple_print extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
@@ -12,7 +12,7 @@ public class Lang$luaj$simple_print extends org.luaj.vm2.lib.TwoArgFunction {
         k2 = org.luaj.vm2.LuaValue.valueOf(1);
     }
     
-    public Lang$luaj$simple_print() {
+    public Lang$luaj$jsbool_no_force_equal_p() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {

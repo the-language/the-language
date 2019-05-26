@@ -28,7 +28,6 @@ local function __TS__ArrayPush(arr, ...)
     return #arr
 end
 
-local ____exports = {}
 local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, delay2delay_evaluate, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, machinetext_print_step, symbols_set_init, symbols_set_neg_init
 function LANG_ERROR()
     error("TheLanguage PANIC")
@@ -1173,11 +1172,6 @@ delay_builtin_form_t = 8
 delay_apply_t = 9
 comment_t = 11
 hole_t = 10
-____exports.new_comment = new_comment
-____exports.comment_p = comment_p
-____exports.comment_comment = comment_comment
-____exports.comment_x = comment_x
-____exports.un_comment_all = un_comment_all
 local function can_new_symbol_unicodechar_p(x)
     return symbols_set_neg()[x] ~= nil
 end
@@ -1193,33 +1187,7 @@ end
 local function new_symbol(x)
     return new_symbol_unicodechar(symbols_set()[x])
 end
-____exports.can_new_symbol_p = can_new_symbol_p
-____exports.New_Symbol = New_Symbol
-____exports.new_symbol = new_symbol
-____exports.symbol_p = symbol_p
-____exports.un_symbol = un_symbol
-____exports.New_Construction = New_Construction
-____exports.new_construction = new_construction
-____exports.construction_p = construction_p
-____exports.construction_head = construction_head
-____exports.construction_tail = construction_tail
 null_v = {null_t}
-____exports.Null_V = Null_V
-____exports.null_v = null_v
-____exports.null_p = null_p
-____exports.New_Data = New_Data
-____exports.new_data = new_data
-____exports.data_p = data_p
-____exports.data_name = data_name
-____exports.data_list = data_list
-____exports.New_Error = New_Error
-____exports.new_error = new_error
-____exports.error_p = error_p
-____exports.error_name = error_name
-____exports.error_list = error_list
-____exports.just_p = just_p
-____exports.evaluate = evaluate
-____exports.apply = apply
 local function force_uncomment_all_rec(raw)
     local x = force_uncomment_all(raw)
     local function conslike(xx)
@@ -1247,8 +1215,6 @@ local function force_uncomment_all_rec(raw)
     end
     return x
 end
-____exports.force_all_rec = force_all_rec
-____exports.force_uncomment_all_rec = force_uncomment_all_rec
 system_symbol = new_symbol("太始初核")
 local name_symbol = new_symbol("符名")
 function_symbol = new_symbol("化滅")
@@ -1333,27 +1299,18 @@ end
 local function maybe_list_to_jsArray(xs)
     return list_to_jsArray(xs, function(x) return x end, function(_1, _2) return false end)
 end
-____exports.jsArray_to_list = jsArray_to_list
-____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
-____exports.new_list = new_list
 local function un_just_comment_all(x)
     while just_p(x) or comment_p(x) do
         x = un_just_all(un_comment_all(x))
     end
     return x
 end
-____exports.un_just_all = un_just_all
-____exports.un_just_comment_all = un_just_comment_all
-____exports.delay_p = delay_p
-____exports.delay_just_p = delay_just_p
 local function delay_env(x)
     return delay_evaluate_env(delay2delay_evaluate(x))
 end
 local function delay_x(x)
     return delay_evaluate_x(delay2delay_evaluate(x))
 end
-____exports.delay_env = delay_env
-____exports.delay_x = delay_x
 local function force_uncomment1(raw)
     if comment_p(raw) then
         return comment_x(raw)
@@ -1361,10 +1318,6 @@ local function force_uncomment1(raw)
         return force1(raw)
     end
 end
-____exports.force_all = force_all
-____exports.force1 = force1
-____exports.force_uncomment1 = force_uncomment1
-____exports.force_uncomment_all = force_uncomment_all
 env_null_v = {}
 local function val2env(x)
     x = force_all(x)
@@ -1424,12 +1377,6 @@ local function val2env(x)
     end
     return ret
 end
-____exports.env_null_v = env_null_v
-____exports.env_set = env_set
-____exports.env_get = env_get
-____exports.env2val = env2val
-____exports.env_foreach = env_foreach
-____exports.val2env = val2env
 local function make_builtin_p_func(p_sym, p_jsfunc)
     return {
         p_sym,
@@ -1637,7 +1584,6 @@ real_builtin_func_apply_s = {
 }
 local equal_p
 equal_p = jsbool_equal_p
-____exports.equal_p = equal_p
 local function jsbool_no_force_equal_p(x, y)
     local stack1 = {x}
     local stack2 = {y}
@@ -1661,7 +1607,6 @@ local function jsbool_no_force_equal_p(x, y)
     end
     return #stack2 == 0
 end
-____exports.simple_print = simple_print
 local function complex_parse(x)
     local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
     function eof()
@@ -2103,7 +2048,6 @@ local function complex_parse(x)
     readcomment = make_read_two(";", function(comment, x) return new_comment(comment, x) end)
     return val()
 end
-____exports.complex_parse = complex_parse
 local function complex_print(val)
     local function print_sys_name(x, is_inner_bool)
         if symbol_p(x) then
@@ -2218,7 +2162,6 @@ local function complex_print(val)
     end
     return LANG_ERROR()
 end
-____exports.complex_print = complex_print
 local function machinetext_parse(rawstr)
     local result = new_hole_do()
     local stack = {function(x) return hole_set_do(result, x) end}
@@ -2322,8 +2265,6 @@ local function machinetext_print(x)
     end
     return result
 end
-____exports.machinetext_parse = machinetext_parse
-____exports.machinetext_print = machinetext_print
 local function trampoline_return(x)
     return function() return {
         false,
@@ -2343,9 +2284,6 @@ local function run_trampoline(x)
     end
     return i[2]
 end
-____exports.trampoline_return = trampoline_return
-____exports.trampoline_delay = trampoline_delay
-____exports.run_trampoline = run_trampoline
 local return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
 local bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
 local function new_effect_bind(monad, func)
@@ -2437,6 +2375,69 @@ end
 local function run_monad_stackoverflow(return_handler, op_handler, code, state)
     return run_trampoline(run_monad_helper((function(v, s) return trampoline_return(return_handler(v, s)) end), (function(op, st, rs) return trampoline_return(op_handler(op, st, function(v, s) return run_trampoline(rs(v, s)) end)) end), code, state))
 end
+
+local ____exports = {}
+____exports.new_comment = new_comment
+____exports.comment_p = comment_p
+____exports.comment_comment = comment_comment
+____exports.comment_x = comment_x
+____exports.un_comment_all = un_comment_all
+____exports.can_new_symbol_p = can_new_symbol_p
+____exports.New_Symbol = New_Symbol
+____exports.new_symbol = new_symbol
+____exports.symbol_p = symbol_p
+____exports.un_symbol = un_symbol
+____exports.New_Construction = New_Construction
+____exports.new_construction = new_construction
+____exports.construction_p = construction_p
+____exports.construction_head = construction_head
+____exports.construction_tail = construction_tail
+____exports.Null_V = Null_V
+____exports.null_v = null_v
+____exports.null_p = null_p
+____exports.New_Data = New_Data
+____exports.new_data = new_data
+____exports.data_p = data_p
+____exports.data_name = data_name
+____exports.data_list = data_list
+____exports.New_Error = New_Error
+____exports.new_error = new_error
+____exports.error_p = error_p
+____exports.error_name = error_name
+____exports.error_list = error_list
+____exports.just_p = just_p
+____exports.evaluate = evaluate
+____exports.apply = apply
+____exports.force_all_rec = force_all_rec
+____exports.force_uncomment_all_rec = force_uncomment_all_rec
+____exports.jsArray_to_list = jsArray_to_list
+____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
+____exports.new_list = new_list
+____exports.un_just_all = un_just_all
+____exports.un_just_comment_all = un_just_comment_all
+____exports.delay_p = delay_p
+____exports.delay_just_p = delay_just_p
+____exports.delay_env = delay_env
+____exports.delay_x = delay_x
+____exports.force_all = force_all
+____exports.force1 = force1
+____exports.force_uncomment1 = force_uncomment1
+____exports.force_uncomment_all = force_uncomment_all
+____exports.env_null_v = env_null_v
+____exports.env_set = env_set
+____exports.env_get = env_get
+____exports.env2val = env2val
+____exports.env_foreach = env_foreach
+____exports.val2env = val2env
+____exports.equal_p = equal_p
+____exports.simple_print = simple_print
+____exports.complex_parse = complex_parse
+____exports.complex_print = complex_print
+____exports.machinetext_parse = machinetext_parse
+____exports.machinetext_print = machinetext_print
+____exports.trampoline_return = trampoline_return
+____exports.trampoline_delay = trampoline_delay
+____exports.run_trampoline = run_trampoline
 ____exports.Return_Effect_SystemName = Return_Effect_SystemName
 ____exports.return_effect_systemName = return_effect_systemName
 ____exports.Bind_Effect_SystemName = Bind_Effect_SystemName
@@ -2446,4 +2447,3 @@ ____exports.new_effect_return = new_effect_return
 ____exports.run_monad_trampoline = run_monad_trampoline
 ____exports.run_monad_stackoverflow = run_monad_stackoverflow
 return ____exports
-

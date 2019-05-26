@@ -29,7 +29,6 @@ $__TS__ArrayPush = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
     }
     return (is_string($arr) ? strlen($arr) : count((array)$arr));
 });
-$____exports = ((object)[]);
 $LANG_ERROR = NULL;
 $LANG_ASSERT = NULL;
 $symbols_set_neg = NULL;
@@ -1373,11 +1372,6 @@ $delay_builtin_form_t = 8;
 $delay_apply_t = 9;
 $comment_t = 11;
 $hole_t = 10;
-$____exports->{"new_comment"} = $new_comment;
-$____exports->{"comment_p"} = $comment_p;
-$____exports->{"comment_comment"} = $comment_comment;
-$____exports->{"comment_x"} = $comment_x;
-$____exports->{"un_comment_all"} = $un_comment_all;
 $can_new_symbol_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
     return (($symbols_set_neg()->{(is_int($x) ? $x - 1 : $x)}) != NULL);
 });
@@ -1390,33 +1384,7 @@ $can_new_symbol_p = (function ($x = NULL) use (&$symbols_set) {
 $new_symbol = (function ($x = NULL) use (&$new_symbol_unicodechar, &$symbols_set) {
     return $new_symbol_unicodechar(($symbols_set()->{(is_int($x) ? $x - 1 : $x)}));
 });
-$____exports->{"can_new_symbol_p"} = $can_new_symbol_p;
-$____exports->{"New_Symbol"} = $GLOBALS["New_Symbol"];
-$____exports->{"new_symbol"} = $new_symbol;
-$____exports->{"symbol_p"} = $symbol_p;
-$____exports->{"un_symbol"} = $un_symbol;
-$____exports->{"New_Construction"} = $GLOBALS["New_Construction"];
-$____exports->{"new_construction"} = $new_construction;
-$____exports->{"construction_p"} = $construction_p;
-$____exports->{"construction_head"} = $construction_head;
-$____exports->{"construction_tail"} = $construction_tail;
 $null_v = ((object)[$null_t]);
-$____exports->{"Null_V"} = $GLOBALS["Null_V"];
-$____exports->{"null_v"} = $null_v;
-$____exports->{"null_p"} = $null_p;
-$____exports->{"New_Data"} = $GLOBALS["New_Data"];
-$____exports->{"new_data"} = $new_data;
-$____exports->{"data_p"} = $data_p;
-$____exports->{"data_name"} = $data_name;
-$____exports->{"data_list"} = $data_list;
-$____exports->{"New_Error"} = $GLOBALS["New_Error"];
-$____exports->{"new_error"} = $new_error;
-$____exports->{"error_p"} = $error_p;
-$____exports->{"error_name"} = $error_name;
-$____exports->{"error_list"} = $error_list;
-$____exports->{"just_p"} = $just_p;
-$____exports->{"evaluate"} = $evaluate;
-$____exports->{"apply"} = $apply;
 $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all_rec, &$force_uncomment_all, &$force_uncomment_all_rec, &$lang_copy_do) {
     $x = $force_uncomment_all($raw);
     $conslike = (function ($xx = NULL) use (&$comment_p, &$force_all_rec, &$force_uncomment_all_rec, &$lang_copy_do) {
@@ -1445,8 +1413,6 @@ $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construct
     }
     return $x;
 });
-$____exports->{"force_all_rec"} = $force_all_rec;
-$____exports->{"force_uncomment_all_rec"} = $force_uncomment_all_rec;
 $system_symbol = $new_symbol("太始初核");
 $name_symbol = $new_symbol("符名");
 $function_symbol = $new_symbol("化滅");
@@ -1559,27 +1525,18 @@ $maybe_list_to_jsArray = (function ($xs = NULL) use (&$list_to_jsArray) {
         return false;
     }));
 });
-$____exports->{"jsArray_to_list"} = $jsArray_to_list;
-$____exports->{"maybe_list_to_jsArray"} = $maybe_list_to_jsArray;
-$____exports->{"new_list"} = $new_list;
 $un_just_comment_all = (function ($x = NULL) use (&$comment_p, &$just_p, &$un_comment_all, &$un_just_all) {
     while (($just_p($x) || $comment_p($x))) {
         $x = $un_just_all($un_comment_all($x));
     }
     return $x;
 });
-$____exports->{"un_just_all"} = $un_just_all;
-$____exports->{"un_just_comment_all"} = $un_just_comment_all;
-$____exports->{"delay_p"} = $delay_p;
-$____exports->{"delay_just_p"} = $delay_just_p;
 $delay_env = (function ($x = NULL) use (&$delay2delay_evaluate, &$delay_evaluate_env) {
     return $delay_evaluate_env($delay2delay_evaluate($x));
 });
 $delay_x = (function ($x = NULL) use (&$delay2delay_evaluate, &$delay_evaluate_x) {
     return $delay_evaluate_x($delay2delay_evaluate($x));
 });
-$____exports->{"delay_env"} = $delay_env;
-$____exports->{"delay_x"} = $delay_x;
 $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$force1) {
     if ($comment_p($raw)) {
         return $comment_x($raw);
@@ -1588,10 +1545,6 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
     }
 
 });
-$____exports->{"force_all"} = $force_all;
-$____exports->{"force1"} = $force1;
-$____exports->{"force_uncomment1"} = $force_uncomment1;
-$____exports->{"force_uncomment_all"} = $force_uncomment_all;
 $env_null_v = ((object)[]);
 $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_symbol, &$null_p, &$symbol_equal_p, &$symbol_p) {
     $x = $force_all($x);
@@ -1653,12 +1606,6 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$
     }
     return $ret;
 });
-$____exports->{"env_null_v"} = $env_null_v;
-$____exports->{"env_set"} = $env_set;
-$____exports->{"env_get"} = $env_get;
-$____exports->{"env2val"} = $env2val;
-$____exports->{"env_foreach"} = $env_foreach;
-$____exports->{"val2env"} = $val2env;
 $make_builtin_p_func = (function ($p_sym = NULL, $p_jsfunc = NULL) use (&$builtin_func_apply, &$delay_just_p, &$false_v, &$force1, &$true_v) {
     return ((object)[
         $p_sym,
@@ -1845,7 +1792,6 @@ $real_builtin_func_apply_s = ((object)[
 ]);
 $equal_p = NULL;
 $equal_p = $jsbool_equal_p;
-$____exports->{"equal_p"} = $equal_p;
 $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$machinetext_print_step) {
     $stack1 = ((object)[$x]);
     $stack2 = ((object)[$y]);
@@ -1876,7 +1822,6 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$machinetext_p
     }
     return ((is_string($stack2) ? strlen($stack2) : count((array)$stack2)) == 0);
 });
-$____exports->{"simple_print"} = $simple_print;
 $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$can_new_symbol_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_symbol, &$function_symbol, &$hole_set_do, &$isOrNot_symbol, &$jsArray_to_list, &$list_to_jsArray, &$new_comment, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol, &$null_p, &$null_v, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$val2env) {
     $state_const = NULL;
     $state = NULL;
@@ -2383,7 +2328,6 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     }));
     return $val();
 });
-$____exports->{"complex_parse"} = $complex_parse;
 $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_symbol, &$new_construction, &$null_p, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
     $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
         if ($symbol_p($x)) {
@@ -2557,7 +2501,6 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
     }
     return $LANG_ERROR();
 });
-$____exports->{"complex_print"} = $complex_print;
 $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$can_new_symbol_unicodechar_p, &$evaluate, &$hole_set_do, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_symbol_unicodechar, &$null_v, &$val2env) {
     $result = $new_hole_do();
     $stack = ((object)[
@@ -2687,8 +2630,6 @@ $machinetext_print = (function ($x = NULL) use (&$machinetext_print_step) {
     }
     return $result;
 });
-$____exports->{"machinetext_parse"} = $machinetext_parse;
-$____exports->{"machinetext_print"} = $machinetext_print;
 $trampoline_return = (function ($x = NULL) {
     return (function () use (&$x) {
         return ((object)[false, $x]);
@@ -2706,9 +2647,6 @@ $run_trampoline = (function ($x = NULL) {
     }
     return ($i->{1});
 });
-$____exports->{"trampoline_return"} = $trampoline_return;
-$____exports->{"trampoline_delay"} = $trampoline_delay;
-$____exports->{"run_trampoline"} = $run_trampoline;
 $return_effect_systemName = $systemName_make($new_construction(
     $sub_symbol,
     $new_construction($new_construction($effect_symbol, $new_construction($new_construction(
@@ -2861,6 +2799,68 @@ $run_monad_stackoverflow = (function ($return_handler = NULL, $op_handler = NULL
         }), $code, $state)
     );
 });
+$____exports = ((object)[]);
+$____exports->{"new_comment"} = $new_comment;
+$____exports->{"comment_p"} = $comment_p;
+$____exports->{"comment_comment"} = $comment_comment;
+$____exports->{"comment_x"} = $comment_x;
+$____exports->{"un_comment_all"} = $un_comment_all;
+$____exports->{"can_new_symbol_p"} = $can_new_symbol_p;
+$____exports->{"New_Symbol"} = $GLOBALS["New_Symbol"];
+$____exports->{"new_symbol"} = $new_symbol;
+$____exports->{"symbol_p"} = $symbol_p;
+$____exports->{"un_symbol"} = $un_symbol;
+$____exports->{"New_Construction"} = $GLOBALS["New_Construction"];
+$____exports->{"new_construction"} = $new_construction;
+$____exports->{"construction_p"} = $construction_p;
+$____exports->{"construction_head"} = $construction_head;
+$____exports->{"construction_tail"} = $construction_tail;
+$____exports->{"Null_V"} = $GLOBALS["Null_V"];
+$____exports->{"null_v"} = $null_v;
+$____exports->{"null_p"} = $null_p;
+$____exports->{"New_Data"} = $GLOBALS["New_Data"];
+$____exports->{"new_data"} = $new_data;
+$____exports->{"data_p"} = $data_p;
+$____exports->{"data_name"} = $data_name;
+$____exports->{"data_list"} = $data_list;
+$____exports->{"New_Error"} = $GLOBALS["New_Error"];
+$____exports->{"new_error"} = $new_error;
+$____exports->{"error_p"} = $error_p;
+$____exports->{"error_name"} = $error_name;
+$____exports->{"error_list"} = $error_list;
+$____exports->{"just_p"} = $just_p;
+$____exports->{"evaluate"} = $evaluate;
+$____exports->{"apply"} = $apply;
+$____exports->{"force_all_rec"} = $force_all_rec;
+$____exports->{"force_uncomment_all_rec"} = $force_uncomment_all_rec;
+$____exports->{"jsArray_to_list"} = $jsArray_to_list;
+$____exports->{"maybe_list_to_jsArray"} = $maybe_list_to_jsArray;
+$____exports->{"new_list"} = $new_list;
+$____exports->{"un_just_all"} = $un_just_all;
+$____exports->{"un_just_comment_all"} = $un_just_comment_all;
+$____exports->{"delay_p"} = $delay_p;
+$____exports->{"delay_just_p"} = $delay_just_p;
+$____exports->{"delay_env"} = $delay_env;
+$____exports->{"delay_x"} = $delay_x;
+$____exports->{"force_all"} = $force_all;
+$____exports->{"force1"} = $force1;
+$____exports->{"force_uncomment1"} = $force_uncomment1;
+$____exports->{"force_uncomment_all"} = $force_uncomment_all;
+$____exports->{"env_null_v"} = $env_null_v;
+$____exports->{"env_set"} = $env_set;
+$____exports->{"env_get"} = $env_get;
+$____exports->{"env2val"} = $env2val;
+$____exports->{"env_foreach"} = $env_foreach;
+$____exports->{"val2env"} = $val2env;
+$____exports->{"equal_p"} = $equal_p;
+$____exports->{"simple_print"} = $simple_print;
+$____exports->{"complex_parse"} = $complex_parse;
+$____exports->{"complex_print"} = $complex_print;
+$____exports->{"machinetext_parse"} = $machinetext_parse;
+$____exports->{"machinetext_print"} = $machinetext_print;
+$____exports->{"trampoline_return"} = $trampoline_return;
+$____exports->{"trampoline_delay"} = $trampoline_delay;
+$____exports->{"run_trampoline"} = $run_trampoline;
 $____exports->{"Return_Effect_SystemName"} = $GLOBALS["Return_Effect_SystemName"];
 $____exports->{"return_effect_systemName"} = $return_effect_systemName;
 $____exports->{"Bind_Effect_SystemName"} = $GLOBALS["Bind_Effect_SystemName"];

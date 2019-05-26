@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$force_all_rec$conslike extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$force_uncomment_all_rec$conslike extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -12,7 +12,7 @@ public class Lang$luaj$force_all_rec$conslike extends org.luaj.vm2.lib.OneArgFun
         k1 = org.luaj.vm2.LuaValue.valueOf(3);
     }
     
-    public Lang$luaj$force_all_rec$conslike() {
+    public Lang$luaj$force_uncomment_all_rec$conslike() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

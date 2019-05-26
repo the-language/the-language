@@ -1,11 +1,11 @@
 package lang;
-public class Lang$luaj$un_just_all extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$un_just_comment_all extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
     
-    public Lang$luaj$un_just_all() {
+    public Lang$luaj$un_just_comment_all() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

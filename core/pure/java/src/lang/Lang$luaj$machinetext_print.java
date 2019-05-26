@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$machinetext_parse$1 extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$machinetext_print extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
@@ -16,7 +16,7 @@ public class Lang$luaj$machinetext_parse$1 extends org.luaj.vm2.lib.OneArgFuncti
         k4 = org.luaj.vm2.LuaString.valueOf("tostring");
     }
     
-    public Lang$luaj$machinetext_parse$1() {
+    public Lang$luaj$machinetext_print() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

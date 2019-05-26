@@ -156,10 +156,17 @@ in-dir "typescript" {
                  raw))
              |> id out &>! lang.lua
              sed -i (id "s|^function __TS__|local function __TS__|g") lang.lua
+             
              sed -i (id "s|^\\( *\\)\\([^=]*\\) = function(|\\1function \\2(|g") lang.lua
              (define (u x) (match x [(list (regexp #rx"^( *)local ([^,=\n ]*)$" (list l1 v1 n1)) (regexp #rx"^( *)function ([^,=\n( ]*)(.*)$" (list l2 v2 n2 t)) tail ...) (if (equal? n1 n2) (string-append v1 "local function " n1 t "\n" (u tail)) (string-append l1 "\n" l2 "\n" (u tail)))] [(cons a d) (string-append a "\n" (u d))] ['() "\n"]))
              (define t (u (string->lines #{cat lang.lua})))
              |> id t &>! lang.lua
+
+             grep (id "____exports") lang.lua &>! lang.lua.1
+             sed -i (id "/____exports/d") lang.lua
+             cat lang.lua.1 &>> lang.lua
+             rm lang.lua.1
+
              ~/.luarocks/bin/luasrcdiet lang.lua -o lang.min.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {

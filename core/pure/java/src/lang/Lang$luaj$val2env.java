@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$env_null_v extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$val2env extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -23,7 +23,7 @@ public class Lang$luaj$env_null_v extends org.luaj.vm2.lib.OneArgFunction {
         k2 = org.luaj.vm2.LuaValue.valueOf(2);
     }
     
-    public Lang$luaj$env_null_v() {
+    public Lang$luaj$val2env() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
