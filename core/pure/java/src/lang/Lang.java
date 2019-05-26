@@ -65,7 +65,7 @@ public final class Lang {
 	machinetext_print = exports.get("machinetext_print");
 	machinetext_parse = exports.get("machinetext_parse");
     }
-    // LuaString.valueOf會導致Java和Lua的`𠇚`等字符不同。
+    // LuaString.valueOf(String)或LuaString.tojstring()會導致Java和Lua的`𠇚`等字符不同。
     public static LangValue complex_parse(String source) throws Exception {
 	return new LangValue(complex_parse.call(LuaString.valueOf(source.getBytes())));
     }
