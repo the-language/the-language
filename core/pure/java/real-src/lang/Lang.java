@@ -33,52 +33,60 @@ import org.luaj.vm2.LuaString;
 // import org.luaj.vm2.compiler.LuaC;
 // import org.luaj.vm2.LoadState;
 public final class Lang {
-  private static Globals globals;
-  private static LuaTable exports;
-  private static LuaValue complex_parse;
-  private static LuaValue complex_print;
-  private static LuaValue simple_print;
-  private static LuaValue force1;
-  private static LuaValue force_all;
-  private static LuaValue force_all_rec;
-  static {
-    globals = new Globals();
-    globals.load(new BaseLib());
-    // globals.load(new PackageLib());
-    // globals.load(new Bit32Lib());
-    // globals.load(new OsLib());
-    // globals.load(new MathLib());
-    // globals.load(new TableLib());
-    globals.load(new StringLib());
-    // globals.load(new CoroutineLib());
-    // LoadState.install(globals);
-    // LuaC.install(globals);
-    LuaValue lang_luaj = (LuaValue)(new Lang$luaj());
-    lang_luaj.initupvalue1(globals);
-    exports = (LuaTable)(lang_luaj).call();
-    complex_parse = exports.get("complex_parse");
-    complex_print = exports.get("complex_print");
-    simple_print = exports.get("simple_print");
-    force1 = exports.get("force1");
-    force_all = exports.get("force_all");
-    force_all_rec = exports.get("force_all_rec");
-  }
-  public static LangValue complex_parse(String source) throws Exception {
-    return new LangValue(complex_parse.call(LuaString.valueOf(source)));
-  }
-  public static String complex_print(LangValue value) throws Exception {
-    return ((LuaString)complex_print.call(value.luavalue)).tojstring();
-  }
-  public static String simple_print(LangValue value) throws Exception {
-    return ((LuaString)simple_print.call(value.luavalue)).tojstring();
-  }
-  public static LangValue force1(LangValue value) throws Exception {
-    return new LangValue(force1.call(value.luavalue));
-  }
-  public static LangValue force_all(LangValue value) throws Exception {
-    return new LangValue(force_all.call(value.luavalue));
-  }
-  public static LangValue force_all_rec(LangValue value) throws Exception {
-    return new LangValue(force_all_rec.call(value.luavalue));
-  }
+    private static LuaValue complex_parse;
+    private static LuaValue complex_print;
+    private static LuaValue simple_print;
+    private static LuaValue force1;
+    private static LuaValue force_all;
+    private static LuaValue force_all_rec;
+    private static LuaValue machinetext_print;
+    private static LuaValue machinetext_parse;
+    static {
+	Globals globals = new Globals();
+	globals.load(new BaseLib());
+	// globals.load(new PackageLib());
+	// globals.load(new Bit32Lib());
+	// globals.load(new OsLib());
+	// globals.load(new MathLib());
+	// globals.load(new TableLib());
+	globals.load(new StringLib());
+	// globals.load(new CoroutineLib());
+	// LoadState.install(globals);
+	// LuaC.install(globals);
+	LuaValue lang_luaj = (LuaValue)(new Lang$luaj());
+	lang_luaj.initupvalue1(globals);
+	LuaTable exports = (LuaTable)(lang_luaj).call();
+	complex_parse = exports.get("complex_parse");
+	complex_print = exports.get("complex_print");
+	simple_print = exports.get("simple_print");
+	force1 = exports.get("force1");
+	force_all = exports.get("force_all");
+	force_all_rec = exports.get("force_all_rec");
+	machinetext_print = exports.get("machinetext_print");
+	machinetext_parse = exports.get("machinetext_parse");
+    }
+    public static LangValue complex_parse(String source) throws Exception {
+	return new LangValue(complex_parse.call(LuaString.valueOf(source)));
+    }
+    public static LangValue machinetext_parse(String source) throws Exception {
+	return new LangValue(machinetext_parse.call(LuaString.valueOf(source)));
+    }
+    public static String complex_print(LangValue value) throws Exception {
+	return ((LuaString)complex_print.call(value.luavalue)).tojstring();
+    }
+    public static String machinetext_print(LangValue value) throws Exception {
+	return ((LuaString)machinetext_print.call(value.luavalue)).tojstring();
+    }
+    public static String simple_print(LangValue value) throws Exception {
+	return ((LuaString)simple_print.call(value.luavalue)).tojstring();
+    }
+    public static LangValue force1(LangValue value) throws Exception {
+	return new LangValue(force1.call(value.luavalue));
+    }
+    public static LangValue force_all(LangValue value) throws Exception {
+	return new LangValue(force_all.call(value.luavalue));
+    }
+    public static LangValue force_all_rec(LangValue value) throws Exception {
+	return new LangValue(force_all_rec.call(value.luavalue));
+    }
 }
