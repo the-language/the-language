@@ -1855,8 +1855,8 @@ function machinetext_parse(rawstr) {
     const result = new_hole_do();
     let stack = [(x) => hole_set_do(result, x)];
     let state = 0;
-    function parse_error() {
-        throw 'MT parse ERROR';
+    function parse_error(x = "") {
+        throw 'MT parse ERROR ' + x;
     }
     function parse_assert(x) {
         if (!x) {
@@ -1894,7 +1894,7 @@ function machinetext_parse(rawstr) {
                     hol(new_symbol_unicodechar(tmp));
                 }
                 else {
-                    return parse_error();
+                    return parse_error('can_new_symbol_unicodechar_p(' + tmp + ') == false');
                 }
             }
             else if (chr === '.') {

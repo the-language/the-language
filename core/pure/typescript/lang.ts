@@ -1941,8 +1941,8 @@ function machinetext_parse(rawstr: string): LangVal {
     const result = new_hole_do()
     let stack: Array<(x: LangVal) => void> = [(x) => hole_set_do(result, x)]
     let state = 0
-    function parse_error(): never {
-        throw 'MT parse ERROR'
+    function parse_error(x: string = ""): never {
+        throw 'MT parse ERROR ' + x
     }
     function parse_assert(x: boolean): void {
         if (!x) { return parse_error() }
@@ -1975,7 +1975,7 @@ function machinetext_parse(rawstr: string): LangVal {
                 if (can_new_symbol_unicodechar_p(tmp)) {
                     hol(new_symbol_unicodechar(tmp))
                 } else {
-                    return parse_error()
+                    return parse_error('can_new_symbol_unicodechar_p(' + tmp + ') == false')
                 }
             } else if (chr === '.') {
                 conslike(new_construction)

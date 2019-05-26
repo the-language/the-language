@@ -2509,8 +2509,11 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
         })
     ]);
     $state = 0;
-    $parse_error = (function () {
-        throw new Exception("MT parse ERROR");
+    $parse_error = (function ($x = NULL) {
+        if (($x == NULL)) {
+            $x = "";
+        }
+        throw new Exception(("MT parse ERROR " . ((string)$x)));
     });
     $parse_assert = (function ($x = NULL) use (&$parse_error) {
         if (!($x)) {
@@ -2556,7 +2559,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
                 if ($can_new_symbol_unicodechar_p($tmp)) {
                     $hol($new_symbol_unicodechar($tmp));
                 } else {
-                    return $parse_error();
+                    return $parse_error(("can_new_symbol_unicodechar_p(" . (((string)$tmp) . ") == false")));
                 }
 
             } elseif (($chr == ".")) {

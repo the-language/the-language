@@ -2170,8 +2170,11 @@ local function machinetext_parse(rawstr)
     local result = new_hole_do()
     local stack = {function(x) return hole_set_do(result, x) end}
     local state = 0
-    local function parse_error()
-        error("MT parse ERROR")
+    local function parse_error(x)
+        if x == nil then
+            x = ""
+        end
+        error("MT parse ERROR " .. tostring(x))
     end
     local function parse_assert(x)
         if not x then
@@ -2209,7 +2212,7 @@ local function machinetext_parse(rawstr)
                 if can_new_symbol_unicodechar_p(tmp) then
                     hol(new_symbol_unicodechar(tmp))
                 else
-                    return parse_error()
+                    return parse_error("can_new_symbol_unicodechar_p(" .. tostring(tmp) .. ") == false")
                 end
             elseif chr == "." then
                 conslike(new_construction)
