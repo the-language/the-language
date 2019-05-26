@@ -1975,7 +1975,7 @@ function machinetext_parse(rawstr: string): LangVal {
                 if (can_new_symbol_unicodechar_p(tmp)) {
                     hol(new_symbol_unicodechar(tmp))
                 } else {
-                    return parse_error('can_new_symbol_unicodechar_p(' + tmp + ') == false')
+                    return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false')
                 }
             } else if (chr === '.') {
                 conslike(new_construction)

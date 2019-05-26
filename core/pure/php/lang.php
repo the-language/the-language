@@ -2559,7 +2559,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
                 if ($can_new_symbol_unicodechar_p($tmp)) {
                     $hol($new_symbol_unicodechar($tmp));
                 } else {
-                    return $parse_error(("can_new_symbol_unicodechar_p(" . (((string)$tmp) . ") == false")));
+                    return $parse_error(("can_new_symbol_unicodechar_p(\"" . (((string)$tmp) . "\") == false")));
                 }
 
             } elseif (($chr == ".")) {

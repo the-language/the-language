@@ -32,8 +32,8 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
         k2 = org.luaj.vm2.LuaString.valueOf("^");
         k3 = org.luaj.vm2.LuaString.valueOf("");
         k4 = org.luaj.vm2.LuaString.valueOf("tostring");
-        k5 = org.luaj.vm2.LuaString.valueOf("can_new_symbol_unicodechar_p(");
-        k6 = org.luaj.vm2.LuaString.valueOf(") == false");
+        k5 = org.luaj.vm2.LuaString.valueOf("can_new_symbol_unicodechar_p(\"");
+        k6 = org.luaj.vm2.LuaString.valueOf("\") == false");
         k7 = org.luaj.vm2.LuaString.valueOf(".");
         k8 = org.luaj.vm2.LuaString.valueOf("#");
         k9 = org.luaj.vm2.LuaString.valueOf("!");

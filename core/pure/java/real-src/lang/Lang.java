@@ -65,20 +65,21 @@ public final class Lang {
 	machinetext_print = exports.get("machinetext_print");
 	machinetext_parse = exports.get("machinetext_parse");
     }
+    // LuaString.valueOf會導致Java和Lua的`𠇚`等字符不同。
     public static LangValue complex_parse(String source) throws Exception {
-	return new LangValue(complex_parse.call(LuaString.valueOf(source)));
+	return new LangValue(complex_parse.call(LuaString.valueOf(source.getBytes())));
     }
     public static LangValue machinetext_parse(String source) throws Exception {
-	return new LangValue(machinetext_parse.call(LuaString.valueOf(source)));
+	return new LangValue(machinetext_parse.call(LuaString.valueOf(source.getBytes())));
     }
     public static String complex_print(LangValue value) throws Exception {
-	return ((LuaString)complex_print.call(value.luavalue)).tojstring();
+	return new String(((LuaString)complex_print.call(value.luavalue)).m_bytes);
     }
     public static String machinetext_print(LangValue value) throws Exception {
-	return ((LuaString)machinetext_print.call(value.luavalue)).tojstring();
+	return new String(((LuaString)machinetext_print.call(value.luavalue)).m_bytes);
     }
     public static String simple_print(LangValue value) throws Exception {
-	return ((LuaString)simple_print.call(value.luavalue)).tojstring();
+	return new String(((LuaString)simple_print.call(value.luavalue)).m_bytes);
     }
     public static LangValue force1(LangValue value) throws Exception {
 	return new LangValue(force1.call(value.luavalue));

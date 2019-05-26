@@ -2212,7 +2212,7 @@ local function machinetext_parse(rawstr)
                 if can_new_symbol_unicodechar_p(tmp) then
                     hol(new_symbol_unicodechar(tmp))
                 else
-                    return parse_error("can_new_symbol_unicodechar_p(" .. tostring(tmp) .. ") == false")
+                    return parse_error("can_new_symbol_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
                 end
             elseif chr == "." then
                 conslike(new_construction)

@@ -16716,15 +16716,15 @@ static inline int lcf2_V(lua_State *L) {
         } else {
 
           /* else
-           * return i("can_new_symbol_unicodechar_p("..tostring(e)..") ==
+           * return i("can_new_symbol_unicodechar_p(\""..tostring(e).."\") ==
            * false") */
           const int lc1273 = lua_gettop(L);
           lc_getupvalue(L, lc1255, 3, 212);
-          lua_pushliteral(L, "can_new_symbol_unicodechar_p(");
+          lua_pushliteral(L, "can_new_symbol_unicodechar_p(\"");
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
           lua_pushvalue(L, 15);
           lua_call(L, 1, 1);
-          lua_pushliteral(L, ") == false");
+          lua_pushliteral(L, "\") == false");
           lua_concat(L, 2);
           lua_concat(L, 2);
           lua_call(L, 1, LUA_MULTRET);
@@ -21565,7 +21565,7 @@ static inline int lcf_main(lua_State *L) {
    * if ft(e)then
    * o(tt(e))
    * else
-   * return i("can_new_symbol_unicodechar_p("..tostring(e)..") == false")
+   * return i("can_new_symbol_unicodechar_p(\""..tostring(e).."\") == false")
    * end
    * elseif e=="."then
    * n(s)

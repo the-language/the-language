@@ -2190,7 +2190,7 @@ end
 if ft(e)then
 o(tt(e))
 else
-return i("can_new_symbol_unicodechar_p("..tostring(e)..") == false")
+return i("can_new_symbol_unicodechar_p(\""..tostring(e).."\") == false")
 end
 elseif e=="."then
 n(s)

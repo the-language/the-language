@@ -1894,7 +1894,7 @@ function machinetext_parse(rawstr) {
                     hol(new_symbol_unicodechar(tmp));
                 }
                 else {
-                    return parse_error('can_new_symbol_unicodechar_p(' + tmp + ') == false');
+                    return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false');
                 }
             }
             else if (chr === '.') {
