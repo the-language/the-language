@@ -1343,9 +1343,17 @@ export { equal_p }
 
 // 不允許比較delay。
 function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
+    if (x === y) { return true }
     let stack1 = [x]
     let stack2 = [y]
     while (stack1.length !== 0) {
+        if (stack1.length !== stack2.length) { return false }
+        for (let i = 0; i < stack1.length; i++) {
+            if (stack1[i] === stack2[i]) {
+                stack1[i] = null_v
+                stack2[i] = null_v
+            }
+        }
         const ret1__new_stack1 = machinetext_print_step(stack1)
         const ret1 = ret1__new_stack1[0]
         const new_stack1 = ret1__new_stack1[1]
