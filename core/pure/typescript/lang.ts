@@ -1348,24 +1348,24 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
     let stack2 = [y]
     while (stack1.length !== 0) {
         if (stack1.length !== stack2.length) { return false }
+        const ret1: Array<string> = []
+        const ret2: Array<string> = []
+        const new1: Array<LangVal> = []
+        const new2: Array<LangVal> = []
         for (let i = 0; i < stack1.length; i++) {
             if (stack1[i] === stack2[i]) {
-                stack1[i] = null_v
-                stack2[i] = null_v
+                //nothing
+            } else {
+                machinetext_print_step2_do(stack1[i], (v) => ret1.push(v), (v) => new1.push(v))
+                machinetext_print_step2_do(stack2[i], (v) => ret2.push(v), (v) => new2.push(v))
             }
         }
-        const ret1__new_stack1 = machinetext_print_step(stack1)
-        const ret1 = ret1__new_stack1[0]
-        const new_stack1 = ret1__new_stack1[1]
-        const ret2__new_stack2 = machinetext_print_step(stack2)
-        const ret2 = ret2__new_stack2[0]
-        const new_stack2 = ret2__new_stack2[1]
         if (ret1.length !== ret2.length) { return false }
         for (let i = 0; i < ret1.length; i++) {
             if (ret1[i] !== ret2[i]) { return false }
         }
-        stack1 = new_stack1
-        stack2 = new_stack2
+        stack1 = new1
+        stack2 = new2
     }
     return stack2.length === 0
 }
