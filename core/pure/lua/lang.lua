@@ -2094,7 +2094,14 @@ local function complex_print(val)
                     return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[3], true)))
                 end
             end
-            local hd = jsbool_no_force_equal_p(maybe_xs[3], something_symbol) and "_" or jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) and "" or print_sys_name(maybe_xs[3], true)
+            local hd
+            if jsbool_no_force_equal_p(maybe_xs[3], something_symbol) then
+                hd = "_"
+            elseif jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) then
+                hd = ""
+            else
+                hd = print_sys_name(maybe_xs[3], true)
+            end
             return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[2], true)))
         elseif maybe_xs ~= false and #maybe_xs == 2 then
             if jsbool_no_force_equal_p(maybe_xs[1], form_symbol) then

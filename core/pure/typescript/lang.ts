@@ -1852,9 +1852,14 @@ function complex_print(val: LangVal): string {
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true))
                 }
             }
-            const hd: string = jsbool_no_force_equal_p(maybe_xs[2], something_symbol) ? '_' :
-                jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) ? '' :
-                    print_sys_name(maybe_xs[2], true)
+            let hd: string
+            if (jsbool_no_force_equal_p(maybe_xs[2], something_symbol)) {
+                hd = '_'
+            } else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
+                hd = ''
+            } else {
+                hd = print_sys_name(maybe_xs[2], true)
+            }
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true))
         } else if (maybe_xs !== false && maybe_xs.length === 2) {
             if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {

@@ -72,62 +72,33 @@ public class Lang$luaj$complex_print$print_sys_name extends org.luaj.vm2.lib.Var
         a2.u1 = this.u2;
         org.luaj.vm2.LuaValue a3 = this.u3.call(a0);
         if (!a3.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a3.len().eq_b(k0) && this.u4.call(a3.get(k1), this.u5).toboolean()) {
-            org.luaj.vm2.LuaValue a4 = null;
-            org.luaj.vm2.LuaValue a5 = this.u3.call(a3.get(k2));
-            if (!a5.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a5.len().eq_b(k0) && this.u4.call(a5.get(k1), this.u6[0]).toboolean()) {
-                org.luaj.vm2.LuaValue a6 = a5.get(k2);
-                org.luaj.vm2.LuaValue a7 = this.u3.call(a6);
-                if (!a7.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a7.len().eq_b(k1) && this.u4.call(a5.get(k0), this.u7).toboolean()) {
-                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(a7.get(k1), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k4.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
+            org.luaj.vm2.LuaValue a4 = this.u3.call(a3.get(k2));
+            if (!a4.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a4.len().eq_b(k0) && this.u4.call(a4.get(k1), this.u6[0]).toboolean()) {
+                org.luaj.vm2.LuaValue a5 = a4.get(k2);
+                org.luaj.vm2.LuaValue a6 = this.u3.call(a5);
+                if (!a6.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a6.len().eq_b(k1) && this.u4.call(a4.get(k0), this.u7).toboolean()) {
+                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(a6.get(k1), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k4.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
                 }
-                if (this.u9.call(a6).toboolean() && this.u4.call(this.u10.call(a6), this.u7).toboolean() && this.u4.call(a5.get(k0), this.u7).toboolean()) {
-                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(this.u11.call(a6), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k5.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
+                if (this.u9.call(a5).toboolean() && this.u4.call(this.u10.call(a5), this.u7).toboolean() && this.u4.call(a4.get(k0), this.u7).toboolean()) {
+                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(this.u11.call(a5), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k5.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
                 }
-                if (this.u4.call(a6, this.u7).toboolean() && this.u4.call(a3.get(k0), this.u12).toboolean()) {
-                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)k6.concat(this.u2.get(k3).invoke(this.u8.invoke(a5.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1()));
-                }
-            }
-            org.luaj.vm2.LuaValue a8 = this.u3.call(a3.get(k0));
-            if (this.u4.call(a3.get(k2), this.u6[0]).toboolean() && !a8.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a8.len().eq_b(k2) && this.u4.call(a8.get(k1), this.u13).toboolean()) {
-                return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(a8.get(k2), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k7));
-            }
-            if (!a5.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a5.len().eq_b(k2) && this.u4.call(a3.get(k0), this.u12).toboolean() && this.u4.call(a5.get(k1), this.u14[0]).toboolean()) {
-                org.luaj.vm2.LuaValue a9 = this.u3.call(a5.get(k2));
-                if (!a9.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a9.len().eq_b(k0) && this.u4.call(a9.get(k1), this.u6[0]).toboolean() && this.u4.call(a9.get(k2), this.u7).toboolean()) {
-                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)k8.concat(this.u2.get(k3).invoke(this.u8.invoke(a9.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1()));
+                if (this.u4.call(a5, this.u7).toboolean() && this.u4.call(a3.get(k0), this.u12).toboolean()) {
+                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)k6.concat(this.u2.get(k3).invoke(this.u8.invoke(a4.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1()));
                 }
             }
-            boolean b = this.u4.call(a3.get(k0), this.u7).toboolean();
-            label0: {
-                label3: {
-                    label4: {
-                        if (b) {
-                            break label4;
-                        }
-                        break label3;
-                    }
-                    a4 = k9;
-                    if (!a4.toboolean()) {
-                        break label3;
-                    }
-                    break label0;
-                }
-                boolean b0 = this.u4.call(a3.get(k0), this.u12).toboolean();
-                label2: {
-                    label1: {
-                        if (b0) {
-                            break label1;
-                        }
-                        break label2;
-                    }
-                    a4 = k10;
-                    if (a4.toboolean()) {
-                        break label0;
-                    }
-                }
-                a4 = this.u8.call(a3.get(k0), (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.TRUE);
+            org.luaj.vm2.LuaValue a7 = this.u3.call(a3.get(k0));
+            if (this.u4.call(a3.get(k2), this.u6[0]).toboolean() && !a7.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a7.len().eq_b(k2) && this.u4.call(a7.get(k1), this.u13).toboolean()) {
+                return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).invoke(this.u8.invoke(a7.get(k2), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().concat(k7));
             }
-            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).call(a4).concat(k11.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k2), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
+            if (!a4.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a4.len().eq_b(k2) && this.u4.call(a3.get(k0), this.u12).toboolean() && this.u4.call(a4.get(k1), this.u14[0]).toboolean()) {
+                org.luaj.vm2.LuaValue a8 = this.u3.call(a4.get(k2));
+                if (!a8.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a8.len().eq_b(k0) && this.u4.call(a8.get(k1), this.u6[0]).toboolean() && this.u4.call(a8.get(k2), this.u7).toboolean()) {
+                    return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)k8.concat(this.u2.get(k3).invoke(this.u8.invoke(a8.get(k0), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1()));
+                }
+            }
+
+            org.luaj.vm2.LuaValue a9 = (this.u4.call(a3.get(k0), this.u7).toboolean()) ? k9 : (this.u4.call(a3.get(k0), this.u12).toboolean()) ? k10 : this.u8.call(a3.get(k0), (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.TRUE);
+            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)this.u2.get(k3).call(a9).concat(k11.concat(this.u2.get(k3).invoke(this.u8.invoke(a3.get(k2), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.TRUE).subargs(1)).arg1().buffer())).value());
         }
         if (!a3.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a3.len().eq_b(k2)) {
             if (this.u4.call(a3.get(k1), this.u14[0]).toboolean()) {

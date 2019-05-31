@@ -2408,9 +2408,15 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
                     return $inner_bracket((":&>" . ((string)$print_sys_name(($maybe_lst_88->{2}), true))));
                 }
             }
-            $hd = ((($jsbool_no_force_equal_p(($maybe_xs->{2}), $something_symbol) && "_") ||
-                ($jsbool_no_force_equal_p(($maybe_xs->{2}), $theThing_symbol) && "")) ||
-                $print_sys_name(($maybe_xs->{2}), true));
+            $hd = NULL;
+            if ($jsbool_no_force_equal_p(($maybe_xs->{2}), $something_symbol)) {
+                $hd = "_";
+            } elseif ($jsbool_no_force_equal_p(($maybe_xs->{2}), $theThing_symbol)) {
+                $hd = "";
+            } else {
+                $hd = $print_sys_name(($maybe_xs->{2}), true);
+            }
+
             return $inner_bracket((((string)$hd) . (":" . ((string)$print_sys_name(($maybe_xs->{1}), true)))));
         } elseif ((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count((array)$maybe_xs)) == 2))) {
