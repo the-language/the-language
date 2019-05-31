@@ -8,8 +8,6 @@ echo 'public static void main(String[] args) throws Exception {' >> "$f"
 cat "$1" >> "$f"
 echo '}}' >> "$f"
 
-cat "$f"
-
 pushd "$(dirname "$0")/java/src"
 java_src="$(pwd)"
 popd

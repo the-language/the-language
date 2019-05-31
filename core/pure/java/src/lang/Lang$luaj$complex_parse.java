@@ -145,6 +145,7 @@ public class Lang$luaj$complex_parse extends org.luaj.vm2.lib.VarArgFunction {
         a23.u8 = this.u11;
         Lang$luaj$complex_parse$10 a24 = new Lang$luaj$complex_parse$10();
         a24.u0 = a18;
+        a24.u1 = this.u1;
         a9[0] = a24;
         Lang$luaj$complex_parse$11 a25 = new Lang$luaj$complex_parse$11();
         a25.u0 = a19;
@@ -157,7 +158,8 @@ public class Lang$luaj$complex_parse extends org.luaj.vm2.lib.VarArgFunction {
         a25.u7 = a6;
         a25.u8 = a7;
         a25.u9 = a8;
-        a25.u10 = a17;
+        a25.u10 = this.u1;
+        a25.u11 = a17;
         a10[0] = a25;
         Lang$luaj$complex_parse$12 a26 = new Lang$luaj$complex_parse$12();
         a26.u0 = a17;
@@ -180,7 +182,8 @@ public class Lang$luaj$complex_parse extends org.luaj.vm2.lib.VarArgFunction {
         a29.u9 = a7;
         a29.u10 = a8;
         a29.u11 = a12;
-        a29.u12 = a17;
+        a29.u12 = this.u1;
+        a29.u13 = a17;
         a11[0] = a29;
         Lang$luaj$complex_parse$16 a30 = new Lang$luaj$complex_parse$16();
         a30.u0 = a14;

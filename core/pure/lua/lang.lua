@@ -21,8 +21,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local function __TS__ArrayPush(arr, ...)
     local items = ({...})
-    for ____TS_index = 1, #items do
-        local item = items[____TS_index]
+    for ____, item in ipairs(items) do
         arr[#arr + 1] = item
     end
     return #arr
@@ -277,8 +276,7 @@ function un_just_all(raw)
         __TS__ArrayPush(xs, x)
         x = un_just(x)
     end
-    for ____TS_index = 1, #xs do
-        local v = xs[____TS_index]
+    for ____, v in ipairs(xs) do
         lang_set_do(v, x)
     end
     return x
@@ -387,8 +385,7 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
                     null_p_function_builtin_systemName,
                 }
                 local is_elim = false
-                for ____TS_index = 1, #elim_s do
-                    local elim_s_v = elim_s[____TS_index]
+                for ____, elim_s_v in ipairs(elim_s) do
                     if jsbool_equal_p(elim_s_v, f) then
                         is_elim = true
                         break
@@ -728,8 +725,7 @@ function real_apply(f, xs, selfvalraw)
 end
 function real_builtin_func_apply(f, xs, selfvalraw)
     local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
-    for ____TS_index = 1, #real_builtin_func_apply_s do
-        local xx = real_builtin_func_apply_s[____TS_index]
+    for ____, xx in ipairs(real_builtin_func_apply_s) do
         if jsbool_equal_p(f, xx[1]) then
             if #xs ~= xx[2] then
                 return error_v()
@@ -1768,7 +1764,7 @@ local function complex_parse(x)
         if a_space_p(chr) then
             return false
         end
-        local ____TS_array = {
+        for ____, v in ipairs({
             "(",
             ")",
             "!",
@@ -1789,9 +1785,7 @@ local function complex_parse(x)
             "]",
             "&",
             ";",
-        }
-        for ____TS_index = 1, #____TS_array do
-            local v = ____TS_array[____TS_index]
+        }) do
             if v == chr then
                 return false
             end
@@ -1811,8 +1805,7 @@ local function complex_parse(x)
             readapply,
             readcomment,
         }
-        for ____TS_index = 1, #fs do
-            local f = fs[____TS_index]
+        for ____, f in ipairs(fs) do
             local x = f()
             if x ~= false then
                 return x
@@ -1870,8 +1863,7 @@ local function complex_parse(x)
                 readcomment,
             }
         end
-        for ____TS_index = 1, #fs do
-            local f = fs[____TS_index]
+        for ____, f in ipairs(fs) do
             local x = f()
             if x ~= false then
                 return x
@@ -2203,8 +2195,7 @@ local function machinetext_parse(rawstr)
     local callbacks = {}
     while #stack ~= 0 do
         local new_stack = {}
-        for ____TS_index = 1, #stack do
-            local hol = stack[____TS_index]
+        for ____, hol in ipairs(stack) do
             local chr = get_do()
             local function conslike(c)
                 local hol1 = new_hole_do()
@@ -2275,8 +2266,7 @@ end
 local function machinetext_print_step(stack)
     local result = {}
     local new_stack = {}
-    for ____TS_index = 1, #stack do
-        local x = stack[____TS_index]
+    for ____, x in ipairs(stack) do
         machinetext_print_step2_do(x, function(v) return __TS__ArrayPush(result, v) end, function(v) return __TS__ArrayPush(new_stack, v) end)
     end
     return {
@@ -2291,8 +2281,7 @@ local function machinetext_print(x)
         local tmpret__new_stack = machinetext_print_step(stack)
         local tmpret = tmpret__new_stack[1]
         local new_stack = tmpret__new_stack[2]
-        for ____TS_index = 1, #tmpret do
-            local s = tmpret[____TS_index]
+        for ____, s in ipairs(tmpret) do
             result = tostring(result) .. tostring(s)
         end
         stack = new_stack
@@ -2417,24 +2406,19 @@ ____exports.comment_comment = comment_comment
 ____exports.comment_x = comment_x
 ____exports.un_comment_all = un_comment_all
 ____exports.can_new_symbol_p = can_new_symbol_p
-____exports.New_Symbol = New_Symbol
 ____exports.new_symbol = new_symbol
 ____exports.symbol_p = symbol_p
 ____exports.un_symbol = un_symbol
-____exports.New_Construction = New_Construction
 ____exports.new_construction = new_construction
 ____exports.construction_p = construction_p
 ____exports.construction_head = construction_head
 ____exports.construction_tail = construction_tail
-____exports.Null_V = Null_V
 ____exports.null_v = null_v
 ____exports.null_p = null_p
-____exports.New_Data = New_Data
 ____exports.new_data = new_data
 ____exports.data_p = data_p
 ____exports.data_name = data_name
 ____exports.data_list = data_list
-____exports.New_Error = New_Error
 ____exports.new_error = new_error
 ____exports.error_p = error_p
 ____exports.error_name = error_name
@@ -2472,9 +2456,7 @@ ____exports.machinetext_print = machinetext_print
 ____exports.trampoline_return = trampoline_return
 ____exports.trampoline_delay = trampoline_delay
 ____exports.run_trampoline = run_trampoline
-____exports.Return_Effect_SystemName = Return_Effect_SystemName
 ____exports.return_effect_systemName = return_effect_systemName
-____exports.Bind_Effect_SystemName = Bind_Effect_SystemName
 ____exports.bind_effect_systemName = bind_effect_systemName
 ____exports.new_effect_bind = new_effect_bind
 ____exports.new_effect_return = new_effect_return

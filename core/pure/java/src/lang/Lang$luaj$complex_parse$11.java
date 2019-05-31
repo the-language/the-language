@@ -11,10 +11,11 @@ public class Lang$luaj$complex_parse$11 extends org.luaj.vm2.lib.VarArgFunction 
     org.luaj.vm2.LuaValue[] u8;
     org.luaj.vm2.LuaValue[] u9;
     org.luaj.vm2.LuaValue u10;
+    org.luaj.vm2.LuaValue u11;
     final static org.luaj.vm2.LuaValue k0;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+        k0 = org.luaj.vm2.LuaString.valueOf("ipairs");
     }
     
     public Lang$luaj$complex_parse$11() {
@@ -42,19 +43,21 @@ public class Lang$luaj$complex_parse$11 extends org.luaj.vm2.lib.VarArgFunction 
         ((org.luaj.vm2.LuaValue)a0).rawset(7, a7);
         ((org.luaj.vm2.LuaValue)a0).rawset(8, a8);
         ((org.luaj.vm2.LuaValue)a0).rawset(9, a9);
-        org.luaj.vm2.LuaValue a10 = k0;
-        org.luaj.vm2.LuaValue a11 = ((org.luaj.vm2.LuaValue)a0).len();
-        org.luaj.vm2.LuaValue a12 = k0;
-        org.luaj.vm2.LuaValue a13 = a10.sub(a12);
+        org.luaj.vm2.Varargs a10 = this.u10.get(k0).invoke((org.luaj.vm2.Varargs)a0);
+        org.luaj.vm2.LuaValue a11 = a10.arg1();
+        org.luaj.vm2.LuaValue a12 = a10.arg(2);
+        org.luaj.vm2.LuaValue a13 = a10.arg(3);
         while(true) {
-            a13 = a13.add(a12);
-            if (!a13.testfor_b(a11, a12)) {
-                return org.luaj.vm2.LuaValue.tailcallOf(this.u10, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
+            org.luaj.vm2.Varargs a14 = a11.invoke(a12, (org.luaj.vm2.Varargs)a13);
+            a13 = a14.arg1();
+            org.luaj.vm2.LuaValue a15 = a14.arg(2);
+            if (a13.isnil()) {
+                return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
             }
-            org.luaj.vm2.LuaValue a14 = ((org.luaj.vm2.LuaValue)a0).get(a13).call();
-            if (!a14.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
-                org.luaj.vm2.Varargs a15 = a14;
-                return a15;
+            org.luaj.vm2.LuaValue a16 = a15.call();
+            if (!a16.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
+                org.luaj.vm2.Varargs a17 = a16;
+                return a17;
             }
         }
     }

@@ -4,10 +4,11 @@ public class Lang$luaj$52 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
+    org.luaj.vm2.LuaValue u4;
     final static org.luaj.vm2.LuaValue k0;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+        k0 = org.luaj.vm2.LuaString.valueOf("ipairs");
     }
     
     public Lang$luaj$52() {
@@ -22,17 +23,18 @@ public class Lang$luaj$52 extends org.luaj.vm2.lib.OneArgFunction {
             this.u1.call((org.luaj.vm2.LuaValue)a0, a);
             a = this.u2.call(a);
         }
-        org.luaj.vm2.LuaValue a1 = k0;
-        org.luaj.vm2.LuaValue a2 = ((org.luaj.vm2.LuaValue)a0).len();
-        org.luaj.vm2.LuaValue a3 = k0;
-        org.luaj.vm2.LuaValue a4 = a1.sub(a3);
+        org.luaj.vm2.Varargs a1 = this.u3.get(k0).invoke((org.luaj.vm2.Varargs)a0);
+        org.luaj.vm2.LuaValue a2 = a1.arg1();
+        org.luaj.vm2.LuaValue a3 = a1.arg(2);
+        org.luaj.vm2.LuaValue a4 = a1.arg(3);
         while(true) {
-            a4 = a4.add(a3);
-            if (!a4.testfor_b(a2, a3)) {
+            org.luaj.vm2.Varargs a5 = a2.invoke(a3, (org.luaj.vm2.Varargs)a4);
+            a4 = a5.arg1();
+            org.luaj.vm2.LuaValue a6 = a5.arg(2);
+            if (a4.isnil()) {
                 return a;
             }
-            org.luaj.vm2.LuaValue a5 = ((org.luaj.vm2.LuaValue)a0).get(a4);
-            this.u3.call(a5, a);
+            this.u4.call(a6, a);
         }
     }
 }

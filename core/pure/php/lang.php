@@ -20,11 +20,12 @@
 */
 $__TS__ArrayPush = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
     $items = ((object)$lUa_Vararg_LuA);
-    $lUaTmP_1_LuAtMp = (is_string($items) ? strlen($items) : count((array)$items));
-    $lUaTmP_2_LuAtMp = 1;
-    for ($lUa_I_LuA = 1; $lUaTmP_2_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_1_LuAtMp : $lUa_I_LuA >= $lUaTmP_1_LuAtMp; $lUa_I_LuA += $lUaTmP_2_LuAtMp) {
-        $____TS_index = $lUa_I_LuA;
-        $item = ($items->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+    $lUaTmP_1_LuAtMp = $items;
+    $lUaTmP_2_LuAtMp = (is_string($lUaTmP_1_LuAtMp) ? strlen($lUaTmP_1_LuAtMp) : count((array)$lUaTmP_1_LuAtMp));
+    $lUaTmP_3_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_3_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_2_LuAtMp : $lUa_I_LuA >= $lUaTmP_2_LuAtMp; $lUa_I_LuA += $lUaTmP_3_LuAtMp) {
+        $____ = $lUa_I_LuA;
+        $item = ($lUaTmP_1_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
         $arr->{count((array)$arr)} = $item;
     }
     return (is_string($arr) ? strlen($arr) : count((array)$arr));
@@ -181,8 +182,8 @@ $un_symbol_unicodechar = (function ($x = NULL) {
     return ($x->{1});
 });
 $un_symbol = (function ($x = NULL) use (&$symbols_set_neg, &$un_symbol_unicodechar) {
-    $lUaTmP_3_LuAtMp = $un_symbol_unicodechar($x);
-    return ($symbols_set_neg()->{(is_int($lUaTmP_3_LuAtMp) ? $lUaTmP_3_LuAtMp - 1 : $lUaTmP_3_LuAtMp)});
+    $lUaTmP_4_LuAtMp = $un_symbol_unicodechar($x);
+    return ($symbols_set_neg()->{(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)});
 });
 $new_construction = (function ($x = NULL, $y = NULL) use (&$construction_t) {
     return ((object)[$construction_t, $x, $y]);
@@ -367,11 +368,12 @@ $un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_
         $__TS__ArrayPush($xs, $x);
         $x = $un_just($x);
     }
-    $lUaTmP_4_LuAtMp = (is_string($xs) ? strlen($xs) : count((array)$xs));
-    $lUaTmP_5_LuAtMp = 1;
-    for ($lUa_I_LuA = 1; $lUaTmP_5_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_4_LuAtMp : $lUa_I_LuA >= $lUaTmP_4_LuAtMp; $lUa_I_LuA += $lUaTmP_5_LuAtMp) {
-        $____TS_index = $lUa_I_LuA;
-        $v = ($xs->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+    $lUaTmP_5_LuAtMp = $xs;
+    $lUaTmP_6_LuAtMp = (is_string($lUaTmP_5_LuAtMp) ? strlen($lUaTmP_5_LuAtMp) : count((array)$lUaTmP_5_LuAtMp));
+    $lUaTmP_7_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_7_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_6_LuAtMp : $lUa_I_LuA >= $lUaTmP_6_LuAtMp; $lUa_I_LuA += $lUaTmP_7_LuAtMp) {
+        $____ = $lUa_I_LuA;
+        $v = ($lUaTmP_5_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
         $lang_set_do($v, $x);
     }
     return $x;
@@ -484,11 +486,12 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
                     $null_p_function_builtin_systemName
                 ]);
                 $is_elim = false;
-                $lUaTmP_6_LuAtMp = (is_string($elim_s) ? strlen($elim_s) : count((array)$elim_s));
-                $lUaTmP_7_LuAtMp = 1;
-                for ($lUa_I_LuA = 1; $lUaTmP_7_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_6_LuAtMp : $lUa_I_LuA >= $lUaTmP_6_LuAtMp; $lUa_I_LuA += $lUaTmP_7_LuAtMp) {
-                    $____TS_index = $lUa_I_LuA;
-                    $elim_s_v = ($elim_s->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+                $lUaTmP_8_LuAtMp = $elim_s;
+                $lUaTmP_9_LuAtMp = (is_string($lUaTmP_8_LuAtMp) ? strlen($lUaTmP_8_LuAtMp) : count((array)$lUaTmP_8_LuAtMp));
+                $lUaTmP_10_LuAtMp = 1;
+                for ($lUa_I_LuA = 1; $lUaTmP_10_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_9_LuAtMp : $lUa_I_LuA >= $lUaTmP_9_LuAtMp; $lUa_I_LuA += $lUaTmP_10_LuAtMp) {
+                    $____ = $lUa_I_LuA;
+                    $elim_s_v = ($lUaTmP_8_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
                     if ($jsbool_equal_p($elim_s_v, $f)) {
                         $is_elim = true;
                         break;
@@ -880,11 +883,12 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
             $new_list($function_builtin_use_systemName, $new_list($f, $jsArray_to_list($xs)))
         );
     });
-    $lUaTmP_8_LuAtMp = (is_string($real_builtin_func_apply_s) ? strlen($real_builtin_func_apply_s) : count((array)$real_builtin_func_apply_s));
-    $lUaTmP_9_LuAtMp = 1;
-    for ($lUa_I_LuA = 1; $lUaTmP_9_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_8_LuAtMp : $lUa_I_LuA >= $lUaTmP_8_LuAtMp; $lUa_I_LuA += $lUaTmP_9_LuAtMp) {
-        $____TS_index = $lUa_I_LuA;
-        $xx = ($real_builtin_func_apply_s->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+    $lUaTmP_11_LuAtMp = $real_builtin_func_apply_s;
+    $lUaTmP_12_LuAtMp = (is_string($lUaTmP_11_LuAtMp) ? strlen($lUaTmP_11_LuAtMp) : count((array)$lUaTmP_11_LuAtMp));
+    $lUaTmP_13_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_13_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_12_LuAtMp : $lUa_I_LuA >= $lUaTmP_12_LuAtMp; $lUa_I_LuA += $lUaTmP_13_LuAtMp) {
+        $____ = $lUa_I_LuA;
+        $xx = ($lUaTmP_11_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
         if ($jsbool_equal_p($f, ($xx->{0}))) {
             if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != ($xx->{1}))) {
                 return $error_v();
@@ -1873,14 +1877,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     });
     $get = (function () use (&$LANG_ASSERT, &$eof, &$state, &$state_const) {
         $LANG_ASSERT(!($eof()));
-        $lUaTmP_10_LuAtMp = ($state + 0);
-        $ret = substr($state_const, $lUaTmP_10_LuAtMp, ($state + 1) - $lUaTmP_10_LuAtMp);
+        $lUaTmP_14_LuAtMp = ($state + 0);
+        $ret = substr($state_const, $lUaTmP_14_LuAtMp, ($state + 1) - $lUaTmP_14_LuAtMp);
         $state = ($state + 1);
         return $ret;
     });
     $put = (function ($chr = NULL) use (&$LANG_ASSERT, &$state, &$state_const) {
-        $lUaTmP_11_LuAtMp = ($state - 1);
-        $LANG_ASSERT((substr($state_const, $lUaTmP_11_LuAtMp, $state - $lUaTmP_11_LuAtMp) == $chr));
+        $lUaTmP_15_LuAtMp = ($state - 1);
+        $LANG_ASSERT((substr($state_const, $lUaTmP_15_LuAtMp, $state - $lUaTmP_15_LuAtMp) == $chr));
         $state = ($state - 1);
     });
     $parse_error = (function ($x_1 = NULL) {
@@ -2021,12 +2025,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         if ($a_space_p($chr)) {
             return false;
         }
-        $____TS_array = ((object)["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]);
-        $lUaTmP_12_LuAtMp = (is_string($____TS_array) ? strlen($____TS_array) : count((array)$____TS_array));
-        $lUaTmP_13_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_13_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_12_LuAtMp : $lUa_I_LuA >= $lUaTmP_12_LuAtMp; $lUa_I_LuA += $lUaTmP_13_LuAtMp) {
-            $____TS_index = $lUa_I_LuA;
-            $v = ($____TS_array->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+        $lUaTmP_16_LuAtMp = ((object)["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]);
+        $lUaTmP_17_LuAtMp = (is_string($lUaTmP_16_LuAtMp) ? strlen($lUaTmP_16_LuAtMp) : count((array)$lUaTmP_16_LuAtMp));
+        $lUaTmP_18_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_18_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_17_LuAtMp : $lUa_I_LuA >= $lUaTmP_17_LuAtMp; $lUa_I_LuA += $lUaTmP_18_LuAtMp) {
+            $____ = $lUa_I_LuA;
+            $v = ($lUaTmP_16_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
             if (($v == $chr)) {
                 return false;
             }
@@ -2046,11 +2050,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             $readapply,
             $readcomment
         ]);
-        $lUaTmP_14_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
-        $lUaTmP_15_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_15_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_14_LuAtMp : $lUa_I_LuA >= $lUaTmP_14_LuAtMp; $lUa_I_LuA += $lUaTmP_15_LuAtMp) {
-            $____TS_index = $lUa_I_LuA;
-            $f = ($fs->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+        $lUaTmP_19_LuAtMp = $fs;
+        $lUaTmP_20_LuAtMp = (is_string($lUaTmP_19_LuAtMp) ? strlen($lUaTmP_19_LuAtMp) : count((array)$lUaTmP_19_LuAtMp));
+        $lUaTmP_21_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_21_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_20_LuAtMp : $lUa_I_LuA >= $lUaTmP_20_LuAtMp; $lUa_I_LuA += $lUaTmP_21_LuAtMp) {
+            $____ = $lUa_I_LuA;
+            $f = ($lUaTmP_19_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
             $x_1 = $f();
             if (($x_1 != false)) {
                 return $x_1;
@@ -2109,11 +2114,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             ]);
         }
 
-        $lUaTmP_16_LuAtMp = (is_string($fs) ? strlen($fs) : count((array)$fs));
-        $lUaTmP_17_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_17_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_16_LuAtMp : $lUa_I_LuA >= $lUaTmP_16_LuAtMp; $lUa_I_LuA += $lUaTmP_17_LuAtMp) {
-            $____TS_index = $lUa_I_LuA;
-            $f = ($fs->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+        $lUaTmP_22_LuAtMp = $fs;
+        $lUaTmP_23_LuAtMp = (is_string($lUaTmP_22_LuAtMp) ? strlen($lUaTmP_22_LuAtMp) : count((array)$lUaTmP_22_LuAtMp));
+        $lUaTmP_24_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
+            $____ = $lUa_I_LuA;
+            $f = ($lUaTmP_22_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
             $x_1 = $f();
             if (($x_1 != false)) {
                 return $x_1;
@@ -2546,19 +2552,20 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
     });
     $get_do = (function () use (&$parse_assert, &$rawstr, &$state) {
         $parse_assert(((is_string($rawstr) ? strlen($rawstr) : count((array)$rawstr)) > $state));
-        $lUaTmP_18_LuAtMp = ($state + 0);
-        $result_1 = substr($rawstr, $lUaTmP_18_LuAtMp, ($state + 1) - $lUaTmP_18_LuAtMp);
+        $lUaTmP_25_LuAtMp = ($state + 0);
+        $result_1 = substr($rawstr, $lUaTmP_25_LuAtMp, ($state + 1) - $lUaTmP_25_LuAtMp);
         $state = ($state + 1);
         return $result_1;
     });
     $callbacks = ((object)[]);
     while (((is_string($stack) ? strlen($stack) : count((array)$stack)) != 0)) {
         $new_stack = ((object)[]);
-        $lUaTmP_19_LuAtMp = (is_string($stack) ? strlen($stack) : count((array)$stack));
-        $lUaTmP_20_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_20_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_19_LuAtMp : $lUa_I_LuA >= $lUaTmP_19_LuAtMp; $lUa_I_LuA += $lUaTmP_20_LuAtMp) {
-            $____TS_index = $lUa_I_LuA;
-            $hol = ($stack->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+        $lUaTmP_26_LuAtMp = $stack;
+        $lUaTmP_27_LuAtMp = (is_string($lUaTmP_26_LuAtMp) ? strlen($lUaTmP_26_LuAtMp) : count((array)$lUaTmP_26_LuAtMp));
+        $lUaTmP_28_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_28_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_27_LuAtMp : $lUa_I_LuA >= $lUaTmP_27_LuAtMp; $lUa_I_LuA += $lUaTmP_28_LuAtMp) {
+            $____ = $lUa_I_LuA;
+            $hol = ($lUaTmP_26_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
             $chr = $get_do();
             $conslike = (function ($c = NULL) use (&$__TS__ArrayPush, &$hol, &$hole_set_do, &$new_hole_do, &$new_stack) {
                 $hol1 = $new_hole_do();
@@ -2642,11 +2649,12 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
 $machinetext_print_step = (function ($stack = NULL) use (&$__TS__ArrayPush, &$machinetext_print_step2_do) {
     $result = ((object)[]);
     $new_stack = ((object)[]);
-    $lUaTmP_21_LuAtMp = (is_string($stack) ? strlen($stack) : count((array)$stack));
-    $lUaTmP_22_LuAtMp = 1;
-    for ($lUa_I_LuA = 1; $lUaTmP_22_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_21_LuAtMp : $lUa_I_LuA >= $lUaTmP_21_LuAtMp; $lUa_I_LuA += $lUaTmP_22_LuAtMp) {
-        $____TS_index = $lUa_I_LuA;
-        $x = ($stack->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+    $lUaTmP_29_LuAtMp = $stack;
+    $lUaTmP_30_LuAtMp = (is_string($lUaTmP_29_LuAtMp) ? strlen($lUaTmP_29_LuAtMp) : count((array)$lUaTmP_29_LuAtMp));
+    $lUaTmP_31_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_31_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_30_LuAtMp : $lUa_I_LuA >= $lUaTmP_30_LuAtMp; $lUa_I_LuA += $lUaTmP_31_LuAtMp) {
+        $____ = $lUa_I_LuA;
+        $x = ($lUaTmP_29_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
         $machinetext_print_step2_do($x, (function ($v = NULL) use (&$__TS__ArrayPush, &$result) {
             return $__TS__ArrayPush($result, $v);
         }), (function ($v = NULL) use (&$__TS__ArrayPush, &$new_stack) {
@@ -2662,11 +2670,12 @@ $machinetext_print = (function ($x = NULL) use (&$machinetext_print_step) {
         $tmpret__new_stack = $machinetext_print_step($stack);
         $tmpret = ($tmpret__new_stack->{0});
         $new_stack = ($tmpret__new_stack->{1});
-        $lUaTmP_23_LuAtMp = (is_string($tmpret) ? strlen($tmpret) : count((array)$tmpret));
-        $lUaTmP_24_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
-            $____TS_index = $lUa_I_LuA;
-            $s = ($tmpret->{(is_int($____TS_index) ? $____TS_index - 1 : $____TS_index)});
+        $lUaTmP_32_LuAtMp = $tmpret;
+        $lUaTmP_33_LuAtMp = (is_string($lUaTmP_32_LuAtMp) ? strlen($lUaTmP_32_LuAtMp) : count((array)$lUaTmP_32_LuAtMp));
+        $lUaTmP_34_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_34_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_33_LuAtMp : $lUa_I_LuA >= $lUaTmP_33_LuAtMp; $lUa_I_LuA += $lUaTmP_34_LuAtMp) {
+            $____ = $lUa_I_LuA;
+            $s = ($lUaTmP_32_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
             $result = (((string)$result) . ((string)$s));
         }
         $stack = $new_stack;
@@ -2849,24 +2858,19 @@ $____exports->{"comment_comment"} = $comment_comment;
 $____exports->{"comment_x"} = $comment_x;
 $____exports->{"un_comment_all"} = $un_comment_all;
 $____exports->{"can_new_symbol_p"} = $can_new_symbol_p;
-$____exports->{"New_Symbol"} = $GLOBALS["New_Symbol"];
 $____exports->{"new_symbol"} = $new_symbol;
 $____exports->{"symbol_p"} = $symbol_p;
 $____exports->{"un_symbol"} = $un_symbol;
-$____exports->{"New_Construction"} = $GLOBALS["New_Construction"];
 $____exports->{"new_construction"} = $new_construction;
 $____exports->{"construction_p"} = $construction_p;
 $____exports->{"construction_head"} = $construction_head;
 $____exports->{"construction_tail"} = $construction_tail;
-$____exports->{"Null_V"} = $GLOBALS["Null_V"];
 $____exports->{"null_v"} = $null_v;
 $____exports->{"null_p"} = $null_p;
-$____exports->{"New_Data"} = $GLOBALS["New_Data"];
 $____exports->{"new_data"} = $new_data;
 $____exports->{"data_p"} = $data_p;
 $____exports->{"data_name"} = $data_name;
 $____exports->{"data_list"} = $data_list;
-$____exports->{"New_Error"} = $GLOBALS["New_Error"];
 $____exports->{"new_error"} = $new_error;
 $____exports->{"error_p"} = $error_p;
 $____exports->{"error_name"} = $error_name;
@@ -2904,9 +2908,7 @@ $____exports->{"machinetext_print"} = $machinetext_print;
 $____exports->{"trampoline_return"} = $trampoline_return;
 $____exports->{"trampoline_delay"} = $trampoline_delay;
 $____exports->{"run_trampoline"} = $run_trampoline;
-$____exports->{"Return_Effect_SystemName"} = $GLOBALS["Return_Effect_SystemName"];
 $____exports->{"return_effect_systemName"} = $return_effect_systemName;
-$____exports->{"Bind_Effect_SystemName"} = $GLOBALS["Bind_Effect_SystemName"];
 $____exports->{"bind_effect_systemName"} = $bind_effect_systemName;
 $____exports->{"new_effect_bind"} = $new_effect_bind;
 $____exports->{"new_effect_return"} = $new_effect_return;
