@@ -99,23 +99,29 @@
     (define (pre-id) pre)
     (define (main-id cmd) (make ((name (depend ...) code) ...) cmd))))
 
+(define-syntax-rule (for/par h body)
+    (begin
+        (define xs '())
+        (for h (set! xs (cons (thread (lambda () body)) xs)))
+        (for ([x xs]) (thread-wait x))))
+
 ;; (do-make (current-command-line-arguments))
 (provide write-Makefile pre-do-make do-make)
 (define-make++ "make.rkt" write-Makefile ("typescript/.done.racket.code.generator" "typescript/lang.ts" pre-do-make) do-make
   {
 in-dir "typescript" {
     (define files (sort (filter (match-lambda [(regexp #rx".*\\.ts$") #t] [_ #f]) (map path->string (directory-list "lang.ts.d" #:build? #t))) string<?))
-    (displayln files)
     (make/proc `((".done.racket.code.generator" (,@files) ,(lambda () {
         yarn
-        (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
-        |> delete-file tmpfile
-        |> id "" &>! lang.ts
-        (for ([file files]) {
+        (for/par ([file files]) {
+            (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
             |> lines->string (run-racket-code-generators->lines (string->lines #{cat (id file)})) &>! (id tmpfile)
             npx tsfmt -r (id tmpfile)
             dos2unix (id tmpfile)
             mv (id tmpfile) (id file)
+        })
+        |> id "" &>! lang.ts
+        (for ([file files]) {
             cat (id file) &>> lang.ts
             echo &>> lang.ts
         })
@@ -141,7 +147,7 @@ in-dir "typescript" {
             yarn
             npx tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
-                          [(list "/**" " * @fileoverview added by tsickle" " * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc" " */" "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
+                          [(list "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
             |> id raw &>! langraw.js
             (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
