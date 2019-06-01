@@ -387,6 +387,24 @@ function symbol_equal_p(x, y) {
     }
 }
 // 相對獨立的部分。符號名稱 }}}
+/*
+    The Language
+    Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 // {{{ 相對獨立的部分。對內建數據結構的簡單處理
 function jsArray_to_list(xs) {
     let ret = null_v;
@@ -731,6 +749,24 @@ function val2env(x) {
 }
 export { env_null_v, env_set, env_get, env2val, env_foreach, val2env, };
 // 相對獨立的部分。變量之環境 }}}
+/*
+    The Language
+    Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 // 註疏系統WIP
 function force_uncomment_list_1(list, not_list_k, delay_just_k, k) {
     let ret = [];
@@ -1268,6 +1304,24 @@ function jsbool_no_force_equal_p(x, y) {
     }
     return stack2.length === 0;
 }
+/*
+    The Language
+    Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 // {{{ 相對獨立的部分。simple printer
 function simple_print(x) {
     // [[[ 大量重複代碼 simple_print <-> complex_print
@@ -1886,6 +1940,24 @@ function complex_print(val) {
 }
 export { complex_print };
 // 相對獨立的部分。complex parser/complex printer }}}
+/*
+    The Language
+    Copyright (C) 2018, 2019  Zaoqi <zaomir@outlook.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 // {{{ 相對獨立的部分。machinetext parse/print
 // 註疏系統WIP
 function machinetext_parse(rawstr) {
