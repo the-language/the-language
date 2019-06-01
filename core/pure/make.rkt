@@ -56,8 +56,6 @@
 (define eval-ns (make-base-namespace))
 (eval '(require racket) eval-ns)
 (define (eval-str-sandbox x) (eval (read (open-input-string x)) eval-ns))
-(define raw-lang.ts #{cat typescript/lang.ts})
-(define raw-lang.ts-lines (string->lines raw-lang.ts))
 (define (run-racket-code-generators->lines lines)
     (match lines
         [(list
@@ -106,14 +104,23 @@
 (define-make++ "make.rkt" write-Makefile ("typescript/.done.racket.code.generator" "typescript/lang.ts" pre-do-make) do-make
   {
 in-dir "typescript" {
-    (make ((".done.racket.code.generator" ("lang.ts") {
-        |> lines->string (run-racket-code-generators->lines raw-lang.ts-lines) &>! lang.tmp.ts
+    (define files (sort (filter (match-lambda [(regexp #rx".*\\.ts$") #t] [_ #f]) (map path->string (directory-list "lang.ts.d" #:build? #t))) string<?))
+    (displayln files)
+    (make/proc `((".done.racket.code.generator" (,@files) ,(lambda () {
         yarn
-        npx tsfmt -r lang.tmp.ts
-        dos2unix lang.tmp.ts
-        mv lang.tmp.ts lang.ts
+        (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
+        |> delete-file tmpfile
+        |> id "" &>! lang.ts
+        (for ([file files]) {
+            |> lines->string (run-racket-code-generators->lines (string->lines #{cat (id file)})) &>! (id tmpfile)
+            npx tsfmt -r (id tmpfile)
+            dos2unix (id tmpfile)
+            mv (id tmpfile) (id file)
+            cat (id file) &>> lang.ts
+            echo &>> lang.ts
+        })
         touch .done.racket.code.generator
-    })))
+    }))))
     }
 }
     (("all" ("ecmascript/lang.js"
