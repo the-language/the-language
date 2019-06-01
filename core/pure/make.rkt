@@ -83,23 +83,23 @@
   )
 
 
-(define-syntax-rule (define-make++ self write-id (pre-file pre-src pre-id) main-id pre ((name (depend ...) code) ...))
+(define-syntax-rule (define-make++ self write-id (pre-src pre-id pre-dep) main-id pre ((name (depend ...) code) ...))
   (begin
     (define (write-id Makefile)
       (define mkfile
         (string-append
          (string-append
-          name ":" (string-append " " (if (equal? depend pre-src) (string-append pre-src" "pre-file) depend)) ...
+          name ":" (string-append " " depend) ...
           "\n\tracket "Makefile".domake.rkt "name"\n\n"
           ) ...
-         pre-file": "pre-src"\n\tracket "Makefile".premake.rkt\n"))
+         pre-src": "(apply string-append (add-between pre-dep " "))"\n\tracket "Makefile".premake.rkt\n"))
       (display-to-file mkfile Makefile #:exists 'replace)
       (display-to-file (string-append"#lang racket\n(require \""self"\")\n("(symbol->string 'pre-id)")") (string-append Makefile".premake.rkt") #:exists 'replace)
       (display-to-file (string-append"#lang racket\n(require \""self"\")\n("(symbol->string 'main-id)" (current-command-line-arguments))") (string-append Makefile".domake.rkt") #:exists 'replace))
     (define (pre-id) pre)
     (define (main-id cmd) (make ((name (depend ...) code) ...) cmd))))
 
-(define-syntax-rule (for/par h body)
+(define-syntax-rule (for/par h body) ;; [WIP]出錯時不會停止。
     (begin
         (define xs '())
         (for h (set! xs (cons (thread (lambda () body)) xs)))
@@ -107,13 +107,13 @@
 
 ;; (do-make (current-command-line-arguments))
 (provide write-Makefile pre-do-make do-make)
-(define-make++ "make.rkt" write-Makefile ("typescript/.done.racket.code.generator" "typescript/lang.ts" pre-do-make) do-make
-  {
-in-dir "typescript" {
-    (define files (sort (filter (match-lambda [(regexp #rx".*\\.ts$") #t] [_ #f]) (map path->string (directory-list "lang.ts.d" #:build? #t))) string<?))
-    (make/proc `((".done.racket.code.generator" (,@files) ,(lambda () {
+(define (mk-ts-files d) (sort (filter (match-lambda [(regexp #rx".*\\.ts$") #t] [_ #f]) (map path->string (directory-list (string-append d "lang.ts.d") #:build? #t))) string<?))
+(define ts-files-root (mk-ts-files "typescript/"))
+(define-make++ "make.rkt" write-Makefile ("typescript/lang.ts" pre-do-make ts-files-root) do-make
+    (make/proc `(("typescript/lang.ts" (,@ts-files-root) ,(lambda () (in-dir "typescript" {
         yarn
-        (for/par ([file files]) {
+        (define ts-files (mk-ts-files ""))
+        (for/par ([file ts-files]) {
             (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
             |> lines->string (run-racket-code-generators->lines (string->lines #{cat (id file)})) &>! (id tmpfile)
             npx tsfmt -r (id tmpfile)
@@ -121,14 +121,11 @@ in-dir "typescript" {
             mv (id tmpfile) (id file)
         })
         |> id "" &>! lang.ts
-        (for ([file files]) {
+        (for ([file ts-files]) {
             cat (id file) &>> lang.ts
             echo &>> lang.ts
         })
-        touch .done.racket.code.generator
-    }))))
-    }
-}
+    })))))
     (("all" ("ecmascript/lang.js"
              "lua/lang.lua"
              "lua/lang.min.lua"
