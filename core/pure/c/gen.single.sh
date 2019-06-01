@@ -37,7 +37,6 @@ f=lang.c.tmp
 npx codingame-merge -w src.cpp/ -o "$f"
 rm -fr src.cpp
 sed -i 's|^#if defined(LUA_CORE)$|#if 1|g' "$f" # luai_num* macros
-sed -i 's|^#ifdef __cplusplus$|#if 0|g' "$f" # extern "C" { ... }
 sed -i 's|^#if defined(LUA_USE_READLINE)$|#if 0|g' "$f"
 for x in LUA_API LUAI_FUNC ;do
   sed -i "s|^#define[  ]$x[	 ].*\$|#define $x static inline|g" "$f"
