@@ -136,7 +136,10 @@
              "php/lang.php"
              "java/src"
              "c/lang.h"
-             "c/lang.c")
+             "c/lang.c"
+             "c/testmain"
+             "c/lang.o"
+             "c/liblang.a")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
@@ -205,7 +208,7 @@
            touch lua2c
      }})
      ("c/lang.h" () (void))
-     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.min.lua" "c/patch/lang.tail.c" "c/lang.h" "c/testmain.c") {
+     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang.min.lua" "c/patch/lang.tail.c" "c/lang.h") {
        in-dir "c" {
              (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang.min.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
 
@@ -230,8 +233,15 @@
                    c-copyright
                    #{cat lang.c}))
              |> id single &>! lang.c
-
-             clang -o testmain testmain.c lang.c ;; -Wl,-s -DNDEBUG -Ofast -Oz
+     }})
+     ("c/lang.o" ("c/lang.c" "c/lang.h") { in-dir "c" {
+         clang -I. -c -o lang.o lang.c -Ofast ;; -Oz -DNDEBUG
+     }})
+     ("c/liblang.a" ("c/lang.o") { in-dir "c" {
+         ar -r liblang.a lang.o
+     }})
+     ("c/testmain" ("c/liblang.a" "c/testmain.c") { in-dir "c" {
+         clang -o testmain testmain.c -L. -I. -llang -Wl,-s
      }})
      ("php/lang.php" ("lua/lang.lua") {
          in-dir "php" {

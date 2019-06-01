@@ -1,6 +1,9 @@
 /lua-5.1.5/
 /lua2c/
-/testmain
 /lang.lua2c.out.c
 /node_modules/
 /src/
+
+/liblang.a
+/testmain
+/lang.o

@@ -1,4 +1,4 @@
-all: ecmascript/lang.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c
+all: ecmascript/lang.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c c/testmain c/lang.o c/liblang.a
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.js
@@ -31,8 +31,17 @@ c/lua2c: c/lua2c-lib-lua2c-ast2cast.lua
 c/lang.h:
 	racket Makefile.domake.rkt c/lang.h
 
-c/lang.c: c/lua-5.1.5 c/lua-5.1.5/src/lua c/lua2c lua/lang.min.lua c/patch/lang.tail.c c/lang.h c/testmain.c
+c/lang.c: c/lua-5.1.5 c/lua-5.1.5/src/lua c/lua2c lua/lang.min.lua c/patch/lang.tail.c c/lang.h
 	racket Makefile.domake.rkt c/lang.c
+
+c/lang.o: c/lang.c c/lang.h
+	racket Makefile.domake.rkt c/lang.o
+
+c/liblang.a: c/lang.o
+	racket Makefile.domake.rkt c/liblang.a
+
+c/testmain: c/liblang.a c/testmain.c
+	racket Makefile.domake.rkt c/testmain
 
 php/lang.php: lua/lang.lua
 	racket Makefile.domake.rkt php/lang.php
