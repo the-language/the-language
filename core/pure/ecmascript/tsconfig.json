@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES3",
-        "removeComments": true,
 
         "strict": true,
     },
