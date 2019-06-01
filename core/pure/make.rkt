@@ -139,6 +139,7 @@
              "c/lang.c"
              "c/testmain"
              "c/lang.o"
+             "c/liblang.so"
              "c/liblang.a")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
@@ -236,6 +237,9 @@
      }})
      ("c/lang.o" ("c/lang.c" "c/lang.h") { in-dir "c" {
          clang -I. -c -o lang.o lang.c -Ofast ;; -Oz -DNDEBUG
+     }})
+     ("c/liblang.so" ("c/lang.o") { in-dir "c" {
+         clang -Wl,-s -shared lang.o -o liblang.so
      }})
      ("c/liblang.a" ("c/lang.o") { in-dir "c" {
          ar -r liblang.a lang.o
