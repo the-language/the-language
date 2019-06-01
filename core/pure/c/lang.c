@@ -22639,59 +22639,50 @@ static inline lang_value *lang_value_from_lua_orNULL(lang_state *L) {
   lua_remove(L->L, -1);
   return ret;
 }
-extern lang_value *lang_complex_parse_orNULL(lang_state *L, const char *str) {
-  assert(lua_gettop(L->L) == 0);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
-  lua_getfield(L->L, -1, "complex_parse");
-  lua_remove(L->L, -2);
-  lua_pushstring(L->L, str);
-  lua_call(L->L, 1, 1);
-  lang_value *ret = lang_value_from_lua_orNULL(L);
-  if (NULL == ret) {
-    lua_settop(L->L, 0);
-    return NULL;
-  }
-  assert(lua_gettop(L->L) == 0);
-  return ret;
+#define _DEF_lang_a_parse(name) \
+extern lang_value *lang_##name##_orNULL(lang_state *L, const char *str) { \
+  assert(lua_gettop(L->L) == 0); \
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref); \
+  lua_getfield(L->L, -1, #name); \
+  lua_remove(L->L, -2); \
+  lua_pushstring(L->L, str); \
+  lua_call(L->L, 1, 1); \
+  lang_value *ret = lang_value_from_lua_orNULL(L); \
+  if (NULL == ret) { \
+    lua_settop(L->L, 0); \
+    return NULL; \
+  } \
+  assert(lua_gettop(L->L) == 0); \
+  return ret; \
 }
-extern char *lang_complex_print_retMalloc_orNULL(lang_state *L, lang_value *val) {
-  assert(lua_gettop(L->L) == 0);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
-  lua_getfield(L->L, -1, "complex_print");
-  lua_remove(L->L, -2);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, val->lua_ref);
-  lua_call(L->L, 1, 1);
-  assert(lua_isstring(L->L, -1));
-  const char *rawret = lua_tostring(L->L, -1);
-  lua_remove(L->L, -1);
-  assert(lua_gettop(L->L) == 0);
-  size_t len = strlen(rawret);
-  char *ret = malloc(len + 1);
-  if (NULL == ret) {
-    return NULL;
-  }
-  memcpy(ret, rawret, len + 1);
-  return ret;
+
+#define _DEF_lang_a_print(name) \
+extern char *lang_##name##_retMalloc_orNULL(lang_state *L, lang_value *val) { \
+  assert(lua_gettop(L->L) == 0); \
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref); \
+  lua_getfield(L->L, -1, #name); \
+  lua_remove(L->L, -2); \
+  lua_rawgeti(L->L, LUA_REGISTRYINDEX, val->lua_ref); \
+  lua_call(L->L, 1, 1); \
+  assert(lua_isstring(L->L, -1)); \
+  const char *rawret = lua_tostring(L->L, -1); \
+  lua_remove(L->L, -1); \
+  assert(lua_gettop(L->L) == 0); \
+  size_t len = strlen(rawret); \
+  char *ret = malloc(len + 1); \
+  if (NULL == ret) { \
+    return NULL; \
+  } \
+  memcpy(ret, rawret, len + 1); \
+  return ret; \
 }
-extern char *lang_simple_print_retMalloc_orNULL(lang_state *L, lang_value *val) {
-  assert(lua_gettop(L->L) == 0);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, L->exports_ref);
-  lua_getfield(L->L, -1, "simple_print");
-  lua_remove(L->L, -2);
-  lua_rawgeti(L->L, LUA_REGISTRYINDEX, val->lua_ref);
-  lua_call(L->L, 1, 1);
-  assert(lua_isstring(L->L, -1));
-  const char *rawret = lua_tostring(L->L, -1);
-  lua_remove(L->L, -1);
-  assert(lua_gettop(L->L) == 0);
-  size_t len = strlen(rawret);
-  char *ret = malloc(len + 1);
-  if (NULL == ret) {
-    return NULL;
-  }
-  memcpy(ret, rawret, len + 1);
-  return ret;
-}
+
+_DEF_lang_a_parse(complex_parse);
+_DEF_lang_a_parse(machinetext_parse);
+
+_DEF_lang_a_print(complex_print);
+_DEF_lang_a_print(simple_print);
+_DEF_lang_a_print(machinetext_print);
 /*-- File: src.cpp/lang.cpp end --*/
 /*-- #include "src.cpp/lang.h" start --*/
 /*-- File: src.cpp/lapi.cpp start --*/
