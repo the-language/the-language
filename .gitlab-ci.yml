@@ -17,7 +17,6 @@ stages:
 all:
     stage: all
     script:
-      - touch core/pure/typescript/lang.ts
       - racket make.rkt
       - racket test.rkt
     retry: 2
