@@ -4,5 +4,5 @@
 (require "test.js.rkt")
 (require "test.lua.rkt")
 (require "test.java.rkt")
-./do_testmain.sh
+(require "test.c.rkt")
 (require "test.php.rkt")

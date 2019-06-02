@@ -25,7 +25,7 @@ extern "C" {
   
   extern lang_value *lang_force1_orNULL(lang_state *L, lang_value *val);
   extern lang_value *lang_force_all_orNULL(lang_state *L, lang_value *val);
-  extern lang_value *lang_force_rec_orNULL(lang_state *L, lang_value *val);
+  extern lang_value *lang_force_all_rec_orNULL(lang_state *L, lang_value *val);
   
 #if defined(__cplusplus)
 }

@@ -7,7 +7,7 @@ igcc@^0.4.0-1:
   resolved "https://registry.yarnpkg.com/igcc/-/igcc-0.4.0-1.tgz#2941872be72daea97147dca3f284dc5f3c8d1a3d"
   integrity sha512-UW2kx+xO8RI3N5yVEYlyABpQgphcnmr5YCQsKtbFzgbr3E7ilApYmNOO1NrTb1vrUd6iVjMo+6dihnxtUuHalQ==
 
-ya-igcc@^0.0.2-2:
-  version "0.0.2-2"
-  resolved "https://registry.yarnpkg.com/ya-igcc/-/ya-igcc-0.0.2-2.tgz#d87ef5fcea2ae9f7a58b9bd8e531c4e360e0490a"
-  integrity sha512-TRailrkR4LjsgEod2EVn/nXpjQDs6kyewxFstUrhByD4Rh0jhSIw+CiylqgXKzISBsLcC+C1WG9QvppqmOPuJA==
+ya-igcc@^0.0.2-4:
+  version "0.0.2-4"
+  resolved "https://registry.yarnpkg.com/ya-igcc/-/ya-igcc-0.0.2-4.tgz#a66ae058e46b453a53f43df3742877b2e01d4bfe"
+  integrity sha512-RI6pg1xtsPiAloQ5SyAS/24RJgqU00EIy93PnxqpIq9NZjP15AqcrR53fWNEdv9fi1P19kHftlzZKPudcXIiTA==

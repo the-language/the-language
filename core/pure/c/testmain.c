@@ -30,5 +30,6 @@ int main(void) {
   assert(s);
   puts(s);
   free(s);
+  lang_state_delete(L);
   return 0;
 }
