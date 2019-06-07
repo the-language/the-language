@@ -6,10 +6,9 @@ variables:
 
 before_script:
   - pacman -Sy
-  - pacman -S --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make wget git python2 gawk luarocks php
+  - pacman -S --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make wget git python2 gawk php
   - archlinux-java set java-11-openjdk
   - raco pkg install --batch --user --auto rash
-  - luarocks install luasrcdiet --local
 
 stages:
     - all

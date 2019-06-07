@@ -7,10 +7,13 @@ ecmascript/exports.list: ecmascript/lang.js
 ecmascript/lang.js: typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/lang.js
 
+lua/luasrcdiet:
+	racket Makefile.domake.rkt lua/luasrcdiet
+
 lua/lang.min.lua: lua/lang.lua
 	racket Makefile.domake.rkt lua/lang.min.lua
 
-lua/lang.lua: typescript/lang.ts
+lua/lang.lua: typescript/lang.ts lua/luasrcdiet c/lua-5.1.5/src/lua
 	racket Makefile.domake.rkt lua/lang.lua
 
 ecmascript6/lang.js: typescript/lang.ts

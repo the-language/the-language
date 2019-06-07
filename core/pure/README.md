@@ -24,7 +24,7 @@ racket test.rkt
 * NodeJS NPM | `sudo apt install nodejs npm` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn`
-* racket | `sudo apt install racket` `sudo pacman -S racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
+* racket | `sudo apt install racket` `sudo pacman -S racket` `sudo apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip`
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`
 * racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/77363527621054ca4e64eda4f542a5c45f7b4861
@@ -35,8 +35,6 @@ racket test.rkt
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make`
 * wget | `sudo apt install wget` `sudo pacman -S wget` `sudo apk add wget`
 * [已不再依賴] golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
-* luarocks | `sudo pacman -S luarocks`
-* `~/.luarocks/bin/luasrcdiet` | `luarocks install luasrcdiet --local` https://github.com/jirutka/luasrcdiet
 
 ### 運行依賴
 

@@ -155,8 +155,9 @@
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
             |> lines->string exports &>! exports.list
      }})
+     ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
      ("lua/lang.min.lua" ("lua/lang.lua") (void)) ;; 實現在下面
-     ("lua/lang.lua" ("typescript/lang.ts") {
+     ("lua/lang.lua" ("typescript/lang.ts" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") {
          in-dir "lua" {
              yarn
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
@@ -181,7 +182,7 @@
              cat lang.lua.1 &>> lang.lua
              rm lang.lua.1
 
-             ~/.luarocks/bin/luasrcdiet lang.lua -o lang.min.lua
+             ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang.min.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
