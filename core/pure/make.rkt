@@ -156,8 +156,10 @@
             |> lines->string exports &>! exports.list
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
-     ("lua/lang.min.lua" ("lua/lang.lua") (void)) ;; 實現在下面
-     ("lua/lang.lua" ("typescript/lang.ts" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") {
+     ("lua/lang.min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
+         sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang.min.lua")
+     }})
+     ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
              yarn
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
@@ -181,8 +183,6 @@
              sed -i (id "/____exports/d") lang.lua
              cat lang.lua.1 &>> lang.lua
              rm lang.lua.1
-
-             ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang.min.lua
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
