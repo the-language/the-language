@@ -75,7 +75,10 @@ install_mirror(){
     fi
 }
 chrt(){
-    ./sandbox.sh "$@"
+    for f in host.conf hosts nsswitch.conf resolv.conf; do
+	cp "/etc/$f" sandbox/etc/
+    done
+    USER=root HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin ./sandbox.proot/src/proot -0 -r sandbox --kill-on-exit -b /dev/ -b /sys/ -b /proc/ -b /tmp/ -b . -b sandbox.profile:/root/.profile "$@"
 }
 getnodeurl_ret=''
 getnodeurl(){
@@ -239,7 +242,7 @@ Server = http://mirror.rackspace.com/$getarch_ret_archlinuxsource" > sandbox/etc
     cd ..
     cd ..
     
-    chrt pacman -S --noconfirm --force bash coreutils pacman
+    chrt sh -c 'until pacman -S --noconfirm --force bash coreutils pacman busybox musl base;do true;done'
 }
 main(){
     [ -d sandbox ] || init
