@@ -147,8 +147,6 @@ $new_lambda = NULL;
 $jsbool_equal_p = NULL;
 $simple_print = NULL;
 $machinetext_print_step2_do = NULL;
-$symbols_set_init = NULL;
-$symbols_set_neg_init = NULL;
 $LANG_ERROR = (function () {
     throw new Exception("TheLanguage PANIC");
 });

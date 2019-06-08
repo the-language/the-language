@@ -216,6 +216,7 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
         a.subargs(1);
+
         Lang$luaj$__TS__ArrayPush a0 = new Lang$luaj$__TS__ArrayPush();
         a0.u0 = this.u0;
         org.luaj.vm2.LuaValue a1 = org.luaj.vm2.LuaValue.NIL;
@@ -727,8 +728,8 @@ public class Lang$luaj extends org.luaj.vm2.lib.VarArgFunction {
         a130.u16 = a83;
         a130.u17 = a84;
         a130.u18 = a56;
-        Lang$luaj$76 a131 = new Lang$luaj$76();
-        Lang$luaj$77 a132 = new Lang$luaj$77();
+        Lang$luaj$symbols_set_init a131 = new Lang$luaj$symbols_set_init();
+        Lang$luaj$symbols_set_neg_init a132 = new Lang$luaj$symbols_set_neg_init();
         Lang$luaj$symbols_set a133 = new Lang$luaj$symbols_set();
         org.luaj.vm2.LuaValue[] a134 = Lang$luaj.newupe();
         a134[0] = a133;
