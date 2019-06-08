@@ -18,4 +18,6 @@ all:
     script:
       - racket make.rkt
       - racket test.rkt
+      - git add .
+      - git diff --cached
     retry: 2
