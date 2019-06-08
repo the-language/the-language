@@ -242,7 +242,7 @@ Server = http://mirror.rackspace.com/$getarch_ret_archlinuxsource" > sandbox/etc
     cd ..
     cd ..
     
-    chrt sh -c 'until pacman -S --noconfirm --force bash coreutils pacman busybox musl base;do true;done'
+    chrt sh -c 'until pacman -S --noconfirm --force pacman bash coreutils busybox musl base;do true;done'
 }
 main(){
     [ -d sandbox ] || init
