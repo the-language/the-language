@@ -22,7 +22,7 @@ racket test.rkt
 
 支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`
 
-* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install coreutils cygwin`
+* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install busybox gow`
 * NodeJS NPM | `sudo apt install nodejs npm` `scoop install nodejs` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn` `scoop install yarn`
