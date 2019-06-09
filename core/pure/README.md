@@ -20,9 +20,9 @@ racket test.rkt
 
 ### 編譯依賴
 
-支持 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`
+支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`
 
-* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install busybox`
+* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install coreutils cygwin`
 * NodeJS NPM | `sudo apt install nodejs npm` `scoop install nodejs` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn` `scoop install yarn`
