@@ -20,7 +20,7 @@ racket test.rkt
 
 ### 編譯依賴
 
-支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`
+支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`[注：clang，racket-rash暫時無法正常工作。clang缺少`.h`。racket-rash對path處理不正確。]
 
 * GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install busybox`
 * NodeJS NPM | `sudo apt install nodejs npm` `scoop install nodejs` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
@@ -33,7 +33,7 @@ racket test.rkt
 * racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git` `scoop install git-with-openssh`
 * jdk9+ 或 graal | `sudo pacman -S jdk11-openjdk` `sudo apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
-* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev` `scoop install llvm`
+* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev` `scoop install llvm gcc`
 * GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make` `scoop install make`
 * curl | `sudo pacman -S curl` `sudo apt install curl` `sudo apk add curl` `scoop install curl`
 * [已不再依賴] golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
