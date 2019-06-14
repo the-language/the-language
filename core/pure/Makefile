@@ -22,11 +22,11 @@ ecmascript6/lang.js: typescript/lang.ts
 java/src: lua/lang.lua java/real-src/lang/Lang.java java/real-src/lang/LangValue.java
 	racket Makefile.domake.rkt java/src
 
-c/lua-5.1.5:
-	racket Makefile.domake.rkt c/lua-5.1.5
-
-c/lua-5.1.5/src/lua: c/lua-5.1.5
+c/lua-5.1.5/src/lua:
 	racket Makefile.domake.rkt c/lua-5.1.5/src/lua
+
+c/lua-5.1.5: c/lua-5.1.5/src/lua
+	racket Makefile.domake.rkt c/lua-5.1.5
 
 c/lua2c: c/lua2c-lib-lua2c-ast2cast.lua
 	racket Makefile.domake.rkt c/lua2c
