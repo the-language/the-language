@@ -27,17 +27,17 @@ racket test.rkt
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `sudo pacman -S yarn` `scoop install yarn`
 * racket | `sudo apt install racket` `sudo pacman -S racket` `scoop install racket` `sudo apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
-* python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip`
+* python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip` `scoop install python27 python36`[需要先`scoop bucket add versions`]
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`
 * racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/77363527621054ca4e64eda4f542a5c45f7b4861
 * racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
 * git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git` `scoop install git-with-openssh`
 * jdk9+ 或 graal | `sudo pacman -S jdk11-openjdk` `sudo apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
-* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev`
-* GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make` `scoop install llvm`
+* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev` `scoop install llvm`
+* GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make` `scoop install make`
 * curl | `sudo pacman -S curl` `sudo apt install curl` `sudo apk add curl` `scoop install curl`
 * [已不再依賴] golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
 
 ### 運行依賴
 
-* php | `sudo apt install php` `sudo pacman -S php`
+* php | `sudo apt install php` `sudo pacman -S php` `scoop install php`
