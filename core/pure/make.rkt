@@ -118,6 +118,7 @@
         })
     })))))
     (("all" ("ecmascript/lang.min.js"
+             "ecmascript/lang.js"
              "lua/lang.lua"
              "lua/lang.min.lua"
              "ecmascript6/lang.js"
@@ -145,6 +146,11 @@
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.js
             |> lines->string exports &>! exports.list
+     }})
+     ("ecmascript/lang.js" ("typescript/lang.ts") { in-dir "ecmascript" {
+         npx tsc --removeComments --outDir lang.js.tmp
+         mv lang.js.tmp/langraw.js lang.js
+         rm -fr lang.js.tmp
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
      ("lua/lang.min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {

@@ -1,4 +1,4 @@
-all: ecmascript/lang.min.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c c/testmain c/lang.o c/liblang.so c/liblang.a
+all: ecmascript/lang.min.js ecmascript/lang.js lua/lang.lua lua/lang.min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c c/testmain c/lang.o c/liblang.so c/liblang.a
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.min.js
@@ -6,6 +6,9 @@ ecmascript/exports.list: ecmascript/lang.min.js
 
 ecmascript/lang.min.js: typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/lang.min.js
+
+ecmascript/lang.js: typescript/lang.ts
+	racket Makefile.domake.rkt ecmascript/lang.js
 
 lua/luasrcdiet:
 	racket Makefile.domake.rkt lua/luasrcdiet

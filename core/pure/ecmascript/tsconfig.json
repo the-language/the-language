@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "moduleResolution": "Node",
+        "newLine": "lf",
         "target": "ES3",
+        "noImplicitUseStrict": true,
+        "alwaysStrict": false,
 
         "strict": true,
     },
