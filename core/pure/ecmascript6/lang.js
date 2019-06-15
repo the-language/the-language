@@ -2057,49 +2057,39 @@ function machinetext_parse(rawstr) {
 }
 // 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
-function machinetext_print_step(stack) {
-    const result = [];
-    const new_stack = [];
-    for (let x of stack) {
-        x = un_just_all(x);
-        const conslike = function (xx, s, g1, g2) {
-            result.push(s);
-            return new_stack.push(g1(xx), g2(xx));
-        };
-        if (symbol_p(x)) {
-            result.push('^', un_symbol_unicodechar(x), '^');
-        }
-        else if (construction_p(x)) {
-            conslike(x, '.', construction_head, construction_tail);
-        }
-        else if (null_p(x)) {
-            result.push('_');
-        }
-        else if (data_p(x)) {
-            conslike(x, '#', data_name, data_list);
-        }
-        else if (error_p(x)) {
-            conslike(x, '!', error_name, error_list);
-        }
-        else if (delay_p(x)) {
-            const y = delay2delay_evaluate(x);
-            conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
-        }
-        else {
-            return LANG_ERROR();
-        }
-    }
-    return [result, new_stack];
-}
 function machinetext_print(x) {
     let stack = [x];
     let result = "";
     while (stack.length !== 0) {
-        const tmpret__new_stack = machinetext_print_step(stack);
-        const tmpret = tmpret__new_stack[0];
-        const new_stack = tmpret__new_stack[1];
-        for (const s of tmpret) {
-            result += s;
+        const new_stack = [];
+        for (let x of stack) {
+            x = un_just_all(x);
+            const conslike = function (xx, s, g1, g2) {
+                result += (s);
+                return new_stack.push(g1(xx), g2(xx));
+            };
+            if (symbol_p(x)) {
+                result += ('^' + un_symbol_unicodechar(x) + '^');
+            }
+            else if (construction_p(x)) {
+                conslike(x, '.', construction_head, construction_tail);
+            }
+            else if (null_p(x)) {
+                result += ('_');
+            }
+            else if (data_p(x)) {
+                conslike(x, '#', data_name, data_list);
+            }
+            else if (error_p(x)) {
+                conslike(x, '!', error_name, error_list);
+            }
+            else if (delay_p(x)) {
+                const y = delay2delay_evaluate(x);
+                conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
+            }
+            else {
+                return LANG_ERROR();
+            }
         }
         stack = new_stack;
     }

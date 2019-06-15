@@ -1,9 +1,9 @@
 package lang;
-public class Lang$luaj$machinetext_print_step$1 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$machinetext_print$1 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     
-    public Lang$luaj$machinetext_print_step$1() {
+    public Lang$luaj$machinetext_print$1() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
