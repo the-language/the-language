@@ -15,29 +15,29 @@ racket test.rkt
 
 ### 可選依賴
 
-* hanazono字體 | `sudo pacman -S ttf-hanazono` https://ctext.org/font-test-page/zh
+* hanazono字體 | `pacman -S ttf-hanazono` https://ctext.org/font-test-page/zh
 * Racket終端Unicode支援 | `raco pkg install --auto readline-gpl`
 
 ### 編譯依賴
 
-支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/scoop`[注：clang，racket-rash暫時無法正常工作。clang缺少`.h`。racket-rash對path處理不正確。]
+支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/msys2/pacman`[注：需要加`mingw-w64-x86_64-`等前綴] `windows/scoop`[注：clang，racket-rash暫時無法正常工作。clang缺少`.h`。racket-rash對path處理不正確。]
 
-* GNU coreutils, BASH, GNU tar, dos2unix, ... `sudo apk add bash` `sudo pacman -S dos2unix gawk` `sudo apt install dos2unix` `scoop install busybox`
-* NodeJS NPM | `sudo apt install nodejs npm` `scoop install nodejs` `sudo pacman -S nodejs npm` `sudo apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
+* GNU coreutils, BASH, GNU tar, dos2unix, ... `apk add bash` `pacman -S dos2unix gawk` `apt install dos2unix` `scoop install busybox`
+* NodeJS NPM | `apt install nodejs npm` `scoop install nodejs` `pacman -S nodejs npm` `apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
-* yarn | `npm i -g yarn` `sudo pacman -S yarn` `scoop install yarn`
-* racket | `sudo apt install racket` `sudo pacman -S racket` `scoop install racket` `sudo apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
-* python2,3 pip2,3 2to3 | `sudo apt install python python3 python-pip python3-pip` `sudo pacman -S python2 python python2-pip python-pip` `sudo apk add python2 python3 py2-pip` `scoop install python27 python36`[需要先`scoop bucket add versions`]
+* [已不再依賴] yarn | `npm i -g yarn` `pacman -S yarn` `scoop install yarn`
+* racket | `apt install racket` `pacman -S racket` `scoop install racket` `apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
+* python2,3 pip2,3 2to3 | `apt install python python3 python-pip python3-pip` `pacman -S python2 python python2-pip python-pip` `apk add python2 python3 py2-pip` `scoop install python27 python36`[需要先`scoop bucket add versions`]
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`
 * racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/77363527621054ca4e64eda4f542a5c45f7b4861
 * racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
-* git | `sudo apt install git` `sudo pacman -S git` `sudo apk add git` `scoop install git-with-openssh`
-* jdk9+ 或 graal | `sudo pacman -S jdk11-openjdk` `sudo apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
-* clang, clang-format | `sudo apt install clang clang-format` `sudo pacman -S clang` `sudo apk add clang libc-dev` `scoop install llvm gcc`
-* GNU make | `sudo apt install make` `sudo pacman -S make` `sudo apk add make` `scoop install make`
-* curl | `sudo pacman -S curl` `sudo apt install curl` `sudo apk add curl` `scoop install curl`
-* [已不再依賴] golang 1.10+ | `sudo apt install golang-1.10` `sudo pacman -S go` `sudo apk add go`
+* git | `apt install git` `pacman -S git` `apk add git` `scoop install git-with-openssh`
+* jdk9+ 或 graal | `pacman -S jdk11-openjdk` `apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
+* clang, clang-format | `apt install clang clang-format` `pacman -S clang` `apk add clang libc-dev` `scoop install llvm gcc`
+* GNU make | `apt install make` `pacman -S make` `apk add make` `scoop install make`
+* curl | `pacman -S curl` `apt install curl` `apk add curl` `scoop install curl`
+* [已不再依賴] golang 1.10+ | `apt install golang-1.10` `pacman -S go` `apk add go`
 
 ### 運行依賴
 
-* php | `sudo apt install php` `sudo pacman -S php` `scoop install php`
+* php | `apt install php` `pacman -S php` `scoop install php`

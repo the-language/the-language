@@ -111,7 +111,7 @@
 (define ts-files-root (mk-ts-files "typescript/"))
 (define-make++ "make.rkt" write-Makefile ("typescript/lang.ts" pre-do-make ts-files-root) do-make
     (make/proc `(("typescript/lang.ts" (,@ts-files-root) ,(lambda () (in-dir "typescript" {
-        yarn
+        npm install
         (define ts-files (mk-ts-files ""))
         (for/par ([file ts-files]) {
             (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
@@ -145,7 +145,7 @@
      ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.js" ("typescript/lang.ts") {
         in-dir "ecmascript" {
-            yarn
+            npm install
             npx tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
                           [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
@@ -161,7 +161,7 @@
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
-             yarn
+             npm install
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
              touch lang.lua
              rm lang.lua
@@ -186,7 +186,7 @@
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
-             yarn
+             npm install
              touch lang.js
              rm lang.js
              npx tsc --build tsconfig.json
@@ -201,7 +201,7 @@
      ("c/lua-5.1.5/src/lua" () {in-dir "c" {
          |> id "curl http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd .." | sh
      }})
-     ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") (void))
+     ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") { touch c/lua-5.1.5 })
      ("c/lua2c" ("c/lua2c-lib-lua2c-ast2cast.lua") {
        in-dir "c" {
            |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh ;; commit c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 [TODO] 改做下載https://github.com/davidm/lua2c/archive/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92.zip
@@ -250,7 +250,7 @@
      }})
      ("php/lang.php" ("lua/lang.lua") {
          in-dir "php" {
-             yarn
+             npm install
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
              |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
      }})

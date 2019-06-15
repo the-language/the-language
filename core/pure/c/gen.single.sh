@@ -1,5 +1,5 @@
 #!/bin/sh
-yarn
+npm install
 mkdir -p src.cpp
 rm -fr src.cpp
 mkdir src.cpp
