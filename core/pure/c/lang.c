@@ -1379,6 +1379,9 @@ LUALIB_API void (luaL_pushresult) (luaL_Buffer *B);
 #define LUA_COLIBNAME "coroutine"
 LUALIB_API int(luaopen_base)(lua_State *L);
 
+#define LUA_TABLIBNAME  "table"
+LUALIB_API int (luaopen_table) (lua_State *L);
+
 #define LUA_STRLIBNAME "string"
 LUALIB_API int(luaopen_string)(lua_State *L);
 
@@ -1428,9 +1431,9 @@ static inline void lc_add(lua_State *L, int idxa, int idxb) {
   }
 }
 
-/* name: l
+/* name: v
  * function(e,...) */
-static inline int lcf1_l(lua_State *L) {
+static inline int lcf1_v(lua_State *L) {
   enum { lc_nformalargs = 1 };
   if ((lua_gettop(L) < lc_nformalargs)) {
     lua_settop(L, lc_nformalargs);
@@ -1501,9 +1504,136 @@ static inline int lcf1_l(lua_State *L) {
   assert(lua_gettop(L) - lc_nextra == 2);
 }
 
-/* name: q
+/* __sub metamethod handler.
+ * warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
+static inline void lc_sub(lua_State *L, int idxa, int idxb) {
+  if (lua_isnumber(L, idxa) && lua_isnumber(L, idxb)) {
+    lua_pushnumber(L, lua_tonumber(L, idxa) - lua_tonumber(L, idxb));
+  } else {
+    if (luaL_getmetafield(L, idxa, "__sub") ||
+        luaL_getmetafield(L, idxb, "__sub")) {
+      lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 1 : idxa);
+      lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 2 : idxb);
+      lua_call(L, 2, 1);
+    } else {
+      luaL_error(L, "attempt to perform arithmetic");
+    }
+  }
+}
+
+/* warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
+static inline int lc_le(lua_State *L, int idxa, int idxb) {
+  if (lua_type(L, idxa) == LUA_TNUMBER && lua_type(L, idxb) == LUA_TNUMBER) {
+    return lua_tonumber(L, idxa) <= lua_tonumber(L, idxb);
+  } else if (lua_type(L, idxa) == LUA_TSTRING &&
+             lua_type(L, idxb) == LUA_TSTRING) {
+    /* result similar to lvm.c l_strcmp */
+    return lua_lessthan(L, idxa, idxb) || lua_rawequal(L, idxa, idxb);
+  } else if (luaL_getmetafield(L, idxa, "__le") ||
+             luaL_getmetafield(L, idxb, "__le")) {
+    lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 1 : idxa);
+    lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 2 : idxb);
+    lua_call(L, 2, 1);
+    const int result = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
+  } else if (luaL_getmetafield(L, idxa, "__lt") ||
+             luaL_getmetafield(L, idxb, "__lt")) {
+    lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 1 : idxb);
+    lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 2 : idxa);
+    lua_call(L, 2, 1);
+    const int result = !lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
+  } else {
+    return luaL_error(L, "attempt to compare");
+  }
+}
+
+/* name: Ne
+ * function(a,...) */
+static inline int lcf1_Ne(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  if ((lua_gettop(L) < lc_nformalargs)) {
+    lua_settop(L, lc_nformalargs);
+  }
+  const int lc_nactualargs = lua_gettop(L);
+  const int lc_nextra = (lc_nactualargs - lc_nformalargs);
+
+  /* local t=({...}) */
+  lua_createtable(L, 1, 0);
+  const int lc7 = lua_gettop(L);
+  {
+    int i;
+    for (i = lc_nformalargs + 1; i <= lc_nactualargs; i++) {
+      lua_pushvalue(L, i);
+    }
+  }
+  while ((lua_gettop(L) > lc7)) {
+    lua_rawseti(L, lc7, (0 + (lua_gettop(L) - lc7)));
+  }
+  assert(lua_gettop(L) - lc_nextra == 2);
+
+  /* do
+   * local e=#t-1 */
+  const double lc8 = lua_objlen(L, (2 + lc_nextra));
+  lua_pushnumber(L, lc8);
+  lua_pushnumber(L, 1);
+  lc_sub(L, -2, -1);
+  lua_remove(L, -2);
+  lua_remove(L, -2);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* while e>=0 do */
+  enum { lc9 = 3 };
+  while (1) {
+    lua_pushnumber(L, 0);
+    const int lc10 = lc_le(L, -1, (3 + lc_nextra));
+    lua_pop(L, 1);
+    lua_pushboolean(L, lc10);
+    if (!(lua_toboolean(L, -1))) {
+      break;
+    }
+    lua_pop(L, 1);
+
+    /* table.insert(a,1,t[e+1]) */
+    lua_getfield(L, LUA_ENVIRONINDEX, "table");
+    lua_pushliteral(L, "insert");
+    lua_gettable(L, -2);
+    lua_remove(L, -2);
+    lua_pushvalue(L, 1);
+    lua_pushnumber(L, 1);
+    lua_pushnumber(L, 1);
+    lc_add(L, (3 + lc_nextra), -1);
+    lua_remove(L, -2);
+    lua_gettable(L, (2 + lc_nextra));
+    lua_call(L, 3, 0);
+    assert(lua_gettop(L) - lc_nextra == 3);
+
+    /* e=e-1 */
+    lua_pushnumber(L, 1);
+    lc_sub(L, (3 + lc_nextra), -1);
+    lua_remove(L, -2);
+    lua_replace(L, (3 + lc_nextra));
+    assert(lua_gettop(L) - lc_nextra == 3);
+  }
+  lua_settop(L, (lc9 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* internal: stack cleanup on scope exit */
+  lua_pop(L, 1);
+  assert(lua_gettop(L) - lc_nextra == 2);
+
+  /* return#a */
+  const double lc11 = lua_objlen(L, 1);
+  lua_pushnumber(L, lc11);
+  return 1;
+  assert(lua_gettop(L) - lc_nextra == 2);
+}
+
+/* name: j
  * function() */
-static inline int lcf1_q(lua_State *L) {
+static inline int lcf1_j(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -1548,44 +1678,44 @@ static inline void lc_getupvalue(lua_State *L, int tidx, int level, int varid) {
   }
 }
 
-/* name: S
+/* name: H
  * function(e) */
-static inline int lcf1_S(lua_State *L) {
+static inline int lcf1_H(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* if not e then */
-  enum { lc7 = 1 };
+  enum { lc13 = 1 };
   lua_pushboolean(L, !(lua_toboolean(L, 1)));
-  const int lc8 = lua_toboolean(L, -1);
+  const int lc14 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc8) {
+  if (lc14) {
 
-    /* return q() */
-    const int lc9 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+    /* return j() */
+    const int lc15 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 117);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc9);
+    return (lua_gettop(L) - lc15);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc7);
+  lua_settop(L, lc13);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: ce
- * function(t,e) */
-static inline int lcf1_ce(lua_State *L) {
+/* name: fe
+ * function(e,t) */
+static inline int lcf1_fe(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
    * ye,
-   * t,
    * e,
+   * t,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 103);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 104);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -1595,26 +1725,26 @@ static inline int lcf1_ce(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: O
+/* name: I
  * function(e) */
-static inline int lcf1_O(lua_State *L) {
+static inline int lcf1_I(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* return e[1]==ye */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 103);
-  const int lc10 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 104);
+  const int lc16 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc10);
+  lua_pushboolean(L, lc16);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ue
+/* name: oe
  * function(e) */
-static inline int lcf1_ue(lua_State *L) {
+static inline int lcf1_oe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1625,9 +1755,9 @@ static inline int lcf1_ue(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: X
+/* name: K
  * function(e) */
-static inline int lcf1_X(lua_State *L) {
+static inline int lcf1_K(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1638,16 +1768,16 @@ static inline int lcf1_X(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ze
+/* name: qe
  * function(e) */
-static inline int lcf1_ze(lua_State *L) {
+static inline int lcf1_qe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* while O(e)do */
-  enum { lc11 = 1 };
+  /* while I(e)do */
+  enum { lc17 = 1 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 101);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -1655,14 +1785,14 @@ static inline int lcf1_ze(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* e=X(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 98);
+    /* e=K(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc11);
+  lua_settop(L, lc17);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -1677,20 +1807,20 @@ static inline int lcf1_p(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==pe */
+  /* return e[1]==Ve */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 113);
-  const int lc12 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 114);
+  const int lc18 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc12);
+  lua_pushboolean(L, lc18);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: fe
+/* name: le
  * function(e) */
-static inline int lcf1_fe(lua_State *L) {
+static inline int lcf1_le(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1701,16 +1831,16 @@ static inline int lcf1_fe(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: me
+/* name: de
  * function(e) */
-static inline int lcf1_me(lua_State *L) {
+static inline int lcf1_de(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return f()[fe(e)] */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 114);
+  /* return m()[le(e)] */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 115);
   lua_call(L, 0, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 95);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_gettable(L, -2);
@@ -1719,45 +1849,45 @@ static inline int lcf1_me(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: L
- * function(e,t) */
-static inline int lcf1_L(lua_State *L) {
+/* name: D
+ * function(t,e) */
+static inline int lcf1_D(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* if e==t then */
-  enum { lc13 = 2 };
-  const int lc14 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc14);
-  const int lc15 = lua_toboolean(L, -1);
+  /* if t==e then */
+  enum { lc19 = 2 };
+  const int lc20 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc20);
+  const int lc21 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc15) {
+  if (lc21) {
 
     /* return true */
     lua_pushboolean(L, 1);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc13);
+  lua_settop(L, lc19);
   assert(lua_gettop(L) == 2);
 
-  /* if fe(e)==fe(t) then */
-  enum { lc16 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 95);
+  /* if le(t)==le(e) then */
+  enum { lc22 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 95);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  const int lc17 = lua_equal(L, -2, -1);
+  const int lc23 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc17);
-  const int lc18 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc23);
+  const int lc24 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc18) {
+  if (lc24) {
 
-    /* I(e,t) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+    /* O(t,e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
     lua_pushvalue(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 0);
@@ -1775,24 +1905,24 @@ static inline int lcf1_L(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc16);
+  lua_settop(L, lc22);
   assert(lua_gettop(L) == 2);
   return 0;
 }
 
 /* name: s
- * function(e,t) */
+ * function(t,e) */
 static inline int lcf1_s(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * Oe,
-   * e,
+   * Ie,
    * t,
+   * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 112);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 113);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -1808,13 +1938,13 @@ static inline int lcf1_a(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==Oe */
+  /* return e[1]==Ie */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 112);
-  const int lc19 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 113);
+  const int lc25 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc19);
+  lua_pushboolean(L, lc25);
   return 1;
   assert(lua_gettop(L) == 1);
 }
@@ -1832,9 +1962,9 @@ static inline int lcf1_o(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: n
+/* name: i
  * function(e) */
-static inline int lcf1_n(lua_State *L) {
+static inline int lcf1_i(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1845,36 +1975,36 @@ static inline int lcf1_n(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: r
+/* name: h
  * function(e) */
-static inline int lcf1_r(lua_State *L) {
+static inline int lcf1_h(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==ne */
+  /* return e[1]==Ae */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 111);
-  const int lc20 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 112);
+  const int lc26 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc20);
+  lua_pushboolean(L, lc26);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: E
+/* name: T
  * function(t,e) */
-static inline int lcf1_E(lua_State *L) {
+static inline int lcf1_T(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * he,
+   * b,
    * t,
    * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 110);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 111);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -1884,26 +2014,26 @@ static inline int lcf1_E(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: m
+/* name: c
  * function(e) */
-static inline int lcf1_m(lua_State *L) {
+static inline int lcf1_c(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==he */
+  /* return e[1]==b */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 110);
-  const int lc21 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 111);
+  const int lc27 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc21);
+  lua_pushboolean(L, lc27);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: _
+/* name: E
  * function(e) */
-static inline int lcf1__(lua_State *L) {
+static inline int lcf1_E(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -1927,19 +2057,19 @@ static inline int lcf1_A(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: R
+/* name: L
  * function(t,e) */
-static inline int lcf1_R(lua_State *L) {
+static inline int lcf1_L(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * Z,
+   * M,
    * t,
    * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 109);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 110);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -1955,26 +2085,13 @@ static inline int lcf1_g(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==Z */
+  /* return e[1]==M */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 109);
-  const int lc22 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 110);
+  const int lc28 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc22);
-  return 1;
-  assert(lua_gettop(L) == 1);
-}
-
-/* name: U
- * function(e) */
-static inline int lcf1_U(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* return e[2] */
-  lua_pushnumber(L, 2);
-  lua_gettable(L, 1);
+  lua_pushboolean(L, lc28);
   return 1;
   assert(lua_gettop(L) == 1);
 }
@@ -1985,6 +2102,19 @@ static inline int lcf1_C(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
+  /* return e[2] */
+  lua_pushnumber(L, 2);
+  lua_gettable(L, 1);
+  return 1;
+  assert(lua_gettop(L) == 1);
+}
+
+/* name: U
+ * function(e) */
+static inline int lcf1_U(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
   /* return e[3] */
   lua_pushnumber(L, 3);
   lua_gettable(L, 1);
@@ -1992,19 +2122,19 @@ static inline int lcf1_C(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: V
+/* name: B
  * function(e) */
-static inline int lcf1_V(lua_State *L) {
+static inline int lcf1_B(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==ee */
+  /* return e[1]==Y */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 108);
-  const int lc23 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 109);
+  const int lc29 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc23);
+  lua_pushboolean(L, lc29);
   return 1;
   assert(lua_gettop(L) == 1);
 }
@@ -2022,19 +2152,19 @@ static inline int lcf1_rt(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: H
- * function(e,t) */
-static inline int lcf1_H(lua_State *L) {
+/* name: S
+ * function(t,e) */
+static inline int lcf1_S(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * ve,
-   * e,
+   * ne,
    * t,
+   * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 107);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 108);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -2044,26 +2174,26 @@ static inline int lcf1_H(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: B
+/* name: Q
  * function(e) */
-static inline int lcf1_B(lua_State *L) {
+static inline int lcf1_Q(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==ve */
+  /* return e[1]==ne */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 107);
-  const int lc24 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 108);
+  const int lc30 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc24);
+  lua_pushboolean(L, lc30);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: te
+/* name: X
  * function(e) */
-static inline int lcf1_te(lua_State *L) {
+static inline int lcf1_X(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2074,9 +2204,9 @@ static inline int lcf1_te(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ae
+/* name: Z
  * function(e) */
-static inline int lcf1_ae(lua_State *L) {
+static inline int lcf1_Z(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2087,20 +2217,20 @@ static inline int lcf1_ae(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: Ge
+/* name: Oe
  * function(e,a,t) */
-static inline int lcf1_Ge(lua_State *L) {
+static inline int lcf1_Oe(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
   /* return{
-   * Y,
+   * pe,
    * e,
    * a,
    * t,
    * } */
   lua_createtable(L, 4, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 105);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 106);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -2112,19 +2242,19 @@ static inline int lcf1_Ge(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
-/* name: Q
+/* name: G
  * function(e) */
-static inline int lcf1_Q(lua_State *L) {
+static inline int lcf1_G(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==Y */
+  /* return e[1]==pe */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 105);
-  const int lc25 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 106);
+  const int lc31 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc25);
+  lua_pushboolean(L, lc31);
   return 1;
   assert(lua_gettop(L) == 1);
 }
@@ -2142,9 +2272,9 @@ static inline int lcf1__e(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: xe
+/* name: Te
  * function(e) */
-static inline int lcf1_xe(lua_State *L) {
+static inline int lcf1_Te(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2155,9 +2285,9 @@ static inline int lcf1_xe(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: qe
+/* name: ze
  * function(e) */
-static inline int lcf1_qe(lua_State *L) {
+static inline int lcf1_ze(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2168,19 +2298,19 @@ static inline int lcf1_qe(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: j
+/* name: q
  * function(t,e) */
-static inline int lcf1_j(lua_State *L) {
+static inline int lcf1_q(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * b,
+   * ae,
    * t,
    * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 106);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 107);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -2190,26 +2320,26 @@ static inline int lcf1_j(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: J
+/* name: P
  * function(e) */
-static inline int lcf1_J(lua_State *L) {
+static inline int lcf1_P(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==b */
+  /* return e[1]==ae */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 106);
-  const int lc26 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 107);
+  const int lc32 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc26);
+  lua_pushboolean(L, lc32);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: le
+/* name: ue
  * function(e) */
-static inline int lcf1_le(lua_State *L) {
+static inline int lcf1_ue(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2233,19 +2363,19 @@ static inline int lcf1_re(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: P
+/* name: F
  * function(t,e) */
-static inline int lcf1_P(lua_State *L) {
+static inline int lcf1_F(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* return{
-   * Ae,
+   * he,
    * t,
    * e,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 104);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 105);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -2255,19 +2385,19 @@ static inline int lcf1_P(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: G
+/* name: V
  * function(e) */
-static inline int lcf1_G(lua_State *L) {
+static inline int lcf1_V(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==Ae */
+  /* return e[1]==he */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 104);
-  const int lc27 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 105);
+  const int lc33 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc27);
+  lua_pushboolean(L, lc33);
   return 1;
   assert(lua_gettop(L) == 1);
 }
@@ -2285,9 +2415,9 @@ static inline int lcf1_je(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: Ee
+/* name: xe
  * function(e) */
-static inline int lcf1_Ee(lua_State *L) {
+static inline int lcf1_xe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -2304,8 +2434,8 @@ static inline int lcf1_t(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* e[2]=F(e[2]) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 59);
+  /* e[2]=W(e[2]) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 60);
   lua_pushnumber(L, 2);
   lua_gettable(L, 1);
   lua_call(L, 1, 1);
@@ -2314,8 +2444,8 @@ static inline int lcf1_t(lua_State *L) {
   lua_settable(L, 1);
   assert(lua_gettop(L) == 1);
 
-  /* e[3]=F(e[3]) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 59);
+  /* e[3]=W(e[3]) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 60);
   lua_pushnumber(L, 3);
   lua_gettable(L, 1);
   lua_call(L, 1, 1);
@@ -2330,105 +2460,105 @@ static inline int lcf1_t(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: F
+/* name: W
  * function(e) */
-static inline int lcf1_F(lua_State *L) {
+static inline int lcf1_W(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local e=h(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 20);
+  /* local e=r(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 21);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 2);
 
   /* local function t(e)
-   * e[2]=F(e[2])
-   * e[3]=F(e[3])
+   * e[2]=W(e[2])
+   * e[3]=W(e[3])
    * return e
    * end */
   lua_pushvalue(L, lua_upvalueindex(1));
   lua_pushcclosure(L, lcf1_t, 1);
   assert(lua_gettop(L) == 3);
 
-  /* if m(e) then */
-  enum { lc28 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
+  /* if c(e) then */
+  enum { lc34 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  const int lc29 = lua_toboolean(L, -1);
+  const int lc35 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc29) {
+  if (lc35) {
 
     /* return t(e) */
-    const int lc30 = lua_gettop(L);
+    const int lc36 = lua_gettop(L);
     lua_pushvalue(L, 3);
     lua_pushvalue(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc30);
+    return (lua_gettop(L) - lc36);
     assert(lua_gettop(L) == 3);
   } else {
 
     /* elseif g(e) then */
-    enum { lc31 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
+    enum { lc37 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 82);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
-    const int lc32 = lua_toboolean(L, -1);
+    const int lc38 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc32) {
+    if (lc38) {
 
       /* return t(e) */
-      const int lc33 = lua_gettop(L);
+      const int lc39 = lua_gettop(L);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 2);
       lua_call(L, 1, LUA_MULTRET);
-      return (lua_gettop(L) - lc33);
+      return (lua_gettop(L) - lc39);
       assert(lua_gettop(L) == 3);
     } else {
 
       /* elseif a(e) then */
-      enum { lc34 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+      enum { lc40 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
-      const int lc35 = lua_toboolean(L, -1);
+      const int lc41 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc35) {
+      if (lc41) {
 
         /* return t(e) */
-        const int lc36 = lua_gettop(L);
+        const int lc42 = lua_gettop(L);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 2);
         lua_call(L, 1, LUA_MULTRET);
-        return (lua_gettop(L) - lc36);
+        return (lua_gettop(L) - lc42);
         assert(lua_gettop(L) == 3);
       } else {
 
-        /* elseif O(e) then */
-        enum { lc37 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+        /* elseif I(e) then */
+        enum { lc43 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 101);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
-        const int lc38 = lua_toboolean(L, -1);
+        const int lc44 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc38) {
+        if (lc44) {
 
           /* return t(e) */
-          const int lc39 = lua_gettop(L);
+          const int lc45 = lua_gettop(L);
           lua_pushvalue(L, 3);
           lua_pushvalue(L, 2);
           lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc39);
+          return (lua_gettop(L) - lc45);
           assert(lua_gettop(L) == 3);
         }
-        lua_settop(L, lc37);
+        lua_settop(L, lc43);
       }
-      lua_settop(L, lc34);
+      lua_settop(L, lc40);
     }
-    lua_settop(L, lc31);
+    lua_settop(L, lc37);
   }
-  lua_settop(L, lc28);
+  lua_settop(L, lc34);
   assert(lua_gettop(L) == 3);
 
   /* return e */
@@ -2437,60 +2567,60 @@ static inline int lcf1_F(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
-/* name: K
+/* name: ge
  * function() */
-static inline int lcf1_K(lua_State *L) {
+static inline int lcf1_ge(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return{be} */
+  /* return{se} */
   lua_createtable(L, 1, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 102);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 103);
   lua_rawseti(L, -2, 1);
   return 1;
   assert(lua_gettop(L) == 0);
 }
 
-/* name: i
+/* name: d
  * function(e) */
-static inline int lcf1_i(lua_State *L) {
+static inline int lcf1_d(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e[1]==be */
+  /* return e[1]==se */
   lua_pushnumber(L, 1);
   lua_gettable(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 102);
-  const int lc40 = lua_equal(L, -2, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 103);
+  const int lc46 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc40);
+  lua_pushboolean(L, lc46);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: I
+/* name: O
  * function(e,t) */
-static inline int lcf1_I(lua_State *L) {
+static inline int lcf1_O(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* if e==t then */
-  enum { lc41 = 2 };
-  const int lc42 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc42);
-  const int lc43 = lua_toboolean(L, -1);
+  enum { lc47 = 2 };
+  const int lc48 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc48);
+  const int lc49 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc43) {
+  if (lc49) {
 
     /* return */
     return 0;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc41);
+  lua_settop(L, lc47);
   assert(lua_gettop(L) == 2);
 
-  /* e[1]=ee */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 108);
+  /* e[1]=Y */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 109);
   lua_pushnumber(L, 1);
   lua_insert(L, -2);
   lua_settable(L, 1);
@@ -2519,24 +2649,24 @@ static inline int lcf1_I(lua_State *L) {
   return 0;
 }
 
-/* name: W
+/* name: we
  * function(e,t) */
-static inline int lcf1_W(lua_State *L) {
+static inline int lcf1_we(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* S(i(e)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 115);
-  const int lc44 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
+  /* H(d(e)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  const int lc50 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 58);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc44), 0);
+  lua_call(L, (lua_gettop(L) - lc50), 0);
   assert(lua_gettop(L) == 2);
 
-  /* S(not i(t)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 115);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
+  /* H(not d(t)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 58);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -2586,19 +2716,19 @@ static inline int lcf1_W(lua_State *L) {
   return 0;
 }
 
-/* name: dt
+/* name: lt
  * function(t) */
-static inline int lcf1_dt(lua_State *L) {
+static inline int lcf1_lt(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local e=K() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 58);
+  /* local e=ge() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 59);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
-  /* W(e,t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 55);
+  /* we(e,t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
   lua_pushvalue(L, 2);
   lua_pushvalue(L, 1);
   lua_call(L, 2, 0);
@@ -2610,66 +2740,20 @@ static inline int lcf1_dt(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* __sub metamethod handler.
- * warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
-static inline void lc_sub(lua_State *L, int idxa, int idxb) {
-  if (lua_isnumber(L, idxa) && lua_isnumber(L, idxb)) {
-    lua_pushnumber(L, lua_tonumber(L, idxa) - lua_tonumber(L, idxb));
-  } else {
-    if (luaL_getmetafield(L, idxa, "__sub") ||
-        luaL_getmetafield(L, idxb, "__sub")) {
-      lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 1 : idxa);
-      lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 2 : idxb);
-      lua_call(L, 2, 1);
-    } else {
-      luaL_error(L, "attempt to perform arithmetic");
-    }
-  }
-}
-
-/* warning: assumes indices in range LUA_REGISTRYINDEX < x < 0 are relative. */
-static inline int lc_le(lua_State *L, int idxa, int idxb) {
-  if (lua_type(L, idxa) == LUA_TNUMBER && lua_type(L, idxb) == LUA_TNUMBER) {
-    return lua_tonumber(L, idxa) <= lua_tonumber(L, idxb);
-  } else if (lua_type(L, idxa) == LUA_TSTRING &&
-             lua_type(L, idxb) == LUA_TSTRING) {
-    /* result similar to lvm.c l_strcmp */
-    return lua_lessthan(L, idxa, idxb) || lua_rawequal(L, idxa, idxb);
-  } else if (luaL_getmetafield(L, idxa, "__le") ||
-             luaL_getmetafield(L, idxb, "__le")) {
-    lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 1 : idxa);
-    lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 2 : idxb);
-    lua_call(L, 2, 1);
-    const int result = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    return result;
-  } else if (luaL_getmetafield(L, idxa, "__lt") ||
-             luaL_getmetafield(L, idxb, "__lt")) {
-    lua_pushvalue(L, idxb < 0 && idxb > LUA_REGISTRYINDEX ? idxb - 1 : idxb);
-    lua_pushvalue(L, idxa < 0 && idxa > LUA_REGISTRYINDEX ? idxa - 2 : idxa);
-    lua_call(L, 2, 1);
-    const int result = !lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    return result;
-  } else {
-    return luaL_error(L, "attempt to compare");
-  }
-}
-
-/* name: T
+/* name: _
  * function(a) */
-static inline int lcf1_T(lua_State *L) {
+static inline int lcf1__(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local t=v */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
+  /* local t=y */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
   assert(lua_gettop(L) == 2);
 
   /* do
    * local e=#a-1 */
-  const double lc45 = lua_objlen(L, 1);
-  lua_pushnumber(L, lc45);
+  const double lc51 = lua_objlen(L, 1);
+  lua_pushnumber(L, lc51);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
   lua_remove(L, -2);
@@ -2677,19 +2761,19 @@ static inline int lcf1_T(lua_State *L) {
   assert(lua_gettop(L) == 3);
 
   /* while e>=0 do */
-  enum { lc46 = 3 };
+  enum { lc52 = 3 };
   while (1) {
     lua_pushnumber(L, 0);
-    const int lc47 = lc_le(L, -1, 3);
+    const int lc53 = lc_le(L, -1, 3);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc47);
+    lua_pushboolean(L, lc53);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
     /* t=s(a[e+1],t) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 93);
     lua_pushnumber(L, 1);
     lc_add(L, 3, -1);
     lua_remove(L, -2);
@@ -2706,7 +2790,7 @@ static inline int lcf1_T(lua_State *L) {
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc46);
+  lua_settop(L, lc52);
   assert(lua_gettop(L) == 3);
 
   /* internal: stack cleanup on scope exit */
@@ -2728,24 +2812,24 @@ static inline int lcf1_e(lua_State *L) {
 
   /* local e=({...}) */
   lua_createtable(L, 1, 0);
-  const int lc48 = lua_gettop(L);
+  const int lc54 = lua_gettop(L);
   {
     int i;
     for (i = lc_nformalargs + 1; i <= lc_nactualargs; i++) {
       lua_pushvalue(L, i);
     }
   }
-  while ((lua_gettop(L) > lc48)) {
-    lua_rawseti(L, lc48, (0 + (lua_gettop(L) - lc48)));
+  while ((lua_gettop(L) > lc54)) {
+    lua_rawseti(L, lc54, (0 + (lua_gettop(L) - lc54)));
   }
   assert(lua_gettop(L) - lc_nextra == 1);
 
-  /* return T(e) */
-  const int lc49 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
+  /* return _(e) */
+  const int lc55 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 28);
   lua_pushvalue(L, (1 + lc_nextra));
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc49);
+  return (lua_gettop(L) - lc55);
   assert(lua_gettop(L) - lc_nextra == 1);
 }
 
@@ -2755,23 +2839,23 @@ static inline int lcf1_N(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* if not V(e) then */
-  enum { lc50 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 78);
+  /* if not B(e) then */
+  enum { lc56 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc51 = lua_toboolean(L, -1);
+  const int lc57 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc51) {
+  if (lc57) {
 
     /* return e */
     lua_pushvalue(L, 1);
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc50);
+  lua_settop(L, lc56);
   assert(lua_gettop(L) == 1);
 
   /* local e=e */
@@ -2782,10 +2866,10 @@ static inline int lcf1_N(lua_State *L) {
   lua_newtable(L);
   assert(lua_gettop(L) == 3);
 
-  /* while V(e)do */
-  enum { lc52 = 3 };
+  /* while B(e)do */
+  enum { lc58 = 3 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 78);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -2793,26 +2877,26 @@ static inline int lcf1_N(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* l(t,e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 1);
+    /* v(t,e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 1);
     lua_pushvalue(L, 3);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 3);
 
     /* e=rt(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 77);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 78);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     lua_replace(L, 2);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc52);
+  lua_settop(L, lc58);
   assert(lua_gettop(L) == 3);
 
   /* for a,t in ipairs(t)do
    * internal: local f, s, var = explist */
-  enum { lc53 = 3 };
+  enum { lc59 = 3 };
   lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
   lua_pushvalue(L, 3);
   lua_call(L, 1, 3);
@@ -2834,8 +2918,8 @@ static inline int lcf1_N(lua_State *L) {
     /* internal: local a with idx 7
      * internal: local t with idx 8 */
 
-    /* I(t,e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+    /* O(t,e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
     lua_pushvalue(L, 8);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 0);
@@ -2844,7 +2928,7 @@ static inline int lcf1_N(lua_State *L) {
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 2);
   }
-  lua_settop(L, lc53);
+  lua_settop(L, lc59);
   assert(lua_gettop(L) == 3);
 
   /* return e */
@@ -2853,31 +2937,31 @@ static inline int lcf1_N(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
-/* name: de
+/* name: me
  * function(e) */
-static inline int lcf1_de(lua_State *L) {
+static inline int lcf1_me(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return B(e)or Q(e)or J(e)or G(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 75);
+  /* return Q(e)or G(e)or P(e)or V(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 76);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 71);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 72);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
   }
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 66);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 67);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
   }
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 62);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 63);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
   }
@@ -2885,19 +2969,19 @@ static inline int lcf1_de(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: y
+/* name: w
  * function(e) */
-static inline int lcf1_y(lua_State *L) {
+static inline int lcf1_w(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return V(e)or de(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 78);
+  /* return B(e)or me(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 24);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
   }
@@ -2907,13 +2991,13 @@ static inline int lcf1_y(lua_State *L) {
 
 /* name: r
  * function(t) */
-static inline int lcf2_r(lua_State *L) {
+static inline int lcf1_r(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* I(e,t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 56);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 122);
+  /* O(e,t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 57);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 123);
   lua_pushvalue(L, 1);
   lua_call(L, 2, 0);
   assert(lua_gettop(L) == 1);
@@ -2924,23 +3008,23 @@ static inline int lcf2_r(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* while e<#a do */
-  enum { lc65 = 2 };
+  enum { lc71 = 2 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 119);
-    const double lc66 = lua_objlen(L, -1);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 120);
+    const double lc72 = lua_objlen(L, -1);
     lua_pop(L, 1);
-    lua_pushnumber(L, lc66);
-    const int lc67 = lua_lessthan(L, 2, -1);
+    lua_pushnumber(L, lc72);
+    const int lc73 = lua_lessthan(L, 2, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc67);
+    lua_pushboolean(L, lc73);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* I(a[e+1],t) */
-    lc_getupvalue(L, lua_upvalueindex(1), 2, 56);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 119);
+    /* O(a[e+1],t) */
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 57);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 120);
     lua_pushnumber(L, 1);
     lc_add(L, 2, -1);
     lua_remove(L, -2);
@@ -2957,7 +3041,7 @@ static inline int lcf2_r(lua_State *L) {
     lua_replace(L, 2);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc65);
+  lua_settop(L, lc71);
   assert(lua_gettop(L) == 2);
 
   /* internal: stack cleanup on scope exit */
@@ -2970,53 +3054,53 @@ static inline int lcf2_r(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: n
+/* name: s
  * function(t) */
-static inline int lcf2_n(lua_State *L) {
+static inline int lcf2_s(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* r(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 121);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 122);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 1);
 
-  /* if y(t) then */
-  enum { lc68 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 23);
+  /* if w(t) then */
+  enum { lc74 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc69 = lua_toboolean(L, -1);
+  const int lc75 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc69) {
+  if (lc75) {
 
-    /* l(a,e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 3, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 119);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 122);
+    /* v(a,e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 120);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 123);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 1);
 
-    /* return d(t,i,{
+    /* return n(t,i,{
      * false,
      * false,
      * },a) */
-    const int lc70 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 2, 22);
+    const int lc76 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 23);
     lua_pushvalue(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 117);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 118);
     lua_createtable(L, 2, 0);
     lua_pushboolean(L, 0);
     lua_rawseti(L, -2, 1);
     lua_pushboolean(L, 0);
     lua_rawseti(L, -2, 2);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 119);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 120);
     lua_call(L, 4, LUA_MULTRET);
-    return (lua_gettop(L) - lc70);
+    return (lua_gettop(L) - lc76);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc68);
+  lua_settop(L, lc74);
   assert(lua_gettop(L) == 1);
 
   /* return t */
@@ -3033,7 +3117,7 @@ static inline int lcf2_o(lua_State *L) {
 
   /* t[2]=true */
   lua_pushboolean(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 118);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 119);
   lua_insert(L, -2);
   lua_pushnumber(L, 2);
   lua_insert(L, -2);
@@ -3041,18 +3125,18 @@ static inline int lcf2_o(lua_State *L) {
   lua_pop(L, 1);
   assert(lua_gettop(L) == 0);
 
-  /* return n(Je) */
-  const int lc72 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 120);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 49);
+  /* return s(dt) */
+  const int lc78 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 121);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 50);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc72);
+  return (lua_gettop(L) - lc78);
   assert(lua_gettop(L) == 0);
 }
 
-/* name: u
+/* name: d
  * function() */
-static inline int lcf1_u(lua_State *L) {
+static inline int lcf2_d(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -3062,9 +3146,9 @@ static inline int lcf1_u(lua_State *L) {
 
   /* for t in pairs(h)do
    * internal: local f, s, var = explist */
-  enum { lc73 = 1 };
+  enum { lc79 = 1 };
   lua_getfield(L, LUA_ENVIRONINDEX, "pairs");
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 123);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 124);
   lua_call(L, 1, 3);
   while (1) {
 
@@ -3093,14 +3177,14 @@ static inline int lcf1_u(lua_State *L) {
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc73);
+  lua_settop(L, lc79);
   assert(lua_gettop(L) == 1);
 
   /* for t in pairs(i)do
    * internal: local f, s, var = explist */
-  enum { lc74 = 1 };
+  enum { lc80 = 1 };
   lua_getfield(L, LUA_ENVIRONINDEX, "pairs");
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 117);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 118);
   lua_call(L, 1, 3);
   while (1) {
 
@@ -3129,7 +3213,7 @@ static inline int lcf1_u(lua_State *L) {
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc74);
+  lua_settop(L, lc80);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -3138,51 +3222,51 @@ static inline int lcf1_u(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: d
+/* name: n
  * function(o,i,t,a) */
-static inline int lcf1_d(lua_State *L) {
+static inline int lcf1_n(lua_State *L) {
   lua_checkstack(L, 29);
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc54 = 5 };
-  assert((lua_gettop(L) == lc54));
+  enum { lc60 = 5 };
+  assert((lua_gettop(L) == lc60));
   lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 117);
-  lua_pushvalue(L, 3);
   lua_rawseti(L, -2, 118);
-  lua_pushvalue(L, 4);
+  lua_pushvalue(L, 3);
   lua_rawseti(L, -2, 119);
+  lua_pushvalue(L, 4);
+  lua_rawseti(L, -2, 120);
 
   /* if i==nil then */
-  enum { lc55 = 5 };
-  lc_getupvalue(L, lc54, 0, 117);
+  enum { lc61 = 5 };
+  lc_getupvalue(L, lc60, 0, 118);
   lua_pushnil(L);
-  const int lc56 = lua_equal(L, -2, -1);
+  const int lc62 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc56);
-  const int lc57 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc62);
+  const int lc63 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc57) {
+  if (lc63) {
 
     /* i={} */
     lua_newtable(L);
-    lc_setupvalue(L, lc54, 0, 117);
+    lc_setupvalue(L, lc60, 0, 118);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc55);
+  lua_settop(L, lc61);
   assert(lua_gettop(L) == 5);
 
   /* if t==nil then */
-  enum { lc58 = 5 };
-  lc_getupvalue(L, lc54, 0, 118);
+  enum { lc64 = 5 };
+  lc_getupvalue(L, lc60, 0, 119);
   lua_pushnil(L);
-  const int lc59 = lua_equal(L, -2, -1);
+  const int lc65 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc59);
-  const int lc60 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc65);
+  const int lc66 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc60) {
+  if (lc66) {
 
     /* t={
      * false,
@@ -3193,95 +3277,95 @@ static inline int lcf1_d(lua_State *L) {
     lua_rawseti(L, -2, 1);
     lua_pushboolean(L, 0);
     lua_rawseti(L, -2, 2);
-    lc_setupvalue(L, lc54, 0, 118);
+    lc_setupvalue(L, lc60, 0, 119);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc58);
+  lua_settop(L, lc64);
   assert(lua_gettop(L) == 5);
 
   /* if a==nil then */
-  enum { lc61 = 5 };
-  lc_getupvalue(L, lc54, 0, 119);
+  enum { lc67 = 5 };
+  lc_getupvalue(L, lc60, 0, 120);
   lua_pushnil(L);
-  const int lc62 = lua_equal(L, -2, -1);
+  const int lc68 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc62);
-  const int lc63 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc68);
+  const int lc69 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc63) {
+  if (lc69) {
 
     /* a={} */
     lua_newtable(L);
-    lc_setupvalue(L, lc54, 0, 119);
+    lc_setupvalue(L, lc60, 0, 120);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc61);
+  lua_settop(L, lc67);
   assert(lua_gettop(L) == 5);
 
-  /* local e,r,n */
-  lc_newclosuretable(L, lc54);
-  enum { lc64 = 6 };
-  assert((lua_gettop(L) == lc64));
+  /* local e,r,s */
+  lc_newclosuretable(L, lc60);
+  enum { lc70 = 6 };
+  assert((lua_gettop(L) == lc70));
   lua_settop(L, (lua_gettop(L) + 3));
-  lua_rawseti(L, lc64, 120);
-  lua_rawseti(L, lc64, 121);
-  lua_rawseti(L, lc64, 122);
+  lua_rawseti(L, lc70, 121);
+  lua_rawseti(L, lc70, 122);
+  lua_rawseti(L, lc70, 123);
   assert(lua_gettop(L) == 6);
 
   /* function r(t)
-   * I(e,t)
+   * O(e,t)
    * do
    * local e=0
    * while e<#a do
-   * I(a[e+1],t)
+   * O(a[e+1],t)
    * e=e+1
    * end
    * end
    * return t
    * end */
-  lua_pushvalue(L, lc64);
-  lua_pushcclosure(L, lcf2_r, 1);
-  lc_setupvalue(L, lc64, 0, 121);
+  lua_pushvalue(L, lc70);
+  lua_pushcclosure(L, lcf1_r, 1);
+  lc_setupvalue(L, lc70, 0, 122);
   assert(lua_gettop(L) == 6);
 
-  /* function n(t)
+  /* function s(t)
    * r(t)
-   * if y(t)then
-   * l(a,e)
-   * return d(t,i,{
+   * if w(t)then
+   * v(a,e)
+   * return n(t,i,{
    * false,
    * false,
    * },a)
    * end
    * return t
    * end */
-  lua_pushvalue(L, lc64);
-  lua_pushcclosure(L, lcf2_n, 1);
-  lc_setupvalue(L, lc64, 0, 120);
+  lua_pushvalue(L, lc70);
+  lua_pushcclosure(L, lcf2_s, 1);
+  lc_setupvalue(L, lc70, 0, 121);
   assert(lua_gettop(L) == 6);
 
   /* local h={} */
-  lc_newclosuretable(L, lc64);
-  enum { lc71 = 7 };
-  assert((lua_gettop(L) == lc71));
+  lc_newclosuretable(L, lc70);
+  enum { lc77 = 7 };
+  assert((lua_gettop(L) == lc77));
   lua_newtable(L);
-  lua_rawseti(L, lc71, 123);
+  lua_rawseti(L, lc77, 124);
   assert(lua_gettop(L) == 7);
 
   /* e=o */
   lua_pushvalue(L, 1);
-  lc_setupvalue(L, lc71, 1, 122);
+  lc_setupvalue(L, lc77, 1, 123);
   assert(lua_gettop(L) == 7);
 
   /* local function o()
    * t[2]=true
-   * return n(Je)
+   * return s(dt)
    * end */
-  lua_pushvalue(L, lc71);
+  lua_pushvalue(L, lc77);
   lua_pushcclosure(L, lcf2_o, 1);
   assert(lua_gettop(L) == 8);
 
-  /* local function u()
+  /* local function d()
    * local e={}
    * for t in pairs(h)do
    * e[t]=true
@@ -3291,8 +3375,8 @@ static inline int lcf1_d(lua_State *L) {
    * end
    * return e
    * end */
-  lua_pushvalue(L, lc71);
-  lua_pushcclosure(L, lcf1_u, 1);
+  lua_pushvalue(L, lc77);
+  lua_pushcclosure(L, lcf2_d, 1);
   assert(lua_gettop(L) == 9);
 
   /* do
@@ -3300,36 +3384,36 @@ static inline int lcf1_d(lua_State *L) {
   lua_pushnumber(L, 0);
   assert(lua_gettop(L) == 10);
 
-  /* while y(e)and t<32 do */
-  enum { lc75 = 10 };
+  /* while w(e)and t<32 do */
+  enum { lc81 = 10 };
   while (1) {
-    lc_getupvalue(L, lc71, 3, 23);
-    lc_getupvalue(L, lc71, 1, 122);
+    lc_getupvalue(L, lc77, 3, 24);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 1, 1);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
       lua_pushnumber(L, 32);
-      const int lc76 = lua_lessthan(L, 10, -1);
+      const int lc82 = lua_lessthan(L, 10, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc76);
+      lua_pushboolean(L, lc82);
     }
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* l(a,e) */
-    lc_getupvalue(L, lc71, 4, 1);
-    lc_getupvalue(L, lc71, 2, 119);
-    lc_getupvalue(L, lc71, 1, 122);
+    /* v(a,e) */
+    lc_getupvalue(L, lc77, 5, 1);
+    lc_getupvalue(L, lc77, 2, 120);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 10);
 
     /* e=k(e) */
-    lc_getupvalue(L, lc71, 3, 21);
-    lc_getupvalue(L, lc71, 1, 122);
+    lc_getupvalue(L, lc77, 3, 22);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 1, 1);
-    lc_setupvalue(L, lc71, 1, 122);
+    lc_setupvalue(L, lc77, 1, 123);
     assert(lua_gettop(L) == 10);
 
     /* t=t+1 */
@@ -3339,71 +3423,71 @@ static inline int lcf1_d(lua_State *L) {
     lua_replace(L, 10);
     assert(lua_gettop(L) == 10);
   }
-  lua_settop(L, lc75);
+  lua_settop(L, lc81);
   assert(lua_gettop(L) == 10);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 9);
 
-  /* while y(e)do */
-  enum { lc77 = 9 };
+  /* while w(e)do */
+  enum { lc83 = 9 };
   while (1) {
-    lc_getupvalue(L, lc71, 3, 23);
-    lc_getupvalue(L, lc71, 1, 122);
+    lc_getupvalue(L, lc77, 3, 24);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* local s=w(e) */
-    lc_getupvalue(L, lc71, 3, 2);
-    lc_getupvalue(L, lc71, 1, 122);
+    /* local r=f(e) */
+    lc_getupvalue(L, lc77, 3, 3);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 10);
 
-    /* if i[s]==true then */
-    enum { lc78 = 10 };
-    lc_getupvalue(L, lc71, 2, 117);
+    /* if i[r]==true then */
+    enum { lc84 = 10 };
+    lc_getupvalue(L, lc77, 2, 118);
     lua_pushvalue(L, 10);
     lua_gettable(L, -2);
     lua_remove(L, -2);
     lua_pushboolean(L, 1);
-    const int lc79 = lua_equal(L, -2, -1);
+    const int lc85 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc79);
-    const int lc80 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc85);
+    const int lc86 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc80) {
+    if (lc86) {
 
       /* return o() */
-      const int lc81 = lua_gettop(L);
+      const int lc87 = lua_gettop(L);
       lua_pushvalue(L, 8);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc81);
+      return (lua_gettop(L) - lc87);
       assert(lua_gettop(L) == 10);
     }
-    lua_settop(L, lc78);
+    lua_settop(L, lc84);
     assert(lua_gettop(L) == 10);
 
-    /* if h[s]==true then */
-    enum { lc82 = 10 };
-    lc_getupvalue(L, lc71, 0, 123);
+    /* if h[r]==true then */
+    enum { lc88 = 10 };
+    lc_getupvalue(L, lc77, 0, 124);
     lua_pushvalue(L, 10);
     lua_gettable(L, -2);
     lua_remove(L, -2);
     lua_pushboolean(L, 1);
-    const int lc83 = lua_equal(L, -2, -1);
+    const int lc89 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc83);
-    const int lc84 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc89);
+    const int lc90 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc84) {
+    if (lc90) {
 
       /* t[1]=true */
       lua_pushboolean(L, 1);
-      lc_getupvalue(L, lc71, 2, 118);
+      lc_getupvalue(L, lc77, 2, 119);
       lua_insert(L, -2);
       lua_pushnumber(L, 1);
       lua_insert(L, -2);
@@ -3411,79 +3495,79 @@ static inline int lcf1_d(lua_State *L) {
       lua_pop(L, 1);
       assert(lua_gettop(L) == 10);
 
-      /* if B(e) then */
-      enum { lc85 = 10 };
-      lc_getupvalue(L, lc71, 3, 75);
-      lc_getupvalue(L, lc71, 1, 122);
+      /* if Q(e) then */
+      enum { lc91 = 10 };
+      lc_getupvalue(L, lc77, 3, 76);
+      lc_getupvalue(L, lc77, 1, 123);
       lua_call(L, 1, 1);
-      const int lc86 = lua_toboolean(L, -1);
+      const int lc92 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc86) {
+      if (lc92) {
 
         /* return o() */
-        const int lc87 = lua_gettop(L);
+        const int lc93 = lua_gettop(L);
         lua_pushvalue(L, 8);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc87);
+        return (lua_gettop(L) - lc93);
         assert(lua_gettop(L) == 10);
       } else {
 
-        /* elseif J(e) then */
-        enum { lc88 = 10 };
-        lc_getupvalue(L, lc71, 3, 66);
-        lc_getupvalue(L, lc71, 1, 122);
+        /* elseif P(e) then */
+        enum { lc94 = 10 };
+        lc_getupvalue(L, lc77, 3, 67);
+        lc_getupvalue(L, lc77, 1, 123);
         lua_call(L, 1, 1);
-        const int lc89 = lua_toboolean(L, -1);
+        const int lc95 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc89) {
+        if (lc95) {
 
-          /* local a=le(e) */
-          lc_getupvalue(L, lc71, 3, 65);
-          lc_getupvalue(L, lc71, 1, 122);
+          /* local a=ue(e) */
+          lc_getupvalue(L, lc77, 3, 66);
+          lc_getupvalue(L, lc77, 1, 123);
           lua_call(L, 1, 1);
           assert(lua_gettop(L) == 11);
 
           /* local e=re(e) */
-          lc_getupvalue(L, lc71, 3, 64);
-          lc_getupvalue(L, lc71, 1, 122);
+          lc_getupvalue(L, lc77, 3, 65);
+          lc_getupvalue(L, lc77, 1, 123);
           lua_call(L, 1, 1);
           assert(lua_gettop(L) == 12);
 
-          /* local s={
-           * Ke,
-           * Ve,
-           * Ye,
-           * Re,
-           * De,
+          /* local h={
+           * He,
            * We,
-           * Me,
+           * Fe,
+           * Ye,
            * Pe,
-           * Ne,
-           * Ce,
+           * Me,
+           * De,
+           * Re,
            * Le,
+           * Ue,
+           * Ce,
            * } */
           lua_createtable(L, 11, 0);
-          lc_getupvalue(L, lc71, 3, 48);
+          lc_getupvalue(L, lc77, 3, 49);
           lua_rawseti(L, -2, 1);
-          lc_getupvalue(L, lc71, 3, 47);
+          lc_getupvalue(L, lc77, 3, 48);
           lua_rawseti(L, -2, 2);
-          lc_getupvalue(L, lc71, 3, 46);
+          lc_getupvalue(L, lc77, 3, 47);
           lua_rawseti(L, -2, 3);
-          lc_getupvalue(L, lc71, 3, 45);
+          lc_getupvalue(L, lc77, 3, 46);
           lua_rawseti(L, -2, 4);
-          lc_getupvalue(L, lc71, 3, 44);
+          lc_getupvalue(L, lc77, 3, 45);
           lua_rawseti(L, -2, 5);
-          lc_getupvalue(L, lc71, 3, 43);
+          lc_getupvalue(L, lc77, 3, 44);
           lua_rawseti(L, -2, 6);
-          lc_getupvalue(L, lc71, 3, 42);
+          lc_getupvalue(L, lc77, 3, 43);
           lua_rawseti(L, -2, 7);
-          lc_getupvalue(L, lc71, 3, 41);
+          lc_getupvalue(L, lc77, 3, 42);
           lua_rawseti(L, -2, 8);
-          lc_getupvalue(L, lc71, 3, 40);
+          lc_getupvalue(L, lc77, 3, 41);
           lua_rawseti(L, -2, 9);
-          lc_getupvalue(L, lc71, 3, 39);
+          lc_getupvalue(L, lc77, 3, 40);
           lua_rawseti(L, -2, 10);
-          lc_getupvalue(L, lc71, 3, 38);
+          lc_getupvalue(L, lc77, 3, 39);
           lua_rawseti(L, -2, 11);
           assert(lua_gettop(L) == 13);
 
@@ -3491,9 +3575,9 @@ static inline int lcf1_d(lua_State *L) {
           lua_pushboolean(L, 0);
           assert(lua_gettop(L) == 14);
 
-          /* for t,e in ipairs(s)do
+          /* for t,e in ipairs(h)do
            * internal: local f, s, var = explist */
-          enum { lc90 = 14 };
+          enum { lc96 = 14 };
           lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
           lua_pushvalue(L, 13);
           lua_call(L, 1, 3);
@@ -3515,15 +3599,15 @@ static inline int lcf1_d(lua_State *L) {
             /* internal: local t with idx 18
              * internal: local e with idx 19 */
 
-            /* if c(e,a) then */
-            enum { lc91 = 19 };
-            lc_getupvalue(L, lc71, 3, 3);
+            /* if l(e,a) then */
+            enum { lc97 = 19 };
+            lc_getupvalue(L, lc77, 3, 4);
             lua_pushvalue(L, 19);
             lua_pushvalue(L, 11);
             lua_call(L, 2, 1);
-            const int lc92 = lua_toboolean(L, -1);
+            const int lc98 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc92) {
+            if (lc98) {
 
               /* i=true */
               lua_pushboolean(L, 1);
@@ -3534,210 +3618,210 @@ static inline int lcf1_d(lua_State *L) {
               break;
               assert(lua_gettop(L) == 19);
             }
-            lua_settop(L, lc91);
+            lua_settop(L, lc97);
             assert(lua_gettop(L) == 19);
 
             /* internal: stack cleanup on scope exit */
             lua_pop(L, 2);
           }
-          lua_settop(L, lc90);
+          lua_settop(L, lc96);
           assert(lua_gettop(L) == 14);
 
           /* if i then */
-          enum { lc93 = 14 };
+          enum { lc99 = 14 };
           if (lua_toboolean(L, 14)) {
 
-            /* S(#e==1) */
-            lc_getupvalue(L, lc71, 3, 115);
-            const double lc94 = lua_objlen(L, 12);
-            lua_pushnumber(L, lc94);
+            /* H(#e==1) */
+            lc_getupvalue(L, lc77, 3, 116);
+            const double lc100 = lua_objlen(L, 12);
+            lua_pushnumber(L, lc100);
             lua_pushnumber(L, 1);
-            const int lc95 = lua_equal(L, -2, -1);
+            const int lc101 = lua_equal(L, -2, -1);
             lua_pop(L, 2);
-            lua_pushboolean(L, lc95);
+            lua_pushboolean(L, lc101);
             lua_call(L, 1, 0);
             assert(lua_gettop(L) == 14);
 
-            /* S(t[2]==false) */
-            lc_getupvalue(L, lc71, 3, 115);
-            lc_getupvalue(L, lc71, 2, 118);
+            /* H(t[2]==false) */
+            lc_getupvalue(L, lc77, 3, 116);
+            lc_getupvalue(L, lc77, 2, 119);
             lua_pushnumber(L, 2);
             lua_gettable(L, -2);
             lua_remove(L, -2);
             lua_pushboolean(L, 0);
-            const int lc96 = lua_equal(L, -2, -1);
+            const int lc102 = lua_equal(L, -2, -1);
             lua_pop(L, 2);
-            lua_pushboolean(L, lc96);
+            lua_pushboolean(L, lc102);
             lua_call(L, 1, 0);
             assert(lua_gettop(L) == 14);
 
-            /* local e=d(e[1],u(),t) */
-            lc_getupvalue(L, lc71, 3, 22);
+            /* local e=n(e[1],d(),t) */
+            lc_getupvalue(L, lc77, 3, 23);
             lua_pushnumber(L, 1);
             lua_gettable(L, 12);
             lua_pushvalue(L, 9);
             lua_call(L, 0, 1);
-            lc_getupvalue(L, lc71, 2, 118);
+            lc_getupvalue(L, lc77, 2, 119);
             lua_call(L, 3, 1);
             assert(lua_gettop(L) == 15);
 
             /* if t[2] then */
-            enum { lc97 = 15 };
-            lc_getupvalue(L, lc71, 2, 118);
+            enum { lc103 = 15 };
+            lc_getupvalue(L, lc77, 2, 119);
             lua_pushnumber(L, 2);
             lua_gettable(L, -2);
             lua_remove(L, -2);
-            const int lc98 = lua_toboolean(L, -1);
+            const int lc104 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc98) {
+            if (lc104) {
 
-              /* return n(j(a,{e})) */
-              const int lc99 = lua_gettop(L);
-              lc_getupvalue(L, lc71, 1, 120);
-              const int lc100 = lua_gettop(L);
-              lc_getupvalue(L, lc71, 3, 67);
+              /* return s(q(a,{e})) */
+              const int lc105 = lua_gettop(L);
+              lc_getupvalue(L, lc77, 1, 121);
+              const int lc106 = lua_gettop(L);
+              lc_getupvalue(L, lc77, 3, 68);
               lua_pushvalue(L, 11);
               lua_createtable(L, 1, 0);
               lua_pushvalue(L, 15);
               lua_rawseti(L, -2, 1);
               lua_call(L, 2, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc100), LUA_MULTRET);
-              return (lua_gettop(L) - lc99);
+              lua_call(L, (lua_gettop(L) - lc106), LUA_MULTRET);
+              return (lua_gettop(L) - lc105);
               assert(lua_gettop(L) == 15);
             } else {
 
               /* else
-               * return q() */
-              const int lc101 = lua_gettop(L);
-              lc_getupvalue(L, lc71, 3, 116);
+               * return j() */
+              const int lc107 = lua_gettop(L);
+              lc_getupvalue(L, lc77, 3, 117);
               lua_call(L, 0, LUA_MULTRET);
-              return (lua_gettop(L) - lc101);
+              return (lua_gettop(L) - lc107);
               assert(lua_gettop(L) == 15);
             }
-            lua_settop(L, lc97);
+            lua_settop(L, lc103);
             assert(lua_gettop(L) == 15);
           }
-          lua_settop(L, lc93);
+          lua_settop(L, lc99);
           assert(lua_gettop(L) == 14);
 
-          /* if c(a,ie) then */
-          enum { lc102 = 14 };
-          lc_getupvalue(L, lc71, 3, 3);
+          /* if l(a,te) then */
+          enum { lc108 = 14 };
+          lc_getupvalue(L, lc77, 3, 4);
           lua_pushvalue(L, 11);
-          lc_getupvalue(L, lc71, 3, 37);
+          lc_getupvalue(L, lc77, 3, 38);
           lua_call(L, 2, 1);
-          const int lc103 = lua_toboolean(L, -1);
+          const int lc109 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc103) {
+          if (lc109) {
 
             /* return o() */
-            const int lc104 = lua_gettop(L);
+            const int lc110 = lua_gettop(L);
             lua_pushvalue(L, 8);
             lua_call(L, 0, LUA_MULTRET);
-            return (lua_gettop(L) - lc104);
+            return (lua_gettop(L) - lc110);
             assert(lua_gettop(L) == 14);
           } else {
 
-            /* elseif c(a,Te) then */
-            enum { lc105 = 14 };
-            lc_getupvalue(L, lc71, 3, 3);
+            /* elseif l(a,be) then */
+            enum { lc111 = 14 };
+            lc_getupvalue(L, lc77, 3, 4);
             lua_pushvalue(L, 11);
-            lc_getupvalue(L, lc71, 3, 36);
+            lc_getupvalue(L, lc77, 3, 37);
             lua_call(L, 2, 1);
-            const int lc106 = lua_toboolean(L, -1);
+            const int lc112 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc106) {
+            if (lc112) {
 
               /* return o() */
-              const int lc107 = lua_gettop(L);
+              const int lc113 = lua_gettop(L);
               lua_pushvalue(L, 8);
               lua_call(L, 0, LUA_MULTRET);
-              return (lua_gettop(L) - lc107);
+              return (lua_gettop(L) - lc113);
               assert(lua_gettop(L) == 14);
             } else {
 
-              /* elseif c(a,ke) then */
-              enum { lc108 = 14 };
-              lc_getupvalue(L, lc71, 3, 3);
+              /* elseif l(a,ve) then */
+              enum { lc114 = 14 };
+              lc_getupvalue(L, lc77, 3, 4);
               lua_pushvalue(L, 11);
-              lc_getupvalue(L, lc71, 3, 35);
+              lc_getupvalue(L, lc77, 3, 36);
               lua_call(L, 2, 1);
-              const int lc109 = lua_toboolean(L, -1);
+              const int lc115 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc109) {
+              if (lc115) {
 
                 /* return o() */
-                const int lc110 = lua_gettop(L);
+                const int lc116 = lua_gettop(L);
                 lua_pushvalue(L, 8);
                 lua_call(L, 0, LUA_MULTRET);
-                return (lua_gettop(L) - lc110);
+                return (lua_gettop(L) - lc116);
                 assert(lua_gettop(L) == 14);
               } else {
 
-                /* elseif c(a,oe) then */
-                enum { lc111 = 14 };
-                lc_getupvalue(L, lc71, 3, 3);
+                /* elseif l(a,ee) then */
+                enum { lc117 = 14 };
+                lc_getupvalue(L, lc77, 3, 4);
                 lua_pushvalue(L, 11);
-                lc_getupvalue(L, lc71, 3, 34);
+                lc_getupvalue(L, lc77, 3, 35);
                 lua_call(L, 2, 1);
-                const int lc112 = lua_toboolean(L, -1);
+                const int lc118 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc112) {
+                if (lc118) {
 
-                  /* S(#e==3) */
-                  lc_getupvalue(L, lc71, 3, 115);
-                  const double lc113 = lua_objlen(L, 12);
-                  lua_pushnumber(L, lc113);
+                  /* H(#e==3) */
+                  lc_getupvalue(L, lc77, 3, 116);
+                  const double lc119 = lua_objlen(L, 12);
+                  lua_pushnumber(L, lc119);
                   lua_pushnumber(L, 3);
-                  const int lc114 = lua_equal(L, -2, -1);
+                  const int lc120 = lua_equal(L, -2, -1);
                   lua_pop(L, 2);
-                  lua_pushboolean(L, lc114);
+                  lua_pushboolean(L, lc120);
                   lua_call(L, 1, 0);
                   assert(lua_gettop(L) == 14);
 
-                  /* S(t[2]==false) */
-                  lc_getupvalue(L, lc71, 3, 115);
-                  lc_getupvalue(L, lc71, 2, 118);
+                  /* H(t[2]==false) */
+                  lc_getupvalue(L, lc77, 3, 116);
+                  lc_getupvalue(L, lc77, 2, 119);
                   lua_pushnumber(L, 2);
                   lua_gettable(L, -2);
                   lua_remove(L, -2);
                   lua_pushboolean(L, 0);
-                  const int lc115 = lua_equal(L, -2, -1);
+                  const int lc121 = lua_equal(L, -2, -1);
                   lua_pop(L, 2);
-                  lua_pushboolean(L, lc115);
+                  lua_pushboolean(L, lc121);
                   lua_call(L, 1, 0);
                   assert(lua_gettop(L) == 14);
 
-                  /* local a=d(e[1],u(),t) */
-                  lc_getupvalue(L, lc71, 3, 22);
+                  /* local a=n(e[1],d(),t) */
+                  lc_getupvalue(L, lc77, 3, 23);
                   lua_pushnumber(L, 1);
                   lua_gettable(L, 12);
                   lua_pushvalue(L, 9);
                   lua_call(L, 0, 1);
-                  lc_getupvalue(L, lc71, 2, 118);
+                  lc_getupvalue(L, lc77, 2, 119);
                   lua_call(L, 3, 1);
                   assert(lua_gettop(L) == 15);
 
                   /* if t[2] then */
-                  enum { lc116 = 15 };
-                  lc_getupvalue(L, lc71, 2, 118);
+                  enum { lc122 = 15 };
+                  lc_getupvalue(L, lc77, 2, 119);
                   lua_pushnumber(L, 2);
                   lua_gettable(L, -2);
                   lua_remove(L, -2);
-                  const int lc117 = lua_toboolean(L, -1);
+                  const int lc123 = lua_toboolean(L, -1);
                   lua_pop(L, 1);
-                  if (lc117) {
+                  if (lc123) {
 
-                    /* return n(j(oe,{
+                    /* return s(q(ee,{
                      * a,
                      * e[2],
                      * e[3],
                      * })) */
-                    const int lc118 = lua_gettop(L);
-                    lc_getupvalue(L, lc71, 1, 120);
-                    const int lc119 = lua_gettop(L);
-                    lc_getupvalue(L, lc71, 3, 67);
-                    lc_getupvalue(L, lc71, 3, 34);
+                    const int lc124 = lua_gettop(L);
+                    lc_getupvalue(L, lc77, 1, 121);
+                    const int lc125 = lua_gettop(L);
+                    lc_getupvalue(L, lc77, 3, 68);
+                    lc_getupvalue(L, lc77, 3, 35);
                     lua_createtable(L, 3, 0);
                     lua_pushvalue(L, 15);
                     lua_rawseti(L, -2, 1);
@@ -3748,94 +3832,94 @@ static inline int lcf1_d(lua_State *L) {
                     lua_gettable(L, 12);
                     lua_rawseti(L, -2, 3);
                     lua_call(L, 2, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc119), LUA_MULTRET);
-                    return (lua_gettop(L) - lc118);
+                    lua_call(L, (lua_gettop(L) - lc125), LUA_MULTRET);
+                    return (lua_gettop(L) - lc124);
                     assert(lua_gettop(L) == 15);
                   } else {
 
                     /* else
-                     * return q() */
-                    const int lc120 = lua_gettop(L);
-                    lc_getupvalue(L, lc71, 3, 116);
+                     * return j() */
+                    const int lc126 = lua_gettop(L);
+                    lc_getupvalue(L, lc77, 3, 117);
                     lua_call(L, 0, LUA_MULTRET);
-                    return (lua_gettop(L) - lc120);
+                    return (lua_gettop(L) - lc126);
                     assert(lua_gettop(L) == 15);
                   }
-                  lua_settop(L, lc116);
+                  lua_settop(L, lc122);
                   assert(lua_gettop(L) == 15);
                 }
-                lua_settop(L, lc111);
+                lua_settop(L, lc117);
               }
-              lua_settop(L, lc108);
+              lua_settop(L, lc114);
             }
-            lua_settop(L, lc105);
+            lua_settop(L, lc111);
           }
-          lua_settop(L, lc102);
+          lua_settop(L, lc108);
           assert(lua_gettop(L) == 14);
 
-          /* return q() */
-          const int lc121 = lua_gettop(L);
-          lc_getupvalue(L, lc71, 3, 116);
+          /* return j() */
+          const int lc127 = lua_gettop(L);
+          lc_getupvalue(L, lc77, 3, 117);
           lua_call(L, 0, LUA_MULTRET);
-          return (lua_gettop(L) - lc121);
+          return (lua_gettop(L) - lc127);
           assert(lua_gettop(L) == 14);
         } else {
 
-          /* elseif Q(e) then */
-          enum { lc122 = 10 };
-          lc_getupvalue(L, lc71, 3, 71);
-          lc_getupvalue(L, lc71, 1, 122);
+          /* elseif G(e) then */
+          enum { lc128 = 10 };
+          lc_getupvalue(L, lc77, 3, 72);
+          lc_getupvalue(L, lc77, 1, 123);
           lua_call(L, 1, 1);
-          const int lc123 = lua_toboolean(L, -1);
+          const int lc129 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc123) {
+          if (lc129) {
 
             /* return o() */
-            const int lc124 = lua_gettop(L);
+            const int lc130 = lua_gettop(L);
             lua_pushvalue(L, 8);
             lua_call(L, 0, LUA_MULTRET);
-            return (lua_gettop(L) - lc124);
+            return (lua_gettop(L) - lc130);
             assert(lua_gettop(L) == 10);
           } else {
 
-            /* elseif G(e) then */
-            enum { lc125 = 10 };
-            lc_getupvalue(L, lc71, 3, 62);
-            lc_getupvalue(L, lc71, 1, 122);
+            /* elseif V(e) then */
+            enum { lc131 = 10 };
+            lc_getupvalue(L, lc77, 3, 63);
+            lc_getupvalue(L, lc77, 1, 123);
             lua_call(L, 1, 1);
-            const int lc126 = lua_toboolean(L, -1);
+            const int lc132 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc126) {
+            if (lc132) {
 
               /* return o() */
-              const int lc127 = lua_gettop(L);
+              const int lc133 = lua_gettop(L);
               lua_pushvalue(L, 8);
               lua_call(L, 0, LUA_MULTRET);
-              return (lua_gettop(L) - lc127);
+              return (lua_gettop(L) - lc133);
               assert(lua_gettop(L) == 10);
             }
-            lua_settop(L, lc125);
+            lua_settop(L, lc131);
           }
-          lua_settop(L, lc122);
+          lua_settop(L, lc128);
         }
-        lua_settop(L, lc88);
+        lua_settop(L, lc94);
       }
-      lua_settop(L, lc85);
+      lua_settop(L, lc91);
       assert(lua_gettop(L) == 10);
 
-      /* return q() */
-      const int lc128 = lua_gettop(L);
-      lc_getupvalue(L, lc71, 3, 116);
+      /* return j() */
+      const int lc134 = lua_gettop(L);
+      lc_getupvalue(L, lc77, 3, 117);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc128);
+      return (lua_gettop(L) - lc134);
       assert(lua_gettop(L) == 10);
     }
-    lua_settop(L, lc82);
+    lua_settop(L, lc88);
     assert(lua_gettop(L) == 10);
 
-    /* h[s]=true */
+    /* h[r]=true */
     lua_pushboolean(L, 1);
-    lc_getupvalue(L, lc71, 0, 123);
+    lc_getupvalue(L, lc77, 0, 124);
     lua_insert(L, -2);
     lua_pushvalue(L, 10);
     lua_insert(L, -2);
@@ -3843,32 +3927,32 @@ static inline int lcf1_d(lua_State *L) {
     lua_pop(L, 1);
     assert(lua_gettop(L) == 10);
 
-    /* l(a,e) */
-    lc_getupvalue(L, lc71, 4, 1);
-    lc_getupvalue(L, lc71, 2, 119);
-    lc_getupvalue(L, lc71, 1, 122);
+    /* v(a,e) */
+    lc_getupvalue(L, lc77, 5, 1);
+    lc_getupvalue(L, lc77, 2, 120);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 10);
 
     /* e=k(e) */
-    lc_getupvalue(L, lc71, 3, 21);
-    lc_getupvalue(L, lc71, 1, 122);
+    lc_getupvalue(L, lc77, 3, 22);
+    lc_getupvalue(L, lc77, 1, 123);
     lua_call(L, 1, 1);
-    lc_setupvalue(L, lc71, 1, 122);
+    lc_setupvalue(L, lc77, 1, 123);
     assert(lua_gettop(L) == 10);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc77);
+  lua_settop(L, lc83);
   assert(lua_gettop(L) == 9);
 
   /* return r(e) */
-  const int lc129 = lua_gettop(L);
-  lc_getupvalue(L, lc71, 1, 121);
-  lc_getupvalue(L, lc71, 1, 122);
+  const int lc135 = lua_gettop(L);
+  lc_getupvalue(L, lc77, 1, 122);
+  lc_getupvalue(L, lc77, 1, 123);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc129);
+  return (lua_gettop(L) - lc135);
   assert(lua_gettop(L) == 9);
 }
 
@@ -3879,7 +3963,7 @@ static inline int lcf1_k(lua_State *L) {
   lua_settop(L, 1);
 
   /* local e=N(a) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 2);
@@ -3888,9 +3972,9 @@ static inline int lcf1_k(lua_State *L) {
   lua_settop(L, (lua_gettop(L) + 1));
   assert(lua_gettop(L) == 3);
 
-  /* S(not V(e)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 115);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 78);
+  /* H(not B(e)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -3898,21 +3982,21 @@ static inline int lcf1_k(lua_State *L) {
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 3);
 
-  /* if B(e) then */
-  enum { lc130 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 75);
+  /* if Q(e) then */
+  enum { lc136 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 76);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  const int lc131 = lua_toboolean(L, -1);
+  const int lc137 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc131) {
+  if (lc137) {
 
-    /* t=tt(te(e),ae(e),a) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 11);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 74);
+    /* t=it(X(e),Z(e),a) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 12);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 75);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 73);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 74);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     lua_pushvalue(L, 1);
@@ -3921,24 +4005,24 @@ static inline int lcf1_k(lua_State *L) {
     assert(lua_gettop(L) == 3);
   } else {
 
-    /* elseif Q(e) then */
-    enum { lc132 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 71);
+    /* elseif G(e) then */
+    enum { lc138 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 72);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
-    const int lc133 = lua_toboolean(L, -1);
+    const int lc139 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc133) {
+    if (lc139) {
 
-      /* t=Xe(_e(e),xe(e),qe(e),a) */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 6);
+      /* t=Xe(_e(e),Te(e),ze(e),a) */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 7);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 71);
+      lua_pushvalue(L, 2);
+      lua_call(L, 1, 1);
       lc_getupvalue(L, lua_upvalueindex(1), 0, 70);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
       lc_getupvalue(L, lua_upvalueindex(1), 0, 69);
-      lua_pushvalue(L, 2);
-      lua_call(L, 1, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 68);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
       lua_pushvalue(L, 1);
@@ -3947,21 +4031,21 @@ static inline int lcf1_k(lua_State *L) {
       assert(lua_gettop(L) == 3);
     } else {
 
-      /* elseif J(e) then */
-      enum { lc134 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 66);
+      /* elseif P(e) then */
+      enum { lc140 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 67);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
-      const int lc135 = lua_toboolean(L, -1);
+      const int lc141 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc135) {
+      if (lc141) {
 
-        /* t=Ze(le(e),re(e),a) */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 7);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 65);
+        /* t=Ze(ue(e),re(e),a) */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 8);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 66);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 64);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 65);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
         lua_pushvalue(L, 1);
@@ -3970,21 +4054,21 @@ static inline int lcf1_k(lua_State *L) {
         assert(lua_gettop(L) == 3);
       } else {
 
-        /* elseif G(e) then */
-        enum { lc136 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 62);
+        /* elseif V(e) then */
+        enum { lc142 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 63);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
-        const int lc137 = lua_toboolean(L, -1);
+        const int lc143 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc137) {
+        if (lc143) {
 
-          /* t=et(je(e),Ee(e),a) */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 8);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 61);
+          /* t=ht(je(e),xe(e),a) */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 9);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 62);
           lua_pushvalue(L, 2);
           lua_call(L, 1, 1);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 60);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 61);
           lua_pushvalue(L, 2);
           lua_call(L, 1, 1);
           lua_pushvalue(L, 1);
@@ -3999,24 +4083,24 @@ static inline int lcf1_k(lua_State *L) {
           lua_replace(L, 3);
           assert(lua_gettop(L) == 3);
         }
-        lua_settop(L, lc136);
+        lua_settop(L, lc142);
       }
-      lua_settop(L, lc134);
+      lua_settop(L, lc140);
     }
-    lua_settop(L, lc132);
+    lua_settop(L, lc138);
   }
-  lua_settop(L, lc130);
+  lua_settop(L, lc136);
   assert(lua_gettop(L) == 3);
 
   /* t=N(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
   lua_pushvalue(L, 3);
   lua_call(L, 1, 1);
   lua_replace(L, 3);
   assert(lua_gettop(L) == 3);
 
-  /* I(e,t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+  /* O(e,t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
   lua_pushvalue(L, 2);
   lua_pushvalue(L, 3);
   lua_call(L, 2, 0);
@@ -4028,36 +4112,36 @@ static inline int lcf1_k(lua_State *L) {
   assert(lua_gettop(L) == 3);
 }
 
-/* name: h
+/* name: r
  * function(e) */
-static inline int lcf1_h(lua_State *L) {
+static inline int lcf2_r(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return d(e) */
-  const int lc138 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 22);
+  /* return n(e) */
+  const int lc144 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 23);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc138);
+  return (lua_gettop(L) - lc144);
   assert(lua_gettop(L) == 1);
 }
 
-/* name: Fe
+/* name: Qe
  * function(e) */
-static inline int lcf1_Fe(lua_State *L) {
+static inline int lcf1_Qe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* while y(e)or O(e)do */
-  enum { lc139 = 1 };
+  /* while w(e)or I(e)do */
+  enum { lc145 = 1 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 23);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 24);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 101);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
     }
@@ -4066,17 +4150,17 @@ static inline int lcf1_Fe(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* e=h(ze(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 20);
-    const int lc140 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 97);
+    /* e=r(qe(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 21);
+    const int lc146 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 98);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc140), 1);
+    lua_call(L, (lua_gettop(L) - lc146), 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc139);
+  lua_settop(L, lc145);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -4085,9 +4169,9 @@ static inline int lcf1_Fe(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ge
+/* name: Ee
  * function(a,o,i) */
-static inline int lcf1_ge(lua_State *L) {
+static inline int lcf1_Ee(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -4101,21 +4185,21 @@ static inline int lcf1_ge(lua_State *L) {
   assert(lua_gettop(L) == 5);
 
   /* while e<#a do */
-  enum { lc141 = 5 };
+  enum { lc147 = 5 };
   while (1) {
-    const double lc142 = lua_objlen(L, 1);
-    lua_pushnumber(L, lc142);
-    const int lc143 = lua_lessthan(L, 5, -1);
+    const double lc148 = lua_objlen(L, 1);
+    lua_pushnumber(L, lc148);
+    const int lc149 = lua_lessthan(L, 5, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc143);
+    lua_pushboolean(L, lc149);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* if c(a[(e+0)+1],o) then */
-    enum { lc144 = 5 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+    /* if l(a[(e+0)+1],o) then */
+    enum { lc150 = 5 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 4);
     lua_pushnumber(L, 0);
     lc_add(L, 5, -1);
     lua_remove(L, -2);
@@ -4126,9 +4210,9 @@ static inline int lcf1_ge(lua_State *L) {
     lua_gettable(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 1);
-    const int lc145 = lua_toboolean(L, -1);
+    const int lc151 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc145) {
+    if (lc151) {
 
       /* t[(e+0)+1]=o */
       lua_pushvalue(L, 2);
@@ -4165,13 +4249,13 @@ static inline int lcf1_ge(lua_State *L) {
       assert(lua_gettop(L) == 5);
 
       /* while e<#a do */
-      enum { lc146 = 5 };
+      enum { lc152 = 5 };
       while (1) {
-        const double lc147 = lua_objlen(L, 1);
-        lua_pushnumber(L, lc147);
-        const int lc148 = lua_lessthan(L, 5, -1);
+        const double lc153 = lua_objlen(L, 1);
+        lua_pushnumber(L, lc153);
+        const int lc154 = lua_lessthan(L, 5, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc148);
+        lua_pushboolean(L, lc154);
         if (!(lua_toboolean(L, -1))) {
           break;
         }
@@ -4224,7 +4308,7 @@ static inline int lcf1_ge(lua_State *L) {
         lua_replace(L, 5);
         assert(lua_gettop(L) == 5);
       }
-      lua_settop(L, lc146);
+      lua_settop(L, lc152);
       assert(lua_gettop(L) == 5);
       assert(lua_gettop(L) == 5);
 
@@ -4275,7 +4359,7 @@ static inline int lcf1_ge(lua_State *L) {
       lua_settable(L, 4);
       assert(lua_gettop(L) == 5);
     }
-    lua_settop(L, lc144);
+    lua_settop(L, lc150);
     assert(lua_gettop(L) == 5);
 
     /* e=e+2 */
@@ -4285,7 +4369,7 @@ static inline int lcf1_ge(lua_State *L) {
     lua_replace(L, 5);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc141);
+  lua_settop(L, lc147);
   assert(lua_gettop(L) == 5);
 
   /* internal: stack cleanup on scope exit */
@@ -4294,8 +4378,8 @@ static inline int lcf1_ge(lua_State *L) {
 
   /* t[(#a+0)+1]=o */
   lua_pushvalue(L, 2);
-  const double lc149 = lua_objlen(L, 1);
-  lua_pushnumber(L, lc149);
+  const double lc155 = lua_objlen(L, 1);
+  lua_pushnumber(L, lc155);
   lua_pushnumber(L, 0);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
@@ -4310,8 +4394,8 @@ static inline int lcf1_ge(lua_State *L) {
 
   /* t[(#a+1)+1]=i */
   lua_pushvalue(L, 3);
-  const double lc150 = lua_objlen(L, 1);
-  lua_pushnumber(L, lc150);
+  const double lc156 = lua_objlen(L, 1);
+  lua_pushnumber(L, lc156);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
@@ -4330,9 +4414,9 @@ static inline int lcf1_ge(lua_State *L) {
   assert(lua_gettop(L) == 4);
 }
 
-/* name: Ie
- * function(t,o,a) */
-static inline int lcf1_Ie(lua_State *L) {
+/* name: Ge
+ * function(t,a,o) */
+static inline int lcf1_Ge(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -4342,21 +4426,21 @@ static inline int lcf1_Ie(lua_State *L) {
   assert(lua_gettop(L) == 4);
 
   /* while e<#t do */
-  enum { lc151 = 4 };
+  enum { lc157 = 4 };
   while (1) {
-    const double lc152 = lua_objlen(L, 1);
-    lua_pushnumber(L, lc152);
-    const int lc153 = lua_lessthan(L, 4, -1);
+    const double lc158 = lua_objlen(L, 1);
+    lua_pushnumber(L, lc158);
+    const int lc159 = lua_lessthan(L, 4, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc153);
+    lua_pushboolean(L, lc159);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* if c(t[(e+0)+1],o) then */
-    enum { lc154 = 4 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+    /* if l(t[(e+0)+1],a) then */
+    enum { lc160 = 4 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 4);
     lua_pushnumber(L, 0);
     lc_add(L, 4, -1);
     lua_remove(L, -2);
@@ -4367,9 +4451,9 @@ static inline int lcf1_Ie(lua_State *L) {
     lua_gettable(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 1);
-    const int lc155 = lua_toboolean(L, -1);
+    const int lc161 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc155) {
+    if (lc161) {
 
       /* return t[(e+1)+1] */
       lua_pushnumber(L, 1);
@@ -4383,7 +4467,7 @@ static inline int lcf1_Ie(lua_State *L) {
       return 1;
       assert(lua_gettop(L) == 4);
     }
-    lua_settop(L, lc154);
+    lua_settop(L, lc160);
     assert(lua_gettop(L) == 4);
 
     /* e=e+2 */
@@ -4393,22 +4477,22 @@ static inline int lcf1_Ie(lua_State *L) {
     lua_replace(L, 4);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc151);
+  lua_settop(L, lc157);
   assert(lua_gettop(L) == 4);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 3);
 
-  /* return a */
+  /* return o */
   lua_pushvalue(L, 3);
   return 1;
   assert(lua_gettop(L) == 3);
 }
 
-/* name: it
+/* name: et
  * function(t,a) */
-static inline int lcf1_it(lua_State *L) {
+static inline int lcf1_et(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -4418,21 +4502,21 @@ static inline int lcf1_it(lua_State *L) {
   assert(lua_gettop(L) == 3);
 
   /* while e<#t do */
-  enum { lc156 = 3 };
+  enum { lc162 = 3 };
   while (1) {
-    const double lc157 = lua_objlen(L, 1);
-    lua_pushnumber(L, lc157);
-    const int lc158 = lua_lessthan(L, 3, -1);
+    const double lc163 = lua_objlen(L, 1);
+    lua_pushnumber(L, lc163);
+    const int lc164 = lua_lessthan(L, 3, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc158);
+    lua_pushboolean(L, lc164);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* if c(t[(e+0)+1],a) then */
-    enum { lc159 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+    /* if l(t[(e+0)+1],a) then */
+    enum { lc165 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 4);
     lua_pushnumber(L, 0);
     lc_add(L, 3, -1);
     lua_remove(L, -2);
@@ -4443,9 +4527,9 @@ static inline int lcf1_it(lua_State *L) {
     lua_gettable(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 1);
-    const int lc160 = lua_toboolean(L, -1);
+    const int lc166 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc160) {
+    if (lc166) {
 
       /* return t[(e+1)+1] */
       lua_pushnumber(L, 1);
@@ -4459,7 +4543,7 @@ static inline int lcf1_it(lua_State *L) {
       return 1;
       assert(lua_gettop(L) == 3);
     }
-    lua_settop(L, lc159);
+    lua_settop(L, lc165);
     assert(lua_gettop(L) == 3);
 
     /* e=e+2 */
@@ -4469,29 +4553,29 @@ static inline int lcf1_it(lua_State *L) {
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc156);
+  lua_settop(L, lc162);
   assert(lua_gettop(L) == 3);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* return q() */
-  const int lc161 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  /* return j() */
+  const int lc167 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc161);
+  return (lua_gettop(L) - lc167);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: D
- * function(a) */
-static inline int lcf1_D(lua_State *L) {
+/* name: R
+ * function(o) */
+static inline int lcf1_R(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local o=v */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
+  /* local a=y */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
   assert(lua_gettop(L) == 2);
 
   /* do
@@ -4499,22 +4583,22 @@ static inline int lcf1_D(lua_State *L) {
   lua_pushnumber(L, 0);
   assert(lua_gettop(L) == 3);
 
-  /* while t<#a do */
-  enum { lc162 = 3 };
+  /* while t<#o do */
+  enum { lc168 = 3 };
   while (1) {
-    const double lc163 = lua_objlen(L, 1);
-    lua_pushnumber(L, lc163);
-    const int lc164 = lua_lessthan(L, 3, -1);
+    const double lc169 = lua_objlen(L, 1);
+    lua_pushnumber(L, lc169);
+    const int lc170 = lua_lessthan(L, 3, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc164);
+    lua_pushboolean(L, lc170);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* o=s(e(a[(t+0)+1],a[(t+1)+1]),o) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
+    /* a=s(e(o[(t+0)+1],o[(t+1)+1]),a) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 93);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
     lua_pushnumber(L, 0);
     lc_add(L, 3, -1);
     lua_remove(L, -2);
@@ -4544,29 +4628,29 @@ static inline int lcf1_D(lua_State *L) {
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc162);
+  lua_settop(L, lc168);
   assert(lua_gettop(L) == 3);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* return E(Be,e(o)) */
-  const int lc165 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
-  const int lc166 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 50);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
+  /* return T(Se,e(a)) */
+  const int lc171 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+  const int lc172 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 51);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc166), LUA_MULTRET);
-  return (lua_gettop(L) - lc165);
+  lua_call(L, (lua_gettop(L) - lc172), LUA_MULTRET);
+  return (lua_gettop(L) - lc171);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: He
+/* name: Ke
  * function(t,a) */
-static inline int lcf1_He(lua_State *L) {
+static inline int lcf1_Ke(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -4576,13 +4660,13 @@ static inline int lcf1_He(lua_State *L) {
   assert(lua_gettop(L) == 3);
 
   /* while e<#t do */
-  enum { lc167 = 3 };
+  enum { lc173 = 3 };
   while (1) {
-    const double lc168 = lua_objlen(L, 1);
-    lua_pushnumber(L, lc168);
-    const int lc169 = lua_lessthan(L, 3, -1);
+    const double lc174 = lua_objlen(L, 1);
+    lua_pushnumber(L, lc174);
+    const int lc175 = lua_lessthan(L, 3, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc169);
+    lua_pushboolean(L, lc175);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
@@ -4616,7 +4700,7 @@ static inline int lcf1_He(lua_State *L) {
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc167);
+  lua_settop(L, lc173);
   assert(lua_gettop(L) == 3);
 
   /* internal: stack cleanup on scope exit */
@@ -4625,32 +4709,32 @@ static inline int lcf1_He(lua_State *L) {
   return 0;
 }
 
-/* name: nt
- * function(e,d,h,u) */
-static inline int lcf1_nt(lua_State *L) {
+/* name: ot
+ * function(e,d,r,l) */
+static inline int lcf1_ot(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* local i={} */
+  /* local s={} */
   lua_newtable(L);
   assert(lua_gettop(L) == 5);
 
-  /* local s={} */
+  /* local t={} */
   lua_newtable(L);
   assert(lua_gettop(L) == 6);
 
   /* local e=N(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 7);
 
-  /* local t=true */
+  /* local n=true */
   lua_pushboolean(L, 1);
   assert(lua_gettop(L) == 8);
 
   /* while true do */
-  enum { lc170 = 8 };
+  enum { lc176 = 8 };
   while (1) {
     lua_pushboolean(L, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -4658,46 +4742,46 @@ static inline int lcf1_nt(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* if r(e) then */
-    enum { lc171 = 8 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+    /* if h(e) then */
+    enum { lc177 = 8 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
     lua_pushvalue(L, 7);
     lua_call(L, 1, 1);
-    const int lc172 = lua_toboolean(L, -1);
+    const int lc178 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc172) {
+    if (lc178) {
 
-      /* return u(s,i) */
-      const int lc173 = lua_gettop(L);
+      /* return l(t,s) */
+      const int lc179 = lua_gettop(L);
       lua_pushvalue(L, 4);
       lua_pushvalue(L, 6);
       lua_pushvalue(L, 5);
       lua_call(L, 2, LUA_MULTRET);
-      return (lua_gettop(L) - lc173);
+      return (lua_gettop(L) - lc179);
       assert(lua_gettop(L) == 8);
     } else {
 
-      /* elseif O(e) then */
-      enum { lc174 = 8 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+      /* elseif I(e) then */
+      enum { lc180 = 8 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 101);
       lua_pushvalue(L, 7);
       lua_call(L, 1, 1);
-      const int lc175 = lua_toboolean(L, -1);
+      const int lc181 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc175) {
+      if (lc181) {
 
-        /* l(s,ue(e)) */
-        lc_getupvalue(L, lua_upvalueindex(1), 1, 1);
-        const int lc176 = lua_gettop(L);
+        /* v(t,oe(e)) */
+        lc_getupvalue(L, lua_upvalueindex(1), 2, 1);
+        const int lc182 = lua_gettop(L);
         lua_pushvalue(L, 6);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
         lua_pushvalue(L, 7);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc176), 0);
+        lua_call(L, (lua_gettop(L) - lc182), 0);
         assert(lua_gettop(L) == 8);
 
-        /* e=X(e) */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 98);
+        /* e=K(e) */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
         lua_pushvalue(L, 7);
         lua_call(L, 1, 1);
         lua_replace(L, 7);
@@ -4705,52 +4789,52 @@ static inline int lcf1_nt(lua_State *L) {
       } else {
 
         /* elseif a(e) then */
-        enum { lc177 = 8 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+        enum { lc183 = 8 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
         lua_pushvalue(L, 7);
         lua_call(L, 1, 1);
-        const int lc178 = lua_toboolean(L, -1);
+        const int lc184 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc178) {
+        if (lc184) {
 
-          /* l(i,o(e)) */
-          lc_getupvalue(L, lua_upvalueindex(1), 1, 1);
-          const int lc179 = lua_gettop(L);
+          /* v(s,o(e)) */
+          lc_getupvalue(L, lua_upvalueindex(1), 2, 1);
+          const int lc185 = lua_gettop(L);
           lua_pushvalue(L, 5);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 90);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
           lua_pushvalue(L, 7);
           lua_call(L, 1, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc179), 0);
+          lua_call(L, (lua_gettop(L) - lc185), 0);
           assert(lua_gettop(L) == 8);
 
-          /* e=n(e) */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
+          /* e=i(e) */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 90);
           lua_pushvalue(L, 7);
           lua_call(L, 1, 1);
           lua_replace(L, 7);
           assert(lua_gettop(L) == 8);
         } else {
 
-          /* elseif y(e) then */
-          enum { lc180 = 8 };
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 23);
+          /* elseif w(e) then */
+          enum { lc186 = 8 };
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 24);
           lua_pushvalue(L, 7);
           lua_call(L, 1, 1);
-          const int lc181 = lua_toboolean(L, -1);
+          const int lc187 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc181) {
+          if (lc187) {
 
-            /* if t then */
-            enum { lc182 = 8 };
+            /* if n then */
+            enum { lc188 = 8 };
             if (lua_toboolean(L, 8)) {
 
-              /* t=false */
+              /* n=false */
               lua_pushboolean(L, 0);
               lua_replace(L, 8);
               assert(lua_gettop(L) == 8);
 
               /* e=k(e) */
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 21);
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 22);
               lua_pushvalue(L, 7);
               lua_call(L, 1, 1);
               lua_replace(L, 7);
@@ -4758,35 +4842,35 @@ static inline int lcf1_nt(lua_State *L) {
             } else {
 
               /* else
-               * return h() */
-              const int lc183 = lua_gettop(L);
+               * return r() */
+              const int lc189 = lua_gettop(L);
               lua_pushvalue(L, 3);
               lua_call(L, 0, LUA_MULTRET);
-              return (lua_gettop(L) - lc183);
+              return (lua_gettop(L) - lc189);
               assert(lua_gettop(L) == 8);
             }
-            lua_settop(L, lc182);
+            lua_settop(L, lc188);
             assert(lua_gettop(L) == 8);
           } else {
 
             /* else
              * return d() */
-            const int lc184 = lua_gettop(L);
+            const int lc190 = lua_gettop(L);
             lua_pushvalue(L, 2);
             lua_call(L, 0, LUA_MULTRET);
-            return (lua_gettop(L) - lc184);
+            return (lua_gettop(L) - lc190);
             assert(lua_gettop(L) == 8);
           }
-          lua_settop(L, lc180);
+          lua_settop(L, lc186);
         }
-        lua_settop(L, lc177);
+        lua_settop(L, lc183);
       }
-      lua_settop(L, lc174);
+      lua_settop(L, lc180);
     }
-    lua_settop(L, lc171);
+    lua_settop(L, lc177);
     assert(lua_gettop(L) == 8);
   }
-  lua_settop(L, lc170);
+  lua_settop(L, lc176);
   assert(lua_gettop(L) == 8);
   return 0;
 }
@@ -4797,59 +4881,59 @@ static inline int lcf2_t(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return R(z,e(M,e(ke,e(D(s),i)))) */
-  const int lc190 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 82);
-  const int lc191 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 53);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 26);
-  const int lc192 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 31);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 26);
-  const int lc193 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 35);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 14);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+  /* return L(z,e(J,e(ve,e(R(s),n)))) */
+  const int lc196 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 83);
+  const int lc197 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 54);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 27);
+  const int lc198 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 32);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 27);
+  const int lc199 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 36);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 15);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
   lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 126);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 127);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc193), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc192), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc191), LUA_MULTRET);
-  return (lua_gettop(L) - lc190);
+  lua_call(L, (lua_gettop(L) - lc199), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc198), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc197), LUA_MULTRET);
+  return (lua_gettop(L) - lc196);
   assert(lua_gettop(L) == 0);
 }
 
 /* function() */
-static inline int lcf197(lua_State *L) {
+static inline int lcf203(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
   /* return d */
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 126);
   return 1;
   assert(lua_gettop(L) == 0);
 }
 
-/* function(i,e) */
-static inline int lcf267(lua_State *L) {
+/* function(n,e) */
+static inline int lcf273(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* if#i~=0 then */
-  enum { lc198 = 2 };
-  const double lc199 = lua_objlen(L, 1);
-  lua_pushnumber(L, lc199);
+  /* if#n~=0 then */
+  enum { lc204 = 2 };
+  const double lc205 = lua_objlen(L, 1);
+  lua_pushnumber(L, lc205);
   lua_pushnumber(L, 0);
-  const int lc200 = lua_equal(L, -2, -1);
+  const int lc206 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc200);
+  lua_pushboolean(L, lc206);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc201 = lua_toboolean(L, -1);
+  const int lc207 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc201) {
+  if (lc207) {
 
     /* error("WIP") */
     lua_getfield(L, LUA_ENVIRONINDEX, "error");
@@ -4857,40 +4941,40 @@ static inline int lcf267(lua_State *L) {
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc198);
+  lua_settop(L, lc204);
   assert(lua_gettop(L) == 2);
 
-  /* if c(e[1],se) then */
-  enum { lc202 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 3);
+  /* if l(e[1],ie) then */
+  enum { lc208 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 4);
   lua_pushnumber(L, 1);
   lua_gettable(L, 2);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 30);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 31);
   lua_call(L, 2, 1);
-  const int lc203 = lua_toboolean(L, -1);
+  const int lc209 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc203) {
+  if (lc209) {
 
     /* if#e==1 then */
-    enum { lc204 = 2 };
-    const double lc205 = lua_objlen(L, 2);
-    lua_pushnumber(L, lc205);
+    enum { lc210 = 2 };
+    const double lc211 = lua_objlen(L, 2);
+    lua_pushnumber(L, lc211);
     lua_pushnumber(L, 1);
-    const int lc206 = lua_equal(L, -2, -1);
+    const int lc212 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc206);
-    const int lc207 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc212);
+    const int lc213 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc207) {
+    if (lc213) {
 
       /* return t() */
-      const int lc208 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+      const int lc214 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc208);
+      return (lua_gettop(L) - lc214);
       assert(lua_gettop(L) == 2);
     }
-    lua_settop(L, lc204);
+    lua_settop(L, lc210);
     assert(lua_gettop(L) == 2);
 
     /* local o=e[2] */
@@ -4908,20 +4992,20 @@ static inline int lcf267(lua_State *L) {
     assert(lua_gettop(L) == 5);
 
     /* while t<#e do */
-    enum { lc209 = 5 };
+    enum { lc215 = 5 };
     while (1) {
-      const double lc210 = lua_objlen(L, 2);
-      lua_pushnumber(L, lc210);
-      const int lc211 = lua_lessthan(L, 5, -1);
+      const double lc216 = lua_objlen(L, 2);
+      lua_pushnumber(L, lc216);
+      const int lc217 = lua_lessthan(L, 5, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc211);
+      lua_pushboolean(L, lc217);
       if (!(lua_toboolean(L, -1))) {
         break;
       }
       lua_pop(L, 1);
 
-      /* l(a,e[t+1]) */
-      lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
+      /* v(a,e[t+1]) */
+      lc_getupvalue(L, lua_upvalueindex(1), 5, 1);
       lua_pushvalue(L, 4);
       lua_pushnumber(L, 1);
       lc_add(L, 5, -1);
@@ -4937,119 +5021,72 @@ static inline int lcf267(lua_State *L) {
       lua_replace(L, 5);
       assert(lua_gettop(L) == 5);
     }
-    lua_settop(L, lc209);
+    lua_settop(L, lc215);
     assert(lua_gettop(L) == 5);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
     assert(lua_gettop(L) == 4);
 
-    /* return Ge(s,o,a) */
-    const int lc212 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 3, 72);
-    lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+    /* return Oe(s,o,a) */
+    const int lc218 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 3, 73);
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
     lua_pushvalue(L, 3);
     lua_pushvalue(L, 4);
     lua_call(L, 3, LUA_MULTRET);
-    return (lua_gettop(L) - lc212);
+    return (lua_gettop(L) - lc218);
     assert(lua_gettop(L) == 4);
   } else {
 
-    /* elseif c(e[1],ht) then */
-    enum { lc213 = 2 };
-    lc_getupvalue(L, lua_upvalueindex(1), 3, 3);
+    /* elseif l(e[1],nt) then */
+    enum { lc219 = 2 };
+    lc_getupvalue(L, lua_upvalueindex(1), 3, 4);
     lua_pushnumber(L, 1);
     lua_gettable(L, 2);
-    lc_getupvalue(L, lua_upvalueindex(1), 3, 29);
+    lc_getupvalue(L, lua_upvalueindex(1), 3, 30);
     lua_call(L, 2, 1);
-    const int lc214 = lua_toboolean(L, -1);
+    const int lc220 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc214) {
+    if (lc220) {
 
       /* if#e==1 then */
-      enum { lc215 = 2 };
-      const double lc216 = lua_objlen(L, 2);
-      lua_pushnumber(L, lc216);
+      enum { lc221 = 2 };
+      const double lc222 = lua_objlen(L, 2);
+      lua_pushnumber(L, lc222);
       lua_pushnumber(L, 1);
-      const int lc217 = lua_equal(L, -2, -1);
+      const int lc223 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc217);
-      const int lc218 = lua_toboolean(L, -1);
+      lua_pushboolean(L, lc223);
+      const int lc224 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc218) {
+      if (lc224) {
 
         /* return t() */
-        const int lc219 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+        const int lc225 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc219);
+        return (lua_gettop(L) - lc225);
         assert(lua_gettop(L) == 2);
       }
-      lua_settop(L, lc215);
+      lua_settop(L, lc221);
       assert(lua_gettop(L) == 2);
 
-      /* local h=h(H(s,e[2])) */
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 20);
-      const int lc220 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 76);
-      lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+      /* local n=r(S(s,e[2])) */
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 21);
+      const int lc226 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 77);
+      lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
       lua_pushnumber(L, 2);
       lua_gettable(L, 2);
       lua_call(L, 2, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc220), 1);
+      lua_call(L, (lua_gettop(L) - lc226), 1);
       assert(lua_gettop(L) == 3);
 
-      /* if not m(h) then */
-      enum { lc221 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 85);
+      /* if not c(n) then */
+      enum { lc227 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 86);
       lua_pushvalue(L, 3);
-      lua_call(L, 1, 1);
-      lua_pushboolean(L, !(lua_toboolean(L, -1)));
-      lua_remove(L, -2);
-      const int lc222 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc222) {
-
-        /* return t() */
-        const int lc223 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
-        lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc223);
-        assert(lua_gettop(L) == 3);
-      }
-      lua_settop(L, lc221);
-      assert(lua_gettop(L) == 3);
-
-      /* local i=k(_(h)) */
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 21);
-      const int lc224 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 84);
-      lua_pushvalue(L, 3);
-      lua_call(L, 1, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc224), 1);
-      assert(lua_gettop(L) == 4);
-
-      /* if y(i) then */
-      enum { lc225 = 4 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 23);
-      lua_pushvalue(L, 4);
-      lua_call(L, 1, 1);
-      const int lc226 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc226) {
-
-        /* return d */
-        lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
-        return 1;
-        assert(lua_gettop(L) == 4);
-      }
-      lua_settop(L, lc225);
-      assert(lua_gettop(L) == 4);
-
-      /* if not p(i) then */
-      enum { lc227 = 4 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 96);
-      lua_pushvalue(L, 4);
       lua_call(L, 1, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
@@ -5059,67 +5096,67 @@ static inline int lcf267(lua_State *L) {
 
         /* return t() */
         const int lc229 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
         lua_call(L, 0, LUA_MULTRET);
         return (lua_gettop(L) - lc229);
-        assert(lua_gettop(L) == 4);
+        assert(lua_gettop(L) == 3);
       }
       lua_settop(L, lc227);
-      assert(lua_gettop(L) == 4);
+      assert(lua_gettop(L) == 3);
 
-      /* if not L(i,x) then */
-      enum { lc230 = 4 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 93);
-      lua_pushvalue(L, 4);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 51);
-      lua_call(L, 2, 1);
-      lua_pushboolean(L, !(lua_toboolean(L, -1)));
-      lua_remove(L, -2);
-      const int lc231 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc231) {
-
-        /* return t() */
-        const int lc232 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
-        lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc232);
-        assert(lua_gettop(L) == 4);
-      }
-      lua_settop(L, lc230);
-      assert(lua_gettop(L) == 4);
-
-      /* local i=k(A(h)) */
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 21);
-      const int lc233 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 83);
+      /* local r=k(E(n)) */
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 22);
+      const int lc230 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 85);
       lua_pushvalue(L, 3);
       lua_call(L, 1, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc233), 1);
-      assert(lua_gettop(L) == 5);
+      lua_call(L, (lua_gettop(L) - lc230), 1);
+      assert(lua_gettop(L) == 4);
 
-      /* if y(i) then */
-      enum { lc234 = 5 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 23);
-      lua_pushvalue(L, 5);
+      /* if w(r) then */
+      enum { lc231 = 4 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 24);
+      lua_pushvalue(L, 4);
       lua_call(L, 1, 1);
-      const int lc235 = lua_toboolean(L, -1);
+      const int lc232 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc235) {
+      if (lc232) {
 
         /* return d */
-        lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
+        lc_getupvalue(L, lua_upvalueindex(1), 2, 126);
         return 1;
-        assert(lua_gettop(L) == 5);
+        assert(lua_gettop(L) == 4);
       }
-      lua_settop(L, lc234);
-      assert(lua_gettop(L) == 5);
+      lua_settop(L, lc231);
+      assert(lua_gettop(L) == 4);
 
-      /* if not a(i) then */
-      enum { lc236 = 5 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 91);
-      lua_pushvalue(L, 5);
+      /* if not p(r) then */
+      enum { lc233 = 4 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 97);
+      lua_pushvalue(L, 4);
       lua_call(L, 1, 1);
+      lua_pushboolean(L, !(lua_toboolean(L, -1)));
+      lua_remove(L, -2);
+      const int lc234 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc234) {
+
+        /* return t() */
+        const int lc235 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
+        lua_call(L, 0, LUA_MULTRET);
+        return (lua_gettop(L) - lc235);
+        assert(lua_gettop(L) == 4);
+      }
+      lua_settop(L, lc233);
+      assert(lua_gettop(L) == 4);
+
+      /* if not D(r,x) then */
+      enum { lc236 = 4 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 94);
+      lua_pushvalue(L, 4);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 52);
+      lua_call(L, 2, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
       const int lc237 = lua_toboolean(L, -1);
@@ -5128,50 +5165,44 @@ static inline int lcf267(lua_State *L) {
 
         /* return t() */
         const int lc238 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
         lua_call(L, 0, LUA_MULTRET);
         return (lua_gettop(L) - lc238);
-        assert(lua_gettop(L) == 5);
+        assert(lua_gettop(L) == 4);
       }
       lua_settop(L, lc236);
-      assert(lua_gettop(L) == 5);
+      assert(lua_gettop(L) == 4);
 
-      /* local o=o(i) */
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 90);
-      lua_pushvalue(L, 5);
-      lua_call(L, 1, 1);
-      assert(lua_gettop(L) == 6);
-
-      /* local a=k(n(i)) */
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 21);
+      /* local n=k(A(n)) */
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 22);
       const int lc239 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 89);
-      lua_pushvalue(L, 5);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 84);
+      lua_pushvalue(L, 3);
       lua_call(L, 1, LUA_MULTRET);
       lua_call(L, (lua_gettop(L) - lc239), 1);
-      assert(lua_gettop(L) == 7);
+      assert(lua_gettop(L) == 5);
 
-      /* if y(a) then */
-      enum { lc240 = 7 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 23);
-      lua_pushvalue(L, 7);
+      /* if w(n) then */
+      enum { lc240 = 5 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 24);
+      lua_pushvalue(L, 5);
       lua_call(L, 1, 1);
       const int lc241 = lua_toboolean(L, -1);
       lua_pop(L, 1);
       if (lc241) {
 
         /* return d */
-        lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
+        lc_getupvalue(L, lua_upvalueindex(1), 2, 126);
         return 1;
-        assert(lua_gettop(L) == 7);
+        assert(lua_gettop(L) == 5);
       }
       lua_settop(L, lc240);
-      assert(lua_gettop(L) == 7);
+      assert(lua_gettop(L) == 5);
 
-      /* if not r(a) then */
-      enum { lc242 = 7 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 87);
-      lua_pushvalue(L, 7);
+      /* if not a(n) then */
+      enum { lc242 = 5 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 92);
+      lua_pushvalue(L, 5);
       lua_call(L, 1, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
@@ -5181,22 +5212,75 @@ static inline int lcf267(lua_State *L) {
 
         /* return t() */
         const int lc244 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
         lua_call(L, 0, LUA_MULTRET);
         return (lua_gettop(L) - lc244);
-        assert(lua_gettop(L) == 7);
+        assert(lua_gettop(L) == 5);
       }
       lua_settop(L, lc242);
+      assert(lua_gettop(L) == 5);
+
+      /* local o=o(n) */
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 91);
+      lua_pushvalue(L, 5);
+      lua_call(L, 1, 1);
+      assert(lua_gettop(L) == 6);
+
+      /* local a=k(i(n)) */
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 22);
+      const int lc245 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 90);
+      lua_pushvalue(L, 5);
+      lua_call(L, 1, LUA_MULTRET);
+      lua_call(L, (lua_gettop(L) - lc245), 1);
       assert(lua_gettop(L) == 7);
 
-      /* local a={D(s)} */
+      /* if w(a) then */
+      enum { lc246 = 7 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 24);
+      lua_pushvalue(L, 7);
+      lua_call(L, 1, 1);
+      const int lc247 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc247) {
+
+        /* return d */
+        lc_getupvalue(L, lua_upvalueindex(1), 2, 126);
+        return 1;
+        assert(lua_gettop(L) == 7);
+      }
+      lua_settop(L, lc246);
+      assert(lua_gettop(L) == 7);
+
+      /* if not h(a) then */
+      enum { lc248 = 7 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 88);
+      lua_pushvalue(L, 7);
+      lua_call(L, 1, 1);
+      lua_pushboolean(L, !(lua_toboolean(L, -1)));
+      lua_remove(L, -2);
+      const int lc249 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc249) {
+
+        /* return t() */
+        const int lc250 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
+        lua_call(L, 0, LUA_MULTRET);
+        return (lua_gettop(L) - lc250);
+        assert(lua_gettop(L) == 7);
+      }
+      lua_settop(L, lc248);
+      assert(lua_gettop(L) == 7);
+
+      /* local a={R(s)} */
       lua_createtable(L, 1, 0);
-      const int lc245 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 14);
-      lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+      const int lc251 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 15);
+      lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
       lua_call(L, 1, LUA_MULTRET);
-      while ((lua_gettop(L) > lc245)) {
-        lua_rawseti(L, lc245, (0 + (lua_gettop(L) - lc245)));
+      while ((lua_gettop(L) > lc251)) {
+        lua_rawseti(L, lc251, (0 + (lua_gettop(L) - lc251)));
       }
       assert(lua_gettop(L) == 8);
 
@@ -5206,20 +5290,20 @@ static inline int lcf267(lua_State *L) {
       assert(lua_gettop(L) == 9);
 
       /* while t<#e do */
-      enum { lc246 = 9 };
+      enum { lc252 = 9 };
       while (1) {
-        const double lc247 = lua_objlen(L, 2);
-        lua_pushnumber(L, lc247);
-        const int lc248 = lua_lessthan(L, 9, -1);
+        const double lc253 = lua_objlen(L, 2);
+        lua_pushnumber(L, lc253);
+        const int lc254 = lua_lessthan(L, 9, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc248);
+        lua_pushboolean(L, lc254);
         if (!(lua_toboolean(L, -1))) {
           break;
         }
         lua_pop(L, 1);
 
-        /* l(a,e[t+1]) */
-        lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
+        /* v(a,e[t+1]) */
+        lc_getupvalue(L, lua_upvalueindex(1), 5, 1);
         lua_pushvalue(L, 8);
         lua_pushnumber(L, 1);
         lc_add(L, 9, -1);
@@ -5235,54 +5319,54 @@ static inline int lcf267(lua_State *L) {
         lua_replace(L, 9);
         assert(lua_gettop(L) == 9);
       }
-      lua_settop(L, lc246);
+      lua_settop(L, lc252);
       assert(lua_gettop(L) == 9);
 
       /* internal: stack cleanup on scope exit */
       lua_pop(L, 1);
       assert(lua_gettop(L) == 8);
 
-      /* return P(o,a) */
-      const int lc249 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 63);
+      /* return F(o,a) */
+      const int lc255 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 64);
       lua_pushvalue(L, 6);
       lua_pushvalue(L, 8);
       lua_call(L, 2, LUA_MULTRET);
-      return (lua_gettop(L) - lc249);
+      return (lua_gettop(L) - lc255);
       assert(lua_gettop(L) == 8);
     } else {
 
-      /* elseif c(e[1],M) then */
-      enum { lc250 = 2 };
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 3);
+      /* elseif l(e[1],J) then */
+      enum { lc256 = 2 };
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 4);
       lua_pushnumber(L, 1);
       lua_gettable(L, 2);
-      lc_getupvalue(L, lua_upvalueindex(1), 3, 31);
+      lc_getupvalue(L, lua_upvalueindex(1), 3, 32);
       lua_call(L, 2, 1);
-      const int lc251 = lua_toboolean(L, -1);
+      const int lc257 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc251) {
+      if (lc257) {
 
         /* if#e==1 then */
-        enum { lc252 = 2 };
-        const double lc253 = lua_objlen(L, 2);
-        lua_pushnumber(L, lc253);
+        enum { lc258 = 2 };
+        const double lc259 = lua_objlen(L, 2);
+        lua_pushnumber(L, lc259);
         lua_pushnumber(L, 1);
-        const int lc254 = lua_equal(L, -2, -1);
+        const int lc260 = lua_equal(L, -2, -1);
         lua_pop(L, 2);
-        lua_pushboolean(L, lc254);
-        const int lc255 = lua_toboolean(L, -1);
+        lua_pushboolean(L, lc260);
+        const int lc261 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc255) {
+        if (lc261) {
 
           /* return t() */
-          const int lc256 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 127);
+          const int lc262 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
           lua_call(L, 0, LUA_MULTRET);
-          return (lua_gettop(L) - lc256);
+          return (lua_gettop(L) - lc262);
           assert(lua_gettop(L) == 2);
         }
-        lua_settop(L, lc252);
+        lua_settop(L, lc258);
         assert(lua_gettop(L) == 2);
 
         /* local o=e[2] */
@@ -5300,30 +5384,30 @@ static inline int lcf267(lua_State *L) {
         assert(lua_gettop(L) == 5);
 
         /* while t<#e do */
-        enum { lc257 = 5 };
+        enum { lc263 = 5 };
         while (1) {
-          const double lc258 = lua_objlen(L, 2);
-          lua_pushnumber(L, lc258);
-          const int lc259 = lua_lessthan(L, 5, -1);
+          const double lc264 = lua_objlen(L, 2);
+          lua_pushnumber(L, lc264);
+          const int lc265 = lua_lessthan(L, 5, -1);
           lua_pop(L, 1);
-          lua_pushboolean(L, lc259);
+          lua_pushboolean(L, lc265);
           if (!(lua_toboolean(L, -1))) {
             break;
           }
           lua_pop(L, 1);
 
-          /* l(a,H(s,e[t+1])) */
-          lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
-          const int lc260 = lua_gettop(L);
+          /* v(a,S(s,e[t+1])) */
+          lc_getupvalue(L, lua_upvalueindex(1), 5, 1);
+          const int lc266 = lua_gettop(L);
           lua_pushvalue(L, 4);
-          lc_getupvalue(L, lua_upvalueindex(1), 3, 76);
-          lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+          lc_getupvalue(L, lua_upvalueindex(1), 3, 77);
+          lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
           lua_pushnumber(L, 1);
           lc_add(L, 5, -1);
           lua_remove(L, -2);
           lua_gettable(L, 2);
           lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc260), 0);
+          lua_call(L, (lua_gettop(L) - lc266), 0);
           assert(lua_gettop(L) == 5);
 
           /* t=t+1 */
@@ -5333,27 +5417,27 @@ static inline int lcf267(lua_State *L) {
           lua_replace(L, 5);
           assert(lua_gettop(L) == 5);
         }
-        lua_settop(L, lc257);
+        lua_settop(L, lc263);
         assert(lua_gettop(L) == 5);
 
         /* internal: stack cleanup on scope exit */
         lua_pop(L, 1);
         assert(lua_gettop(L) == 4);
 
-        /* return j(o,a) */
-        const int lc261 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 3, 67);
+        /* return q(o,a) */
+        const int lc267 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 3, 68);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 4);
         lua_call(L, 2, LUA_MULTRET);
-        return (lua_gettop(L) - lc261);
+        return (lua_gettop(L) - lc267);
         assert(lua_gettop(L) == 4);
       } else {
 
         /* else
-         * local o=H(s,e[1]) */
-        lc_getupvalue(L, lua_upvalueindex(1), 3, 76);
-        lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+         * local o=S(s,e[1]) */
+        lc_getupvalue(L, lua_upvalueindex(1), 3, 77);
+        lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
         lua_pushnumber(L, 1);
         lua_gettable(L, 2);
         lua_call(L, 2, 1);
@@ -5369,30 +5453,30 @@ static inline int lcf267(lua_State *L) {
         assert(lua_gettop(L) == 5);
 
         /* while t<#e do */
-        enum { lc262 = 5 };
+        enum { lc268 = 5 };
         while (1) {
-          const double lc263 = lua_objlen(L, 2);
-          lua_pushnumber(L, lc263);
-          const int lc264 = lua_lessthan(L, 5, -1);
+          const double lc269 = lua_objlen(L, 2);
+          lua_pushnumber(L, lc269);
+          const int lc270 = lua_lessthan(L, 5, -1);
           lua_pop(L, 1);
-          lua_pushboolean(L, lc264);
+          lua_pushboolean(L, lc270);
           if (!(lua_toboolean(L, -1))) {
             break;
           }
           lua_pop(L, 1);
 
-          /* l(a,H(s,e[t+1])) */
-          lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
-          const int lc265 = lua_gettop(L);
+          /* v(a,S(s,e[t+1])) */
+          lc_getupvalue(L, lua_upvalueindex(1), 5, 1);
+          const int lc271 = lua_gettop(L);
           lua_pushvalue(L, 4);
-          lc_getupvalue(L, lua_upvalueindex(1), 3, 76);
-          lc_getupvalue(L, lua_upvalueindex(1), 2, 124);
+          lc_getupvalue(L, lua_upvalueindex(1), 3, 77);
+          lc_getupvalue(L, lua_upvalueindex(1), 2, 125);
           lua_pushnumber(L, 1);
           lc_add(L, 5, -1);
           lua_remove(L, -2);
           lua_gettable(L, 2);
           lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc265), 0);
+          lua_call(L, (lua_gettop(L) - lc271), 0);
           assert(lua_gettop(L) == 5);
 
           /* t=t+1 */
@@ -5402,94 +5486,94 @@ static inline int lcf267(lua_State *L) {
           lua_replace(L, 5);
           assert(lua_gettop(L) == 5);
         }
-        lua_settop(L, lc262);
+        lua_settop(L, lc268);
         assert(lua_gettop(L) == 5);
 
         /* internal: stack cleanup on scope exit */
         lua_pop(L, 1);
         assert(lua_gettop(L) == 4);
 
-        /* return P(o,a) */
-        const int lc266 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 3, 63);
+        /* return F(o,a) */
+        const int lc272 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 3, 64);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 4);
         lua_call(L, 2, LUA_MULTRET);
-        return (lua_gettop(L) - lc266);
+        return (lua_gettop(L) - lc272);
         assert(lua_gettop(L) == 4);
       }
-      lua_settop(L, lc250);
+      lua_settop(L, lc256);
     }
-    lua_settop(L, lc213);
+    lua_settop(L, lc219);
   }
-  lua_settop(L, lc202);
+  lua_settop(L, lc208);
   assert(lua_gettop(L) == 2);
   return 0;
 }
 
-/* name: tt
+/* name: it
  * function(s,t,d) */
-static inline int lcf1_tt(lua_State *L) {
+static inline int lcf1_it(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc185 = 4 };
-  assert((lua_gettop(L) == lc185));
+  enum { lc191 = 4 };
+  assert((lua_gettop(L) == lc191));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 124);
-  lua_pushvalue(L, 3);
   lua_rawseti(L, -2, 125);
+  lua_pushvalue(L, 3);
+  lua_rawseti(L, -2, 126);
 
-  /* local i=k(t) */
-  lc_newclosuretable(L, lc185);
-  enum { lc186 = 5 };
-  assert((lua_gettop(L) == lc186));
-  lc_getupvalue(L, lc185, 1, 21);
+  /* local n=k(t) */
+  lc_newclosuretable(L, lc191);
+  enum { lc192 = 5 };
+  assert((lua_gettop(L) == lc192));
+  lc_getupvalue(L, lc191, 1, 22);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  lua_rawseti(L, lc186, 126);
+  lua_rawseti(L, lc192, 127);
   assert(lua_gettop(L) == 5);
 
-  /* if y(i) then */
-  enum { lc187 = 5 };
-  lc_getupvalue(L, lc186, 2, 23);
-  lc_getupvalue(L, lc186, 0, 126);
+  /* if w(n) then */
+  enum { lc193 = 5 };
+  lc_getupvalue(L, lc192, 2, 24);
+  lc_getupvalue(L, lc192, 0, 127);
   lua_call(L, 1, 1);
-  const int lc188 = lua_toboolean(L, -1);
+  const int lc194 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc188) {
+  if (lc194) {
 
     /* return d */
-    lc_getupvalue(L, lc186, 1, 125);
+    lc_getupvalue(L, lc192, 1, 126);
     return 1;
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc187);
+  lua_settop(L, lc193);
   assert(lua_gettop(L) == 5);
 
-  /* local function t()return R(z,e(M,e(ke,e(D(s),i))))end */
-  lc_newclosuretable(L, lc186);
-  enum { lc189 = 6 };
-  assert((lua_gettop(L) == lc189));
-  lua_pushvalue(L, lc189);
+  /* local function t()return L(z,e(J,e(ve,e(R(s),n))))end */
+  lc_newclosuretable(L, lc192);
+  enum { lc195 = 6 };
+  assert((lua_gettop(L) == lc195));
+  lua_pushvalue(L, lc195);
   lua_pushcclosure(L, lcf2_t, 1);
-  lua_rawseti(L, lc189, 127);
+  lua_rawseti(L, lc195, 128);
   assert(lua_gettop(L) == 6);
 
-  /* if a(i) then */
-  enum { lc194 = 6 };
-  lc_getupvalue(L, lc189, 3, 91);
-  lc_getupvalue(L, lc189, 1, 126);
+  /* if a(n) then */
+  enum { lc200 = 6 };
+  lc_getupvalue(L, lc195, 3, 92);
+  lc_getupvalue(L, lc195, 1, 127);
   lua_call(L, 1, 1);
-  const int lc195 = lua_toboolean(L, -1);
+  const int lc201 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc195) {
+  if (lc201) {
 
-    /* return nt(i,t,function()return d end,function(i,e)
-     * if#i~=0 then
+    /* return ot(n,t,function()return d end,function(n,e)
+     * if#n~=0 then
      * error("WIP")
      * end
-     * if c(e[1],se)then
+     * if l(e[1],ie)then
      * if#e==1 then
      * return t()
      * end
@@ -5498,54 +5582,54 @@ static inline int lcf1_tt(lua_State *L) {
      * do
      * local t=2
      * while t<#e do
-     * l(a,e[t+1])
+     * v(a,e[t+1])
      * t=t+1
      * end
      * end
-     * return Ge(s,o,a)
-     * elseif c(e[1],ht)then
+     * return Oe(s,o,a)
+     * elseif l(e[1],nt)then
      * if#e==1 then
      * return t()
      * end
-     * local h=h(H(s,e[2]))
-     * if not m(h)then
+     * local n=r(S(s,e[2]))
+     * if not c(n)then
      * return t()
      * end
-     * local i=k(_(h))
-     * if y(i)then
+     * local r=k(E(n))
+     * if w(r)then
      * return d
      * end
-     * if not p(i)then
+     * if not p(r)then
      * return t()
      * end
-     * if not L(i,x)then
+     * if not D(r,x)then
      * return t()
      * end
-     * local i=k(A(h))
-     * if y(i)then
+     * local n=k(A(n))
+     * if w(n)then
      * return d
      * end
-     * if not a(i)then
+     * if not a(n)then
      * return t()
      * end
-     * local o=o(i)
-     * local a=k(n(i))
-     * if y(a)then
+     * local o=o(n)
+     * local a=k(i(n))
+     * if w(a)then
      * return d
      * end
-     * if not r(a)then
+     * if not h(a)then
      * return t()
      * end
-     * local a={D(s)}
+     * local a={R(s)}
      * do
      * local t=2
      * while t<#e do
-     * l(a,e[t+1])
+     * v(a,e[t+1])
      * t=t+1
      * end
      * end
-     * return P(o,a)
-     * elseif c(e[1],M)then
+     * return F(o,a)
+     * elseif l(e[1],J)then
      * if#e==1 then
      * return t()
      * end
@@ -5554,120 +5638,120 @@ static inline int lcf1_tt(lua_State *L) {
      * do
      * local t=2
      * while t<#e do
-     * l(a,H(s,e[t+1]))
+     * v(a,S(s,e[t+1]))
      * t=t+1
      * end
      * end
-     * return j(o,a)
+     * return q(o,a)
      * else
-     * local o=H(s,e[1])
+     * local o=S(s,e[1])
      * local a={}
      * do
      * local t=1
      * while t<#e do
-     * l(a,H(s,e[t+1]))
+     * v(a,S(s,e[t+1]))
      * t=t+1
      * end
      * end
-     * return P(o,a)
+     * return F(o,a)
      * end
      * end) */
-    const int lc196 = lua_gettop(L);
-    lc_getupvalue(L, lc189, 3, 12);
-    lc_getupvalue(L, lc189, 1, 126);
-    lc_getupvalue(L, lc189, 0, 127);
-    lua_pushvalue(L, lc189);
-    lua_pushcclosure(L, lcf197, 1);
-    lua_pushvalue(L, lc189);
-    lua_pushcclosure(L, lcf267, 1);
+    const int lc202 = lua_gettop(L);
+    lc_getupvalue(L, lc195, 3, 13);
+    lc_getupvalue(L, lc195, 1, 127);
+    lc_getupvalue(L, lc195, 0, 128);
+    lua_pushvalue(L, lc195);
+    lua_pushcclosure(L, lcf203, 1);
+    lua_pushvalue(L, lc195);
+    lua_pushcclosure(L, lcf273, 1);
     lua_call(L, 4, LUA_MULTRET);
-    return (lua_gettop(L) - lc196);
+    return (lua_gettop(L) - lc202);
     assert(lua_gettop(L) == 6);
   } else {
 
-    /* elseif r(i) then */
-    enum { lc268 = 6 };
-    lc_getupvalue(L, lc189, 3, 87);
-    lc_getupvalue(L, lc189, 1, 126);
+    /* elseif h(n) then */
+    enum { lc274 = 6 };
+    lc_getupvalue(L, lc195, 3, 88);
+    lc_getupvalue(L, lc195, 1, 127);
     lua_call(L, 1, 1);
-    const int lc269 = lua_toboolean(L, -1);
+    const int lc275 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc269) {
+    if (lc275) {
 
-      /* return i */
-      lc_getupvalue(L, lc189, 1, 126);
+      /* return n */
+      lc_getupvalue(L, lc195, 1, 127);
       return 1;
       assert(lua_gettop(L) == 6);
     } else {
 
-      /* elseif u(i) then */
-      enum { lc270 = 6 };
-      lc_getupvalue(L, lc189, 3, 10);
-      lc_getupvalue(L, lc189, 1, 126);
+      /* elseif u(n) then */
+      enum { lc276 = 6 };
+      lc_getupvalue(L, lc195, 3, 11);
+      lc_getupvalue(L, lc195, 1, 127);
       lua_call(L, 1, 1);
-      const int lc271 = lua_toboolean(L, -1);
+      const int lc277 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc271) {
+      if (lc277) {
 
-        /* return Ie(s,i,t()) */
-        const int lc272 = lua_gettop(L);
-        lc_getupvalue(L, lc189, 3, 16);
-        const int lc273 = lua_gettop(L);
-        lc_getupvalue(L, lc189, 2, 124);
-        lc_getupvalue(L, lc189, 1, 126);
-        lc_getupvalue(L, lc189, 0, 127);
+        /* return Ge(s,n,t()) */
+        const int lc278 = lua_gettop(L);
+        lc_getupvalue(L, lc195, 3, 17);
+        const int lc279 = lua_gettop(L);
+        lc_getupvalue(L, lc195, 2, 125);
+        lc_getupvalue(L, lc195, 1, 127);
+        lc_getupvalue(L, lc195, 0, 128);
         lua_call(L, 0, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc273), LUA_MULTRET);
-        return (lua_gettop(L) - lc272);
+        lua_call(L, (lua_gettop(L) - lc279), LUA_MULTRET);
+        return (lua_gettop(L) - lc278);
         assert(lua_gettop(L) == 6);
       } else {
 
-        /* elseif g(i) then */
-        enum { lc274 = 6 };
-        lc_getupvalue(L, lc189, 3, 81);
-        lc_getupvalue(L, lc189, 1, 126);
+        /* elseif g(n) then */
+        enum { lc280 = 6 };
+        lc_getupvalue(L, lc195, 3, 82);
+        lc_getupvalue(L, lc195, 1, 127);
         lua_call(L, 1, 1);
-        const int lc275 = lua_toboolean(L, -1);
+        const int lc281 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc275) {
+        if (lc281) {
 
           /* return t() */
-          const int lc276 = lua_gettop(L);
-          lc_getupvalue(L, lc189, 0, 127);
+          const int lc282 = lua_gettop(L);
+          lc_getupvalue(L, lc195, 0, 128);
           lua_call(L, 0, LUA_MULTRET);
-          return (lua_gettop(L) - lc276);
+          return (lua_gettop(L) - lc282);
           assert(lua_gettop(L) == 6);
         }
-        lua_settop(L, lc274);
+        lua_settop(L, lc280);
       }
-      lua_settop(L, lc270);
+      lua_settop(L, lc276);
     }
-    lua_settop(L, lc268);
+    lua_settop(L, lc274);
   }
-  lua_settop(L, lc194);
+  lua_settop(L, lc200);
   assert(lua_gettop(L) == 6);
 
-  /* return q() */
-  const int lc277 = lua_gettop(L);
-  lc_getupvalue(L, lc189, 3, 116);
+  /* return j() */
+  const int lc283 = lua_gettop(L);
+  lc_getupvalue(L, lc195, 3, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc277);
+  return (lua_gettop(L) - lc283);
   assert(lua_gettop(L) == 6);
 }
 
 /* name: u
  * function(e) */
-static inline int lcf2_u(lua_State *L) {
+static inline int lcf1_u(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return p(e)or m(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
+  /* return p(e)or c(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 97);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
   }
@@ -5677,235 +5761,235 @@ static inline int lcf2_u(lua_State *L) {
 
 /* name: d
  * function() */
-static inline int lcf2_d(lua_State *L) {
+static inline int lcf3_d(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return R(z,e(M,e(Te,e(i,T(l))))) */
-  const int lc279 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 82);
-  const int lc280 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 53);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc281 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 31);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc282 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 36);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc283 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 128);
+  /* return L(z,e(J,e(be,e(l,_(n))))) */
+  const int lc285 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 83);
+  const int lc286 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 54);
   lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc287 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 32);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc288 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 37);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc289 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 129);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 28);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 130);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc283), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc282), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc281), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc280), LUA_MULTRET);
-  return (lua_gettop(L) - lc279);
+  lua_call(L, (lua_gettop(L) - lc289), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc288), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc287), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc286), LUA_MULTRET);
+  return (lua_gettop(L) - lc285);
   assert(lua_gettop(L) == 0);
 }
 
-/* name: et
- * function(i,l,c) */
-static inline int lcf1_et(lua_State *L) {
+/* name: ht
+ * function(l,n,m) */
+static inline int lcf1_ht(lua_State *L) {
   lua_checkstack(L, 24);
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc278 = 4 };
-  assert((lua_gettop(L) == lc278));
+  enum { lc284 = 4 };
+  assert((lua_gettop(L) == lc284));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 128);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 129);
+  lua_pushvalue(L, 2);
+  lua_rawseti(L, -2, 130);
 
-  /* local function d()return R(z,e(M,e(Te,e(i,T(l)))))end */
-  lua_pushvalue(L, lc278);
-  lua_pushcclosure(L, lcf2_d, 1);
+  /* local function d()return L(z,e(J,e(be,e(l,_(n)))))end */
+  lua_pushvalue(L, lc284);
+  lua_pushcclosure(L, lcf3_d, 1);
   assert(lua_gettop(L) == 5);
 
-  /* i=k(i) */
-  lc_getupvalue(L, lc278, 1, 21);
-  lc_getupvalue(L, lc278, 0, 128);
+  /* l=k(l) */
+  lc_getupvalue(L, lc284, 1, 22);
+  lc_getupvalue(L, lc284, 0, 129);
   lua_call(L, 1, 1);
-  lc_setupvalue(L, lc278, 0, 128);
+  lc_setupvalue(L, lc284, 0, 129);
   assert(lua_gettop(L) == 5);
 
-  /* if y(i) then */
-  enum { lc284 = 5 };
-  lc_getupvalue(L, lc278, 1, 23);
-  lc_getupvalue(L, lc278, 0, 128);
+  /* if w(l) then */
+  enum { lc290 = 5 };
+  lc_getupvalue(L, lc284, 1, 24);
+  lc_getupvalue(L, lc284, 0, 129);
   lua_call(L, 1, 1);
-  const int lc285 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc285) {
-
-    /* return c */
-    lua_pushvalue(L, 3);
-    return 1;
-    assert(lua_gettop(L) == 5);
-  }
-  lua_settop(L, lc284);
-  assert(lua_gettop(L) == 5);
-
-  /* if not m(i) then */
-  enum { lc286 = 5 };
-  lc_getupvalue(L, lc278, 1, 85);
-  lc_getupvalue(L, lc278, 0, 128);
-  lua_call(L, 1, 1);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc287 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc287) {
-
-    /* return d() */
-    const int lc288 = lua_gettop(L);
-    lua_pushvalue(L, 5);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc288);
-    assert(lua_gettop(L) == 5);
-  }
-  lua_settop(L, lc286);
-  assert(lua_gettop(L) == 5);
-
-  /* local e=h(_(i)) */
-  lc_getupvalue(L, lc278, 1, 20);
-  const int lc289 = lua_gettop(L);
-  lc_getupvalue(L, lc278, 1, 84);
-  lc_getupvalue(L, lc278, 0, 128);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc289), 1);
-  assert(lua_gettop(L) == 6);
-
-  /* if not(p(e)and L(e,t)) then */
-  enum { lc290 = 6 };
-  lc_getupvalue(L, lc278, 1, 96);
-  lua_pushvalue(L, 6);
-  lua_call(L, 1, 1);
-  if (lua_toboolean(L, -1)) {
-    lua_pop(L, 1);
-    lc_getupvalue(L, lc278, 1, 93);
-    lua_pushvalue(L, 6);
-    lc_getupvalue(L, lc278, 1, 52);
-    lua_call(L, 2, 1);
-  }
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
   const int lc291 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc291) {
 
-    /* return d() */
-    const int lc292 = lua_gettop(L);
-    lua_pushvalue(L, 5);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc292);
-    assert(lua_gettop(L) == 6);
+    /* return m */
+    lua_pushvalue(L, 3);
+    return 1;
+    assert(lua_gettop(L) == 5);
   }
   lua_settop(L, lc290);
+  assert(lua_gettop(L) == 5);
+
+  /* if not c(l) then */
+  enum { lc292 = 5 };
+  lc_getupvalue(L, lc284, 1, 86);
+  lc_getupvalue(L, lc284, 0, 129);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc293 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc293) {
+
+    /* return d() */
+    const int lc294 = lua_gettop(L);
+    lua_pushvalue(L, 5);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc294);
+    assert(lua_gettop(L) == 5);
+  }
+  lua_settop(L, lc292);
+  assert(lua_gettop(L) == 5);
+
+  /* local e=r(E(l)) */
+  lc_getupvalue(L, lc284, 1, 21);
+  const int lc295 = lua_gettop(L);
+  lc_getupvalue(L, lc284, 1, 85);
+  lc_getupvalue(L, lc284, 0, 129);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc295), 1);
   assert(lua_gettop(L) == 6);
 
-  /* local t=h(A(i)) */
-  lc_getupvalue(L, lc278, 1, 20);
-  const int lc293 = lua_gettop(L);
-  lc_getupvalue(L, lc278, 1, 83);
-  lc_getupvalue(L, lc278, 0, 128);
+  /* if not(p(e)and D(e,t)) then */
+  enum { lc296 = 6 };
+  lc_getupvalue(L, lc284, 1, 97);
+  lua_pushvalue(L, 6);
+  lua_call(L, 1, 1);
+  if (lua_toboolean(L, -1)) {
+    lua_pop(L, 1);
+    lc_getupvalue(L, lc284, 1, 94);
+    lua_pushvalue(L, 6);
+    lc_getupvalue(L, lc284, 1, 53);
+    lua_call(L, 2, 1);
+  }
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc297 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc297) {
+
+    /* return d() */
+    const int lc298 = lua_gettop(L);
+    lua_pushvalue(L, 5);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc298);
+    assert(lua_gettop(L) == 6);
+  }
+  lua_settop(L, lc296);
+  assert(lua_gettop(L) == 6);
+
+  /* local t=r(A(l)) */
+  lc_getupvalue(L, lc284, 1, 21);
+  const int lc299 = lua_gettop(L);
+  lc_getupvalue(L, lc284, 1, 84);
+  lc_getupvalue(L, lc284, 0, 129);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc293), 1);
+  lua_call(L, (lua_gettop(L) - lc299), 1);
   assert(lua_gettop(L) == 7);
 
   /* if not a(t) then */
-  enum { lc294 = 7 };
-  lc_getupvalue(L, lc278, 1, 91);
+  enum { lc300 = 7 };
+  lc_getupvalue(L, lc284, 1, 92);
   lua_pushvalue(L, 7);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc295 = lua_toboolean(L, -1);
+  const int lc301 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc295) {
+  if (lc301) {
 
     /* return d() */
-    const int lc296 = lua_gettop(L);
+    const int lc302 = lua_gettop(L);
     lua_pushvalue(L, 5);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc296);
+    return (lua_gettop(L) - lc302);
     assert(lua_gettop(L) == 7);
   }
-  lua_settop(L, lc294);
+  lua_settop(L, lc300);
   assert(lua_gettop(L) == 7);
 
-  /* local e=F(o(t)) */
-  lc_getupvalue(L, lc278, 1, 59);
-  const int lc297 = lua_gettop(L);
-  lc_getupvalue(L, lc278, 1, 90);
+  /* local e=W(o(t)) */
+  lc_getupvalue(L, lc284, 1, 60);
+  const int lc303 = lua_gettop(L);
+  lc_getupvalue(L, lc284, 1, 91);
   lua_pushvalue(L, 7);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc297), 1);
+  lua_call(L, (lua_gettop(L) - lc303), 1);
   assert(lua_gettop(L) == 8);
 
-  /* local t=h(n(t)) */
-  lc_getupvalue(L, lc278, 1, 20);
-  const int lc298 = lua_gettop(L);
-  lc_getupvalue(L, lc278, 1, 89);
+  /* local t=r(i(t)) */
+  lc_getupvalue(L, lc284, 1, 21);
+  const int lc304 = lua_gettop(L);
+  lc_getupvalue(L, lc284, 1, 90);
   lua_pushvalue(L, 7);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc298), 1);
+  lua_call(L, (lua_gettop(L) - lc304), 1);
   assert(lua_gettop(L) == 9);
 
-  /* if not(a(t)and r(h(n(t)))) then */
-  enum { lc299 = 9 };
-  lc_getupvalue(L, lc278, 1, 91);
+  /* if not(a(t)and h(r(i(t)))) then */
+  enum { lc305 = 9 };
+  lc_getupvalue(L, lc284, 1, 92);
   lua_pushvalue(L, 9);
   lua_call(L, 1, 1);
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lc278, 1, 87);
-    const int lc300 = lua_gettop(L);
-    lc_getupvalue(L, lc278, 1, 20);
-    const int lc301 = lua_gettop(L);
-    lc_getupvalue(L, lc278, 1, 89);
+    lc_getupvalue(L, lc284, 1, 88);
+    const int lc306 = lua_gettop(L);
+    lc_getupvalue(L, lc284, 1, 21);
+    const int lc307 = lua_gettop(L);
+    lc_getupvalue(L, lc284, 1, 90);
     lua_pushvalue(L, 9);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc301), LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc300), 1);
+    lua_call(L, (lua_gettop(L) - lc307), LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc306), 1);
   }
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc302 = lua_toboolean(L, -1);
+  const int lc308 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc302) {
+  if (lc308) {
 
     /* return d() */
-    const int lc303 = lua_gettop(L);
+    const int lc309 = lua_gettop(L);
     lua_pushvalue(L, 5);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc303);
+    return (lua_gettop(L) - lc309);
     assert(lua_gettop(L) == 9);
   }
-  lua_settop(L, lc299);
+  lua_settop(L, lc305);
   assert(lua_gettop(L) == 9);
 
-  /* local h=o(t) */
-  lc_getupvalue(L, lc278, 1, 90);
+  /* local l=o(t) */
+  lc_getupvalue(L, lc284, 1, 91);
   lua_pushvalue(L, 9);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 10);
 
-  /* local i=Se */
-  lc_getupvalue(L, lc278, 1, 18);
+  /* local r=Be */
+  lc_getupvalue(L, lc284, 1, 19);
   assert(lua_gettop(L) == 11);
 
   /* local t=0 */
   lua_pushnumber(L, 0);
   assert(lua_gettop(L) == 12);
 
-  /* while not r(e)do */
-  enum { lc304 = 12 };
+  /* while not h(e)do */
+  enum { lc310 = 12 };
   while (1) {
-    lc_getupvalue(L, lc278, 1, 87);
+    lc_getupvalue(L, lc284, 1, 88);
     lua_pushvalue(L, 8);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -5916,24 +6000,24 @@ static inline int lcf1_et(lua_State *L) {
     lua_pop(L, 1);
 
     /* if u(e) then */
-    enum { lc305 = 12 };
-    lc_getupvalue(L, lc278, 1, 10);
+    enum { lc311 = 12 };
+    lc_getupvalue(L, lc284, 1, 11);
     lua_pushvalue(L, 8);
     lua_call(L, 1, 1);
-    const int lc306 = lua_toboolean(L, -1);
+    const int lc312 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc306) {
+    if (lc312) {
 
-      /* local a=v */
-      lc_getupvalue(L, lc278, 1, 88);
+      /* local a=y */
+      lc_getupvalue(L, lc284, 1, 89);
       assert(lua_gettop(L) == 13);
 
       /* do
-       * local e=#l-1 */
-      lc_getupvalue(L, lc278, 0, 129);
-      const double lc307 = lua_objlen(L, -1);
+       * local e=#n-1 */
+      lc_getupvalue(L, lc284, 0, 130);
+      const double lc313 = lua_objlen(L, -1);
       lua_pop(L, 1);
-      lua_pushnumber(L, lc307);
+      lua_pushnumber(L, lc313);
       lua_pushnumber(L, 1);
       lc_sub(L, -2, -1);
       lua_remove(L, -2);
@@ -5941,7 +6025,7 @@ static inline int lcf1_et(lua_State *L) {
       assert(lua_gettop(L) == 14);
 
       /* while e>=t do */
-      enum { lc308 = 14 };
+      enum { lc314 = 14 };
       while (1) {
         lua_pushboolean(L, lc_le(L, 12, 14));
         if (!(lua_toboolean(L, -1))) {
@@ -5949,9 +6033,9 @@ static inline int lcf1_et(lua_State *L) {
         }
         lua_pop(L, 1);
 
-        /* a=s(l[e+1],a) */
-        lc_getupvalue(L, lc278, 1, 92);
-        lc_getupvalue(L, lc278, 0, 129);
+        /* a=s(n[e+1],a) */
+        lc_getupvalue(L, lc284, 1, 93);
+        lc_getupvalue(L, lc284, 0, 130);
         lua_pushnumber(L, 1);
         lc_add(L, 14, -1);
         lua_remove(L, -2);
@@ -5969,15 +6053,15 @@ static inline int lcf1_et(lua_State *L) {
         lua_replace(L, 14);
         assert(lua_gettop(L) == 14);
       }
-      lua_settop(L, lc308);
+      lua_settop(L, lc314);
       assert(lua_gettop(L) == 14);
 
       /* internal: stack cleanup on scope exit */
       lua_pop(L, 1);
       assert(lua_gettop(L) == 13);
 
-      /* i=ge(i,e,a) */
-      lc_getupvalue(L, lc278, 1, 17);
+      /* r=Ee(r,e,a) */
+      lc_getupvalue(L, lc284, 1, 18);
       lua_pushvalue(L, 11);
       lua_pushvalue(L, 8);
       lua_pushvalue(L, 13);
@@ -5985,44 +6069,44 @@ static inline int lcf1_et(lua_State *L) {
       lua_replace(L, 11);
       assert(lua_gettop(L) == 13);
 
-      /* t=#l */
-      lc_getupvalue(L, lc278, 0, 129);
-      const double lc309 = lua_objlen(L, -1);
+      /* t=#n */
+      lc_getupvalue(L, lc284, 0, 130);
+      const double lc315 = lua_objlen(L, -1);
       lua_pop(L, 1);
-      lua_pushnumber(L, lc309);
+      lua_pushnumber(L, lc315);
       lua_replace(L, 12);
       assert(lua_gettop(L) == 13);
 
-      /* e=v */
-      lc_getupvalue(L, lc278, 1, 88);
+      /* e=y */
+      lc_getupvalue(L, lc284, 1, 89);
       lua_replace(L, 8);
       assert(lua_gettop(L) == 13);
     } else {
 
       /* elseif a(e) then */
-      enum { lc310 = 12 };
-      lc_getupvalue(L, lc278, 1, 91);
+      enum { lc316 = 12 };
+      lc_getupvalue(L, lc284, 1, 92);
       lua_pushvalue(L, 8);
       lua_call(L, 1, 1);
-      const int lc311 = lua_toboolean(L, -1);
+      const int lc317 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc311) {
+      if (lc317) {
 
-        /* if t<#l then */
-        enum { lc312 = 12 };
-        lc_getupvalue(L, lc278, 0, 129);
-        const double lc313 = lua_objlen(L, -1);
+        /* if t<#n then */
+        enum { lc318 = 12 };
+        lc_getupvalue(L, lc284, 0, 130);
+        const double lc319 = lua_objlen(L, -1);
         lua_pop(L, 1);
-        lua_pushnumber(L, lc313);
-        const int lc314 = lua_lessthan(L, 12, -1);
+        lua_pushnumber(L, lc319);
+        const int lc320 = lua_lessthan(L, 12, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc314);
-        const int lc315 = lua_toboolean(L, -1);
+        lua_pushboolean(L, lc320);
+        const int lc321 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc315) {
+        if (lc321) {
 
-          /* local a=l[t+1] */
-          lc_getupvalue(L, lc278, 0, 129);
+          /* local a=n[t+1] */
+          lc_getupvalue(L, lc284, 0, 130);
           lua_pushnumber(L, 1);
           lc_add(L, 12, -1);
           lua_remove(L, -2);
@@ -6037,10 +6121,10 @@ static inline int lcf1_et(lua_State *L) {
           lua_replace(L, 12);
           assert(lua_gettop(L) == 13);
 
-          /* i=ge(i,o(e),a) */
-          lc_getupvalue(L, lc278, 1, 17);
+          /* r=Ee(r,o(e),a) */
+          lc_getupvalue(L, lc284, 1, 18);
           lua_pushvalue(L, 11);
-          lc_getupvalue(L, lc278, 1, 90);
+          lc_getupvalue(L, lc284, 1, 91);
           lua_pushvalue(L, 8);
           lua_call(L, 1, 1);
           lua_pushvalue(L, 13);
@@ -6048,8 +6132,8 @@ static inline int lcf1_et(lua_State *L) {
           lua_replace(L, 11);
           assert(lua_gettop(L) == 13);
 
-          /* e=n(e) */
-          lc_getupvalue(L, lc278, 1, 89);
+          /* e=i(e) */
+          lc_getupvalue(L, lc284, 1, 90);
           lua_pushvalue(L, 8);
           lua_call(L, 1, 1);
           lua_replace(L, 8);
@@ -6058,64 +6142,64 @@ static inline int lcf1_et(lua_State *L) {
 
           /* else
            * return d() */
-          const int lc316 = lua_gettop(L);
+          const int lc322 = lua_gettop(L);
           lua_pushvalue(L, 5);
           lua_call(L, 0, LUA_MULTRET);
-          return (lua_gettop(L) - lc316);
+          return (lua_gettop(L) - lc322);
           assert(lua_gettop(L) == 12);
         }
-        lua_settop(L, lc312);
+        lua_settop(L, lc318);
         assert(lua_gettop(L) == 12);
       } else {
 
         /* else
          * return d() */
-        const int lc317 = lua_gettop(L);
+        const int lc323 = lua_gettop(L);
         lua_pushvalue(L, 5);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc317);
+        return (lua_gettop(L) - lc323);
         assert(lua_gettop(L) == 12);
       }
-      lua_settop(L, lc310);
+      lua_settop(L, lc316);
     }
-    lua_settop(L, lc305);
+    lua_settop(L, lc311);
     assert(lua_gettop(L) == 12);
   }
-  lua_settop(L, lc304);
+  lua_settop(L, lc310);
   assert(lua_gettop(L) == 12);
 
-  /* if#l~=t then */
-  enum { lc318 = 12 };
-  lc_getupvalue(L, lc278, 0, 129);
-  const double lc319 = lua_objlen(L, -1);
+  /* if#n~=t then */
+  enum { lc324 = 12 };
+  lc_getupvalue(L, lc284, 0, 130);
+  const double lc325 = lua_objlen(L, -1);
   lua_pop(L, 1);
-  lua_pushnumber(L, lc319);
-  const int lc320 = lua_equal(L, -1, 12);
+  lua_pushnumber(L, lc325);
+  const int lc326 = lua_equal(L, -1, 12);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc320);
+  lua_pushboolean(L, lc326);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc321 = lua_toboolean(L, -1);
+  const int lc327 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc321) {
+  if (lc327) {
 
     /* return d() */
-    const int lc322 = lua_gettop(L);
+    const int lc328 = lua_gettop(L);
     lua_pushvalue(L, 5);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc322);
+    return (lua_gettop(L) - lc328);
     assert(lua_gettop(L) == 12);
   }
-  lua_settop(L, lc318);
+  lua_settop(L, lc324);
   assert(lua_gettop(L) == 12);
 
-  /* return H(i,h) */
-  const int lc323 = lua_gettop(L);
-  lc_getupvalue(L, lc278, 1, 76);
+  /* return S(r,l) */
+  const int lc329 = lua_gettop(L);
+  lc_getupvalue(L, lc284, 1, 77);
   lua_pushvalue(L, 11);
   lua_pushvalue(L, 10);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc323);
+  return (lua_gettop(L) - lc329);
   assert(lua_gettop(L) == 12);
 }
 
@@ -6125,24 +6209,24 @@ static inline int lcf2_a(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return R(z,e(M,e(i,T(t)))) */
-  const int lc325 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 82);
-  const int lc326 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 53);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc327 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 31);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc328 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 130);
+  /* return L(z,e(J,e(i,_(t)))) */
+  const int lc331 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 83);
+  const int lc332 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 54);
   lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc333 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 32);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc334 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 131);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 28);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 132);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc328), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc327), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc326), LUA_MULTRET);
-  return (lua_gettop(L) - lc325);
+  lua_call(L, (lua_gettop(L) - lc334), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc333), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc332), LUA_MULTRET);
+  return (lua_gettop(L) - lc331);
   assert(lua_gettop(L) == 0);
 }
 
@@ -6153,23 +6237,23 @@ static inline int lcf1_Ze(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc324 = 4 };
-  assert((lua_gettop(L) == lc324));
+  enum { lc330 = 4 };
+  assert((lua_gettop(L) == lc330));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 130);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 131);
+  lua_pushvalue(L, 2);
+  lua_rawseti(L, -2, 132);
 
-  /* local function a()return R(z,e(M,e(i,T(t))))end */
-  lua_pushvalue(L, lc324);
+  /* local function a()return L(z,e(J,e(i,_(t))))end */
+  lua_pushvalue(L, lc330);
   lua_pushcclosure(L, lcf2_a, 1);
   assert(lua_gettop(L) == 5);
 
   /* for n,e in ipairs(at)do
    * internal: local f, s, var = explist */
-  enum { lc329 = 5 };
+  enum { lc335 = 5 };
   lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
-  lc_getupvalue(L, lc324, 1, 9);
+  lc_getupvalue(L, lc330, 1, 10);
   lua_call(L, 1, 3);
   while (1) {
 
@@ -6189,164 +6273,164 @@ static inline int lcf1_Ze(lua_State *L) {
     /* internal: local n with idx 9
      * internal: local e with idx 10 */
 
-    /* if c(i,e[1]) then */
-    enum { lc330 = 10 };
-    lc_getupvalue(L, lc324, 1, 3);
-    lc_getupvalue(L, lc324, 0, 130);
+    /* if l(i,e[1]) then */
+    enum { lc336 = 10 };
+    lc_getupvalue(L, lc330, 1, 4);
+    lc_getupvalue(L, lc330, 0, 131);
     lua_pushnumber(L, 1);
     lua_gettable(L, 10);
     lua_call(L, 2, 1);
-    const int lc331 = lua_toboolean(L, -1);
+    const int lc337 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc331) {
+    if (lc337) {
 
       /* if#t~=e[2] then */
-      enum { lc332 = 10 };
-      lc_getupvalue(L, lc324, 0, 131);
-      const double lc333 = lua_objlen(L, -1);
+      enum { lc338 = 10 };
+      lc_getupvalue(L, lc330, 0, 132);
+      const double lc339 = lua_objlen(L, -1);
       lua_pop(L, 1);
-      lua_pushnumber(L, lc333);
+      lua_pushnumber(L, lc339);
       lua_pushnumber(L, 2);
       lua_gettable(L, 10);
-      const int lc334 = lua_equal(L, -2, -1);
+      const int lc340 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc334);
+      lua_pushboolean(L, lc340);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc335 = lua_toboolean(L, -1);
+      const int lc341 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc335) {
+      if (lc341) {
 
         /* return a() */
-        const int lc336 = lua_gettop(L);
+        const int lc342 = lua_gettop(L);
         lua_pushvalue(L, 5);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc336);
+        return (lua_gettop(L) - lc342);
         assert(lua_gettop(L) == 10);
       }
-      lua_settop(L, lc332);
+      lua_settop(L, lc338);
       assert(lua_gettop(L) == 10);
 
       /* if e[2]==1 then */
-      enum { lc337 = 10 };
+      enum { lc343 = 10 };
       lua_pushnumber(L, 2);
       lua_gettable(L, 10);
       lua_pushnumber(L, 1);
-      const int lc338 = lua_equal(L, -2, -1);
+      const int lc344 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc338);
-      const int lc339 = lua_toboolean(L, -1);
+      lua_pushboolean(L, lc344);
+      const int lc345 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc339) {
+      if (lc345) {
 
         /* return e[3](t[1],a,o) */
-        const int lc340 = lua_gettop(L);
+        const int lc346 = lua_gettop(L);
         lua_pushnumber(L, 3);
         lua_gettable(L, 10);
-        lc_getupvalue(L, lc324, 0, 131);
+        lc_getupvalue(L, lc330, 0, 132);
         lua_pushnumber(L, 1);
         lua_gettable(L, -2);
         lua_remove(L, -2);
         lua_pushvalue(L, 5);
         lua_pushvalue(L, 3);
         lua_call(L, 3, LUA_MULTRET);
-        return (lua_gettop(L) - lc340);
+        return (lua_gettop(L) - lc346);
         assert(lua_gettop(L) == 10);
       } else {
 
         /* elseif e[2]==2 then */
-        enum { lc341 = 10 };
+        enum { lc347 = 10 };
         lua_pushnumber(L, 2);
         lua_gettable(L, 10);
         lua_pushnumber(L, 2);
-        const int lc342 = lua_equal(L, -2, -1);
+        const int lc348 = lua_equal(L, -2, -1);
         lua_pop(L, 2);
-        lua_pushboolean(L, lc342);
-        const int lc343 = lua_toboolean(L, -1);
+        lua_pushboolean(L, lc348);
+        const int lc349 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc343) {
+        if (lc349) {
 
           /* return e[3](t[1],t[2],a,o) */
-          const int lc344 = lua_gettop(L);
+          const int lc350 = lua_gettop(L);
           lua_pushnumber(L, 3);
           lua_gettable(L, 10);
-          lc_getupvalue(L, lc324, 0, 131);
+          lc_getupvalue(L, lc330, 0, 132);
           lua_pushnumber(L, 1);
           lua_gettable(L, -2);
           lua_remove(L, -2);
-          lc_getupvalue(L, lc324, 0, 131);
+          lc_getupvalue(L, lc330, 0, 132);
           lua_pushnumber(L, 2);
           lua_gettable(L, -2);
           lua_remove(L, -2);
           lua_pushvalue(L, 5);
           lua_pushvalue(L, 3);
           lua_call(L, 4, LUA_MULTRET);
-          return (lua_gettop(L) - lc344);
+          return (lua_gettop(L) - lc350);
           assert(lua_gettop(L) == 10);
         } else {
 
           /* elseif e[2]==3 then */
-          enum { lc345 = 10 };
+          enum { lc351 = 10 };
           lua_pushnumber(L, 2);
           lua_gettable(L, 10);
           lua_pushnumber(L, 3);
-          const int lc346 = lua_equal(L, -2, -1);
+          const int lc352 = lua_equal(L, -2, -1);
           lua_pop(L, 2);
-          lua_pushboolean(L, lc346);
-          const int lc347 = lua_toboolean(L, -1);
+          lua_pushboolean(L, lc352);
+          const int lc353 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc347) {
+          if (lc353) {
 
             /* return e[3](t[1],t[2],t[3],a,o) */
-            const int lc348 = lua_gettop(L);
+            const int lc354 = lua_gettop(L);
             lua_pushnumber(L, 3);
             lua_gettable(L, 10);
-            lc_getupvalue(L, lc324, 0, 131);
+            lc_getupvalue(L, lc330, 0, 132);
             lua_pushnumber(L, 1);
             lua_gettable(L, -2);
             lua_remove(L, -2);
-            lc_getupvalue(L, lc324, 0, 131);
+            lc_getupvalue(L, lc330, 0, 132);
             lua_pushnumber(L, 2);
             lua_gettable(L, -2);
             lua_remove(L, -2);
-            lc_getupvalue(L, lc324, 0, 131);
+            lc_getupvalue(L, lc330, 0, 132);
             lua_pushnumber(L, 3);
             lua_gettable(L, -2);
             lua_remove(L, -2);
             lua_pushvalue(L, 5);
             lua_pushvalue(L, 3);
             lua_call(L, 5, LUA_MULTRET);
-            return (lua_gettop(L) - lc348);
+            return (lua_gettop(L) - lc354);
             assert(lua_gettop(L) == 10);
           }
-          lua_settop(L, lc345);
+          lua_settop(L, lc351);
         }
-        lua_settop(L, lc341);
+        lua_settop(L, lc347);
       }
-      lua_settop(L, lc337);
+      lua_settop(L, lc343);
       assert(lua_gettop(L) == 10);
 
-      /* return q() */
-      const int lc349 = lua_gettop(L);
-      lc_getupvalue(L, lc324, 1, 116);
+      /* return j() */
+      const int lc355 = lua_gettop(L);
+      lc_getupvalue(L, lc330, 1, 117);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc349);
+      return (lua_gettop(L) - lc355);
       assert(lua_gettop(L) == 10);
     }
-    lua_settop(L, lc330);
+    lua_settop(L, lc336);
     assert(lua_gettop(L) == 10);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 2);
   }
-  lua_settop(L, lc329);
+  lua_settop(L, lc335);
   assert(lua_gettop(L) == 5);
 
   /* return a() */
-  const int lc350 = lua_gettop(L);
+  const int lc356 = lua_gettop(L);
   lua_pushvalue(L, 5);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc350);
+  return (lua_gettop(L) - lc356);
   assert(lua_gettop(L) == 5);
 }
 
@@ -6356,27 +6440,27 @@ static inline int lcf3_a(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return R(z,e(se,e(D(i),o,T(t)))) */
-  const int lc352 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 82);
-  const int lc353 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 53);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc354 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 30);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 26);
-  const int lc355 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 14);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 132);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 133);
+  /* return L(z,e(ie,e(R(i),o,_(t)))) */
+  const int lc358 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 83);
+  const int lc359 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 54);
   lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc360 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 31);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 27);
+  const int lc361 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 15);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 133);
+  lua_call(L, 1, 1);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 134);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 28);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 135);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc355), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc354), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc353), LUA_MULTRET);
-  return (lua_gettop(L) - lc352);
+  lua_call(L, (lua_gettop(L) - lc361), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc360), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc359), LUA_MULTRET);
+  return (lua_gettop(L) - lc358);
   assert(lua_gettop(L) == 0);
 }
 
@@ -6386,58 +6470,58 @@ static inline int lcf1_Xe(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc351 = 5 };
-  assert((lua_gettop(L) == lc351));
+  enum { lc357 = 5 };
+  assert((lua_gettop(L) == lc357));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 132);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 133);
-  lua_pushvalue(L, 3);
+  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 134);
+  lua_pushvalue(L, 3);
+  lua_rawseti(L, -2, 135);
 
-  /* local function a()return R(z,e(se,e(D(i),o,T(t))))end */
-  lua_pushvalue(L, lc351);
+  /* local function a()return L(z,e(ie,e(R(i),o,_(t))))end */
+  lua_pushvalue(L, lc357);
   lua_pushcclosure(L, lcf3_a, 1);
   assert(lua_gettop(L) == 6);
 
-  /* if c(o,Ue) then */
-  enum { lc356 = 6 };
-  lc_getupvalue(L, lc351, 1, 3);
-  lc_getupvalue(L, lc351, 0, 133);
-  lc_getupvalue(L, lc351, 1, 33);
+  /* if l(o,ke) then */
+  enum { lc362 = 6 };
+  lc_getupvalue(L, lc357, 1, 4);
+  lc_getupvalue(L, lc357, 0, 134);
+  lc_getupvalue(L, lc357, 1, 34);
   lua_call(L, 2, 1);
-  const int lc357 = lua_toboolean(L, -1);
+  const int lc363 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc357) {
+  if (lc363) {
 
     /* if#t~=1 then */
-    enum { lc358 = 6 };
-    lc_getupvalue(L, lc351, 0, 134);
-    const double lc359 = lua_objlen(L, -1);
+    enum { lc364 = 6 };
+    lc_getupvalue(L, lc357, 0, 135);
+    const double lc365 = lua_objlen(L, -1);
     lua_pop(L, 1);
-    lua_pushnumber(L, lc359);
+    lua_pushnumber(L, lc365);
     lua_pushnumber(L, 1);
-    const int lc360 = lua_equal(L, -2, -1);
+    const int lc366 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc360);
+    lua_pushboolean(L, lc366);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc361 = lua_toboolean(L, -1);
+    const int lc367 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc361) {
+    if (lc367) {
 
       /* return a() */
-      const int lc362 = lua_gettop(L);
+      const int lc368 = lua_gettop(L);
       lua_pushvalue(L, 6);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc362);
+      return (lua_gettop(L) - lc368);
       assert(lua_gettop(L) == 6);
     }
-    lua_settop(L, lc358);
+    lua_settop(L, lc364);
     assert(lua_gettop(L) == 6);
 
     /* return t[1] */
-    lc_getupvalue(L, lc351, 0, 134);
+    lc_getupvalue(L, lc357, 0, 135);
     lua_pushnumber(L, 1);
     lua_gettable(L, -2);
     lua_remove(L, -2);
@@ -6445,149 +6529,149 @@ static inline int lcf1_Xe(lua_State *L) {
     assert(lua_gettop(L) == 6);
   } else {
 
-    /* elseif c(o,ot) then */
-    enum { lc363 = 6 };
-    lc_getupvalue(L, lc351, 1, 3);
-    lc_getupvalue(L, lc351, 0, 133);
-    lc_getupvalue(L, lc351, 1, 32);
+    /* elseif l(o,st) then */
+    enum { lc369 = 6 };
+    lc_getupvalue(L, lc357, 1, 4);
+    lc_getupvalue(L, lc357, 0, 134);
+    lc_getupvalue(L, lc357, 1, 33);
     lua_call(L, 2, 1);
-    const int lc364 = lua_toboolean(L, -1);
+    const int lc370 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc364) {
+    if (lc370) {
 
       /* if#t~=2 then */
-      enum { lc365 = 6 };
-      lc_getupvalue(L, lc351, 0, 134);
-      const double lc366 = lua_objlen(L, -1);
+      enum { lc371 = 6 };
+      lc_getupvalue(L, lc357, 0, 135);
+      const double lc372 = lua_objlen(L, -1);
       lua_pop(L, 1);
-      lua_pushnumber(L, lc366);
+      lua_pushnumber(L, lc372);
       lua_pushnumber(L, 2);
-      const int lc367 = lua_equal(L, -2, -1);
+      const int lc373 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc367);
+      lua_pushboolean(L, lc373);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc368 = lua_toboolean(L, -1);
+      const int lc374 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc368) {
+      if (lc374) {
 
         /* return a() */
-        const int lc369 = lua_gettop(L);
+        const int lc375 = lua_gettop(L);
         lua_pushvalue(L, 6);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc369);
+        return (lua_gettop(L) - lc375);
         assert(lua_gettop(L) == 6);
       }
-      lua_settop(L, lc365);
+      lua_settop(L, lc371);
       assert(lua_gettop(L) == 6);
 
-      /* return Qe(i,t[1],t[2],a) */
-      const int lc370 = lua_gettop(L);
-      lc_getupvalue(L, lc351, 1, 4);
-      lc_getupvalue(L, lc351, 0, 132);
-      lc_getupvalue(L, lc351, 0, 134);
+      /* return Je(i,t[1],t[2],a) */
+      const int lc376 = lua_gettop(L);
+      lc_getupvalue(L, lc357, 1, 5);
+      lc_getupvalue(L, lc357, 0, 133);
+      lc_getupvalue(L, lc357, 0, 135);
       lua_pushnumber(L, 1);
       lua_gettable(L, -2);
       lua_remove(L, -2);
-      lc_getupvalue(L, lc351, 0, 134);
+      lc_getupvalue(L, lc357, 0, 135);
       lua_pushnumber(L, 2);
       lua_gettable(L, -2);
       lua_remove(L, -2);
       lua_pushvalue(L, 6);
       lua_call(L, 4, LUA_MULTRET);
-      return (lua_gettop(L) - lc370);
+      return (lua_gettop(L) - lc376);
       assert(lua_gettop(L) == 6);
     } else {
 
-      /* elseif c(o,st) then */
-      enum { lc371 = 6 };
-      lc_getupvalue(L, lc351, 1, 3);
-      lc_getupvalue(L, lc351, 0, 133);
-      lc_getupvalue(L, lc351, 1, 28);
+      /* elseif l(o,tt) then */
+      enum { lc377 = 6 };
+      lc_getupvalue(L, lc357, 1, 4);
+      lc_getupvalue(L, lc357, 0, 134);
+      lc_getupvalue(L, lc357, 1, 29);
       lua_call(L, 2, 1);
-      const int lc372 = lua_toboolean(L, -1);
+      const int lc378 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc372) {
+      if (lc378) {
 
         /* if#t~=2 then */
-        enum { lc373 = 6 };
-        lc_getupvalue(L, lc351, 0, 134);
-        const double lc374 = lua_objlen(L, -1);
+        enum { lc379 = 6 };
+        lc_getupvalue(L, lc357, 0, 135);
+        const double lc380 = lua_objlen(L, -1);
         lua_pop(L, 1);
-        lua_pushnumber(L, lc374);
+        lua_pushnumber(L, lc380);
         lua_pushnumber(L, 2);
-        const int lc375 = lua_equal(L, -2, -1);
+        const int lc381 = lua_equal(L, -2, -1);
         lua_pop(L, 2);
-        lua_pushboolean(L, lc375);
+        lua_pushboolean(L, lc381);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
-        const int lc376 = lua_toboolean(L, -1);
+        const int lc382 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc376) {
+        if (lc382) {
 
           /* return a() */
-          const int lc377 = lua_gettop(L);
+          const int lc383 = lua_gettop(L);
           lua_pushvalue(L, 6);
           lua_call(L, 0, LUA_MULTRET);
-          return (lua_gettop(L) - lc377);
+          return (lua_gettop(L) - lc383);
           assert(lua_gettop(L) == 6);
         }
-        lua_settop(L, lc373);
+        lua_settop(L, lc379);
         assert(lua_gettop(L) == 6);
 
-        /* return ce(t[1],H(i,t[2])) */
-        const int lc378 = lua_gettop(L);
-        lc_getupvalue(L, lc351, 1, 101);
-        const int lc379 = lua_gettop(L);
-        lc_getupvalue(L, lc351, 0, 134);
+        /* return fe(t[1],S(i,t[2])) */
+        const int lc384 = lua_gettop(L);
+        lc_getupvalue(L, lc357, 1, 102);
+        const int lc385 = lua_gettop(L);
+        lc_getupvalue(L, lc357, 0, 135);
         lua_pushnumber(L, 1);
         lua_gettable(L, -2);
         lua_remove(L, -2);
-        lc_getupvalue(L, lc351, 1, 76);
-        lc_getupvalue(L, lc351, 0, 132);
-        lc_getupvalue(L, lc351, 0, 134);
+        lc_getupvalue(L, lc357, 1, 77);
+        lc_getupvalue(L, lc357, 0, 133);
+        lc_getupvalue(L, lc357, 0, 135);
         lua_pushnumber(L, 2);
         lua_gettable(L, -2);
         lua_remove(L, -2);
         lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc379), LUA_MULTRET);
-        return (lua_gettop(L) - lc378);
+        lua_call(L, (lua_gettop(L) - lc385), LUA_MULTRET);
+        return (lua_gettop(L) - lc384);
         assert(lua_gettop(L) == 6);
       }
-      lua_settop(L, lc371);
+      lua_settop(L, lc377);
     }
-    lua_settop(L, lc363);
+    lua_settop(L, lc369);
   }
-  lua_settop(L, lc356);
+  lua_settop(L, lc362);
   assert(lua_gettop(L) == 6);
 
   /* return a() */
-  const int lc380 = lua_gettop(L);
+  const int lc386 = lua_gettop(L);
   lua_pushvalue(L, 6);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc380);
+  return (lua_gettop(L) - lc386);
   assert(lua_gettop(L) == 6);
 }
 
-/* name: we
+/* name: ce
  * function(t) */
-static inline int lcf1_we(lua_State *L) {
+static inline int lcf1_ce(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return e(se,Ue,t) */
-  const int lc381 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 30);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 33);
+  /* return e(ie,ke,t) */
+  const int lc387 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 31);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 34);
   lua_pushvalue(L, 1);
   lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc381);
+  return (lua_gettop(L) - lc387);
   assert(lua_gettop(L) == 1);
 }
 
 /* function(t,e) */
-static inline int lcf397(lua_State *L) {
+static inline int lcf403(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -6596,25 +6680,25 @@ static inline int lcf397(lua_State *L) {
   lua_pushnumber(L, 0);
   assert(lua_gettop(L) == 3);
 
-  /* while e<#h do */
-  enum { lc392 = 3 };
+  /* while e<#r do */
+  enum { lc398 = 3 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 135);
-    const double lc393 = lua_objlen(L, -1);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 136);
+    const double lc399 = lua_objlen(L, -1);
     lua_pop(L, 1);
-    lua_pushnumber(L, lc393);
-    const int lc394 = lua_lessthan(L, 3, -1);
+    lua_pushnumber(L, lc399);
+    const int lc400 = lua_lessthan(L, 3, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc394);
+    lua_pushboolean(L, lc400);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* if c(h[e+1],t) then */
-    enum { lc395 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 2, 3);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 135);
+    /* if l(r[e+1],t) then */
+    enum { lc401 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 4);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 136);
     lua_pushnumber(L, 1);
     lc_add(L, 3, -1);
     lua_remove(L, -2);
@@ -6622,15 +6706,15 @@ static inline int lcf397(lua_State *L) {
     lua_remove(L, -2);
     lua_pushvalue(L, 1);
     lua_call(L, 2, 1);
-    const int lc396 = lua_toboolean(L, -1);
+    const int lc402 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc396) {
+    if (lc402) {
 
       /* return */
       return 0;
       assert(lua_gettop(L) == 3);
     }
-    lua_settop(L, lc395);
+    lua_settop(L, lc401);
     assert(lua_gettop(L) == 3);
 
     /* e=e+1 */
@@ -6640,56 +6724,56 @@ static inline int lcf397(lua_State *L) {
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc392);
+  lua_settop(L, lc398);
   assert(lua_gettop(L) == 3);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* l(a,t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 136);
+  /* v(a,t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 137);
   lua_pushvalue(L, 1);
   lua_call(L, 2, 0);
   assert(lua_gettop(L) == 2);
   return 0;
 }
 
-/* name: Qe
- * function(m,d,y,w) */
-static inline int lcf1_Qe(lua_State *L) {
+/* name: Je
+ * function(m,d,f,w) */
+static inline int lcf1_Je(lua_State *L) {
   lua_checkstack(L, 22);
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* d=F(d) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 59);
+  /* d=W(d) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 60);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_replace(L, 2);
   assert(lua_gettop(L) == 4);
 
-  /* local h={} */
+  /* local r={} */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc382 = 5 };
-  assert((lua_gettop(L) == lc382));
+  enum { lc388 = 5 };
+  assert((lua_gettop(L) == lc388));
   lua_newtable(L);
-  lua_rawseti(L, lc382, 135);
+  lua_rawseti(L, lc388, 136);
   assert(lua_gettop(L) == 5);
 
-  /* local f=false */
+  /* local c=false */
   lua_pushboolean(L, 0);
   assert(lua_gettop(L) == 6);
 
-  /* local i=d */
+  /* local n=d */
   lua_pushvalue(L, 2);
   assert(lua_gettop(L) == 7);
 
-  /* while not r(i)do */
-  enum { lc383 = 7 };
+  /* while not h(n)do */
+  enum { lc389 = 7 };
   while (1) {
-    lc_getupvalue(L, lc382, 1, 87);
+    lc_getupvalue(L, lc388, 1, 88);
     lua_pushvalue(L, 7);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -6699,54 +6783,54 @@ static inline int lcf1_Qe(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* if u(i) then */
-    enum { lc384 = 7 };
-    lc_getupvalue(L, lc382, 1, 10);
+    /* if u(n) then */
+    enum { lc390 = 7 };
+    lc_getupvalue(L, lc388, 1, 11);
     lua_pushvalue(L, 7);
     lua_call(L, 1, 1);
-    const int lc385 = lua_toboolean(L, -1);
+    const int lc391 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc385) {
+    if (lc391) {
 
-      /* l(h,i) */
-      lc_getupvalue(L, lc382, 2, 1);
-      lc_getupvalue(L, lc382, 0, 135);
+      /* v(r,n) */
+      lc_getupvalue(L, lc388, 3, 1);
+      lc_getupvalue(L, lc388, 0, 136);
       lua_pushvalue(L, 7);
       lua_call(L, 2, 0);
       assert(lua_gettop(L) == 7);
 
-      /* f=true */
+      /* c=true */
       lua_pushboolean(L, 1);
       lua_replace(L, 6);
       assert(lua_gettop(L) == 7);
 
-      /* i=v */
-      lc_getupvalue(L, lc382, 1, 88);
+      /* n=y */
+      lc_getupvalue(L, lc388, 1, 89);
       lua_replace(L, 7);
       assert(lua_gettop(L) == 7);
     } else {
 
-      /* elseif a(i) then */
-      enum { lc386 = 7 };
-      lc_getupvalue(L, lc382, 1, 91);
+      /* elseif a(n) then */
+      enum { lc392 = 7 };
+      lc_getupvalue(L, lc388, 1, 92);
       lua_pushvalue(L, 7);
       lua_call(L, 1, 1);
-      const int lc387 = lua_toboolean(L, -1);
+      const int lc393 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc387) {
+      if (lc393) {
 
-        /* l(h,o(i)) */
-        lc_getupvalue(L, lc382, 2, 1);
-        const int lc388 = lua_gettop(L);
-        lc_getupvalue(L, lc382, 0, 135);
-        lc_getupvalue(L, lc382, 1, 90);
+        /* v(r,o(n)) */
+        lc_getupvalue(L, lc388, 3, 1);
+        const int lc394 = lua_gettop(L);
+        lc_getupvalue(L, lc388, 0, 136);
+        lc_getupvalue(L, lc388, 1, 91);
         lua_pushvalue(L, 7);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc388), 0);
+        lua_call(L, (lua_gettop(L) - lc394), 0);
         assert(lua_gettop(L) == 7);
 
-        /* i=n(i) */
-        lc_getupvalue(L, lc382, 1, 89);
+        /* n=i(n) */
+        lc_getupvalue(L, lc388, 1, 90);
         lua_pushvalue(L, 7);
         lua_call(L, 1, 1);
         lua_replace(L, 7);
@@ -6755,31 +6839,31 @@ static inline int lcf1_Qe(lua_State *L) {
 
         /* else
          * return w() */
-        const int lc389 = lua_gettop(L);
+        const int lc395 = lua_gettop(L);
         lua_pushvalue(L, 4);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc389);
+        return (lua_gettop(L) - lc395);
         assert(lua_gettop(L) == 7);
       }
-      lua_settop(L, lc386);
+      lua_settop(L, lc392);
     }
-    lua_settop(L, lc384);
+    lua_settop(L, lc390);
     assert(lua_gettop(L) == 7);
   }
-  lua_settop(L, lc383);
+  lua_settop(L, lc389);
   assert(lua_gettop(L) == 7);
 
   /* local o */
   lua_settop(L, (lua_gettop(L) + 1));
   assert(lua_gettop(L) == 8);
 
-  /* if f then */
-  enum { lc390 = 8 };
+  /* if c then */
+  enum { lc396 = 8 };
   if (lua_toboolean(L, 6)) {
 
-    /* o=T(h) */
-    lc_getupvalue(L, lc382, 1, 27);
-    lc_getupvalue(L, lc382, 0, 135);
+    /* o=_(r) */
+    lc_getupvalue(L, lc388, 1, 28);
+    lc_getupvalue(L, lc388, 0, 136);
     lua_call(L, 1, 1);
     lua_replace(L, 8);
     assert(lua_gettop(L) == 8);
@@ -6791,33 +6875,33 @@ static inline int lcf1_Qe(lua_State *L) {
     lua_replace(L, 8);
     assert(lua_gettop(L) == 8);
   }
-  lua_settop(L, lc390);
+  lua_settop(L, lc396);
   assert(lua_gettop(L) == 8);
 
   /* local a={} */
-  lc_newclosuretable(L, lc382);
-  enum { lc391 = 9 };
-  assert((lua_gettop(L) == lc391));
+  lc_newclosuretable(L, lc388);
+  enum { lc397 = 9 };
+  assert((lua_gettop(L) == lc397));
   lua_newtable(L);
-  lua_rawseti(L, lc391, 136);
+  lua_rawseti(L, lc397, 137);
   assert(lua_gettop(L) == 9);
 
-  /* He(m,function(t,e)
+  /* Ke(m,function(t,e)
    * do
    * local e=0
-   * while e<#h do
-   * if c(h[e+1],t)then
+   * while e<#r do
+   * if l(r[e+1],t)then
    * return
    * end
    * e=e+1
    * end
    * end
-   * l(a,t)
+   * v(a,t)
    * end) */
-  lc_getupvalue(L, lc391, 2, 13);
+  lc_getupvalue(L, lc397, 2, 14);
   lua_pushvalue(L, 1);
-  lua_pushvalue(L, lc391);
-  lua_pushcclosure(L, lcf397, 1);
+  lua_pushvalue(L, lc397);
+  lua_pushcclosure(L, lcf403, 1);
   lua_call(L, 2, 0);
   assert(lua_gettop(L) == 9);
 
@@ -6827,10 +6911,10 @@ static inline int lcf1_Qe(lua_State *L) {
 
   /* do
    * local e=#a-1 */
-  lc_getupvalue(L, lc391, 0, 136);
-  const double lc398 = lua_objlen(L, -1);
+  lc_getupvalue(L, lc397, 0, 137);
+  const double lc404 = lua_objlen(L, -1);
   lua_pop(L, 1);
-  lua_pushnumber(L, lc398);
+  lua_pushnumber(L, lc404);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
   lua_remove(L, -2);
@@ -6838,20 +6922,20 @@ static inline int lcf1_Qe(lua_State *L) {
   assert(lua_gettop(L) == 11);
 
   /* while e>=0 do */
-  enum { lc399 = 11 };
+  enum { lc405 = 11 };
   while (1) {
     lua_pushnumber(L, 0);
-    const int lc400 = lc_le(L, -1, 11);
+    const int lc406 = lc_le(L, -1, 11);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc400);
+    lua_pushboolean(L, lc406);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
     /* i=s(a[e+1],i) */
-    lc_getupvalue(L, lc391, 2, 92);
-    lc_getupvalue(L, lc391, 0, 136);
+    lc_getupvalue(L, lc397, 2, 93);
+    lc_getupvalue(L, lc397, 0, 137);
     lua_pushnumber(L, 1);
     lc_add(L, 11, -1);
     lua_remove(L, -2);
@@ -6869,7 +6953,7 @@ static inline int lcf1_Qe(lua_State *L) {
     lua_replace(L, 11);
     assert(lua_gettop(L) == 11);
   }
-  lua_settop(L, lc399);
+  lua_settop(L, lc405);
   assert(lua_gettop(L) == 11);
 
   /* internal: stack cleanup on scope exit */
@@ -6882,10 +6966,10 @@ static inline int lcf1_Qe(lua_State *L) {
 
   /* do
    * local e=#a-1 */
-  lc_getupvalue(L, lc391, 0, 136);
-  const double lc401 = lua_objlen(L, -1);
+  lc_getupvalue(L, lc397, 0, 137);
+  const double lc407 = lua_objlen(L, -1);
   lua_pop(L, 1);
-  lua_pushnumber(L, lc401);
+  lua_pushnumber(L, lc407);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
   lua_remove(L, -2);
@@ -6893,31 +6977,31 @@ static inline int lcf1_Qe(lua_State *L) {
   assert(lua_gettop(L) == 12);
 
   /* while e>=0 do */
-  enum { lc402 = 12 };
+  enum { lc408 = 12 };
   while (1) {
     lua_pushnumber(L, 0);
-    const int lc403 = lc_le(L, -1, 12);
+    const int lc409 = lc_le(L, -1, 12);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc403);
+    lua_pushboolean(L, lc409);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* o=s(we(it(m,a[e+1])),o) */
-    lc_getupvalue(L, lc391, 2, 92);
-    lc_getupvalue(L, lc391, 2, 5);
-    const int lc404 = lua_gettop(L);
-    lc_getupvalue(L, lc391, 2, 15);
+    /* o=s(ce(et(m,a[e+1])),o) */
+    lc_getupvalue(L, lc397, 2, 93);
+    lc_getupvalue(L, lc397, 2, 6);
+    const int lc410 = lua_gettop(L);
+    lc_getupvalue(L, lc397, 2, 16);
     lua_pushvalue(L, 1);
-    lc_getupvalue(L, lc391, 0, 136);
+    lc_getupvalue(L, lc397, 0, 137);
     lua_pushnumber(L, 1);
     lc_add(L, 12, -1);
     lua_remove(L, -2);
     lua_gettable(L, -2);
     lua_remove(L, -2);
     lua_call(L, 2, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc404), 1);
+    lua_call(L, (lua_gettop(L) - lc410), 1);
     lua_pushvalue(L, 11);
     lua_call(L, 2, 1);
     lua_replace(L, 11);
@@ -6930,76 +7014,76 @@ static inline int lcf1_Qe(lua_State *L) {
     lua_replace(L, 12);
     assert(lua_gettop(L) == 12);
   }
-  lua_settop(L, lc402);
+  lua_settop(L, lc408);
   assert(lua_gettop(L) == 12);
 
   /* internal: stack cleanup on scope exit */
   lua_pop(L, 1);
   assert(lua_gettop(L) == 11);
 
-  /* return E(t,e(d,s(we(E(t,e(i,y))),o))) */
-  const int lc405 = lua_gettop(L);
-  lc_getupvalue(L, lc391, 2, 86);
-  const int lc406 = lua_gettop(L);
-  lc_getupvalue(L, lc391, 2, 52);
-  lc_getupvalue(L, lc391, 2, 26);
-  const int lc407 = lua_gettop(L);
+  /* return T(t,e(d,s(ce(T(t,e(i,f))),o))) */
+  const int lc411 = lua_gettop(L);
+  lc_getupvalue(L, lc397, 2, 87);
+  const int lc412 = lua_gettop(L);
+  lc_getupvalue(L, lc397, 2, 53);
+  lc_getupvalue(L, lc397, 2, 27);
+  const int lc413 = lua_gettop(L);
   lua_pushvalue(L, 2);
-  lc_getupvalue(L, lc391, 2, 92);
-  lc_getupvalue(L, lc391, 2, 5);
-  const int lc408 = lua_gettop(L);
-  lc_getupvalue(L, lc391, 2, 86);
-  const int lc409 = lua_gettop(L);
-  lc_getupvalue(L, lc391, 2, 52);
-  lc_getupvalue(L, lc391, 2, 26);
+  lc_getupvalue(L, lc397, 2, 93);
+  lc_getupvalue(L, lc397, 2, 6);
+  const int lc414 = lua_gettop(L);
+  lc_getupvalue(L, lc397, 2, 87);
+  const int lc415 = lua_gettop(L);
+  lc_getupvalue(L, lc397, 2, 53);
+  lc_getupvalue(L, lc397, 2, 27);
   lua_pushvalue(L, 10);
   lua_pushvalue(L, 3);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc409), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc408), 1);
+  lua_call(L, (lua_gettop(L) - lc415), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc414), 1);
   lua_pushvalue(L, 11);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc407), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc406), LUA_MULTRET);
-  return (lua_gettop(L) - lc405);
+  lua_call(L, (lua_gettop(L) - lc413), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc412), LUA_MULTRET);
+  return (lua_gettop(L) - lc411);
   assert(lua_gettop(L) == 11);
 }
 
-/* name: i
- * function(e,t,a,o) */
-static inline int lcf2_i(lua_State *L) {
+/* name: n
+ * function(t,e,o,a) */
+static inline int lcf2_n(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* if c(a(e),a(t))and c(o(e),o(t)) then */
-  enum { lc416 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
-  const int lc417 = lua_gettop(L);
+  /* if l(o(t),o(e))and l(a(t),a(e)) then */
+  enum { lc422 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 4);
+  const int lc423 = lua_gettop(L);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc417), 1);
+  lua_call(L, (lua_gettop(L) - lc423), 1);
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
-    const int lc418 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 4);
+    const int lc424 = lua_gettop(L);
     lua_pushvalue(L, 4);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     lua_pushvalue(L, 4);
     lua_pushvalue(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc418), 1);
+    lua_call(L, (lua_gettop(L) - lc424), 1);
   }
-  const int lc419 = lua_toboolean(L, -1);
+  const int lc425 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc419) {
+  if (lc425) {
 
-    /* I(e,t) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+    /* O(t,e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
     lua_pushvalue(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 0);
@@ -7017,114 +7101,114 @@ static inline int lcf2_i(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc416);
+  lua_settop(L, lc422);
   assert(lua_gettop(L) == 4);
   return 0;
 }
 
-/* name: c
- * function(t,e) */
-static inline int lcf1_c(lua_State *L) {
+/* name: l
+ * function(e,t) */
+static inline int lcf1_l(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* if t==e then */
-  enum { lc410 = 2 };
-  const int lc411 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc411);
-  const int lc412 = lua_toboolean(L, -1);
+  /* if e==t then */
+  enum { lc416 = 2 };
+  const int lc417 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc417);
+  const int lc418 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc412) {
+  if (lc418) {
 
     /* return true */
     lua_pushboolean(L, 1);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc410);
+  lua_settop(L, lc416);
   assert(lua_gettop(L) == 2);
 
-  /* t=h(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 20);
+  /* e=r(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 21);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* e=h(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 20);
+  /* t=r(t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 21);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_replace(L, 2);
   assert(lua_gettop(L) == 2);
 
-  /* if t==e then */
-  enum { lc413 = 2 };
-  const int lc414 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc414);
-  const int lc415 = lua_toboolean(L, -1);
+  /* if e==t then */
+  enum { lc419 = 2 };
+  const int lc420 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc420);
+  const int lc421 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc415) {
+  if (lc421) {
 
     /* return true */
     lua_pushboolean(L, 1);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc413);
+  lua_settop(L, lc419);
   assert(lua_gettop(L) == 2);
 
-  /* local function i(e,t,a,o)
-   * if c(a(e),a(t))and c(o(e),o(t))then
-   * I(e,t)
+  /* local function n(t,e,o,a)
+   * if l(o(t),o(e))and l(a(t),a(e))then
+   * O(t,e)
    * return true
    * else
    * return false
    * end
    * end */
   lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf2_i, 1);
+  lua_pushcclosure(L, lcf2_n, 1);
   assert(lua_gettop(L) == 3);
 
-  /* if r(t) then */
-  enum { lc420 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+  /* if h(e) then */
+  enum { lc426 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc421 = lua_toboolean(L, -1);
+  const int lc427 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc421) {
+  if (lc427) {
 
-    /* if not r(e) then */
-    enum { lc422 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+    /* if not h(t) then */
+    enum { lc428 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc423 = lua_toboolean(L, -1);
+    const int lc429 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc423) {
+    if (lc429) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 3);
     }
-    lua_settop(L, lc422);
+    lua_settop(L, lc428);
     assert(lua_gettop(L) == 3);
 
-    /* I(t,v) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+    /* O(e,y) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
     lua_pushvalue(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 3);
 
-    /* I(e,v) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 56);
+    /* O(t,y) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 57);
     lua_pushvalue(L, 2);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 3);
 
@@ -7134,190 +7218,190 @@ static inline int lcf1_c(lua_State *L) {
     assert(lua_gettop(L) == 3);
   } else {
 
-    /* elseif p(t) then */
-    enum { lc424 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
+    /* elseif p(e) then */
+    enum { lc430 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 97);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    const int lc425 = lua_toboolean(L, -1);
+    const int lc431 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc425) {
+    if (lc431) {
 
-      /* if not p(e) then */
-      enum { lc426 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
+      /* if not p(t) then */
+      enum { lc432 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 97);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc427 = lua_toboolean(L, -1);
+      const int lc433 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc427) {
+      if (lc433) {
 
         /* return false */
         lua_pushboolean(L, 0);
         return 1;
         assert(lua_gettop(L) == 3);
       }
-      lua_settop(L, lc426);
+      lua_settop(L, lc432);
       assert(lua_gettop(L) == 3);
 
-      /* return L(t,e) */
-      const int lc428 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 93);
+      /* return D(e,t) */
+      const int lc434 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 94);
       lua_pushvalue(L, 1);
       lua_pushvalue(L, 2);
       lua_call(L, 2, LUA_MULTRET);
-      return (lua_gettop(L) - lc428);
+      return (lua_gettop(L) - lc434);
       assert(lua_gettop(L) == 3);
     } else {
 
-      /* elseif a(t) then */
-      enum { lc429 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+      /* elseif a(e) then */
+      enum { lc435 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc430 = lua_toboolean(L, -1);
+      const int lc436 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc430) {
+      if (lc436) {
 
-        /* if not a(e) then */
-        enum { lc431 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+        /* if not a(t) then */
+        enum { lc437 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
-        const int lc432 = lua_toboolean(L, -1);
+        const int lc438 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc432) {
+        if (lc438) {
 
           /* return false */
           lua_pushboolean(L, 0);
           return 1;
           assert(lua_gettop(L) == 3);
         }
-        lua_settop(L, lc431);
+        lua_settop(L, lc437);
         assert(lua_gettop(L) == 3);
 
-        /* return i(t,e,o,n) */
-        const int lc433 = lua_gettop(L);
+        /* return n(e,t,o,i) */
+        const int lc439 = lua_gettop(L);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 1);
         lua_pushvalue(L, 2);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
         lc_getupvalue(L, lua_upvalueindex(1), 0, 90);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
         lua_call(L, 4, LUA_MULTRET);
-        return (lua_gettop(L) - lc433);
+        return (lua_gettop(L) - lc439);
         assert(lua_gettop(L) == 3);
       } else {
 
-        /* elseif g(t) then */
-        enum { lc434 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
+        /* elseif g(e) then */
+        enum { lc440 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 82);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        const int lc435 = lua_toboolean(L, -1);
+        const int lc441 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc435) {
+        if (lc441) {
 
-          /* if not g(e) then */
-          enum { lc436 = 3 };
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
+          /* if not g(t) then */
+          enum { lc442 = 3 };
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 82);
           lua_pushvalue(L, 2);
           lua_call(L, 1, 1);
           lua_pushboolean(L, !(lua_toboolean(L, -1)));
           lua_remove(L, -2);
-          const int lc437 = lua_toboolean(L, -1);
+          const int lc443 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc437) {
+          if (lc443) {
 
             /* return false */
             lua_pushboolean(L, 0);
             return 1;
             assert(lua_gettop(L) == 3);
           }
-          lua_settop(L, lc436);
+          lua_settop(L, lc442);
           assert(lua_gettop(L) == 3);
 
-          /* return i(t,e,U,C) */
-          const int lc438 = lua_gettop(L);
+          /* return n(e,t,C,U) */
+          const int lc444 = lua_gettop(L);
           lua_pushvalue(L, 3);
           lua_pushvalue(L, 1);
           lua_pushvalue(L, 2);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
           lc_getupvalue(L, lua_upvalueindex(1), 0, 80);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
           lua_call(L, 4, LUA_MULTRET);
-          return (lua_gettop(L) - lc438);
+          return (lua_gettop(L) - lc444);
           assert(lua_gettop(L) == 3);
         } else {
 
-          /* elseif m(t) then */
-          enum { lc439 = 3 };
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
+          /* elseif c(e) then */
+          enum { lc445 = 3 };
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
           lua_pushvalue(L, 1);
           lua_call(L, 1, 1);
-          const int lc440 = lua_toboolean(L, -1);
+          const int lc446 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc440) {
+          if (lc446) {
 
-            /* if not m(e) then */
-            enum { lc441 = 3 };
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
+            /* if not c(t) then */
+            enum { lc447 = 3 };
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
             lua_pushvalue(L, 2);
             lua_call(L, 1, 1);
             lua_pushboolean(L, !(lua_toboolean(L, -1)));
             lua_remove(L, -2);
-            const int lc442 = lua_toboolean(L, -1);
+            const int lc448 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc442) {
+            if (lc448) {
 
               /* return false */
               lua_pushboolean(L, 0);
               return 1;
               assert(lua_gettop(L) == 3);
             }
-            lua_settop(L, lc441);
+            lua_settop(L, lc447);
             assert(lua_gettop(L) == 3);
 
-            /* return i(t,e,_,A) */
-            const int lc443 = lua_gettop(L);
+            /* return n(e,t,E,A) */
+            const int lc449 = lua_gettop(L);
             lua_pushvalue(L, 3);
             lua_pushvalue(L, 1);
             lua_pushvalue(L, 2);
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
             lc_getupvalue(L, lua_upvalueindex(1), 0, 84);
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 83);
             lua_call(L, 4, LUA_MULTRET);
-            return (lua_gettop(L) - lc443);
+            return (lua_gettop(L) - lc449);
             assert(lua_gettop(L) == 3);
           }
-          lua_settop(L, lc439);
+          lua_settop(L, lc445);
         }
-        lua_settop(L, lc434);
+        lua_settop(L, lc440);
       }
-      lua_settop(L, lc429);
+      lua_settop(L, lc435);
     }
-    lua_settop(L, lc424);
+    lua_settop(L, lc430);
   }
-  lua_settop(L, lc420);
+  lua_settop(L, lc426);
   assert(lua_gettop(L) == 3);
 
-  /* return q() */
-  const int lc444 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  /* return j() */
+  const int lc450 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc444);
+  return (lua_gettop(L) - lc450);
   assert(lua_gettop(L) == 3);
 }
 
-/* name: w
+/* name: f
  * function(e) */
-static inline int lcf1_w(lua_State *L) {
+static inline int lcf1_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* e=N(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
@@ -7327,18 +7411,18 @@ static inline int lcf1_w(lua_State *L) {
   lua_pushliteral(L, "");
   assert(lua_gettop(L) == 2);
 
-  /* local i="" */
+  /* local n="" */
   lua_pushliteral(L, "");
   assert(lua_gettop(L) == 3);
 
-  /* if r(e) then */
-  enum { lc445 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+  /* if h(e) then */
+  enum { lc451 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc446 = lua_toboolean(L, -1);
+  const int lc452 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc446) {
+  if (lc452) {
 
     /* return"()" */
     lua_pushliteral(L, "()");
@@ -7347,28 +7431,28 @@ static inline int lcf1_w(lua_State *L) {
   } else {
 
     /* elseif a(e) then */
-    enum { lc447 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+    enum { lc453 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    const int lc448 = lua_toboolean(L, -1);
+    const int lc454 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc448) {
+    if (lc454) {
 
       /* t="(" */
       lua_pushliteral(L, "(");
       lua_replace(L, 2);
       assert(lua_gettop(L) == 3);
 
-      /* i="" */
+      /* n="" */
       lua_pushliteral(L, "");
       lua_replace(L, 3);
       assert(lua_gettop(L) == 3);
 
       /* while a(e)do */
-      enum { lc449 = 3 };
+      enum { lc455 = 3 };
       while (1) {
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
         if (!(lua_toboolean(L, -1))) {
@@ -7376,7 +7460,7 @@ static inline int lcf1_w(lua_State *L) {
         }
         lua_pop(L, 1);
 
-        /* t=tostring(t)..tostring(i)..tostring(w(o(e))) */
+        /* t=tostring(t)..tostring(n)..tostring(f(o(e))) */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
@@ -7384,45 +7468,45 @@ static inline int lcf1_w(lua_State *L) {
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc450 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-        const int lc451 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 90);
+        const int lc456 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+        const int lc457 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 91);
         lua_pushvalue(L, 1);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc451), LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc450), 1);
+        lua_call(L, (lua_gettop(L) - lc457), LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc456), 1);
         lua_concat(L, 2);
         lua_concat(L, 2);
         lua_replace(L, 2);
         assert(lua_gettop(L) == 3);
 
-        /* i=" " */
+        /* n=" " */
         lua_pushliteral(L, " ");
         lua_replace(L, 3);
         assert(lua_gettop(L) == 3);
 
-        /* e=N(n(e)) */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 25);
-        const int lc452 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 89);
+        /* e=N(i(e)) */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 26);
+        const int lc458 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 90);
         lua_pushvalue(L, 1);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc452), 1);
+        lua_call(L, (lua_gettop(L) - lc458), 1);
         lua_replace(L, 1);
         assert(lua_gettop(L) == 3);
       }
-      lua_settop(L, lc449);
+      lua_settop(L, lc455);
       assert(lua_gettop(L) == 3);
 
-      /* if r(e) then */
-      enum { lc453 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 87);
+      /* if h(e) then */
+      enum { lc459 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 88);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc454 = lua_toboolean(L, -1);
+      const int lc460 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc454) {
+      if (lc460) {
 
         /* t=tostring(t)..")" */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
@@ -7435,17 +7519,17 @@ static inline int lcf1_w(lua_State *L) {
       } else {
 
         /* else
-         * t=tostring(t).." . "..tostring(w(e))..")" */
+         * t=tostring(t).." . "..tostring(f(e))..")" */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
         lua_pushliteral(L, " . ");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc455 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
+        const int lc461 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
         lua_pushvalue(L, 1);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc455), 1);
+        lua_call(L, (lua_gettop(L) - lc461), 1);
         lua_pushliteral(L, ")");
         lua_concat(L, 2);
         lua_concat(L, 2);
@@ -7453,7 +7537,7 @@ static inline int lcf1_w(lua_State *L) {
         lua_replace(L, 2);
         assert(lua_gettop(L) == 3);
       }
-      lua_settop(L, lc453);
+      lua_settop(L, lc459);
       assert(lua_gettop(L) == 3);
 
       /* return t */
@@ -7462,116 +7546,116 @@ static inline int lcf1_w(lua_State *L) {
       assert(lua_gettop(L) == 3);
     } else {
 
-      /* elseif m(e) then */
-      enum { lc456 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
+      /* elseif c(e) then */
+      enum { lc462 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 86);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc457 = lua_toboolean(L, -1);
+      const int lc463 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc457) {
+      if (lc463) {
 
-        /* return"#"..tostring(w(s(_(e),A(e)))) */
+        /* return"#"..tostring(f(s(E(e),A(e)))) */
         lua_pushliteral(L, "#");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc458 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-        const int lc459 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
-        const int lc460 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 84);
+        const int lc464 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+        const int lc465 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 93);
+        const int lc466 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 85);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 83);
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 84);
         lua_pushvalue(L, 1);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc460), LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc459), LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc458), 1);
+        lua_call(L, (lua_gettop(L) - lc466), LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc465), LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc464), 1);
         lua_concat(L, 2);
         return 1;
         assert(lua_gettop(L) == 3);
       } else {
 
         /* elseif g(e) then */
-        enum { lc461 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
+        enum { lc467 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 82);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        const int lc462 = lua_toboolean(L, -1);
+        const int lc468 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc462) {
+        if (lc468) {
 
-          /* return"!"..tostring(w(s(U(e),C(e)))) */
+          /* return"!"..tostring(f(s(C(e),U(e)))) */
           lua_pushliteral(L, "!");
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          const int lc463 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-          const int lc464 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 92);
-          const int lc465 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 80);
+          const int lc469 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+          const int lc470 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 93);
+          const int lc471 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 81);
           lua_pushvalue(L, 1);
           lua_call(L, 1, 1);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 79);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 80);
           lua_pushvalue(L, 1);
           lua_call(L, 1, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc465), LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc464), LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc463), 1);
+          lua_call(L, (lua_gettop(L) - lc471), LUA_MULTRET);
+          lua_call(L, (lua_gettop(L) - lc470), LUA_MULTRET);
+          lua_call(L, (lua_gettop(L) - lc469), 1);
           lua_concat(L, 2);
           return 1;
           assert(lua_gettop(L) == 3);
         } else {
 
           /* elseif p(e) then */
-          enum { lc466 = 3 };
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 96);
+          enum { lc472 = 3 };
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 97);
           lua_pushvalue(L, 1);
           lua_call(L, 1, 1);
-          const int lc467 = lua_toboolean(L, -1);
+          const int lc473 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc467) {
+          if (lc473) {
 
-            /* return me(e) */
-            const int lc468 = lua_gettop(L);
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 94);
+            /* return de(e) */
+            const int lc474 = lua_gettop(L);
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 95);
             lua_pushvalue(L, 1);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc468);
+            return (lua_gettop(L) - lc474);
             assert(lua_gettop(L) == 3);
           } else {
 
-            /* elseif O(e) then */
-            enum { lc469 = 3 };
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+            /* elseif I(e) then */
+            enum { lc475 = 3 };
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 101);
             lua_pushvalue(L, 1);
             lua_call(L, 1, 1);
-            const int lc470 = lua_toboolean(L, -1);
+            const int lc476 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc470) {
+            if (lc476) {
 
-              /* return";("..tostring(w(ue(e))).." "..tostring(w(X(e)))..")" */
+              /* return";("..tostring(f(oe(e))).." "..tostring(f(K(e)))..")" */
               lua_pushliteral(L, ";(");
               lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-              const int lc471 = lua_gettop(L);
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-              const int lc472 = lua_gettop(L);
+              const int lc477 = lua_gettop(L);
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+              const int lc478 = lua_gettop(L);
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 100);
+              lua_pushvalue(L, 1);
+              lua_call(L, 1, LUA_MULTRET);
+              lua_call(L, (lua_gettop(L) - lc478), LUA_MULTRET);
+              lua_call(L, (lua_gettop(L) - lc477), 1);
+              lua_pushliteral(L, " ");
+              lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+              const int lc479 = lua_gettop(L);
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+              const int lc480 = lua_gettop(L);
               lc_getupvalue(L, lua_upvalueindex(1), 0, 99);
               lua_pushvalue(L, 1);
               lua_call(L, 1, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc472), LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc471), 1);
-              lua_pushliteral(L, " ");
-              lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-              const int lc473 = lua_gettop(L);
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-              const int lc474 = lua_gettop(L);
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 98);
-              lua_pushvalue(L, 1);
-              lua_call(L, 1, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc474), LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc473), 1);
+              lua_call(L, (lua_gettop(L) - lc480), LUA_MULTRET);
+              lua_call(L, (lua_gettop(L) - lc479), 1);
               lua_pushliteral(L, ")");
               lua_concat(L, 2);
               lua_concat(L, 2);
@@ -7581,40 +7665,40 @@ static inline int lcf1_w(lua_State *L) {
               assert(lua_gettop(L) == 3);
             } else {
 
-              /* elseif B(e) then */
-              enum { lc475 = 3 };
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 75);
+              /* elseif Q(e) then */
+              enum { lc481 = 3 };
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 76);
               lua_pushvalue(L, 1);
               lua_call(L, 1, 1);
-              const int lc476 = lua_toboolean(L, -1);
+              const int lc482 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc476) {
+              if (lc482) {
 
-                /* return"$("..tostring(w(D(te(e)))).."
-                 * "..tostring(w(ae(e)))..")" */
+                /* return"$("..tostring(f(R(X(e)))).." "..tostring(f(Z(e)))..")"
+                 */
                 lua_pushliteral(L, "$(");
                 lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                const int lc477 = lua_gettop(L);
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                const int lc478 = lua_gettop(L);
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 14);
-                const int lc479 = lua_gettop(L);
+                const int lc483 = lua_gettop(L);
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                const int lc484 = lua_gettop(L);
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 15);
+                const int lc485 = lua_gettop(L);
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 75);
+                lua_pushvalue(L, 1);
+                lua_call(L, 1, LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc485), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc484), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc483), 1);
+                lua_pushliteral(L, " ");
+                lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                const int lc486 = lua_gettop(L);
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                const int lc487 = lua_gettop(L);
                 lc_getupvalue(L, lua_upvalueindex(1), 0, 74);
                 lua_pushvalue(L, 1);
                 lua_call(L, 1, LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc479), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc478), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc477), 1);
-                lua_pushliteral(L, " ");
-                lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                const int lc480 = lua_gettop(L);
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                const int lc481 = lua_gettop(L);
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 73);
-                lua_pushvalue(L, 1);
-                lua_call(L, 1, LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc481), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc480), 1);
+                lua_call(L, (lua_gettop(L) - lc487), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc486), 1);
                 lua_pushliteral(L, ")");
                 lua_concat(L, 2);
                 lua_concat(L, 2);
@@ -7624,40 +7708,40 @@ static inline int lcf1_w(lua_State *L) {
                 assert(lua_gettop(L) == 3);
               } else {
 
-                /* elseif J(e) then */
-                enum { lc482 = 3 };
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 66);
+                /* elseif P(e) then */
+                enum { lc488 = 3 };
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 67);
                 lua_pushvalue(L, 1);
                 lua_call(L, 1, 1);
-                const int lc483 = lua_toboolean(L, -1);
+                const int lc489 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc483) {
+                if (lc489) {
 
-                  /* return"%("..tostring(w(le(e))).."
-                   * "..tostring(w(T(re(e))))..")" */
+                  /* return"%("..tostring(f(ue(e))).."
+                   * "..tostring(f(_(re(e))))..")" */
                   lua_pushliteral(L, "%(");
                   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                  const int lc484 = lua_gettop(L);
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                  const int lc485 = lua_gettop(L);
+                  const int lc490 = lua_gettop(L);
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                  const int lc491 = lua_gettop(L);
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 66);
+                  lua_pushvalue(L, 1);
+                  lua_call(L, 1, LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc491), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc490), 1);
+                  lua_pushliteral(L, " ");
+                  lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                  const int lc492 = lua_gettop(L);
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                  const int lc493 = lua_gettop(L);
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 28);
+                  const int lc494 = lua_gettop(L);
                   lc_getupvalue(L, lua_upvalueindex(1), 0, 65);
                   lua_pushvalue(L, 1);
                   lua_call(L, 1, LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc485), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc484), 1);
-                  lua_pushliteral(L, " ");
-                  lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                  const int lc486 = lua_gettop(L);
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                  const int lc487 = lua_gettop(L);
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
-                  const int lc488 = lua_gettop(L);
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 64);
-                  lua_pushvalue(L, 1);
-                  lua_call(L, 1, LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc488), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc487), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc486), 1);
+                  lua_call(L, (lua_gettop(L) - lc494), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc493), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc492), 1);
                   lua_pushliteral(L, ")");
                   lua_concat(L, 2);
                   lua_concat(L, 2);
@@ -7667,53 +7751,53 @@ static inline int lcf1_w(lua_State *L) {
                   assert(lua_gettop(L) == 3);
                 } else {
 
-                  /* elseif Q(e) then */
-                  enum { lc489 = 3 };
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 71);
+                  /* elseif G(e) then */
+                  enum { lc495 = 3 };
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 72);
                   lua_pushvalue(L, 1);
                   lua_call(L, 1, 1);
-                  const int lc490 = lua_toboolean(L, -1);
+                  const int lc496 = lua_toboolean(L, -1);
                   lua_pop(L, 1);
-                  if (lc490) {
+                  if (lc496) {
 
-                    /* return"@("..tostring(w(D(_e(e)))).."
-                     * "..tostring(w(xe(e))).." "..tostring(w(T(qe(e))))..")" */
+                    /* return"@("..tostring(f(R(_e(e)))).."
+                     * "..tostring(f(Te(e))).." "..tostring(f(_(ze(e))))..")" */
                     lua_pushliteral(L, "@(");
                     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc491 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                    const int lc492 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 14);
-                    const int lc493 = lua_gettop(L);
+                    const int lc497 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                    const int lc498 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 15);
+                    const int lc499 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 71);
+                    lua_pushvalue(L, 1);
+                    lua_call(L, 1, LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc499), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc498), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc497), 1);
+                    lua_pushliteral(L, " ");
+                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                    const int lc500 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                    const int lc501 = lua_gettop(L);
                     lc_getupvalue(L, lua_upvalueindex(1), 0, 70);
                     lua_pushvalue(L, 1);
                     lua_call(L, 1, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc493), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc492), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc491), 1);
+                    lua_call(L, (lua_gettop(L) - lc501), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc500), 1);
                     lua_pushliteral(L, " ");
                     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc494 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                    const int lc495 = lua_gettop(L);
+                    const int lc502 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                    const int lc503 = lua_gettop(L);
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 28);
+                    const int lc504 = lua_gettop(L);
                     lc_getupvalue(L, lua_upvalueindex(1), 0, 69);
                     lua_pushvalue(L, 1);
                     lua_call(L, 1, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc495), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc494), 1);
-                    lua_pushliteral(L, " ");
-                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc496 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                    const int lc497 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
-                    const int lc498 = lua_gettop(L);
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 68);
-                    lua_pushvalue(L, 1);
-                    lua_call(L, 1, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc498), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc497), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc496), 1);
+                    lua_call(L, (lua_gettop(L) - lc504), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc503), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc502), 1);
                     lua_pushliteral(L, ")");
                     lua_concat(L, 2);
                     lua_concat(L, 2);
@@ -7725,40 +7809,40 @@ static inline int lcf1_w(lua_State *L) {
                     assert(lua_gettop(L) == 3);
                   } else {
 
-                    /* elseif G(e) then */
-                    enum { lc499 = 3 };
-                    lc_getupvalue(L, lua_upvalueindex(1), 0, 62);
+                    /* elseif V(e) then */
+                    enum { lc505 = 3 };
+                    lc_getupvalue(L, lua_upvalueindex(1), 0, 63);
                     lua_pushvalue(L, 1);
                     lua_call(L, 1, 1);
-                    const int lc500 = lua_toboolean(L, -1);
+                    const int lc506 = lua_toboolean(L, -1);
                     lua_pop(L, 1);
-                    if (lc500) {
+                    if (lc506) {
 
-                      /* return"^("..tostring(w(je(e))).."
-                       * "..tostring(w(T(Ee(e))))..")" */
+                      /* return"^("..tostring(f(je(e))).."
+                       * "..tostring(f(_(xe(e))))..")" */
                       lua_pushliteral(L, "^(");
                       lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                      const int lc501 = lua_gettop(L);
-                      lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                      const int lc502 = lua_gettop(L);
+                      const int lc507 = lua_gettop(L);
+                      lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                      const int lc508 = lua_gettop(L);
+                      lc_getupvalue(L, lua_upvalueindex(1), 0, 62);
+                      lua_pushvalue(L, 1);
+                      lua_call(L, 1, LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc508), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc507), 1);
+                      lua_pushliteral(L, " ");
+                      lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                      const int lc509 = lua_gettop(L);
+                      lc_getupvalue(L, lua_upvalueindex(1), 0, 3);
+                      const int lc510 = lua_gettop(L);
+                      lc_getupvalue(L, lua_upvalueindex(1), 0, 28);
+                      const int lc511 = lua_gettop(L);
                       lc_getupvalue(L, lua_upvalueindex(1), 0, 61);
                       lua_pushvalue(L, 1);
                       lua_call(L, 1, LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc502), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc501), 1);
-                      lua_pushliteral(L, " ");
-                      lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                      const int lc503 = lua_gettop(L);
-                      lc_getupvalue(L, lua_upvalueindex(1), 0, 2);
-                      const int lc504 = lua_gettop(L);
-                      lc_getupvalue(L, lua_upvalueindex(1), 0, 27);
-                      const int lc505 = lua_gettop(L);
-                      lc_getupvalue(L, lua_upvalueindex(1), 0, 60);
-                      lua_pushvalue(L, 1);
-                      lua_call(L, 1, LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc505), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc504), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc503), 1);
+                      lua_call(L, (lua_gettop(L) - lc511), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc510), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc509), 1);
                       lua_pushliteral(L, ")");
                       lua_concat(L, 2);
                       lua_concat(L, 2);
@@ -7767,38 +7851,38 @@ static inline int lcf1_w(lua_State *L) {
                       return 1;
                       assert(lua_gettop(L) == 3);
                     }
-                    lua_settop(L, lc499);
+                    lua_settop(L, lc505);
                   }
-                  lua_settop(L, lc489);
+                  lua_settop(L, lc495);
                 }
-                lua_settop(L, lc482);
+                lua_settop(L, lc488);
               }
-              lua_settop(L, lc475);
+              lua_settop(L, lc481);
             }
-            lua_settop(L, lc469);
+            lua_settop(L, lc475);
           }
-          lua_settop(L, lc466);
+          lua_settop(L, lc472);
         }
-        lua_settop(L, lc461);
+        lua_settop(L, lc467);
       }
-      lua_settop(L, lc456);
+      lua_settop(L, lc462);
     }
-    lua_settop(L, lc447);
+    lua_settop(L, lc453);
   }
-  lua_settop(L, lc445);
+  lua_settop(L, lc451);
   assert(lua_gettop(L) == 3);
 
-  /* return q() */
-  const int lc506 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 116);
+  /* return j() */
+  const int lc512 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc506);
+  return (lua_gettop(L) - lc512);
   assert(lua_gettop(L) == 3);
 }
 
-/* name: u
+/* name: n
  * function() */
-static inline int lcf3_u(lua_State *L) {
+static inline int lcf3_n(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -8205,9 +8289,9 @@ static inline int lcf3_u(lua_State *L) {
   assert(lua_gettop(L) == 0);
 }
 
-/* name: i
+/* name: u
  * function() */
-static inline int lcf3_i(lua_State *L) {
+static inline int lcf2_u(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -8616,46 +8700,7 @@ static inline int lcf3_i(lua_State *L) {
 
 /* name: d
  * function() */
-static inline int lcf3_d(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* return e */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 140);
-  return 1;
-  assert(lua_gettop(L) == 0);
-}
-
-/* name: d
- * function() */
 static inline int lcf4_d(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* local e=u() */
-  lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc510 = 1 };
-  assert((lua_gettop(L) == lc510));
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 137);
-  lua_call(L, 0, 1);
-  lua_rawseti(L, lc510, 140);
-  assert(lua_gettop(L) == 1);
-
-  /* function d()return e end */
-  lua_pushvalue(L, lc510);
-  lua_pushcclosure(L, lcf3_d, 1);
-  lc_setupvalue(L, lc510, 1, 139);
-  assert(lua_gettop(L) == 1);
-
-  /* return e */
-  lc_getupvalue(L, lc510, 0, 140);
-  return 1;
-  assert(lua_gettop(L) == 1);
-}
-
-/* name: f
- * function() */
-static inline int lcf1_f(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -8665,67 +8710,106 @@ static inline int lcf1_f(lua_State *L) {
   assert(lua_gettop(L) == 0);
 }
 
-/* name: f
+/* name: d
  * function() */
-static inline int lcf2_f(lua_State *L) {
+static inline int lcf5_d(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* local e=i() */
+  /* local e=n() */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc511 = 1 };
-  assert((lua_gettop(L) == lc511));
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 138);
+  enum { lc516 = 1 };
+  assert((lua_gettop(L) == lc516));
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 138);
   lua_call(L, 0, 1);
-  lua_rawseti(L, lc511, 141);
+  lua_rawseti(L, lc516, 141);
   assert(lua_gettop(L) == 1);
 
-  /* function f()return e end */
-  lua_pushvalue(L, lc511);
-  lua_pushcclosure(L, lcf1_f, 1);
-  lc_setupvalue(L, lc511, 4, 114);
+  /* function d()return e end */
+  lua_pushvalue(L, lc516);
+  lua_pushcclosure(L, lcf4_d, 1);
+  lc_setupvalue(L, lc516, 1, 140);
   assert(lua_gettop(L) == 1);
 
   /* return e */
-  lc_getupvalue(L, lc511, 0, 141);
+  lc_getupvalue(L, lc516, 0, 141);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ut
+/* name: m
+ * function() */
+static inline int lcf1_m(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* return e */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 142);
+  return 1;
+  assert(lua_gettop(L) == 0);
+}
+
+/* name: m
+ * function() */
+static inline int lcf2_m(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* local e=u() */
+  lc_newclosuretable(L, lua_upvalueindex(1));
+  enum { lc517 = 1 };
+  assert((lua_gettop(L) == lc517));
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 139);
+  lua_call(L, 0, 1);
+  lua_rawseti(L, lc517, 142);
+  assert(lua_gettop(L) == 1);
+
+  /* function m()return e end */
+  lua_pushvalue(L, lc517);
+  lua_pushcclosure(L, lcf1_m, 1);
+  lc_setupvalue(L, lc517, 4, 115);
+  assert(lua_gettop(L) == 1);
+
+  /* return e */
+  lc_getupvalue(L, lc517, 0, 142);
+  return 1;
+  assert(lua_gettop(L) == 1);
+}
+
+/* name: rt
  * function(e) */
-static inline int lcf1_ut(lua_State *L) {
+static inline int lcf2_rt(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return f()[e]~=nil */
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 114);
+  /* return m()[e]~=nil */
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 115);
   lua_call(L, 0, 1);
   lua_pushvalue(L, 1);
   lua_gettable(L, -2);
   lua_remove(L, -2);
   lua_pushnil(L);
-  const int lc513 = lua_equal(L, -2, -1);
+  const int lc519 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc513);
+  lua_pushboolean(L, lc519);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: it
+/* name: Ze
  * function(e) */
-static inline int lcf2_it(lua_State *L) {
+static inline int lcf2_Ze(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* return{
-   * pe,
+   * Ve,
    * e,
    * } */
   lua_createtable(L, 2, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 113);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 114);
   lua_rawseti(L, -2, 1);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 2);
@@ -8733,44 +8817,44 @@ static inline int lcf2_it(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: nt
+/* name: Xe
  * function(e) */
-static inline int lcf2_nt(lua_State *L) {
+static inline int lcf2_Xe(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* return d()[e]~=nil */
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 139);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 140);
   lua_call(L, 0, 1);
   lua_pushvalue(L, 1);
   lua_gettable(L, -2);
   lua_remove(L, -2);
   lua_pushnil(L);
-  const int lc516 = lua_equal(L, -2, -1);
+  const int lc522 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc516);
+  lua_pushboolean(L, lc522);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: i
+/* name: n
  * function(e) */
-static inline int lcf4_i(lua_State *L) {
+static inline int lcf4_n(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return it(d()[e]) */
-  const int lc518 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 143);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 139);
+  /* return Ze(d()[e]) */
+  const int lc524 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 144);
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 140);
   lua_call(L, 0, 1);
   lua_pushvalue(L, 1);
   lua_gettable(L, -2);
   lua_remove(L, -2);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc518);
+  return (lua_gettop(L) - lc524);
   assert(lua_gettop(L) == 1);
 }
 
@@ -8780,8 +8864,8 @@ static inline int lcf3_o(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* e[2]=F(e[2]) */
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 59);
+  /* e[2]=W(e[2]) */
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 60);
   lua_pushnumber(L, 2);
   lua_gettable(L, 1);
   lua_call(L, 1, 1);
@@ -8790,8 +8874,8 @@ static inline int lcf3_o(lua_State *L) {
   lua_settable(L, 1);
   assert(lua_gettop(L) == 1);
 
-  /* e[3]=F(e[3]) */
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 59);
+  /* e[3]=W(e[3]) */
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 60);
   lua_pushnumber(L, 3);
   lua_gettable(L, 1);
   lua_call(L, 1, 1);
@@ -8800,25 +8884,25 @@ static inline int lcf3_o(lua_State *L) {
   lua_settable(L, 1);
   assert(lua_gettop(L) == 1);
 
-  /* if O(e[2])or O(e[3]) then */
-  enum { lc520 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 100);
+  /* if I(e[2])or I(e[3]) then */
+  enum { lc526 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 101);
   lua_pushnumber(L, 2);
   lua_gettable(L, 1);
   lua_call(L, 1, 1);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 8, 100);
+    lc_getupvalue(L, lua_upvalueindex(1), 8, 101);
     lua_pushnumber(L, 3);
     lua_gettable(L, 1);
     lua_call(L, 1, 1);
   }
-  const int lc521 = lua_toboolean(L, -1);
+  const int lc527 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc521) {
+  if (lc527) {
 
-    /* local t=dt(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 8, 54);
+    /* local t=lt(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 8, 55);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 2);
@@ -8833,14 +8917,14 @@ static inline int lcf3_o(lua_State *L) {
     lua_gettable(L, 1);
     assert(lua_gettop(L) == 4);
 
-    /* local a=Oe(a) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 146);
+    /* local a=Ve(a) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 147);
     lua_pushvalue(L, 3);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 5);
 
-    /* local e=Oe(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 146);
+    /* local e=Ve(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 147);
     lua_pushvalue(L, 4);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 6);
@@ -8871,32 +8955,32 @@ static inline int lcf3_o(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc520);
+  lua_settop(L, lc526);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: Oe
+/* name: Ve
  * function(e) */
-static inline int lcf1_Oe(lua_State *L) {
+static inline int lcf1_Ve(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local t=Fe(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 19);
+  /* local t=Qe(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 20);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 2);
 
   /* local function o(e)
-   * e[2]=F(e[2])
-   * e[3]=F(e[3])
-   * if O(e[2])or O(e[3])then
-   * local t=dt(e)
+   * e[2]=W(e[2])
+   * e[3]=W(e[3])
+   * if I(e[2])or I(e[3])then
+   * local t=lt(e)
    * local a=e[2]
    * local e=e[3]
-   * local a=Oe(a)
-   * local e=Oe(e)
+   * local a=Ve(a)
+   * local e=Ve(e)
    * t[2]=a
    * t[3]=e
    * return t
@@ -8908,64 +8992,64 @@ static inline int lcf1_Oe(lua_State *L) {
   lua_pushcclosure(L, lcf3_o, 1);
   assert(lua_gettop(L) == 3);
 
-  /* if m(t) then */
-  enum { lc522 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 85);
+  /* if c(t) then */
+  enum { lc528 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 86);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  const int lc523 = lua_toboolean(L, -1);
+  const int lc529 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc523) {
+  if (lc529) {
 
     /* return o(t) */
-    const int lc524 = lua_gettop(L);
+    const int lc530 = lua_gettop(L);
     lua_pushvalue(L, 3);
     lua_pushvalue(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc524);
+    return (lua_gettop(L) - lc530);
     assert(lua_gettop(L) == 3);
   } else {
 
     /* elseif g(t) then */
-    enum { lc525 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 8, 81);
+    enum { lc531 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 8, 82);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
-    const int lc526 = lua_toboolean(L, -1);
+    const int lc532 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc526) {
+    if (lc532) {
 
       /* return o(t) */
-      const int lc527 = lua_gettop(L);
+      const int lc533 = lua_gettop(L);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 2);
       lua_call(L, 1, LUA_MULTRET);
-      return (lua_gettop(L) - lc527);
+      return (lua_gettop(L) - lc533);
       assert(lua_gettop(L) == 3);
     } else {
 
       /* elseif a(t) then */
-      enum { lc528 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 8, 91);
+      enum { lc534 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 8, 92);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
-      const int lc529 = lua_toboolean(L, -1);
+      const int lc535 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc529) {
+      if (lc535) {
 
         /* return o(t) */
-        const int lc530 = lua_gettop(L);
+        const int lc536 = lua_gettop(L);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 2);
         lua_call(L, 1, LUA_MULTRET);
-        return (lua_gettop(L) - lc530);
+        return (lua_gettop(L) - lc536);
         assert(lua_gettop(L) == 3);
       }
-      lua_settop(L, lc528);
+      lua_settop(L, lc534);
     }
-    lua_settop(L, lc525);
+    lua_settop(L, lc531);
   }
-  lua_settop(L, lc522);
+  lua_settop(L, lc528);
   assert(lua_gettop(L) == 3);
 
   /* return t */
@@ -8980,21 +9064,21 @@ static inline int lcf1_b(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return E(be,s(z,s(e,v))) */
-  const int lc541 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 86);
-  const int lc542 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 147);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 92);
-  const int lc543 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 53);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 92);
+  /* return T(ye,s(z,s(e,y))) */
+  const int lc547 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 87);
+  const int lc548 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 148);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 93);
+  const int lc549 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 54);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 93);
   lua_pushvalue(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 88);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 89);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc543), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc542), LUA_MULTRET);
-  return (lua_gettop(L) - lc541);
+  lua_call(L, (lua_gettop(L) - lc549), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc548), LUA_MULTRET);
+  return (lua_gettop(L) - lc547);
   assert(lua_gettop(L) == 1);
 }
 
@@ -9004,82 +9088,82 @@ static inline int lcf1_Ae(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return b(e(u,e(t,f,a),Y)) */
-  const int lc544 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
-  const int lc545 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 150);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 52);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 149);
+  /* return b(e(u,e(t,m,a),Y)) */
+  const int lc550 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 156);
+  const int lc551 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 151);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 53);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 150);
   lua_pushvalue(L, 1);
   lua_call(L, 3, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 7, 148);
+  lc_getupvalue(L, lua_upvalueindex(1), 7, 149);
   lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc545), LUA_MULTRET);
-  return (lua_gettop(L) - lc544);
+  lua_call(L, (lua_gettop(L) - lc551), LUA_MULTRET);
+  return (lua_gettop(L) - lc550);
   assert(lua_gettop(L) == 1);
 }
 
 /* name: d
- * function(o,a) */
-static inline int lcf5_d(lua_State *L) {
+ * function(a,o) */
+static inline int lcf6_d(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return b(e(u,e(t,e(o),f),a)) */
-  const int lc546 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
-  const int lc547 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 150);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 52);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
+  /* return b(e(u,e(t,e(a),m),o)) */
+  const int lc552 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 156);
+  const int lc553 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 151);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 53);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 149);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 150);
   lua_call(L, 3, 1);
   lua_pushvalue(L, 2);
   lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc547), LUA_MULTRET);
-  return (lua_gettop(L) - lc546);
+  lua_call(L, (lua_gettop(L) - lc553), LUA_MULTRET);
+  return (lua_gettop(L) - lc552);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: ee
+/* name: M
  * function(a) */
-static inline int lcf1_ee(lua_State *L) {
+static inline int lcf1_M(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return b(e(u,t,e(Z,e(u,a,f)))) */
-  const int lc548 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 155);
-  const int lc549 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  const int lc550 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 150);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 52);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  const int lc551 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 151);
-  lc_getupvalue(L, lua_upvalueindex(1), 17, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 150);
+  /* return b(e(u,t,e(ae,e(u,a,m)))) */
+  const int lc554 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 156);
+  const int lc555 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  const int lc556 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 151);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 53);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  const int lc557 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 152);
+  lc_getupvalue(L, lua_upvalueindex(1), 17, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 151);
   lua_pushvalue(L, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 149);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 150);
   lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc551), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc550), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc549), LUA_MULTRET);
-  return (lua_gettop(L) - lc548);
+  lua_call(L, (lua_gettop(L) - lc557), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc556), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc555), LUA_MULTRET);
+  return (lua_gettop(L) - lc554);
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ve
- * function(e,s,i) */
-static inline int lcf1_ve(lua_State *L) {
+/* name: ke
+ * function(e,n,s) */
+static inline int lcf1_ke(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -9088,9 +9172,9 @@ static inline int lcf1_ve(lua_State *L) {
   assert(lua_gettop(L) == 4);
 
   /* while a(e)do */
-  enum { lc574 = 4 };
+  enum { lc580 = 4 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 21, 91);
+    lc_getupvalue(L, lua_upvalueindex(1), 21, 92);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -9098,58 +9182,58 @@ static inline int lcf1_ve(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* l(t,o(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 22, 1);
-    const int lc575 = lua_gettop(L);
+    /* v(t,o(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 23, 1);
+    const int lc581 = lua_gettop(L);
     lua_pushvalue(L, 4);
-    lc_getupvalue(L, lua_upvalueindex(1), 21, 90);
+    lc_getupvalue(L, lua_upvalueindex(1), 21, 91);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc575), 0);
+    lua_call(L, (lua_gettop(L) - lc581), 0);
     assert(lua_gettop(L) == 4);
 
-    /* e=n(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 21, 89);
+    /* e=i(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 21, 90);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc574);
+  lua_settop(L, lc580);
   assert(lua_gettop(L) == 4);
 
-  /* if r(e) then */
-  enum { lc576 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 21, 87);
+  /* if h(e) then */
+  enum { lc582 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 21, 88);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc577 = lua_toboolean(L, -1);
+  const int lc583 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc577) {
+  if (lc583) {
 
-    /* return s(t) */
-    const int lc578 = lua_gettop(L);
+    /* return n(t) */
+    const int lc584 = lua_gettop(L);
     lua_pushvalue(L, 2);
     lua_pushvalue(L, 4);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc578);
+    return (lua_gettop(L) - lc584);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc576);
+  lua_settop(L, lc582);
   assert(lua_gettop(L) == 4);
 
-  /* return i(t,e) */
-  const int lc579 = lua_gettop(L);
+  /* return s(t,e) */
+  const int lc585 = lua_gettop(L);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 4);
   lua_pushvalue(L, 1);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc579);
+  return (lua_gettop(L) - lc585);
   assert(lua_gettop(L) == 4);
 }
 
 /* function(e) */
-static inline int lcf582(lua_State *L) {
+static inline int lcf588(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -9160,7 +9244,7 @@ static inline int lcf582(lua_State *L) {
 }
 
 /* function(e,e) */
-static inline int lcf583(lua_State *L) {
+static inline int lcf589(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
@@ -9172,36 +9256,36 @@ static inline int lcf583(lua_State *L) {
 
 /* name: M
  * function(e) */
-static inline int lcf1_M(lua_State *L) {
+static inline int lcf2_M(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return ve(e,function(e)return e end,function(e,e)return false end) */
-  const int lc581 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 159);
+  /* return ke(e,function(e)return e end,function(e,e)return false end) */
+  const int lc587 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 160);
   lua_pushvalue(L, 1);
-  lua_pushcfunction(L, lcf582);
-  lua_pushcfunction(L, lcf583);
+  lua_pushcfunction(L, lcf588);
+  lua_pushcfunction(L, lcf589);
   lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc581);
+  return (lua_gettop(L) - lc587);
   assert(lua_gettop(L) == 1);
 }
 
-/* name: Ue
+/* name: tt
  * function(e) */
-static inline int lcf1_Ue(lua_State *L) {
+static inline int lcf1_tt(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* while V(e)or O(e)do */
-  enum { lc584 = 1 };
+  /* while B(e)or I(e)do */
+  enum { lc590 = 1 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 22, 78);
+    lc_getupvalue(L, lua_upvalueindex(1), 22, 79);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 22, 100);
+      lc_getupvalue(L, lua_upvalueindex(1), 22, 101);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
     }
@@ -9210,17 +9294,17 @@ static inline int lcf1_Ue(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* e=N(ze(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 22, 25);
-    const int lc585 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 22, 97);
+    /* e=N(qe(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 22, 26);
+    const int lc591 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 22, 98);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc585), 1);
+    lua_call(L, (lua_gettop(L) - lc591), 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc584);
+  lua_settop(L, lc590);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -9235,14 +9319,14 @@ static inline int lcf2_Ae(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* if B(e) then */
-  enum { lc587 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 23, 75);
+  /* if Q(e) then */
+  enum { lc593 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 23, 76);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc588 = lua_toboolean(L, -1);
+  const int lc594 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc588) {
+  if (lc594) {
 
     /* return e */
     lua_pushvalue(L, 1);
@@ -9250,14 +9334,14 @@ static inline int lcf2_Ae(lua_State *L) {
     assert(lua_gettop(L) == 1);
   } else {
 
-    /* elseif Q(e) then */
-    enum { lc589 = 1 };
-    lc_getupvalue(L, lua_upvalueindex(1), 23, 71);
+    /* elseif G(e) then */
+    enum { lc595 = 1 };
+    lc_getupvalue(L, lua_upvalueindex(1), 23, 72);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    const int lc590 = lua_toboolean(L, -1);
+    const int lc596 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc590) {
+    if (lc596) {
 
       /* error("WIP") */
       lua_getfield(L, LUA_ENVIRONINDEX, "error");
@@ -9266,14 +9350,14 @@ static inline int lcf2_Ae(lua_State *L) {
       assert(lua_gettop(L) == 1);
     } else {
 
-      /* elseif J(e) then */
-      enum { lc591 = 1 };
-      lc_getupvalue(L, lua_upvalueindex(1), 23, 66);
+      /* elseif P(e) then */
+      enum { lc597 = 1 };
+      lc_getupvalue(L, lua_upvalueindex(1), 23, 67);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc592 = lua_toboolean(L, -1);
+      const int lc598 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc592) {
+      if (lc598) {
 
         /* error("WIP") */
         lua_getfield(L, LUA_ENVIRONINDEX, "error");
@@ -9282,14 +9366,14 @@ static inline int lcf2_Ae(lua_State *L) {
         assert(lua_gettop(L) == 1);
       } else {
 
-        /* elseif G(e) then */
-        enum { lc593 = 1 };
-        lc_getupvalue(L, lua_upvalueindex(1), 23, 62);
+        /* elseif V(e) then */
+        enum { lc599 = 1 };
+        lc_getupvalue(L, lua_upvalueindex(1), 23, 63);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        const int lc594 = lua_toboolean(L, -1);
+        const int lc600 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc594) {
+        if (lc600) {
 
           /* error("WIP") */
           lua_getfield(L, LUA_ENVIRONINDEX, "error");
@@ -9297,38 +9381,56 @@ static inline int lcf2_Ae(lua_State *L) {
           lua_call(L, 1, 0);
           assert(lua_gettop(L) == 1);
         }
-        lua_settop(L, lc593);
+        lua_settop(L, lc599);
       }
-      lua_settop(L, lc591);
+      lua_settop(L, lc597);
     }
-    lua_settop(L, lc589);
+    lua_settop(L, lc595);
   }
-  lua_settop(L, lc587);
+  lua_settop(L, lc593);
   assert(lua_gettop(L) == 1);
 
-  /* return q() */
-  const int lc595 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 23, 116);
+  /* return j() */
+  const int lc601 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 23, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc595);
+  return (lua_gettop(L) - lc601);
   assert(lua_gettop(L) == 1);
 }
 
-/* name: Qe
+/* name: it
  * function(e) */
-static inline int lcf2_Qe(lua_State *L) {
+static inline int lcf2_it(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return te(Ae(e)) */
-  const int lc596 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 23, 74);
-  const int lc597 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 161);
+  /* return X(Ae(e)) */
+  const int lc602 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 23, 75);
+  const int lc603 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 162);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc597), LUA_MULTRET);
-  return (lua_gettop(L) - lc596);
+  lua_call(L, (lua_gettop(L) - lc603), LUA_MULTRET);
+  return (lua_gettop(L) - lc602);
+  assert(lua_gettop(L) == 1);
+}
+
+/* name: ct
+ * function(e) */
+static inline int lcf1_ct(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
+  /* return Z(Ae(e)) */
+  const int lc604 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 23, 74);
+  const int lc605 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 162);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc605), LUA_MULTRET);
+  return (lua_gettop(L) - lc604);
   assert(lua_gettop(L) == 1);
 }
 
@@ -9338,207 +9440,189 @@ static inline int lcf1_st(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return ae(Ae(e)) */
-  const int lc598 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 23, 73);
-  const int lc599 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 161);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc599), LUA_MULTRET);
-  return (lua_gettop(L) - lc598);
-  assert(lua_gettop(L) == 1);
-}
-
-/* name: ht
- * function(e) */
-static inline int lcf1_ht(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* if O(e) then */
-  enum { lc600 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 23, 100);
+  /* if I(e) then */
+  enum { lc606 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 23, 101);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc601 = lua_toboolean(L, -1);
+  const int lc607 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc601) {
+  if (lc607) {
 
-    /* return X(e) */
-    const int lc602 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 23, 98);
+    /* return K(e) */
+    const int lc608 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 23, 99);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc602);
+    return (lua_gettop(L) - lc608);
     assert(lua_gettop(L) == 1);
   } else {
 
     /* else
      * return k(e) */
-    const int lc603 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 23, 21);
+    const int lc609 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 23, 22);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc603);
+    return (lua_gettop(L) - lc609);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc600);
+  lua_settop(L, lc606);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: se
+/* name: he
  * function(t) */
-static inline int lcf1_se(lua_State *L) {
+static inline int lcf1_he(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* t=h(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
+  /* t=r(t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 1);
 
-  /* if not m(t) then */
-  enum { lc605 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 85);
+  /* if not c(t) then */
+  enum { lc611 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 86);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc606 = lua_toboolean(L, -1);
+  const int lc612 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc606) {
+  if (lc612) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc605);
+  lua_settop(L, lc611);
   assert(lua_gettop(L) == 1);
 
-  /* local e=h(_(t)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-  const int lc607 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 84);
+  /* local e=r(E(t)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  const int lc613 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 85);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc607), 1);
+  lua_call(L, (lua_gettop(L) - lc613), 1);
   assert(lua_gettop(L) == 2);
 
   /* if not p(e) then */
-  enum { lc608 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 96);
+  enum { lc614 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 97);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc609 = lua_toboolean(L, -1);
+  const int lc615 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc609) {
+  if (lc615) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc608);
+  lua_settop(L, lc614);
   assert(lua_gettop(L) == 2);
 
-  /* if not L(e,Be) then */
-  enum { lc610 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 93);
+  /* if not D(e,Se) then */
+  enum { lc616 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 94);
   lua_pushvalue(L, 2);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 50);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 51);
   lua_call(L, 2, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc611 = lua_toboolean(L, -1);
+  const int lc617 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc611) {
+  if (lc617) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc610);
+  lua_settop(L, lc616);
   assert(lua_gettop(L) == 2);
 
-  /* e=h(A(t)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-  const int lc612 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 83);
+  /* e=r(A(t)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  const int lc618 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 84);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc612), 1);
+  lua_call(L, (lua_gettop(L) - lc618), 1);
   lua_replace(L, 2);
   assert(lua_gettop(L) == 2);
 
   /* if not a(e) then */
-  enum { lc613 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+  enum { lc619 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc614 = lua_toboolean(L, -1);
+  const int lc620 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc614) {
+  if (lc620) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc613);
+  lua_settop(L, lc619);
   assert(lua_gettop(L) == 2);
 
-  /* if not r(h(n(e))) then */
-  enum { lc615 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 87);
-  const int lc616 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-  const int lc617 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 89);
+  /* if not h(r(i(e))) then */
+  enum { lc621 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 88);
+  const int lc622 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  const int lc623 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc617), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc616), 1);
+  lua_call(L, (lua_gettop(L) - lc623), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc622), 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc618 = lua_toboolean(L, -1);
+  const int lc624 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc618) {
+  if (lc624) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc615);
+  lua_settop(L, lc621);
   assert(lua_gettop(L) == 2);
 
   /* local t={} */
   lua_newtable(L);
   assert(lua_gettop(L) == 3);
 
-  /* local i=h(o(e)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-  const int lc619 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
+  /* local n=r(o(e)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  const int lc625 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc619), 1);
+  lua_call(L, (lua_gettop(L) - lc625), 1);
   assert(lua_gettop(L) == 4);
 
-  /* while not r(i)do */
-  enum { lc620 = 4 };
+  /* while not h(n)do */
+  enum { lc626 = 4 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 87);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 88);
     lua_pushvalue(L, 4);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -9548,127 +9632,127 @@ static inline int lcf1_se(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* if not a(i) then */
-    enum { lc621 = 4 };
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    /* if not a(n) then */
+    enum { lc627 = 4 };
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
     lua_pushvalue(L, 4);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc622 = lua_toboolean(L, -1);
+    const int lc628 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc622) {
+    if (lc628) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 4);
     }
-    lua_settop(L, lc621);
+    lua_settop(L, lc627);
     assert(lua_gettop(L) == 4);
 
-    /* local e=h(o(i)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-    const int lc623 = lua_gettop(L);
+    /* local e=r(o(n)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+    const int lc629 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    lua_pushvalue(L, 4);
+    lua_call(L, 1, LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc629), 1);
+    assert(lua_gettop(L) == 5);
+
+    /* n=r(i(n)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+    const int lc630 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
     lua_pushvalue(L, 4);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc623), 1);
-    assert(lua_gettop(L) == 5);
-
-    /* i=h(n(i)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-    const int lc624 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 89);
-    lua_pushvalue(L, 4);
-    lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc624), 1);
+    lua_call(L, (lua_gettop(L) - lc630), 1);
     lua_replace(L, 4);
     assert(lua_gettop(L) == 5);
 
     /* if not a(e) then */
-    enum { lc625 = 5 };
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    enum { lc631 = 5 };
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc626 = lua_toboolean(L, -1);
+    const int lc632 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc626) {
+    if (lc632) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 5);
     }
-    lua_settop(L, lc625);
+    lua_settop(L, lc631);
     assert(lua_gettop(L) == 5);
 
-    /* local i=o(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
+    /* local n=o(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 6);
 
-    /* e=h(n(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-    const int lc627 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 89);
+    /* e=r(i(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+    const int lc633 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
     lua_pushvalue(L, 5);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc627), 1);
+    lua_call(L, (lua_gettop(L) - lc633), 1);
     lua_replace(L, 5);
     assert(lua_gettop(L) == 6);
 
     /* if not a(e) then */
-    enum { lc628 = 6 };
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    enum { lc634 = 6 };
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc629 = lua_toboolean(L, -1);
+    const int lc635 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc629) {
+    if (lc635) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 6);
     }
-    lua_settop(L, lc628);
+    lua_settop(L, lc634);
     assert(lua_gettop(L) == 6);
 
     /* local o=o(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 7);
 
-    /* if not r(h(n(e))) then */
-    enum { lc630 = 7 };
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 87);
-    const int lc631 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-    const int lc632 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 89);
+    /* if not h(r(i(e))) then */
+    enum { lc636 = 7 };
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 88);
+    const int lc637 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+    const int lc638 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
     lua_pushvalue(L, 5);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc632), LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc631), 1);
+    lua_call(L, (lua_gettop(L) - lc638), LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc637), 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc633 = lua_toboolean(L, -1);
+    const int lc639 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc633) {
+    if (lc639) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 7);
     }
-    lua_settop(L, lc630);
+    lua_settop(L, lc636);
     assert(lua_gettop(L) == 7);
 
     /* local a=true */
@@ -9681,21 +9765,21 @@ static inline int lcf1_se(lua_State *L) {
     assert(lua_gettop(L) == 9);
 
     /* while e<#t do */
-    enum { lc634 = 9 };
+    enum { lc640 = 9 };
     while (1) {
-      const double lc635 = lua_objlen(L, 3);
-      lua_pushnumber(L, lc635);
-      const int lc636 = lua_lessthan(L, 9, -1);
+      const double lc641 = lua_objlen(L, 3);
+      lua_pushnumber(L, lc641);
+      const int lc642 = lua_lessthan(L, 9, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc636);
+      lua_pushboolean(L, lc642);
       if (!(lua_toboolean(L, -1))) {
         break;
       }
       lua_pop(L, 1);
 
-      /* if c(t[(e+0)+1],i) then */
-      enum { lc637 = 9 };
-      lc_getupvalue(L, lua_upvalueindex(1), 24, 3);
+      /* if l(t[(e+0)+1],n) then */
+      enum { lc643 = 9 };
+      lc_getupvalue(L, lua_upvalueindex(1), 24, 4);
       lua_pushnumber(L, 0);
       lc_add(L, 9, -1);
       lua_remove(L, -2);
@@ -9706,9 +9790,9 @@ static inline int lcf1_se(lua_State *L) {
       lua_gettable(L, 3);
       lua_pushvalue(L, 6);
       lua_call(L, 2, 1);
-      const int lc638 = lua_toboolean(L, -1);
+      const int lc644 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc638) {
+      if (lc644) {
 
         /* t[(e+1)+1]=o */
         lua_pushvalue(L, 7);
@@ -9732,7 +9816,7 @@ static inline int lcf1_se(lua_State *L) {
         break;
         assert(lua_gettop(L) == 9);
       }
-      lua_settop(L, lc637);
+      lua_settop(L, lc643);
       assert(lua_gettop(L) == 9);
 
       /* e=e+2 */
@@ -9742,7 +9826,7 @@ static inline int lcf1_se(lua_State *L) {
       lua_replace(L, 9);
       assert(lua_gettop(L) == 9);
     }
-    lua_settop(L, lc634);
+    lua_settop(L, lc640);
     assert(lua_gettop(L) == 9);
 
     /* internal: stack cleanup on scope exit */
@@ -9750,30 +9834,30 @@ static inline int lcf1_se(lua_State *L) {
     assert(lua_gettop(L) == 8);
 
     /* if a then */
-    enum { lc639 = 8 };
+    enum { lc645 = 8 };
     if (lua_toboolean(L, 8)) {
 
-      /* l(t,i) */
-      lc_getupvalue(L, lua_upvalueindex(1), 25, 1);
+      /* v(t,n) */
+      lc_getupvalue(L, lua_upvalueindex(1), 26, 1);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 6);
       lua_call(L, 2, 0);
       assert(lua_gettop(L) == 8);
 
-      /* l(t,o) */
-      lc_getupvalue(L, lua_upvalueindex(1), 25, 1);
+      /* v(t,o) */
+      lc_getupvalue(L, lua_upvalueindex(1), 26, 1);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 7);
       lua_call(L, 2, 0);
       assert(lua_gettop(L) == 8);
     }
-    lua_settop(L, lc639);
+    lua_settop(L, lc645);
     assert(lua_gettop(L) == 8);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 4);
   }
-  lua_settop(L, lc620);
+  lua_settop(L, lc626);
   assert(lua_gettop(L) == 4);
 
   /* return t */
@@ -9783,220 +9867,220 @@ static inline int lcf1_se(lua_State *L) {
 }
 
 /* function(e) */
-static inline int lcf646(lua_State *L) {
+static inline int lcf652(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* e=k(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 21);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 22);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 1);
 
-  /* if y(e) then */
-  enum { lc641 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 23);
+  /* if w(e) then */
+  enum { lc647 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc642 = lua_toboolean(L, -1);
+  const int lc648 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc642) {
+  if (lc648) {
 
-    /* return j(t,{e}) */
-    const int lc643 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 67);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 163);
+    /* return q(t,{e}) */
+    const int lc649 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 68);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 164);
     lua_createtable(L, 1, 0);
     lua_pushvalue(L, 1);
     lua_rawseti(L, -2, 1);
     lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc643);
+    return (lua_gettop(L) - lc649);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc641);
+  lua_settop(L, lc647);
   assert(lua_gettop(L) == 1);
 
   /* if a(e) then */
-  enum { lc644 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 164);
+  enum { lc650 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 165);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc645 = lua_toboolean(L, -1);
+  const int lc651 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc645) {
+  if (lc651) {
 
-    /* return he */
-    lc_getupvalue(L, lua_upvalueindex(1), 5, 158);
+    /* return se */
+    lc_getupvalue(L, lua_upvalueindex(1), 5, 159);
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc644);
+  lua_settop(L, lc650);
   assert(lua_gettop(L) == 1);
 
   /* return d */
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 157);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 158);
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: ne
+/* name: ie
  * function(t,a) */
-static inline int lcf1_ne(lua_State *L) {
+static inline int lcf1_ie(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc640 = 3 };
-  assert((lua_gettop(L) == lc640));
+  enum { lc646 = 3 };
+  assert((lua_gettop(L) == lc646));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 163);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 164);
+  lua_pushvalue(L, 2);
+  lua_rawseti(L, -2, 165);
 
   /* return{
    * t,
    * 1,
    * function(e)
    * e=k(e)
-   * if y(e)then
-   * return j(t,{e})
+   * if w(e)then
+   * return q(t,{e})
    * end
    * if a(e)then
-   * return he
+   * return se
    * end
    * return d
    * end,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lc640, 0, 163);
+  lc_getupvalue(L, lc646, 0, 164);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 1);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, lc640);
-  lua_pushcclosure(L, lcf646, 1);
+  lua_pushvalue(L, lc646);
+  lua_pushcclosure(L, lcf652, 1);
   lua_rawseti(L, -2, 3);
   return 1;
   assert(lua_gettop(L) == 3);
 }
 
-/* function(e,a) */
-static inline int lcf655(lua_State *L) {
+/* function(e,i) */
+static inline int lcf661(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* e=k(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 21);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 22);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* if y(e) then */
-  enum { lc648 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 23);
+  /* if w(e) then */
+  enum { lc654 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc649 = lua_toboolean(L, -1);
+  const int lc655 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc649) {
+  if (lc655) {
 
-    /* return j(t,{e}) */
-    const int lc650 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 67);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 165);
+    /* return q(t,{e}) */
+    const int lc656 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 68);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 166);
     lua_createtable(L, 1, 0);
     lua_pushvalue(L, 1);
     lua_rawseti(L, -2, 1);
     lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc650);
+    return (lua_gettop(L) - lc656);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc648);
+  lua_settop(L, lc654);
   assert(lua_gettop(L) == 2);
 
-  /* if i(e) then */
-  enum { lc651 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 166);
+  /* if a(e) then */
+  enum { lc657 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 167);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc652 = lua_toboolean(L, -1);
+  const int lc658 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc652) {
+  if (lc658) {
 
     /* return o(e) */
-    const int lc653 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 167);
+    const int lc659 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 168);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc653);
+    return (lua_gettop(L) - lc659);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc651);
+  lua_settop(L, lc657);
   assert(lua_gettop(L) == 2);
 
-  /* return a() */
-  const int lc654 = lua_gettop(L);
+  /* return i() */
+  const int lc660 = lua_gettop(L);
   lua_pushvalue(L, 2);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc654);
+  return (lua_gettop(L) - lc660);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: ee
- * function(t,i,o) */
-static inline int lcf2_ee(lua_State *L) {
+/* name: J
+ * function(t,a,o) */
+static inline int lcf1_J(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc647 = 4 };
-  assert((lua_gettop(L) == lc647));
+  enum { lc653 = 4 };
+  assert((lua_gettop(L) == lc653));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 165);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 166);
-  lua_pushvalue(L, 3);
+  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 167);
+  lua_pushvalue(L, 3);
+  lua_rawseti(L, -2, 168);
 
   /* return{
    * t,
    * 1,
-   * function(e,a)
+   * function(e,i)
    * e=k(e)
-   * if y(e)then
-   * return j(t,{e})
+   * if w(e)then
+   * return q(t,{e})
    * end
-   * if i(e)then
+   * if a(e)then
    * return o(e)
    * end
-   * return a()
+   * return i()
    * end,
    * } */
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, lc647, 0, 165);
+  lc_getupvalue(L, lc653, 0, 166);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 1);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, lc647);
-  lua_pushcclosure(L, lcf655, 1);
+  lua_pushvalue(L, lc653);
+  lua_pushcclosure(L, lcf661, 1);
   lua_rawseti(L, -2, 3);
   return 1;
   assert(lua_gettop(L) == 4);
 }
 
-/* name: i
- * function(t,e,a) */
-static inline int lcf5_i(lua_State *L) {
+/* name: n
+ * function(a,t,e) */
+static inline int lcf5_n(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
-  /* return j(oe,{
+  /* return q(ee,{
+   * a,
    * t,
    * e,
-   * a,
    * }) */
-  const int lc666 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 67);
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 34);
+  const int lc672 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 68);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 35);
   lua_createtable(L, 3, 0);
   lua_pushvalue(L, 1);
   lua_rawseti(L, -2, 1);
@@ -10005,146 +10089,82 @@ static inline int lcf5_i(lua_State *L) {
   lua_pushvalue(L, 3);
   lua_rawseti(L, -2, 3);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc666);
+  return (lua_gettop(L) - lc672);
   assert(lua_gettop(L) == 3);
 }
 
 /* name: s
- * function(e,t) */
-static inline int lcf2_s(lua_State *L) {
+ * function(t,e) */
+static inline int lcf3_s(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return i(e,t,d) */
-  const int lc668 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 168);
+  /* return n(t,e,d) */
+  const int lc674 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 169);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
-  lc_getupvalue(L, lua_upvalueindex(1), 7, 157);
+  lc_getupvalue(L, lua_upvalueindex(1), 7, 158);
   lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc668);
+  return (lua_gettop(L) - lc674);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: i
- * function(o,a,e,t) */
-static inline int lcf6_i(lua_State *L) {
+/* name: n
+ * function(e,o,t,a) */
+static inline int lcf6_n(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* return s(j(ie,{
-   * e(o),
-   * e(a),
-   * }),j(ie,{
+  /* return s(q(te,{
+   * t(e),
    * t(o),
-   * t(a),
+   * }),q(te,{
+   * a(e),
+   * a(o),
    * })) */
-  const int lc669 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 169);
-  const int lc670 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 26, 67);
-  lc_getupvalue(L, lua_upvalueindex(1), 26, 37);
+  const int lc675 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 170);
+  const int lc676 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 26, 68);
+  lc_getupvalue(L, lua_upvalueindex(1), 26, 38);
   lua_createtable(L, 2, 0);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_rawseti(L, -2, 1);
-  const int lc671 = lua_gettop(L);
+  const int lc677 = lua_gettop(L);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  while ((lua_gettop(L) > lc671)) {
-    lua_rawseti(L, lc671, (1 + (lua_gettop(L) - lc671)));
+  while ((lua_gettop(L) > lc677)) {
+    lua_rawseti(L, lc677, (1 + (lua_gettop(L) - lc677)));
   }
   lua_call(L, 2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 26, 67);
-  lc_getupvalue(L, lua_upvalueindex(1), 26, 37);
+  lc_getupvalue(L, lua_upvalueindex(1), 26, 68);
+  lc_getupvalue(L, lua_upvalueindex(1), 26, 38);
   lua_createtable(L, 2, 0);
   lua_pushvalue(L, 4);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_rawseti(L, -2, 1);
-  const int lc672 = lua_gettop(L);
+  const int lc678 = lua_gettop(L);
   lua_pushvalue(L, 4);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  while ((lua_gettop(L) > lc672)) {
-    lua_rawseti(L, lc672, (1 + (lua_gettop(L) - lc672)));
+  while ((lua_gettop(L) > lc678)) {
+    lua_rawseti(L, lc678, (1 + (lua_gettop(L) - lc678)));
   }
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc670), LUA_MULTRET);
-  return (lua_gettop(L) - lc669);
+  lua_call(L, (lua_gettop(L) - lc676), LUA_MULTRET);
+  return (lua_gettop(L) - lc675);
   assert(lua_gettop(L) == 4);
 }
 
-/* function(e,t,i) */
-static inline int lcf699(lua_State *L) {
+/* function(e,t,n) */
+static inline int lcf705(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
-
-  /* if e==t then */
-  enum { lc656 = 3 };
-  const int lc657 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc657);
-  const int lc658 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc658) {
-
-    /* return he */
-    lc_getupvalue(L, lua_upvalueindex(1), 4, 158);
-    return 1;
-    assert(lua_gettop(L) == 3);
-  }
-  lua_settop(L, lc656);
-  assert(lua_gettop(L) == 3);
-
-  /* e=k(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 1);
-  lua_replace(L, 1);
-  assert(lua_gettop(L) == 3);
-
-  /* t=k(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  lua_replace(L, 2);
-  assert(lua_gettop(L) == 3);
-
-  /* if y(e)or y(t) then */
-  enum { lc659 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 23);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 1);
-  if (!(lua_toboolean(L, -1))) {
-    lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 23);
-    lua_pushvalue(L, 2);
-    lua_call(L, 1, 1);
-  }
-  const int lc660 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc660) {
-
-    /* return j(ie,{
-     * e,
-     * t,
-     * }) */
-    const int lc661 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 67);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 37);
-    lua_createtable(L, 2, 0);
-    lua_pushvalue(L, 1);
-    lua_rawseti(L, -2, 1);
-    lua_pushvalue(L, 2);
-    lua_rawseti(L, -2, 2);
-    lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc661);
-    assert(lua_gettop(L) == 3);
-  }
-  lua_settop(L, lc659);
-  assert(lua_gettop(L) == 3);
 
   /* if e==t then */
   enum { lc662 = 3 };
@@ -10154,43 +10174,107 @@ static inline int lcf699(lua_State *L) {
   lua_pop(L, 1);
   if (lc664) {
 
-    /* return he */
-    lc_getupvalue(L, lua_upvalueindex(1), 4, 158);
+    /* return se */
+    lc_getupvalue(L, lua_upvalueindex(1), 4, 159);
     return 1;
     assert(lua_gettop(L) == 3);
   }
   lua_settop(L, lc662);
   assert(lua_gettop(L) == 3);
 
-  /* local function i(t,e,a)
-   * return j(oe,{
+  /* e=k(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 22);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  lua_replace(L, 1);
+  assert(lua_gettop(L) == 3);
+
+  /* t=k(t) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 22);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lua_replace(L, 2);
+  assert(lua_gettop(L) == 3);
+
+  /* if w(e)or w(t) then */
+  enum { lc665 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 24);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  if (!(lua_toboolean(L, -1))) {
+    lua_pop(L, 1);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 24);
+    lua_pushvalue(L, 2);
+    lua_call(L, 1, 1);
+  }
+  const int lc666 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc666) {
+
+    /* return q(te,{
+     * e,
+     * t,
+     * }) */
+    const int lc667 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 68);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 38);
+    lua_createtable(L, 2, 0);
+    lua_pushvalue(L, 1);
+    lua_rawseti(L, -2, 1);
+    lua_pushvalue(L, 2);
+    lua_rawseti(L, -2, 2);
+    lua_call(L, 2, LUA_MULTRET);
+    return (lua_gettop(L) - lc667);
+    assert(lua_gettop(L) == 3);
+  }
+  lua_settop(L, lc665);
+  assert(lua_gettop(L) == 3);
+
+  /* if e==t then */
+  enum { lc668 = 3 };
+  const int lc669 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc669);
+  const int lc670 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc670) {
+
+    /* return se */
+    lc_getupvalue(L, lua_upvalueindex(1), 4, 159);
+    return 1;
+    assert(lua_gettop(L) == 3);
+  }
+  lua_settop(L, lc668);
+  assert(lua_gettop(L) == 3);
+
+  /* local function n(a,t,e)
+   * return q(ee,{
+   * a,
    * t,
    * e,
-   * a,
    * })
    * end */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc665 = 4 };
-  assert((lua_gettop(L) == lc665));
-  lua_pushvalue(L, lc665);
-  lua_pushcclosure(L, lcf5_i, 1);
-  lua_rawseti(L, lc665, 168);
+  enum { lc671 = 4 };
+  assert((lua_gettop(L) == lc671));
+  lua_pushvalue(L, lc671);
+  lua_pushcclosure(L, lcf5_n, 1);
+  lua_rawseti(L, lc671, 169);
   assert(lua_gettop(L) == 4);
 
-  /* local function s(e,t)
-   * return i(e,t,d)
+  /* local function s(t,e)
+   * return n(t,e,d)
    * end */
-  lc_newclosuretable(L, lc665);
-  enum { lc667 = 5 };
-  assert((lua_gettop(L) == lc667));
-  lua_pushvalue(L, lc667);
-  lua_pushcclosure(L, lcf2_s, 1);
-  lua_rawseti(L, lc667, 169);
+  lc_newclosuretable(L, lc671);
+  enum { lc673 = 5 };
+  assert((lua_gettop(L) == lc673));
+  lua_pushvalue(L, lc673);
+  lua_pushcclosure(L, lcf3_s, 1);
+  lua_rawseti(L, lc673, 170);
   assert(lua_gettop(L) == 5);
 
-  /* S(not y(e)) */
-  lc_getupvalue(L, lc667, 26, 115);
-  lc_getupvalue(L, lc667, 26, 23);
+  /* H(not w(e)) */
+  lc_getupvalue(L, lc673, 26, 116);
+  lc_getupvalue(L, lc673, 26, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
@@ -10198,247 +10282,247 @@ static inline int lcf699(lua_State *L) {
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 5);
 
-  /* local function i(o,a,e,t)
-   * return s(j(ie,{
-   * e(o),
-   * e(a),
-   * }),j(ie,{
+  /* local function n(e,o,t,a)
+   * return s(q(te,{
+   * t(e),
    * t(o),
-   * t(a),
+   * }),q(te,{
+   * a(e),
+   * a(o),
    * }))
    * end */
-  lua_pushvalue(L, lc667);
-  lua_pushcclosure(L, lcf6_i, 1);
+  lua_pushvalue(L, lc673);
+  lua_pushcclosure(L, lcf6_n, 1);
   assert(lua_gettop(L) == 6);
 
-  /* if r(e) then */
-  enum { lc673 = 6 };
-  lc_getupvalue(L, lc667, 26, 87);
+  /* if h(e) then */
+  enum { lc679 = 6 };
+  lc_getupvalue(L, lc673, 26, 88);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc674 = lua_toboolean(L, -1);
+  const int lc680 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc674) {
+  if (lc680) {
 
-    /* if not r(e) then */
-    enum { lc675 = 6 };
-    lc_getupvalue(L, lc667, 26, 87);
+    /* if not h(e) then */
+    enum { lc681 = 6 };
+    lc_getupvalue(L, lc673, 26, 88);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc676 = lua_toboolean(L, -1);
+    const int lc682 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc676) {
+    if (lc682) {
 
       /* return d */
-      lc_getupvalue(L, lc667, 7, 157);
+      lc_getupvalue(L, lc673, 7, 158);
       return 1;
       assert(lua_gettop(L) == 6);
     }
-    lua_settop(L, lc675);
+    lua_settop(L, lc681);
     assert(lua_gettop(L) == 6);
 
-    /* return he */
-    lc_getupvalue(L, lc667, 6, 158);
+    /* return se */
+    lc_getupvalue(L, lc673, 6, 159);
     return 1;
     assert(lua_gettop(L) == 6);
   } else {
 
     /* elseif p(e) then */
-    enum { lc677 = 6 };
-    lc_getupvalue(L, lc667, 26, 96);
+    enum { lc683 = 6 };
+    lc_getupvalue(L, lc673, 26, 97);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    const int lc678 = lua_toboolean(L, -1);
+    const int lc684 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc678) {
+    if (lc684) {
 
       /* if not p(t) then */
-      enum { lc679 = 6 };
-      lc_getupvalue(L, lc667, 26, 96);
+      enum { lc685 = 6 };
+      lc_getupvalue(L, lc673, 26, 97);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc680 = lua_toboolean(L, -1);
+      const int lc686 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc680) {
+      if (lc686) {
 
         /* return d */
-        lc_getupvalue(L, lc667, 7, 157);
+        lc_getupvalue(L, lc673, 7, 158);
         return 1;
         assert(lua_gettop(L) == 6);
       }
-      lua_settop(L, lc679);
+      lua_settop(L, lc685);
       assert(lua_gettop(L) == 6);
 
-      /* if L(e,t) then */
-      enum { lc681 = 6 };
-      lc_getupvalue(L, lc667, 26, 93);
+      /* if D(e,t) then */
+      enum { lc687 = 6 };
+      lc_getupvalue(L, lc673, 26, 94);
       lua_pushvalue(L, 1);
       lua_pushvalue(L, 2);
       lua_call(L, 2, 1);
-      const int lc682 = lua_toboolean(L, -1);
+      const int lc688 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc682) {
+      if (lc688) {
 
-        /* return he */
-        lc_getupvalue(L, lc667, 6, 158);
+        /* return se */
+        lc_getupvalue(L, lc673, 6, 159);
         return 1;
         assert(lua_gettop(L) == 6);
       } else {
 
         /* else
          * return d */
-        lc_getupvalue(L, lc667, 7, 157);
+        lc_getupvalue(L, lc673, 7, 158);
         return 1;
         assert(lua_gettop(L) == 6);
       }
-      lua_settop(L, lc681);
+      lua_settop(L, lc687);
       assert(lua_gettop(L) == 6);
     } else {
 
-      /* elseif m(e) then */
-      enum { lc683 = 6 };
-      lc_getupvalue(L, lc667, 26, 85);
+      /* elseif c(e) then */
+      enum { lc689 = 6 };
+      lc_getupvalue(L, lc673, 26, 86);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc684 = lua_toboolean(L, -1);
+      const int lc690 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc684) {
+      if (lc690) {
 
-        /* if not m(t) then */
-        enum { lc685 = 6 };
-        lc_getupvalue(L, lc667, 26, 85);
+        /* if not c(t) then */
+        enum { lc691 = 6 };
+        lc_getupvalue(L, lc673, 26, 86);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
-        const int lc686 = lua_toboolean(L, -1);
+        const int lc692 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc686) {
+        if (lc692) {
 
           /* return d */
-          lc_getupvalue(L, lc667, 7, 157);
+          lc_getupvalue(L, lc673, 7, 158);
           return 1;
           assert(lua_gettop(L) == 6);
         }
-        lua_settop(L, lc685);
+        lua_settop(L, lc691);
         assert(lua_gettop(L) == 6);
 
-        /* return i(e,t,_,A) */
-        const int lc687 = lua_gettop(L);
+        /* return n(e,t,E,A) */
+        const int lc693 = lua_gettop(L);
         lua_pushvalue(L, 6);
         lua_pushvalue(L, 1);
         lua_pushvalue(L, 2);
-        lc_getupvalue(L, lc667, 26, 84);
-        lc_getupvalue(L, lc667, 26, 83);
+        lc_getupvalue(L, lc673, 26, 85);
+        lc_getupvalue(L, lc673, 26, 84);
         lua_call(L, 4, LUA_MULTRET);
-        return (lua_gettop(L) - lc687);
+        return (lua_gettop(L) - lc693);
         assert(lua_gettop(L) == 6);
       } else {
 
         /* elseif a(e) then */
-        enum { lc688 = 6 };
-        lc_getupvalue(L, lc667, 26, 91);
+        enum { lc694 = 6 };
+        lc_getupvalue(L, lc673, 26, 92);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        const int lc689 = lua_toboolean(L, -1);
+        const int lc695 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc689) {
+        if (lc695) {
 
           /* if not a(t) then */
-          enum { lc690 = 6 };
-          lc_getupvalue(L, lc667, 26, 91);
+          enum { lc696 = 6 };
+          lc_getupvalue(L, lc673, 26, 92);
           lua_pushvalue(L, 2);
           lua_call(L, 1, 1);
           lua_pushboolean(L, !(lua_toboolean(L, -1)));
           lua_remove(L, -2);
-          const int lc691 = lua_toboolean(L, -1);
+          const int lc697 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc691) {
+          if (lc697) {
 
             /* return d */
-            lc_getupvalue(L, lc667, 7, 157);
+            lc_getupvalue(L, lc673, 7, 158);
             return 1;
             assert(lua_gettop(L) == 6);
           }
-          lua_settop(L, lc690);
+          lua_settop(L, lc696);
           assert(lua_gettop(L) == 6);
 
-          /* return i(e,t,o,n) */
-          const int lc692 = lua_gettop(L);
+          /* return n(e,t,o,i) */
+          const int lc698 = lua_gettop(L);
           lua_pushvalue(L, 6);
           lua_pushvalue(L, 1);
           lua_pushvalue(L, 2);
-          lc_getupvalue(L, lc667, 26, 90);
-          lc_getupvalue(L, lc667, 26, 89);
+          lc_getupvalue(L, lc673, 26, 91);
+          lc_getupvalue(L, lc673, 26, 90);
           lua_call(L, 4, LUA_MULTRET);
-          return (lua_gettop(L) - lc692);
+          return (lua_gettop(L) - lc698);
           assert(lua_gettop(L) == 6);
         } else {
 
           /* elseif g(e) then */
-          enum { lc693 = 6 };
-          lc_getupvalue(L, lc667, 26, 81);
+          enum { lc699 = 6 };
+          lc_getupvalue(L, lc673, 26, 82);
           lua_pushvalue(L, 1);
           lua_call(L, 1, 1);
-          const int lc694 = lua_toboolean(L, -1);
+          const int lc700 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc694) {
+          if (lc700) {
 
             /* if not g(t) then */
-            enum { lc695 = 6 };
-            lc_getupvalue(L, lc667, 26, 81);
+            enum { lc701 = 6 };
+            lc_getupvalue(L, lc673, 26, 82);
             lua_pushvalue(L, 2);
             lua_call(L, 1, 1);
             lua_pushboolean(L, !(lua_toboolean(L, -1)));
             lua_remove(L, -2);
-            const int lc696 = lua_toboolean(L, -1);
+            const int lc702 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc696) {
+            if (lc702) {
 
               /* return d */
-              lc_getupvalue(L, lc667, 7, 157);
+              lc_getupvalue(L, lc673, 7, 158);
               return 1;
               assert(lua_gettop(L) == 6);
             }
-            lua_settop(L, lc695);
+            lua_settop(L, lc701);
             assert(lua_gettop(L) == 6);
 
-            /* return i(e,t,U,C) */
-            const int lc697 = lua_gettop(L);
+            /* return n(e,t,C,U) */
+            const int lc703 = lua_gettop(L);
             lua_pushvalue(L, 6);
             lua_pushvalue(L, 1);
             lua_pushvalue(L, 2);
-            lc_getupvalue(L, lc667, 26, 80);
-            lc_getupvalue(L, lc667, 26, 79);
+            lc_getupvalue(L, lc673, 26, 81);
+            lc_getupvalue(L, lc673, 26, 80);
             lua_call(L, 4, LUA_MULTRET);
-            return (lua_gettop(L) - lc697);
+            return (lua_gettop(L) - lc703);
             assert(lua_gettop(L) == 6);
           }
-          lua_settop(L, lc693);
+          lua_settop(L, lc699);
         }
-        lua_settop(L, lc688);
+        lua_settop(L, lc694);
       }
-      lua_settop(L, lc683);
+      lua_settop(L, lc689);
     }
-    lua_settop(L, lc677);
+    lua_settop(L, lc683);
   }
-  lua_settop(L, lc673);
+  lua_settop(L, lc679);
   assert(lua_gettop(L) == 6);
 
-  /* return q() */
-  const int lc698 = lua_gettop(L);
-  lc_getupvalue(L, lc667, 26, 116);
+  /* return j() */
+  const int lc704 = lua_gettop(L);
+  lc_getupvalue(L, lc673, 26, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc698);
+  return (lua_gettop(L) - lc704);
   assert(lua_gettop(L) == 6);
 }
 
-/* function(i,e,s) */
-static inline int lcf707(lua_State *L) {
+/* function(n,e,s) */
+static inline int lcf713(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
@@ -10446,16 +10530,16 @@ static inline int lcf707(lua_State *L) {
   lua_newtable(L);
   assert(lua_gettop(L) == 4);
 
-  /* local e=h(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
+  /* local e=r(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 5);
 
   /* while a(e)do */
-  enum { lc700 = 5 };
+  enum { lc706 = 5 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -10463,195 +10547,195 @@ static inline int lcf707(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* l(t,o(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 1);
-    const int lc701 = lua_gettop(L);
+    /* v(t,o(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 26, 1);
+    const int lc707 = lua_gettop(L);
     lua_pushvalue(L, 4);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+    lua_pushvalue(L, 5);
+    lua_call(L, 1, LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc707), 0);
+    assert(lua_gettop(L) == 5);
+
+    /* e=r(i(e)) */
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+    const int lc708 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
     lua_pushvalue(L, 5);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc701), 0);
-    assert(lua_gettop(L) == 5);
-
-    /* e=h(n(e)) */
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-    const int lc702 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 89);
-    lua_pushvalue(L, 5);
-    lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc702), 1);
+    lua_call(L, (lua_gettop(L) - lc708), 1);
     lua_replace(L, 5);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc700);
+  lua_settop(L, lc706);
   assert(lua_gettop(L) == 5);
 
-  /* if not r(e) then */
-  enum { lc703 = 5 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 87);
+  /* if not h(e) then */
+  enum { lc709 = 5 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 88);
   lua_pushvalue(L, 5);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc704 = lua_toboolean(L, -1);
+  const int lc710 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc704) {
+  if (lc710) {
 
     /* return s() */
-    const int lc705 = lua_gettop(L);
+    const int lc711 = lua_gettop(L);
     lua_pushvalue(L, 3);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc705);
+    return (lua_gettop(L) - lc711);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc703);
+  lua_settop(L, lc709);
   assert(lua_gettop(L) == 5);
 
-  /* return P(i,t) */
-  const int lc706 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 63);
+  /* return F(n,t) */
+  const int lc712 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 64);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 4);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc706);
+  return (lua_gettop(L) - lc712);
   assert(lua_gettop(L) == 5);
 }
 
 /* function(e,a,t) */
-static inline int lcf713(lua_State *L) {
+static inline int lcf719(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
 
-  /* local e=se(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 162);
+  /* local e=he(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 163);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 4);
 
   /* if e==false then */
-  enum { lc708 = 4 };
+  enum { lc714 = 4 };
   lua_pushboolean(L, 0);
-  const int lc709 = lua_equal(L, 4, -1);
+  const int lc715 = lua_equal(L, 4, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc709);
-  const int lc710 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc715);
+  const int lc716 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc710) {
+  if (lc716) {
 
     /* return t() */
-    const int lc711 = lua_gettop(L);
+    const int lc717 = lua_gettop(L);
     lua_pushvalue(L, 3);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc711);
+    return (lua_gettop(L) - lc717);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc708);
+  lua_settop(L, lc714);
   assert(lua_gettop(L) == 4);
 
-  /* return H(e,a) */
-  const int lc712 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 76);
+  /* return S(e,a) */
+  const int lc718 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 77);
   lua_pushvalue(L, 4);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc712);
+  return (lua_gettop(L) - lc718);
   assert(lua_gettop(L) == 4);
 }
 
 /* function(e,t) */
-static inline int lcf721(lua_State *L) {
+static inline int lcf727(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* e=k(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 22);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 2);
 
-  /* if y(e) then */
-  enum { lc714 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 23);
+  /* if w(e) then */
+  enum { lc720 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc715 = lua_toboolean(L, -1);
+  const int lc721 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc715) {
+  if (lc721) {
 
-    /* return j(Je,{e}) */
-    const int lc716 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 67);
-    lc_getupvalue(L, lua_upvalueindex(1), 6, 156);
+    /* return q(Ie,{e}) */
+    const int lc722 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 68);
+    lc_getupvalue(L, lua_upvalueindex(1), 6, 157);
     lua_createtable(L, 1, 0);
     lua_pushvalue(L, 1);
     lua_rawseti(L, -2, 1);
     lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc716);
+    return (lua_gettop(L) - lc722);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc714);
+  lua_settop(L, lc720);
   assert(lua_gettop(L) == 2);
 
   /* if not a(e) then */
-  enum { lc717 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
+  enum { lc723 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 92);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc718 = lua_toboolean(L, -1);
+  const int lc724 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc718) {
+  if (lc724) {
 
     /* return t() */
-    const int lc719 = lua_gettop(L);
+    const int lc725 = lua_gettop(L);
     lua_pushvalue(L, 2);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc719);
+    return (lua_gettop(L) - lc725);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc717);
+  lua_settop(L, lc723);
   assert(lua_gettop(L) == 2);
 
   /* return o(e) */
-  const int lc720 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 90);
+  const int lc726 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 91);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc720);
+  return (lua_gettop(L) - lc726);
   assert(lua_gettop(L) == 2);
 }
 
 /* function(e,a,o,t) */
-static inline int lcf737(lua_State *L) {
+static inline int lcf743(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
   /* e=k(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 22);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 4);
 
-  /* if y(e) then */
-  enum { lc722 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 23);
+  /* if w(e) then */
+  enum { lc728 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 24);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc723 = lua_toboolean(L, -1);
+  const int lc729 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc723) {
+  if (lc729) {
 
-    /* return j(oe,{
+    /* return q(ee,{
      * e,
      * a,
      * o,
      * }) */
-    const int lc724 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 67);
-    lc_getupvalue(L, lua_upvalueindex(1), 24, 34);
+    const int lc730 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 68);
+    lc_getupvalue(L, lua_upvalueindex(1), 24, 35);
     lua_createtable(L, 3, 0);
     lua_pushvalue(L, 1);
     lua_rawseti(L, -2, 1);
@@ -10660,142 +10744,142 @@ static inline int lcf737(lua_State *L) {
     lua_pushvalue(L, 3);
     lua_rawseti(L, -2, 3);
     lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc724);
+    return (lua_gettop(L) - lc730);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc722);
+  lua_settop(L, lc728);
   assert(lua_gettop(L) == 4);
 
-  /* if not m(e) then */
-  enum { lc725 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 85);
+  /* if not c(e) then */
+  enum { lc731 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 86);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc726 = lua_toboolean(L, -1);
+  const int lc732 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc726) {
+  if (lc732) {
 
     /* return t() */
-    const int lc727 = lua_gettop(L);
+    const int lc733 = lua_gettop(L);
     lua_pushvalue(L, 4);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc727);
+    return (lua_gettop(L) - lc733);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc725);
+  lua_settop(L, lc731);
   assert(lua_gettop(L) == 4);
 
-  /* local e=h(_(e)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 20);
-  const int lc728 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 84);
+  /* local e=r(E(e)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 21);
+  const int lc734 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 85);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc728), 1);
+  lua_call(L, (lua_gettop(L) - lc734), 1);
   assert(lua_gettop(L) == 5);
 
   /* if not p(e) then */
-  enum { lc729 = 5 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 96);
+  enum { lc735 = 5 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 97);
   lua_pushvalue(L, 5);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc730 = lua_toboolean(L, -1);
+  const int lc736 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc730) {
+  if (lc736) {
 
     /* return t() */
-    const int lc731 = lua_gettop(L);
+    const int lc737 = lua_gettop(L);
     lua_pushvalue(L, 4);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc731);
+    return (lua_gettop(L) - lc737);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc729);
+  lua_settop(L, lc735);
   assert(lua_gettop(L) == 5);
 
-  /* if L(e,et) then */
-  enum { lc732 = 5 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 93);
+  /* if D(e,Je) then */
+  enum { lc738 = 5 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 94);
   lua_pushvalue(L, 5);
-  lc_getupvalue(L, lua_upvalueindex(1), 9, 153);
+  lc_getupvalue(L, lua_upvalueindex(1), 9, 154);
   lua_call(L, 2, 1);
-  const int lc733 = lua_toboolean(L, -1);
+  const int lc739 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc733) {
+  if (lc739) {
 
     /* return a */
     lua_pushvalue(L, 2);
     return 1;
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc732);
+  lua_settop(L, lc738);
   assert(lua_gettop(L) == 5);
 
-  /* if L(e,tt) then */
-  enum { lc734 = 5 };
-  lc_getupvalue(L, lua_upvalueindex(1), 24, 93);
+  /* if D(e,et) then */
+  enum { lc740 = 5 };
+  lc_getupvalue(L, lua_upvalueindex(1), 24, 94);
   lua_pushvalue(L, 5);
-  lc_getupvalue(L, lua_upvalueindex(1), 8, 154);
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 155);
   lua_call(L, 2, 1);
-  const int lc735 = lua_toboolean(L, -1);
+  const int lc741 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc735) {
+  if (lc741) {
 
     /* return o */
     lua_pushvalue(L, 3);
     return 1;
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc734);
+  lua_settop(L, lc740);
   assert(lua_gettop(L) == 5);
 
   /* return t() */
-  const int lc736 = lua_gettop(L);
+  const int lc742 = lua_gettop(L);
   lua_pushvalue(L, 4);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc736);
+  return (lua_gettop(L) - lc742);
   assert(lua_gettop(L) == 5);
 }
 
-/* name: i
- * function(t,e,a,o) */
-static inline int lcf7_i(lua_State *L) {
+/* name: n
+ * function(e,t,a,o) */
+static inline int lcf7_n(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* if d(a(t),a(e))and d(o(t),o(e)) then */
-  enum { lc745 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 170);
-  const int lc746 = lua_gettop(L);
+  /* if d(a(e),a(t))and d(o(e),o(t)) then */
+  enum { lc751 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 171);
+  const int lc752 = lua_gettop(L);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 2);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc746), 1);
+  lua_call(L, (lua_gettop(L) - lc752), 1);
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 170);
-    const int lc747 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 171);
+    const int lc753 = lua_gettop(L);
     lua_pushvalue(L, 4);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     lua_pushvalue(L, 4);
     lua_pushvalue(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc747), 1);
+    lua_call(L, (lua_gettop(L) - lc753), 1);
   }
-  const int lc748 = lua_toboolean(L, -1);
+  const int lc754 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc748) {
+  if (lc754) {
 
-    /* I(t,e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 56);
+    /* O(e,t) */
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 57);
     lua_pushvalue(L, 1);
     lua_pushvalue(L, 2);
     lua_call(L, 2, 0);
@@ -10813,114 +10897,114 @@ static inline int lcf7_i(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc745);
+  lua_settop(L, lc751);
   assert(lua_gettop(L) == 4);
   return 0;
 }
 
 /* name: d
  * function(e,t) */
-static inline int lcf6_d(lua_State *L) {
+static inline int lcf7_d(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
   /* if e==t then */
-  enum { lc739 = 2 };
-  const int lc740 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc740);
-  const int lc741 = lua_toboolean(L, -1);
+  enum { lc745 = 2 };
+  const int lc746 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc746);
+  const int lc747 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc741) {
+  if (lc747) {
 
     /* return true */
     lua_pushboolean(L, 1);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc739);
+  lua_settop(L, lc745);
   assert(lua_gettop(L) == 2);
 
   /* e=N(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 26);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_replace(L, 1);
   assert(lua_gettop(L) == 2);
 
   /* t=N(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 25);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 26);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_replace(L, 2);
   assert(lua_gettop(L) == 2);
 
   /* if e==t then */
-  enum { lc742 = 2 };
-  const int lc743 = lua_equal(L, 1, 2);
-  lua_pushboolean(L, lc743);
-  const int lc744 = lua_toboolean(L, -1);
+  enum { lc748 = 2 };
+  const int lc749 = lua_equal(L, 1, 2);
+  lua_pushboolean(L, lc749);
+  const int lc750 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc744) {
+  if (lc750) {
 
     /* return true */
     lua_pushboolean(L, 1);
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc742);
+  lua_settop(L, lc748);
   assert(lua_gettop(L) == 2);
 
-  /* local function i(t,e,a,o)
-   * if d(a(t),a(e))and d(o(t),o(e))then
-   * I(t,e)
+  /* local function n(e,t,a,o)
+   * if d(a(e),a(t))and d(o(e),o(t))then
+   * O(e,t)
    * return true
    * else
    * return false
    * end
    * end */
   lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf7_i, 1);
+  lua_pushcclosure(L, lcf7_n, 1);
   assert(lua_gettop(L) == 3);
 
-  /* if r(e) then */
-  enum { lc749 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 87);
+  /* if h(e) then */
+  enum { lc755 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 88);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc750 = lua_toboolean(L, -1);
+  const int lc756 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc750) {
+  if (lc756) {
 
-    /* if not r(t) then */
-    enum { lc751 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 87);
+    /* if not h(t) then */
+    enum { lc757 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 88);
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc752 = lua_toboolean(L, -1);
+    const int lc758 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc752) {
+    if (lc758) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 3);
     }
-    lua_settop(L, lc751);
+    lua_settop(L, lc757);
     assert(lua_gettop(L) == 3);
 
-    /* I(e,v) */
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 56);
+    /* O(e,y) */
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 57);
     lua_pushvalue(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 88);
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 89);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 3);
 
-    /* I(t,v) */
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 56);
+    /* O(t,y) */
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 57);
     lua_pushvalue(L, 2);
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 88);
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 89);
     lua_call(L, 2, 0);
     assert(lua_gettop(L) == 3);
 
@@ -10931,244 +11015,244 @@ static inline int lcf6_d(lua_State *L) {
   } else {
 
     /* elseif p(e) then */
-    enum { lc753 = 3 };
-    lc_getupvalue(L, lua_upvalueindex(1), 25, 96);
+    enum { lc759 = 3 };
+    lc_getupvalue(L, lua_upvalueindex(1), 25, 97);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    const int lc754 = lua_toboolean(L, -1);
+    const int lc760 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc754) {
+    if (lc760) {
 
       /* if not p(t) then */
-      enum { lc755 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 25, 96);
+      enum { lc761 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 25, 97);
       lua_pushvalue(L, 2);
       lua_call(L, 1, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc756 = lua_toboolean(L, -1);
+      const int lc762 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc756) {
+      if (lc762) {
 
         /* return false */
         lua_pushboolean(L, 0);
         return 1;
         assert(lua_gettop(L) == 3);
       }
-      lua_settop(L, lc755);
+      lua_settop(L, lc761);
       assert(lua_gettop(L) == 3);
 
-      /* return L(e,t) */
-      const int lc757 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 25, 93);
+      /* return D(e,t) */
+      const int lc763 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 25, 94);
       lua_pushvalue(L, 1);
       lua_pushvalue(L, 2);
       lua_call(L, 2, LUA_MULTRET);
-      return (lua_gettop(L) - lc757);
+      return (lua_gettop(L) - lc763);
       assert(lua_gettop(L) == 3);
     } else {
 
       /* elseif a(e) then */
-      enum { lc758 = 3 };
-      lc_getupvalue(L, lua_upvalueindex(1), 25, 91);
+      enum { lc764 = 3 };
+      lc_getupvalue(L, lua_upvalueindex(1), 25, 92);
       lua_pushvalue(L, 1);
       lua_call(L, 1, 1);
-      const int lc759 = lua_toboolean(L, -1);
+      const int lc765 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc759) {
+      if (lc765) {
 
         /* if not a(t) then */
-        enum { lc760 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 25, 91);
+        enum { lc766 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 25, 92);
         lua_pushvalue(L, 2);
         lua_call(L, 1, 1);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
-        const int lc761 = lua_toboolean(L, -1);
+        const int lc767 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc761) {
+        if (lc767) {
 
           /* return false */
           lua_pushboolean(L, 0);
           return 1;
           assert(lua_gettop(L) == 3);
         }
-        lua_settop(L, lc760);
+        lua_settop(L, lc766);
         assert(lua_gettop(L) == 3);
 
-        /* return i(e,t,o,n) */
-        const int lc762 = lua_gettop(L);
+        /* return n(e,t,o,i) */
+        const int lc768 = lua_gettop(L);
         lua_pushvalue(L, 3);
         lua_pushvalue(L, 1);
         lua_pushvalue(L, 2);
+        lc_getupvalue(L, lua_upvalueindex(1), 25, 91);
         lc_getupvalue(L, lua_upvalueindex(1), 25, 90);
-        lc_getupvalue(L, lua_upvalueindex(1), 25, 89);
         lua_call(L, 4, LUA_MULTRET);
-        return (lua_gettop(L) - lc762);
+        return (lua_gettop(L) - lc768);
         assert(lua_gettop(L) == 3);
       } else {
 
         /* elseif g(e) then */
-        enum { lc763 = 3 };
-        lc_getupvalue(L, lua_upvalueindex(1), 25, 81);
+        enum { lc769 = 3 };
+        lc_getupvalue(L, lua_upvalueindex(1), 25, 82);
         lua_pushvalue(L, 1);
         lua_call(L, 1, 1);
-        const int lc764 = lua_toboolean(L, -1);
+        const int lc770 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc764) {
+        if (lc770) {
 
           /* if not g(t) then */
-          enum { lc765 = 3 };
-          lc_getupvalue(L, lua_upvalueindex(1), 25, 81);
+          enum { lc771 = 3 };
+          lc_getupvalue(L, lua_upvalueindex(1), 25, 82);
           lua_pushvalue(L, 2);
           lua_call(L, 1, 1);
           lua_pushboolean(L, !(lua_toboolean(L, -1)));
           lua_remove(L, -2);
-          const int lc766 = lua_toboolean(L, -1);
+          const int lc772 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc766) {
+          if (lc772) {
 
             /* return false */
             lua_pushboolean(L, 0);
             return 1;
             assert(lua_gettop(L) == 3);
           }
-          lua_settop(L, lc765);
+          lua_settop(L, lc771);
           assert(lua_gettop(L) == 3);
 
-          /* return i(e,t,U,C) */
-          const int lc767 = lua_gettop(L);
+          /* return n(e,t,C,U) */
+          const int lc773 = lua_gettop(L);
           lua_pushvalue(L, 3);
           lua_pushvalue(L, 1);
           lua_pushvalue(L, 2);
+          lc_getupvalue(L, lua_upvalueindex(1), 25, 81);
           lc_getupvalue(L, lua_upvalueindex(1), 25, 80);
-          lc_getupvalue(L, lua_upvalueindex(1), 25, 79);
           lua_call(L, 4, LUA_MULTRET);
-          return (lua_gettop(L) - lc767);
+          return (lua_gettop(L) - lc773);
           assert(lua_gettop(L) == 3);
         } else {
 
-          /* elseif m(e) then */
-          enum { lc768 = 3 };
-          lc_getupvalue(L, lua_upvalueindex(1), 25, 85);
+          /* elseif c(e) then */
+          enum { lc774 = 3 };
+          lc_getupvalue(L, lua_upvalueindex(1), 25, 86);
           lua_pushvalue(L, 1);
           lua_call(L, 1, 1);
-          const int lc769 = lua_toboolean(L, -1);
+          const int lc775 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc769) {
+          if (lc775) {
 
-            /* if not m(t) then */
-            enum { lc770 = 3 };
-            lc_getupvalue(L, lua_upvalueindex(1), 25, 85);
+            /* if not c(t) then */
+            enum { lc776 = 3 };
+            lc_getupvalue(L, lua_upvalueindex(1), 25, 86);
             lua_pushvalue(L, 2);
             lua_call(L, 1, 1);
             lua_pushboolean(L, !(lua_toboolean(L, -1)));
             lua_remove(L, -2);
-            const int lc771 = lua_toboolean(L, -1);
+            const int lc777 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc771) {
+            if (lc777) {
 
               /* return false */
               lua_pushboolean(L, 0);
               return 1;
               assert(lua_gettop(L) == 3);
             }
-            lua_settop(L, lc770);
+            lua_settop(L, lc776);
             assert(lua_gettop(L) == 3);
 
-            /* return i(e,t,_,A) */
-            const int lc772 = lua_gettop(L);
+            /* return n(e,t,E,A) */
+            const int lc778 = lua_gettop(L);
             lua_pushvalue(L, 3);
             lua_pushvalue(L, 1);
             lua_pushvalue(L, 2);
+            lc_getupvalue(L, lua_upvalueindex(1), 25, 85);
             lc_getupvalue(L, lua_upvalueindex(1), 25, 84);
-            lc_getupvalue(L, lua_upvalueindex(1), 25, 83);
             lua_call(L, 4, LUA_MULTRET);
-            return (lua_gettop(L) - lc772);
+            return (lua_gettop(L) - lc778);
             assert(lua_gettop(L) == 3);
           } else {
 
-            /* elseif de(e) then */
-            enum { lc773 = 3 };
-            lc_getupvalue(L, lua_upvalueindex(1), 25, 24);
+            /* elseif me(e) then */
+            enum { lc779 = 3 };
+            lc_getupvalue(L, lua_upvalueindex(1), 25, 25);
             lua_pushvalue(L, 1);
             lua_call(L, 1, 1);
-            const int lc774 = lua_toboolean(L, -1);
+            const int lc780 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc774) {
+            if (lc780) {
 
               /* return false */
               lua_pushboolean(L, 0);
               return 1;
               assert(lua_gettop(L) == 3);
             }
-            lua_settop(L, lc773);
+            lua_settop(L, lc779);
           }
-          lua_settop(L, lc768);
+          lua_settop(L, lc774);
         }
-        lua_settop(L, lc763);
+        lua_settop(L, lc769);
       }
-      lua_settop(L, lc758);
+      lua_settop(L, lc764);
     }
-    lua_settop(L, lc753);
+    lua_settop(L, lc759);
   }
-  lua_settop(L, lc749);
+  lua_settop(L, lc755);
   assert(lua_gettop(L) == 3);
 
-  /* return q() */
-  const int lc775 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 25, 116);
+  /* return j() */
+  const int lc781 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 25, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc775);
+  return (lua_gettop(L) - lc781);
   assert(lua_gettop(L) == 3);
 }
 
-/* name: c
+/* name: l
  * function() */
-static inline int lcf2_c(lua_State *L) {
+static inline int lcf2_l(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return#M==y */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
-  const double lc778 = lua_objlen(L, -1);
+  /* return#D==w */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 198);
+  const double lc784 = lua_objlen(L, -1);
   lua_pop(L, 1);
-  lua_pushnumber(L, lc778);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
-  const int lc779 = lua_equal(L, -2, -1);
+  lua_pushnumber(L, lc784);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
+  const int lc785 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc779);
+  lua_pushboolean(L, lc785);
   return 1;
   assert(lua_gettop(L) == 0);
 }
 
 /* name: d
  * function() */
-static inline int lcf7_d(lua_State *L) {
+static inline int lcf8_d(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* S(not c()) */
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 115);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* H(not l()) */
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 116);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 0);
 
-  /* local e=string.sub(M,y+1,y+1) */
+  /* local e=string.sub(D,w+1,w+1) */
   lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
   lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 198);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
   lua_remove(L, -2);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
@@ -11176,13 +11260,13 @@ static inline int lcf7_d(lua_State *L) {
   lua_call(L, 3, 1);
   assert(lua_gettop(L) == 1);
 
-  /* y=y+1 */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  /* w=w+1 */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
   lua_remove(L, -2);
-  lc_setupvalue(L, lua_upvalueindex(1), 0, 196);
+  lc_setupvalue(L, lua_upvalueindex(1), 0, 197);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -11191,62 +11275,62 @@ static inline int lcf7_d(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: m
+/* name: c
  * function(e) */
-static inline int lcf2_m(lua_State *L) {
+static inline int lcf2_c(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* S(string.sub(M,y,y)==e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 115);
+  /* H(string.sub(D,w,w)==e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 116);
   lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
   lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 198);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
   lua_call(L, 3, 1);
   lua_pushvalue(L, 1);
-  const int lc780 = lua_equal(L, -2, -1);
+  const int lc786 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc780);
+  lua_pushboolean(L, lc786);
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 1);
 
-  /* y=y-1 */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  /* w=w-1 */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 197);
   lua_pushnumber(L, 1);
   lc_sub(L, -2, -1);
   lua_remove(L, -2);
   lua_remove(L, -2);
-  lc_setupvalue(L, lua_upvalueindex(1), 0, 196);
+  lc_setupvalue(L, lua_upvalueindex(1), 0, 197);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: h
+/* name: r
  * function(e) */
-static inline int lcf2_h(lua_State *L) {
+static inline int lcf3_r(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* if e==nil then */
-  enum { lc781 = 1 };
+  enum { lc787 = 1 };
   lua_pushnil(L);
-  const int lc782 = lua_equal(L, 1, -1);
+  const int lc788 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc782);
-  const int lc783 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc788);
+  const int lc789 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc783) {
+  if (lc789) {
 
     /* e="" */
     lua_pushliteral(L, "");
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc781);
+  lua_settop(L, lc787);
   assert(lua_gettop(L) == 1);
 
   /* error("TheLanguage parse ERROR!"..tostring(e)) */
@@ -11261,86 +11345,86 @@ static inline int lcf2_h(lua_State *L) {
   return 0;
 }
 
-/* name: q
+/* name: j
  * function(e) */
-static inline int lcf2_q(lua_State *L) {
+static inline int lcf2_j(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* return e==" "or e=="\n"or e=="\t"or e=="\r" */
   lua_pushvalue(L, 1);
   lua_pushliteral(L, " ");
-  const int lc784 = lua_equal(L, -2, -1);
+  const int lc790 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc784);
+  lua_pushboolean(L, lc790);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
     lua_pushliteral(L, "\n");
-    const int lc785 = lua_equal(L, -2, -1);
+    const int lc791 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc785);
+    lua_pushboolean(L, lc791);
   }
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
     lua_pushliteral(L, "	");
-    const int lc786 = lua_equal(L, -2, -1);
+    const int lc792 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc786);
+    lua_pushboolean(L, lc792);
   }
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
     lua_pushvalue(L, 1);
     lua_pushliteral(L, "\r");
-    const int lc787 = lua_equal(L, -2, -1);
+    const int lc793 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc787);
+    lua_pushboolean(L, lc793);
   }
   return 1;
   assert(lua_gettop(L) == 1);
 }
 
-/* name: _
+/* name: E
  * function() */
-static inline int lcf2__(lua_State *L) {
+static inline int lcf2_E(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc788 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* if l() then */
+  enum { lc794 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
-  const int lc789 = lua_toboolean(L, -1);
+  const int lc795 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc789) {
+  if (lc795) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc788);
+  lua_settop(L, lc794);
   assert(lua_gettop(L) == 0);
 
   /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
-  /* if not q(e) then */
-  enum { lc790 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 191);
+  /* if not j(e) then */
+  enum { lc796 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc791 = lua_toboolean(L, -1);
+  const int lc797 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc791) {
+  if (lc797) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 1);
@@ -11350,18 +11434,18 @@ static inline int lcf2__(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc790);
+  lua_settop(L, lc796);
   assert(lua_gettop(L) == 1);
 
-  /* while q(e)and not c()do */
-  enum { lc792 = 1 };
+  /* while j(e)and not l()do */
+  enum { lc798 = 1 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 191);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
       lua_call(L, 0, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
@@ -11372,32 +11456,32 @@ static inline int lcf2__(lua_State *L) {
     lua_pop(L, 1);
 
     /* e=d() */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
     lua_call(L, 0, 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc792);
+  lua_settop(L, lc798);
   assert(lua_gettop(L) == 1);
 
-  /* if not q(e) then */
-  enum { lc793 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 191);
+  /* if not j(e) then */
+  enum { lc799 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc794 = lua_toboolean(L, -1);
+  const int lc800 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc794) {
+  if (lc800) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc793);
+  lua_settop(L, lc799);
   assert(lua_gettop(L) == 1);
 
   /* return true */
@@ -11406,30 +11490,30 @@ static inline int lcf2__(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: J
+/* name: B
  * function() */
-static inline int lcf2_J(lua_State *L) {
+static inline int lcf2_B(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc795 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* if l() then */
+  enum { lc801 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
-  const int lc796 = lua_toboolean(L, -1);
+  const int lc802 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc796) {
+  if (lc802) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc795);
+  lua_settop(L, lc801);
   assert(lua_gettop(L) == 0);
 
   /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
@@ -11437,19 +11521,19 @@ static inline int lcf2_J(lua_State *L) {
   lua_pushliteral(L, "");
   assert(lua_gettop(L) == 2);
 
-  /* if not L(e) then */
-  enum { lc797 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 180);
+  /* if not W(e) then */
+  enum { lc803 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc798 = lua_toboolean(L, -1);
+  const int lc804 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc798) {
+  if (lc804) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 2);
@@ -11459,18 +11543,18 @@ static inline int lcf2_J(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc797);
+  lua_settop(L, lc803);
   assert(lua_gettop(L) == 2);
 
-  /* while L(e)and not c()do */
-  enum { lc799 = 2 };
+  /* while W(e)and not l()do */
+  enum { lc805 = 2 };
   while (1) {
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 180);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
       lua_call(L, 0, 1);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
@@ -11492,22 +11576,22 @@ static inline int lcf2_J(lua_State *L) {
     assert(lua_gettop(L) == 2);
 
     /* e=d() */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
     lua_call(L, 0, 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc799);
+  lua_settop(L, lc805);
   assert(lua_gettop(L) == 2);
 
-  /* if L(e) then */
-  enum { lc800 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 180);
+  /* if W(e) then */
+  enum { lc806 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc801 = lua_toboolean(L, -1);
+  const int lc807 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc801) {
+  if (lc807) {
 
     /* t=tostring(t)..tostring(e) */
     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
@@ -11522,76 +11606,76 @@ static inline int lcf2_J(lua_State *L) {
   } else {
 
     /* else
-     * m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+     * c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc800);
+  lua_settop(L, lc806);
   assert(lua_gettop(L) == 2);
 
-  /* if nt(t) then */
-  enum { lc802 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 21, 144);
+  /* if Xe(t) then */
+  enum { lc808 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 21, 145);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  const int lc803 = lua_toboolean(L, -1);
+  const int lc809 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc803) {
+  if (lc809) {
 
-    /* return i(t) */
-    const int lc804 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 20, 145);
+    /* return n(t) */
+    const int lc810 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 20, 146);
     lua_pushvalue(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc804);
+    return (lua_gettop(L) - lc810);
     assert(lua_gettop(L) == 2);
   } else {
 
     /* else
-     * return h("Not Symbol"..tostring(t)) */
-    const int lc805 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+     * return r("Not Symbol"..tostring(t)) */
+    const int lc811 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
     lua_pushliteral(L, "Not Symbol");
     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
     lua_concat(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc805);
+    return (lua_gettop(L) - lc811);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc802);
+  lua_settop(L, lc808);
   assert(lua_gettop(L) == 2);
   return 0;
 }
 
-/* name: i
+/* name: o
  * function(a) */
-static inline int lcf8_i(lua_State *L) {
+static inline int lcf4_o(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local e=K() */
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 58);
+  /* local e=ge() */
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 59);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
-  /* W(t,s(a,e)) */
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 55);
-  const int lc812 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 198);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
+  /* we(t,s(a,e)) */
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 56);
+  const int lc818 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 199);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 93);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc812), 0);
+  lua_call(L, (lua_gettop(L) - lc818), 0);
   assert(lua_gettop(L) == 2);
 
   /* t=e */
   lua_pushvalue(L, 2);
-  lc_setupvalue(L, lua_upvalueindex(1), 0, 198);
+  lc_setupvalue(L, lua_upvalueindex(1), 0, 199);
   assert(lua_gettop(L) == 2);
   return 0;
 }
@@ -11602,41 +11686,41 @@ static inline int lcf2_g(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc806 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* if l() then */
+  enum { lc812 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
-  const int lc807 = lua_toboolean(L, -1);
+  const int lc813 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc807) {
+  if (lc813) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc806);
+  lua_settop(L, lc812);
   assert(lua_gettop(L) == 0);
 
   /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
   /* if e~="(" then */
-  enum { lc808 = 1 };
+  enum { lc814 = 1 };
   lua_pushliteral(L, "(");
-  const int lc809 = lua_equal(L, 1, -1);
+  const int lc815 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc809);
+  lua_pushboolean(L, lc815);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc810 = lua_toboolean(L, -1);
+  const int lc816 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc810) {
+  if (lc816) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 1);
@@ -11646,33 +11730,33 @@ static inline int lcf2_g(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc808);
+  lua_settop(L, lc814);
   assert(lua_gettop(L) == 1);
 
-  /* local t=K() */
+  /* local t=ge() */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc811 = 2 };
-  assert((lua_gettop(L) == lc811));
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 58);
+  enum { lc817 = 2 };
+  assert((lua_gettop(L) == lc817));
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 59);
   lua_call(L, 0, 1);
-  lua_rawseti(L, lc811, 198);
+  lua_rawseti(L, lc817, 199);
   assert(lua_gettop(L) == 2);
 
   /* local a=t */
-  lc_getupvalue(L, lc811, 0, 198);
+  lc_getupvalue(L, lc817, 0, 199);
   assert(lua_gettop(L) == 3);
 
-  /* local function i(a)
-   * local e=K()
-   * W(t,s(a,e))
+  /* local function o(a)
+   * local e=ge()
+   * we(t,s(a,e))
    * t=e
    * end */
-  lua_pushvalue(L, lc811);
-  lua_pushcclosure(L, lcf8_i, 1);
+  lua_pushvalue(L, lc817);
+  lua_pushcclosure(L, lcf4_o, 1);
   assert(lua_gettop(L) == 4);
 
   /* while true do */
-  enum { lc813 = 4 };
+  enum { lc819 = 4 };
   while (1) {
     lua_pushboolean(L, 1);
     if (!(lua_toboolean(L, -1))) {
@@ -11680,49 +11764,49 @@ static inline int lcf2_g(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* _() */
-    lc_getupvalue(L, lc811, 1, 190);
+    /* E() */
+    lc_getupvalue(L, lc817, 1, 191);
     lua_call(L, 0, 0);
     assert(lua_gettop(L) == 4);
 
-    /* if c() then */
-    enum { lc814 = 4 };
-    lc_getupvalue(L, lc811, 1, 195);
+    /* if l() then */
+    enum { lc820 = 4 };
+    lc_getupvalue(L, lc817, 1, 196);
     lua_call(L, 0, 1);
-    const int lc815 = lua_toboolean(L, -1);
+    const int lc821 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc815) {
+    if (lc821) {
 
-      /* return h() */
-      const int lc816 = lua_gettop(L);
-      lc_getupvalue(L, lc811, 1, 192);
+      /* return r() */
+      const int lc822 = lua_gettop(L);
+      lc_getupvalue(L, lc817, 1, 193);
       lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc816);
+      return (lua_gettop(L) - lc822);
       assert(lua_gettop(L) == 4);
     }
-    lua_settop(L, lc814);
+    lua_settop(L, lc820);
     assert(lua_gettop(L) == 4);
 
     /* e=d() */
-    lc_getupvalue(L, lc811, 1, 194);
+    lc_getupvalue(L, lc817, 1, 195);
     lua_call(L, 0, 1);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 4);
 
     /* if e==")" then */
-    enum { lc817 = 4 };
+    enum { lc823 = 4 };
     lua_pushliteral(L, ")");
-    const int lc818 = lua_equal(L, 1, -1);
+    const int lc824 = lua_equal(L, 1, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc818);
-    const int lc819 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc824);
+    const int lc825 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc819) {
+    if (lc825) {
 
-      /* W(t,v) */
-      lc_getupvalue(L, lc811, 28, 55);
-      lc_getupvalue(L, lc811, 0, 198);
-      lc_getupvalue(L, lc811, 28, 88);
+      /* we(t,y) */
+      lc_getupvalue(L, lc817, 28, 56);
+      lc_getupvalue(L, lc817, 0, 199);
+      lc_getupvalue(L, lc817, 28, 89);
       lua_call(L, 2, 0);
       assert(lua_gettop(L) == 4);
 
@@ -11731,85 +11815,85 @@ static inline int lcf2_g(lua_State *L) {
       return 1;
       assert(lua_gettop(L) == 4);
     }
-    lua_settop(L, lc817);
+    lua_settop(L, lc823);
     assert(lua_gettop(L) == 4);
 
     /* if e=="." then */
-    enum { lc820 = 4 };
+    enum { lc826 = 4 };
     lua_pushliteral(L, ".");
-    const int lc821 = lua_equal(L, 1, -1);
+    const int lc827 = lua_equal(L, 1, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc821);
-    const int lc822 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc827);
+    const int lc828 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc822) {
+    if (lc828) {
 
-      /* _() */
-      lc_getupvalue(L, lc811, 1, 190);
+      /* E() */
+      lc_getupvalue(L, lc817, 1, 191);
       lua_call(L, 0, 0);
       assert(lua_gettop(L) == 4);
 
-      /* local o=D() */
-      lc_getupvalue(L, lc811, 1, 179);
+      /* local o=M() */
+      lc_getupvalue(L, lc817, 1, 180);
       lua_call(L, 0, 1);
       assert(lua_gettop(L) == 5);
 
-      /* W(t,o) */
-      lc_getupvalue(L, lc811, 28, 55);
-      lc_getupvalue(L, lc811, 0, 198);
+      /* we(t,o) */
+      lc_getupvalue(L, lc817, 28, 56);
+      lc_getupvalue(L, lc817, 0, 199);
       lua_pushvalue(L, 5);
       lua_call(L, 2, 0);
       assert(lua_gettop(L) == 5);
 
-      /* _() */
-      lc_getupvalue(L, lc811, 1, 190);
+      /* E() */
+      lc_getupvalue(L, lc817, 1, 191);
       lua_call(L, 0, 0);
       assert(lua_gettop(L) == 5);
 
-      /* if c() then */
-      enum { lc823 = 5 };
-      lc_getupvalue(L, lc811, 1, 195);
+      /* if l() then */
+      enum { lc829 = 5 };
+      lc_getupvalue(L, lc817, 1, 196);
       lua_call(L, 0, 1);
-      const int lc824 = lua_toboolean(L, -1);
+      const int lc830 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc824) {
+      if (lc830) {
 
-        /* return h() */
-        const int lc825 = lua_gettop(L);
-        lc_getupvalue(L, lc811, 1, 192);
+        /* return r() */
+        const int lc831 = lua_gettop(L);
+        lc_getupvalue(L, lc817, 1, 193);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc825);
+        return (lua_gettop(L) - lc831);
         assert(lua_gettop(L) == 5);
       }
-      lua_settop(L, lc823);
+      lua_settop(L, lc829);
       assert(lua_gettop(L) == 5);
 
       /* e=d() */
-      lc_getupvalue(L, lc811, 1, 194);
+      lc_getupvalue(L, lc817, 1, 195);
       lua_call(L, 0, 1);
       lua_replace(L, 1);
       assert(lua_gettop(L) == 5);
 
       /* if e~=")" then */
-      enum { lc826 = 5 };
+      enum { lc832 = 5 };
       lua_pushliteral(L, ")");
-      const int lc827 = lua_equal(L, 1, -1);
+      const int lc833 = lua_equal(L, 1, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc827);
+      lua_pushboolean(L, lc833);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
-      const int lc828 = lua_toboolean(L, -1);
+      const int lc834 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc828) {
+      if (lc834) {
 
-        /* return h() */
-        const int lc829 = lua_gettop(L);
-        lc_getupvalue(L, lc811, 1, 192);
+        /* return r() */
+        const int lc835 = lua_gettop(L);
+        lc_getupvalue(L, lc817, 1, 193);
         lua_call(L, 0, LUA_MULTRET);
-        return (lua_gettop(L) - lc829);
+        return (lua_gettop(L) - lc835);
         assert(lua_gettop(L) == 5);
       }
-      lua_settop(L, lc826);
+      lua_settop(L, lc832);
       assert(lua_gettop(L) == 5);
 
       /* return a */
@@ -11817,21 +11901,21 @@ static inline int lcf2_g(lua_State *L) {
       return 1;
       assert(lua_gettop(L) == 5);
     }
-    lua_settop(L, lc820);
+    lua_settop(L, lc826);
     assert(lua_gettop(L) == 4);
 
-    /* m(e) */
-    lc_getupvalue(L, lc811, 1, 193);
+    /* c(e) */
+    lc_getupvalue(L, lc817, 1, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 4);
 
-    /* local e=D() */
-    lc_getupvalue(L, lc811, 1, 179);
+    /* local e=M() */
+    lc_getupvalue(L, lc817, 1, 180);
     lua_call(L, 0, 1);
     assert(lua_gettop(L) == 5);
 
-    /* i(e) */
+    /* o(e) */
     lua_pushvalue(L, 4);
     lua_pushvalue(L, 5);
     lua_call(L, 1, 0);
@@ -11840,166 +11924,52 @@ static inline int lcf2_g(lua_State *L) {
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc813);
+  lua_settop(L, lc819);
   assert(lua_gettop(L) == 4);
   return 0;
 }
 
-/* name: V
+/* name: O
  * function() */
-static inline int lcf2_V(lua_State *L) {
+static inline int lcf2_O(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc830 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* if l() then */
+  enum { lc836 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
-  const int lc831 = lua_toboolean(L, -1);
+  const int lc837 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc831) {
+  if (lc837) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc830);
+  lua_settop(L, lc836);
   assert(lua_gettop(L) == 0);
 
   /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
   /* if e~="#" then */
-  enum { lc832 = 1 };
+  enum { lc838 = 1 };
   lua_pushliteral(L, "#");
-  const int lc833 = lua_equal(L, 1, -1);
+  const int lc839 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc833);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc834 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc834) {
-
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
-    lua_pushvalue(L, 1);
-    lua_call(L, 1, 0);
-    assert(lua_gettop(L) == 1);
-
-    /* return false */
-    lua_pushboolean(L, 0);
-    return 1;
-    assert(lua_gettop(L) == 1);
-  }
-  lua_settop(L, lc832);
-  assert(lua_gettop(L) == 1);
-
-  /* local e=g() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
-  lua_call(L, 0, 1);
-  assert(lua_gettop(L) == 2);
-
-  /* if e==false then */
-  enum { lc835 = 2 };
-  lua_pushboolean(L, 0);
-  const int lc836 = lua_equal(L, 2, -1);
-  lua_pop(L, 1);
-  lua_pushboolean(L, lc836);
-  const int lc837 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc837) {
-
-    /* return h() */
-    const int lc838 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc838);
-    assert(lua_gettop(L) == 2);
-  }
-  lua_settop(L, lc835);
-  assert(lua_gettop(L) == 2);
-
-  /* if not a(e) then */
-  enum { lc839 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 91);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
+  lua_pushboolean(L, lc839);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   const int lc840 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc840) {
 
-    /* return h() */
-    const int lc841 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc841);
-    assert(lua_gettop(L) == 2);
-  }
-  lua_settop(L, lc839);
-  assert(lua_gettop(L) == 2);
-
-  /* return E(o(e),n(e)) */
-  const int lc842 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 86);
-  const int lc843 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 90);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 89);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc843), LUA_MULTRET);
-  return (lua_gettop(L) - lc842);
-  assert(lua_gettop(L) == 2);
-}
-
-/* name: U
- * function() */
-static inline int lcf2_U(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* if c() then */
-  enum { lc844 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
-  lua_call(L, 0, 1);
-  const int lc845 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc845) {
-
-    /* return false */
-    lua_pushboolean(L, 0);
-    return 1;
-    assert(lua_gettop(L) == 0);
-  }
-  lua_settop(L, lc844);
-  assert(lua_gettop(L) == 0);
-
-  /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
-  lua_call(L, 0, 1);
-  assert(lua_gettop(L) == 1);
-
-  /* if e~="!" then */
-  enum { lc846 = 1 };
-  lua_pushliteral(L, "!");
-  const int lc847 = lua_equal(L, 1, -1);
-  lua_pop(L, 1);
-  lua_pushboolean(L, lc847);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc848 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc848) {
-
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 1);
@@ -12009,91 +11979,205 @@ static inline int lcf2_U(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc846);
+  lua_settop(L, lc838);
   assert(lua_gettop(L) == 1);
 
   /* local e=g() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
   /* if e==false then */
-  enum { lc849 = 2 };
+  enum { lc841 = 2 };
   lua_pushboolean(L, 0);
-  const int lc850 = lua_equal(L, 2, -1);
+  const int lc842 = lua_equal(L, 2, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc850);
+  lua_pushboolean(L, lc842);
+  const int lc843 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc843) {
+
+    /* return r() */
+    const int lc844 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc844);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc841);
+  assert(lua_gettop(L) == 2);
+
+  /* if not a(e) then */
+  enum { lc845 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 92);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc846 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc846) {
+
+    /* return r() */
+    const int lc847 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc847);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc845);
+  assert(lua_gettop(L) == 2);
+
+  /* return T(o(e),i(e)) */
+  const int lc848 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 87);
+  const int lc849 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 91);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 90);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc849), LUA_MULTRET);
+  return (lua_gettop(L) - lc848);
+  assert(lua_gettop(L) == 2);
+}
+
+/* name: I
+ * function() */
+static inline int lcf2_I(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* if l() then */
+  enum { lc850 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  lua_call(L, 0, 1);
   const int lc851 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc851) {
 
-    /* return h() */
-    const int lc852 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc852);
-    assert(lua_gettop(L) == 2);
+    /* return false */
+    lua_pushboolean(L, 0);
+    return 1;
+    assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc849);
-  assert(lua_gettop(L) == 2);
+  lua_settop(L, lc850);
+  assert(lua_gettop(L) == 0);
 
-  /* if not a(e) then */
-  enum { lc853 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 91);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
+  /* local e=d() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  lua_call(L, 0, 1);
+  assert(lua_gettop(L) == 1);
+
+  /* if e~="!" then */
+  enum { lc852 = 1 };
+  lua_pushliteral(L, "!");
+  const int lc853 = lua_equal(L, 1, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc853);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   const int lc854 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc854) {
 
-    /* return h() */
-    const int lc855 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc855);
-    assert(lua_gettop(L) == 2);
-  }
-  lua_settop(L, lc853);
-  assert(lua_gettop(L) == 2);
-
-  /* return R(o(e),n(e)) */
-  const int lc856 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 82);
-  const int lc857 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 90);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 89);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc857), LUA_MULTRET);
-  return (lua_gettop(L) - lc856);
-  assert(lua_gettop(L) == 2);
-}
-
-/* name: L
- * function(e) */
-static inline int lcf2_L(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* if q(e) then */
-  enum { lc858 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 191);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 1);
-  const int lc859 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc859) {
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+    lua_pushvalue(L, 1);
+    lua_call(L, 1, 0);
+    assert(lua_gettop(L) == 1);
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc858);
+  lua_settop(L, lc852);
+  assert(lua_gettop(L) == 1);
+
+  /* local e=g() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
+  lua_call(L, 0, 1);
+  assert(lua_gettop(L) == 2);
+
+  /* if e==false then */
+  enum { lc855 = 2 };
+  lua_pushboolean(L, 0);
+  const int lc856 = lua_equal(L, 2, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc856);
+  const int lc857 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc857) {
+
+    /* return r() */
+    const int lc858 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc858);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc855);
+  assert(lua_gettop(L) == 2);
+
+  /* if not a(e) then */
+  enum { lc859 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 92);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc860 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc860) {
+
+    /* return r() */
+    const int lc861 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc861);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc859);
+  assert(lua_gettop(L) == 2);
+
+  /* return L(o(e),i(e)) */
+  const int lc862 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 83);
+  const int lc863 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 91);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 90);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc863), LUA_MULTRET);
+  return (lua_gettop(L) - lc862);
+  assert(lua_gettop(L) == 2);
+}
+
+/* name: W
+ * function(e) */
+static inline int lcf2_W(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
+  /* if j(e) then */
+  enum { lc864 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  const int lc865 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc865) {
+
+    /* return false */
+    lua_pushboolean(L, 0);
+    return 1;
+    assert(lua_gettop(L) == 1);
+  }
+  lua_settop(L, lc864);
   assert(lua_gettop(L) == 1);
 
   /* for a,t in ipairs({
@@ -12119,7 +12203,7 @@ static inline int lcf2_L(lua_State *L) {
    * ";",
    * })do
    * internal: local f, s, var = explist */
-  enum { lc860 = 1 };
+  enum { lc866 = 1 };
   lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
   lua_createtable(L, 20, 0);
   lua_pushliteral(L, "(");
@@ -12182,25 +12266,25 @@ static inline int lcf2_L(lua_State *L) {
      * internal: local t with idx 6 */
 
     /* if t==e then */
-    enum { lc861 = 6 };
-    const int lc862 = lua_equal(L, 6, 1);
-    lua_pushboolean(L, lc862);
-    const int lc863 = lua_toboolean(L, -1);
+    enum { lc867 = 6 };
+    const int lc868 = lua_equal(L, 6, 1);
+    lua_pushboolean(L, lc868);
+    const int lc869 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc863) {
+    if (lc869) {
 
       /* return false */
       lua_pushboolean(L, 0);
       return 1;
       assert(lua_gettop(L) == 6);
     }
-    lua_settop(L, lc861);
+    lua_settop(L, lc867);
     assert(lua_gettop(L) == 6);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 2);
   }
-  lua_settop(L, lc860);
+  lua_settop(L, lc866);
   assert(lua_gettop(L) == 1);
 
   /* return true */
@@ -12209,52 +12293,52 @@ static inline int lcf2_L(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: D
+/* name: M
  * function() */
-static inline int lcf2_D(lua_State *L) {
+static inline int lcf3_M(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* _() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 190);
+  /* E() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 191);
   lua_call(L, 0, 0);
   assert(lua_gettop(L) == 0);
 
   /* local e={
    * g,
-   * X,
-   * V,
-   * U,
-   * B,
-   * I,
-   * F,
-   * C,
+   * Q,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * } */
   lua_createtable(L, 9, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
   lua_rawseti(L, -2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 172);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 173);
   lua_rawseti(L, -2, 2);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
   lua_rawseti(L, -2, 3);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
   lua_rawseti(L, -2, 4);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
   lua_rawseti(L, -2, 5);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
   lua_rawseti(L, -2, 6);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
   lua_rawseti(L, -2, 7);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
   lua_rawseti(L, -2, 8);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
   lua_rawseti(L, -2, 9);
   assert(lua_gettop(L) == 1);
 
   /* for t,e in ipairs(e)do
    * internal: local f, s, var = explist */
-  enum { lc864 = 1 };
+  enum { lc870 = 1 };
   lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
   lua_pushvalue(L, 1);
   lua_call(L, 1, 3);
@@ -12282,36 +12366,36 @@ static inline int lcf2_D(lua_State *L) {
     assert(lua_gettop(L) == 7);
 
     /* if e~=false then */
-    enum { lc865 = 7 };
+    enum { lc871 = 7 };
     lua_pushboolean(L, 0);
-    const int lc866 = lua_equal(L, 7, -1);
+    const int lc872 = lua_equal(L, 7, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc866);
+    lua_pushboolean(L, lc872);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc867 = lua_toboolean(L, -1);
+    const int lc873 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc867) {
+    if (lc873) {
 
       /* return e */
       lua_pushvalue(L, 7);
       return 1;
       assert(lua_gettop(L) == 7);
     }
-    lua_settop(L, lc865);
+    lua_settop(L, lc871);
     assert(lua_gettop(L) == 7);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 3);
   }
-  lua_settop(L, lc864);
+  lua_settop(L, lc870);
   assert(lua_gettop(L) == 1);
 
-  /* return h() */
-  const int lc868 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+  /* return r() */
+  const int lc874 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc868);
+  return (lua_gettop(L) - lc874);
   assert(lua_gettop(L) == 1);
 }
 
@@ -12322,23 +12406,23 @@ static inline int lcf2_A(lua_State *L) {
   lua_settop(L, 1);
 
   /* if e==false then */
-  enum { lc869 = 1 };
+  enum { lc875 = 1 };
   lua_pushboolean(L, 0);
-  const int lc870 = lua_equal(L, 1, -1);
+  const int lc876 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc870);
-  const int lc871 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc876);
+  const int lc877 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc871) {
+  if (lc877) {
 
-    /* return h() */
-    const int lc872 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+    /* return r() */
+    const int lc878 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc872);
+    return (lua_gettop(L) - lc878);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc869);
+  lua_settop(L, lc875);
   assert(lua_gettop(L) == 1);
 
   /* return e */
@@ -12347,14 +12431,14 @@ static inline int lcf2_A(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: N
+/* name: U
  * function() */
-static inline int lcf2_N(lua_State *L) {
+static inline int lcf2_U(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return not c() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* return not l() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
@@ -12368,22 +12452,22 @@ static inline int lcf2_k(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* A(N()) */
+  /* A(U()) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 179);
+  const int lc879 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
-  const int lc873 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
   lua_call(L, 0, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc873), 0);
+  lua_call(L, (lua_gettop(L) - lc879), 0);
   assert(lua_gettop(L) == 1);
 
   /* A(d()==e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 179);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   lua_pushvalue(L, 1);
-  const int lc874 = lua_equal(L, -2, -1);
+  const int lc880 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc874);
+  lua_pushboolean(L, lc880);
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 1);
   return 0;
@@ -12396,18 +12480,18 @@ static inline int lcf4_a(lua_State *L) {
   lua_settop(L, 0);
 
   /* k("[") */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
   lua_pushliteral(L, "[");
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 0);
 
-  /* local e=w() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+  /* local e=f() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
   /* k("]") */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
   lua_pushliteral(L, "]");
   lua_call(L, 1, 0);
   assert(lua_gettop(L) == 1);
@@ -12418,33 +12502,33 @@ static inline int lcf4_a(lua_State *L) {
   assert(lua_gettop(L) == 1);
 }
 
-/* name: w
+/* name: f
  * function(t) */
-static inline int lcf2_w(lua_State *L) {
+static inline int lcf2_f(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* if t==nil then */
-  enum { lc875 = 1 };
+  enum { lc881 = 1 };
   lua_pushnil(L);
-  const int lc876 = lua_equal(L, 1, -1);
+  const int lc882 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc876);
-  const int lc877 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc882);
+  const int lc883 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc877) {
+  if (lc883) {
 
     /* t=false */
     lua_pushboolean(L, 0);
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc875);
+  lua_settop(L, lc881);
   assert(lua_gettop(L) == 1);
 
   /* local function a()
    * k("[")
-   * local e=w()
+   * local e=f()
    * k("]")
    * return e
    * end */
@@ -12457,41 +12541,41 @@ static inline int lcf2_w(lua_State *L) {
   assert(lua_gettop(L) == 3);
 
   /* if t then */
-  enum { lc878 = 3 };
+  enum { lc884 = 3 };
   if (lua_toboolean(L, 1)) {
 
     /* e={
      * g,
-     * J,
-     * a,
-     * V,
-     * U,
      * B,
-     * I,
-     * F,
-     * C,
+     * a,
      * O,
+     * I,
+     * N,
+     * V,
+     * C,
+     * P,
+     * R,
      * } */
     lua_createtable(L, 10, 0);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
-    lua_rawseti(L, -2, 1);
     lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
+    lua_rawseti(L, -2, 1);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 190);
     lua_rawseti(L, -2, 2);
     lua_pushvalue(L, 2);
     lua_rawseti(L, -2, 3);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
     lua_rawseti(L, -2, 4);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
     lua_rawseti(L, -2, 5);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
     lua_rawseti(L, -2, 6);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
     lua_rawseti(L, -2, 7);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
     lua_rawseti(L, -2, 8);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
     lua_rawseti(L, -2, 9);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
     lua_rawseti(L, -2, 10);
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
@@ -12500,43 +12584,43 @@ static inline int lcf2_w(lua_State *L) {
     /* else
      * e={
      * g,
-     * Q,
-     * V,
-     * U,
-     * B,
-     * I,
-     * F,
-     * C,
+     * G,
      * O,
+     * I,
+     * N,
+     * V,
+     * C,
+     * P,
+     * R,
      * } */
     lua_createtable(L, 9, 0);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
     lua_rawseti(L, -2, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 173);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 174);
     lua_rawseti(L, -2, 2);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 188);
     lua_rawseti(L, -2, 3);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 187);
     lua_rawseti(L, -2, 4);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 186);
     lua_rawseti(L, -2, 5);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 185);
     lua_rawseti(L, -2, 6);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 184);
     lua_rawseti(L, -2, 7);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 183);
     lua_rawseti(L, -2, 8);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 181);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 182);
     lua_rawseti(L, -2, 9);
     lua_replace(L, 3);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc878);
+  lua_settop(L, lc884);
   assert(lua_gettop(L) == 3);
 
   /* for t,e in ipairs(e)do
    * internal: local f, s, var = explist */
-  enum { lc879 = 3 };
+  enum { lc885 = 3 };
   lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
   lua_pushvalue(L, 3);
   lua_call(L, 1, 3);
@@ -12564,211 +12648,211 @@ static inline int lcf2_w(lua_State *L) {
     assert(lua_gettop(L) == 9);
 
     /* if e~=false then */
-    enum { lc880 = 9 };
+    enum { lc886 = 9 };
     lua_pushboolean(L, 0);
-    const int lc881 = lua_equal(L, 9, -1);
+    const int lc887 = lua_equal(L, 9, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc881);
+    lua_pushboolean(L, lc887);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
-    const int lc882 = lua_toboolean(L, -1);
+    const int lc888 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc882) {
+    if (lc888) {
 
       /* return e */
       lua_pushvalue(L, 9);
       return 1;
       assert(lua_gettop(L) == 9);
     }
-    lua_settop(L, lc880);
+    lua_settop(L, lc886);
     assert(lua_gettop(L) == 9);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 3);
   }
-  lua_settop(L, lc879);
+  lua_settop(L, lc885);
   assert(lua_gettop(L) == 3);
 
-  /* return h() */
-  const int lc883 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+  /* return r() */
+  const int lc889 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc883);
+  return (lua_gettop(L) - lc889);
   assert(lua_gettop(L) == 3);
 }
 
-/* name: G
+/* name: K
  * function(a) */
-static inline int lcf2_G(lua_State *L) {
+static inline int lcf2_K(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* if c() then */
-  enum { lc884 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  /* if l() then */
+  enum { lc890 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
   lua_call(L, 0, 1);
-  const int lc885 = lua_toboolean(L, -1);
+  const int lc891 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc885) {
+  if (lc891) {
 
     /* return a */
     lua_pushvalue(L, 1);
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc884);
+  lua_settop(L, lc890);
   assert(lua_gettop(L) == 1);
 
   /* local o=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
   /* if o=="." then */
-  enum { lc886 = 2 };
+  enum { lc892 = 2 };
   lua_pushliteral(L, ".");
-  const int lc887 = lua_equal(L, 2, -1);
+  const int lc893 = lua_equal(L, 2, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc887);
-  const int lc888 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc893);
+  const int lc894 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc888) {
+  if (lc894) {
 
-    /* local o=w() */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+    /* local o=f() */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
     lua_call(L, 0, 1);
     assert(lua_gettop(L) == 3);
 
-    /* return e(u,e(t,e(a),f),o) */
-    const int lc889 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-    lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
+    /* return e(u,e(t,e(a),m),o) */
+    const int lc895 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+    lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
+    lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
     lua_call(L, 3, 1);
     lua_pushvalue(L, 3);
     lua_call(L, 3, LUA_MULTRET);
-    return (lua_gettop(L) - lc889);
+    return (lua_gettop(L) - lc895);
     assert(lua_gettop(L) == 3);
   } else {
 
     /* elseif o==":" then */
-    enum { lc890 = 2 };
+    enum { lc896 = 2 };
     lua_pushliteral(L, ":");
-    const int lc891 = lua_equal(L, 2, -1);
+    const int lc897 = lua_equal(L, 2, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc891);
-    const int lc892 = lua_toboolean(L, -1);
+    lua_pushboolean(L, lc897);
+    const int lc898 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc892) {
+    if (lc898) {
 
-      /* local t=w() */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+      /* local t=f() */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
       lua_call(L, 0, 1);
       assert(lua_gettop(L) == 3);
 
       /* return e(u,t,a) */
-      const int lc893 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-      lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
+      const int lc899 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+      lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 1);
       lua_call(L, 3, LUA_MULTRET);
-      return (lua_gettop(L) - lc893);
+      return (lua_gettop(L) - lc899);
       assert(lua_gettop(L) == 3);
     } else {
 
       /* elseif o=="~" then */
-      enum { lc894 = 2 };
+      enum { lc900 = 2 };
       lua_pushliteral(L, "~");
-      const int lc895 = lua_equal(L, 2, -1);
+      const int lc901 = lua_equal(L, 2, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc895);
-      const int lc896 = lua_toboolean(L, -1);
+      lua_pushboolean(L, lc901);
+      const int lc902 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc896) {
+      if (lc902) {
 
-        /* return e(Z,a) */
-        const int lc897 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-        lc_getupvalue(L, lua_upvalueindex(1), 14, 151);
+        /* return e(ae,a) */
+        const int lc903 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+        lc_getupvalue(L, lua_upvalueindex(1), 14, 152);
         lua_pushvalue(L, 1);
         lua_call(L, 2, LUA_MULTRET);
-        return (lua_gettop(L) - lc897);
+        return (lua_gettop(L) - lc903);
         assert(lua_gettop(L) == 2);
       } else {
 
         /* elseif o=="@" then */
-        enum { lc898 = 2 };
+        enum { lc904 = 2 };
         lua_pushliteral(L, "@");
-        const int lc899 = lua_equal(L, 2, -1);
+        const int lc905 = lua_equal(L, 2, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc899);
-        const int lc900 = lua_toboolean(L, -1);
+        lua_pushboolean(L, lc905);
+        const int lc906 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc900) {
+        if (lc906) {
 
-          /* local o=w() */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+          /* local o=f() */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
           lua_call(L, 0, 1);
           assert(lua_gettop(L) == 3);
 
-          /* return e(u,e(t,s(a,f),f),o) */
-          const int lc901 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-          lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 92);
+          /* return e(u,e(t,s(a,m),m),o) */
+          const int lc907 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+          lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 93);
           lua_pushvalue(L, 1);
-          lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
+          lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
           lua_call(L, 2, 1);
-          lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
+          lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
           lua_call(L, 3, 1);
           lua_pushvalue(L, 3);
           lua_call(L, 3, LUA_MULTRET);
-          return (lua_gettop(L) - lc901);
+          return (lua_gettop(L) - lc907);
           assert(lua_gettop(L) == 3);
         } else {
 
           /* elseif o=="?" then */
-          enum { lc902 = 2 };
+          enum { lc908 = 2 };
           lua_pushliteral(L, "?");
-          const int lc903 = lua_equal(L, 2, -1);
+          const int lc909 = lua_equal(L, 2, -1);
           lua_pop(L, 1);
-          lua_pushboolean(L, lc903);
-          const int lc904 = lua_toboolean(L, -1);
+          lua_pushboolean(L, lc909);
+          const int lc910 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc904) {
+          if (lc910) {
 
-            /* return e(u,t,e(Z,a)) */
-            const int lc905 = lua_gettop(L);
-            lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-            const int lc906 = lua_gettop(L);
-            lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-            lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
-            lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-            lc_getupvalue(L, lua_upvalueindex(1), 14, 151);
+            /* return e(u,t,e(ae,a)) */
+            const int lc911 = lua_gettop(L);
+            lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+            const int lc912 = lua_gettop(L);
+            lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+            lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
+            lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+            lc_getupvalue(L, lua_upvalueindex(1), 14, 152);
             lua_pushvalue(L, 1);
             lua_call(L, 2, LUA_MULTRET);
-            lua_call(L, (lua_gettop(L) - lc906), LUA_MULTRET);
-            return (lua_gettop(L) - lc905);
+            lua_call(L, (lua_gettop(L) - lc912), LUA_MULTRET);
+            return (lua_gettop(L) - lc911);
             assert(lua_gettop(L) == 2);
           } else {
 
             /* elseif o=="/" then */
-            enum { lc907 = 2 };
+            enum { lc913 = 2 };
             lua_pushliteral(L, "/");
-            const int lc908 = lua_equal(L, 2, -1);
+            const int lc914 = lua_equal(L, 2, -1);
             lua_pop(L, 1);
-            lua_pushboolean(L, lc908);
-            const int lc909 = lua_toboolean(L, -1);
+            lua_pushboolean(L, lc914);
+            const int lc915 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc909) {
+            if (lc915) {
 
               /* local t={a} */
               lua_createtable(L, 1, 0);
@@ -12777,7 +12861,7 @@ static inline int lcf2_G(lua_State *L) {
               assert(lua_gettop(L) == 3);
 
               /* while true do */
-              enum { lc910 = 3 };
+              enum { lc916 = 3 };
               while (1) {
                 lua_pushboolean(L, 1);
                 if (!(lua_toboolean(L, -1))) {
@@ -12785,53 +12869,53 @@ static inline int lcf2_G(lua_State *L) {
                 }
                 lua_pop(L, 1);
 
-                /* local e=w(true) */
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+                /* local e=f(true) */
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
                 lua_pushboolean(L, 1);
                 lua_call(L, 1, 1);
                 assert(lua_gettop(L) == 4);
 
-                /* l(t,e) */
-                lc_getupvalue(L, lua_upvalueindex(1), 28, 1);
+                /* v(t,e) */
+                lc_getupvalue(L, lua_upvalueindex(1), 29, 1);
                 lua_pushvalue(L, 3);
                 lua_pushvalue(L, 4);
                 lua_call(L, 2, 0);
                 assert(lua_gettop(L) == 4);
 
-                /* if c() then */
-                enum { lc911 = 4 };
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+                /* if l() then */
+                enum { lc917 = 4 };
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
                 lua_call(L, 0, 1);
-                const int lc912 = lua_toboolean(L, -1);
+                const int lc918 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc912) {
+                if (lc918) {
 
                   /* break */
                   break;
                   assert(lua_gettop(L) == 4);
                 }
-                lua_settop(L, lc911);
+                lua_settop(L, lc917);
                 assert(lua_gettop(L) == 4);
 
                 /* local e=d() */
-                lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+                lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
                 lua_call(L, 0, 1);
                 assert(lua_gettop(L) == 5);
 
                 /* if e~="/" then */
-                enum { lc913 = 5 };
+                enum { lc919 = 5 };
                 lua_pushliteral(L, "/");
-                const int lc914 = lua_equal(L, 5, -1);
+                const int lc920 = lua_equal(L, 5, -1);
                 lua_pop(L, 1);
-                lua_pushboolean(L, lc914);
+                lua_pushboolean(L, lc920);
                 lua_pushboolean(L, !(lua_toboolean(L, -1)));
                 lua_remove(L, -2);
-                const int lc915 = lua_toboolean(L, -1);
+                const int lc921 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc915) {
+                if (lc921) {
 
-                  /* m(e) */
-                  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+                  /* c(e) */
+                  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
                   lua_pushvalue(L, 5);
                   lua_call(L, 1, 0);
                   assert(lua_gettop(L) == 5);
@@ -12840,31 +12924,31 @@ static inline int lcf2_G(lua_State *L) {
                   break;
                   assert(lua_gettop(L) == 5);
                 }
-                lua_settop(L, lc913);
+                lua_settop(L, lc919);
                 assert(lua_gettop(L) == 5);
 
                 /* internal: stack cleanup on scope exit */
                 lua_pop(L, 2);
               }
-              lua_settop(L, lc910);
+              lua_settop(L, lc916);
               assert(lua_gettop(L) == 3);
 
-              /* return e(pe,T(t)) */
-              const int lc916 = lua_gettop(L);
-              lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-              const int lc917 = lua_gettop(L);
-              lc_getupvalue(L, lua_upvalueindex(1), 13, 152);
+              /* return e(pe,_(t)) */
+              const int lc922 = lua_gettop(L);
               lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+              const int lc923 = lua_gettop(L);
+              lc_getupvalue(L, lua_upvalueindex(1), 13, 153);
+              lc_getupvalue(L, lua_upvalueindex(1), 27, 28);
               lua_pushvalue(L, 3);
               lua_call(L, 1, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc917), LUA_MULTRET);
-              return (lua_gettop(L) - lc916);
+              lua_call(L, (lua_gettop(L) - lc923), LUA_MULTRET);
+              return (lua_gettop(L) - lc922);
               assert(lua_gettop(L) == 3);
             } else {
 
               /* else
-               * m(o) */
-              lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+               * c(o) */
+              lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
               lua_pushvalue(L, 2);
               lua_call(L, 1, 0);
               assert(lua_gettop(L) == 2);
@@ -12874,18 +12958,381 @@ static inline int lcf2_G(lua_State *L) {
               return 1;
               assert(lua_gettop(L) == 2);
             }
-            lua_settop(L, lc907);
+            lua_settop(L, lc913);
           }
-          lua_settop(L, lc902);
+          lua_settop(L, lc908);
         }
-        lua_settop(L, lc898);
+        lua_settop(L, lc904);
       }
-      lua_settop(L, lc894);
+      lua_settop(L, lc900);
     }
-    lua_settop(L, lc890);
+    lua_settop(L, lc896);
   }
-  lua_settop(L, lc886);
+  lua_settop(L, lc892);
   assert(lua_gettop(L) == 2);
+  return 0;
+}
+
+/* name: G
+ * function() */
+static inline int lcf2_G(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* if l() then */
+  enum { lc924 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 196);
+  lua_call(L, 0, 1);
+  const int lc925 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc925) {
+
+    /* return false */
+    lua_pushboolean(L, 0);
+    return 1;
+    assert(lua_gettop(L) == 0);
+  }
+  lua_settop(L, lc924);
+  assert(lua_gettop(L) == 0);
+
+  /* local a=d() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+  lua_call(L, 0, 1);
+  assert(lua_gettop(L) == 1);
+
+  /* if a=="&" then */
+  enum { lc926 = 1 };
+  lua_pushliteral(L, "&");
+  const int lc927 = lua_equal(L, 1, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc927);
+  const int lc928 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc928) {
+
+    /* A(U()) */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 179);
+    const int lc929 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
+    lua_call(L, 0, LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc929), 0);
+    assert(lua_gettop(L) == 1);
+
+    /* local t=d() */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+    lua_call(L, 0, 1);
+    assert(lua_gettop(L) == 2);
+
+    /* if t=="+" then */
+    enum { lc930 = 2 };
+    lua_pushliteral(L, "+");
+    const int lc931 = lua_equal(L, 2, -1);
+    lua_pop(L, 1);
+    lua_pushboolean(L, lc931);
+    const int lc932 = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    if (lc932) {
+
+      /* local t=f() */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+      lua_call(L, 0, 1);
+      assert(lua_gettop(L) == 3);
+
+      /* return e(x,e(z,t)) */
+      const int lc933 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+      const int lc934 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 54);
+      lua_pushvalue(L, 3);
+      lua_call(L, 2, LUA_MULTRET);
+      lua_call(L, (lua_gettop(L) - lc934), LUA_MULTRET);
+      return (lua_gettop(L) - lc933);
+      assert(lua_gettop(L) == 3);
+    } else {
+
+      /* else
+       * c(t) */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+      lua_pushvalue(L, 2);
+      lua_call(L, 1, 0);
+      assert(lua_gettop(L) == 2);
+    }
+    lua_settop(L, lc930);
+    assert(lua_gettop(L) == 2);
+
+    /* local t=f() */
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+    lua_call(L, 0, 1);
+    assert(lua_gettop(L) == 3);
+
+    /* return e(x,t) */
+    const int lc935 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+    lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
+    lua_pushvalue(L, 3);
+    lua_call(L, 2, LUA_MULTRET);
+    return (lua_gettop(L) - lc935);
+    assert(lua_gettop(L) == 3);
+  } else {
+
+    /* elseif a==":" then */
+    enum { lc936 = 1 };
+    lua_pushliteral(L, ":");
+    const int lc937 = lua_equal(L, 1, -1);
+    lua_pop(L, 1);
+    lua_pushboolean(L, lc937);
+    const int lc938 = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    if (lc938) {
+
+      /* A(U()) */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 179);
+      const int lc939 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
+      lua_call(L, 0, LUA_MULTRET);
+      lua_call(L, (lua_gettop(L) - lc939), 0);
+      assert(lua_gettop(L) == 1);
+
+      /* local a=d() */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
+      lua_call(L, 0, 1);
+      assert(lua_gettop(L) == 2);
+
+      /* if a=="&" then */
+      enum { lc940 = 2 };
+      lua_pushliteral(L, "&");
+      const int lc941 = lua_equal(L, 2, -1);
+      lua_pop(L, 1);
+      lua_pushboolean(L, lc941);
+      const int lc942 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc942) {
+
+        /* k(">") */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
+        lua_pushliteral(L, ">");
+        lua_call(L, 1, 0);
+        assert(lua_gettop(L) == 2);
+
+        /* local a=f() */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+        lua_call(L, 0, 1);
+        assert(lua_gettop(L) == 3);
+
+        /* return e(u,e(x,e(t,m,a)),Y) */
+        const int lc943 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+        lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+        const int lc944 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
+        lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
+        lua_pushvalue(L, 3);
+        lua_call(L, 3, LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc944), 1);
+        lc_getupvalue(L, lua_upvalueindex(1), 17, 149);
+        lua_call(L, 3, LUA_MULTRET);
+        return (lua_gettop(L) - lc943);
+        assert(lua_gettop(L) == 3);
+      } else {
+
+        /* elseif a==">" then */
+        enum { lc945 = 2 };
+        lua_pushliteral(L, ">");
+        const int lc946 = lua_equal(L, 2, -1);
+        lua_pop(L, 1);
+        lua_pushboolean(L, lc946);
+        const int lc947 = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        if (lc947) {
+
+          /* local a=f() */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+          lua_call(L, 0, 1);
+          assert(lua_gettop(L) == 3);
+
+          /* return e(u,e(t,m,a),Y) */
+          const int lc948 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+          lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+          lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
+          lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
+          lua_pushvalue(L, 3);
+          lua_call(L, 3, 1);
+          lc_getupvalue(L, lua_upvalueindex(1), 17, 149);
+          lua_call(L, 3, LUA_MULTRET);
+          return (lua_gettop(L) - lc948);
+          assert(lua_gettop(L) == 3);
+        } else {
+
+          /* else
+           * c(a) */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+          lua_pushvalue(L, 2);
+          lua_call(L, 1, 0);
+          assert(lua_gettop(L) == 2);
+        }
+        lua_settop(L, lc945);
+      }
+      lua_settop(L, lc940);
+      assert(lua_gettop(L) == 2);
+
+      /* local t=f() */
+      lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+      lua_call(L, 0, 1);
+      assert(lua_gettop(L) == 3);
+
+      /* return e(u,t,Y) */
+      const int lc949 = lua_gettop(L);
+      lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+      lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+      lua_pushvalue(L, 3);
+      lc_getupvalue(L, lua_upvalueindex(1), 17, 149);
+      lua_call(L, 3, LUA_MULTRET);
+      return (lua_gettop(L) - lc949);
+      assert(lua_gettop(L) == 3);
+    } else {
+
+      /* elseif a=="+" then */
+      enum { lc950 = 1 };
+      lua_pushliteral(L, "+");
+      const int lc951 = lua_equal(L, 1, -1);
+      lua_pop(L, 1);
+      lua_pushboolean(L, lc951);
+      const int lc952 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc952) {
+
+        /* local t=f() */
+        lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+        lua_call(L, 0, 1);
+        assert(lua_gettop(L) == 2);
+
+        /* return e(z,t) */
+        const int lc953 = lua_gettop(L);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+        lc_getupvalue(L, lua_upvalueindex(1), 27, 54);
+        lua_pushvalue(L, 2);
+        lua_call(L, 2, LUA_MULTRET);
+        return (lua_gettop(L) - lc953);
+        assert(lua_gettop(L) == 2);
+      } else {
+
+        /* elseif a=="[" then */
+        enum { lc954 = 1 };
+        lua_pushliteral(L, "[");
+        const int lc955 = lua_equal(L, 1, -1);
+        lua_pop(L, 1);
+        lua_pushboolean(L, lc955);
+        const int lc956 = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        if (lc956) {
+
+          /* local e=f() */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+          lua_call(L, 0, 1);
+          assert(lua_gettop(L) == 2);
+
+          /* k("]") */
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
+          lua_pushliteral(L, "]");
+          lua_call(L, 1, 0);
+          assert(lua_gettop(L) == 2);
+
+          /* return K(e) */
+          const int lc957 = lua_gettop(L);
+          lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+          lua_pushvalue(L, 2);
+          lua_call(L, 1, LUA_MULTRET);
+          return (lua_gettop(L) - lc957);
+          assert(lua_gettop(L) == 2);
+        } else {
+
+          /* elseif a=="_" then */
+          enum { lc958 = 1 };
+          lua_pushliteral(L, "_");
+          const int lc959 = lua_equal(L, 1, -1);
+          lua_pop(L, 1);
+          lua_pushboolean(L, lc959);
+          const int lc960 = lua_toboolean(L, -1);
+          lua_pop(L, 1);
+          if (lc960) {
+
+            /* k(":") */
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
+            lua_pushliteral(L, ":");
+            lua_call(L, 1, 0);
+            assert(lua_gettop(L) == 1);
+
+            /* local t=f() */
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
+            lua_call(L, 0, 1);
+            assert(lua_gettop(L) == 2);
+
+            /* return e(u,t,m) */
+            const int lc961 = lua_gettop(L);
+            lc_getupvalue(L, lua_upvalueindex(1), 27, 27);
+            lc_getupvalue(L, lua_upvalueindex(1), 15, 151);
+            lua_pushvalue(L, 2);
+            lc_getupvalue(L, lua_upvalueindex(1), 16, 150);
+            lua_call(L, 3, LUA_MULTRET);
+            return (lua_gettop(L) - lc961);
+            assert(lua_gettop(L) == 2);
+          } else {
+
+            /* else
+             * c(a) */
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
+            lua_pushvalue(L, 1);
+            lua_call(L, 1, 0);
+            assert(lua_gettop(L) == 1);
+
+            /* local e=B() */
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 190);
+            lua_call(L, 0, 1);
+            assert(lua_gettop(L) == 2);
+
+            /* if e==false then */
+            enum { lc962 = 2 };
+            lua_pushboolean(L, 0);
+            const int lc963 = lua_equal(L, 2, -1);
+            lua_pop(L, 1);
+            lua_pushboolean(L, lc963);
+            const int lc964 = lua_toboolean(L, -1);
+            lua_pop(L, 1);
+            if (lc964) {
+
+              /* return false */
+              lua_pushboolean(L, 0);
+              return 1;
+              assert(lua_gettop(L) == 2);
+            }
+            lua_settop(L, lc962);
+            assert(lua_gettop(L) == 2);
+
+            /* return K(e) */
+            const int lc965 = lua_gettop(L);
+            lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
+            lua_pushvalue(L, 2);
+            lua_call(L, 1, LUA_MULTRET);
+            return (lua_gettop(L) - lc965);
+            assert(lua_gettop(L) == 2);
+          }
+          lua_settop(L, lc958);
+        }
+        lua_settop(L, lc954);
+      }
+      lua_settop(L, lc950);
+    }
+    lua_settop(L, lc936);
+  }
+  lua_settop(L, lc926);
+  assert(lua_gettop(L) == 1);
   return 0;
 }
 
@@ -12895,427 +13342,17 @@ static inline int lcf2_Q(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc918 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 195);
-  lua_call(L, 0, 1);
-  const int lc919 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc919) {
-
-    /* return false */
-    lua_pushboolean(L, 0);
-    return 1;
-    assert(lua_gettop(L) == 0);
-  }
-  lua_settop(L, lc918);
-  assert(lua_gettop(L) == 0);
-
-  /* local a=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
-  lua_call(L, 0, 1);
-  assert(lua_gettop(L) == 1);
-
-  /* if a=="&" then */
-  enum { lc920 = 1 };
-  lua_pushliteral(L, "&");
-  const int lc921 = lua_equal(L, 1, -1);
-  lua_pop(L, 1);
-  lua_pushboolean(L, lc921);
-  const int lc922 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc922) {
-
-    /* A(N()) */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
-    const int lc923 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
-    lua_call(L, 0, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc923), 0);
-    assert(lua_gettop(L) == 1);
-
-    /* local t=d() */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
-    lua_call(L, 0, 1);
-    assert(lua_gettop(L) == 2);
-
-    /* if t=="+" then */
-    enum { lc924 = 2 };
-    lua_pushliteral(L, "+");
-    const int lc925 = lua_equal(L, 2, -1);
-    lua_pop(L, 1);
-    lua_pushboolean(L, lc925);
-    const int lc926 = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    if (lc926) {
-
-      /* local t=w() */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-      lua_call(L, 0, 1);
-      assert(lua_gettop(L) == 3);
-
-      /* return e(x,e(z,t)) */
-      const int lc927 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-      const int lc928 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 51);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
-      lua_pushvalue(L, 3);
-      lua_call(L, 2, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc928), LUA_MULTRET);
-      return (lua_gettop(L) - lc927);
-      assert(lua_gettop(L) == 3);
-    } else {
-
-      /* else
-       * m(t) */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
-      lua_pushvalue(L, 2);
-      lua_call(L, 1, 0);
-      assert(lua_gettop(L) == 2);
-    }
-    lua_settop(L, lc924);
-    assert(lua_gettop(L) == 2);
-
-    /* local t=w() */
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-    lua_call(L, 0, 1);
-    assert(lua_gettop(L) == 3);
-
-    /* return e(x,t) */
-    const int lc929 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-    lc_getupvalue(L, lua_upvalueindex(1), 27, 51);
-    lua_pushvalue(L, 3);
-    lua_call(L, 2, LUA_MULTRET);
-    return (lua_gettop(L) - lc929);
-    assert(lua_gettop(L) == 3);
-  } else {
-
-    /* elseif a==":" then */
-    enum { lc930 = 1 };
-    lua_pushliteral(L, ":");
-    const int lc931 = lua_equal(L, 1, -1);
-    lua_pop(L, 1);
-    lua_pushboolean(L, lc931);
-    const int lc932 = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    if (lc932) {
-
-      /* A(N()) */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 178);
-      const int lc933 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 177);
-      lua_call(L, 0, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc933), 0);
-      assert(lua_gettop(L) == 1);
-
-      /* local a=d() */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 194);
-      lua_call(L, 0, 1);
-      assert(lua_gettop(L) == 2);
-
-      /* if a=="&" then */
-      enum { lc934 = 2 };
-      lua_pushliteral(L, "&");
-      const int lc935 = lua_equal(L, 2, -1);
-      lua_pop(L, 1);
-      lua_pushboolean(L, lc935);
-      const int lc936 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc936) {
-
-        /* k(">") */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
-        lua_pushliteral(L, ">");
-        lua_call(L, 1, 0);
-        assert(lua_gettop(L) == 2);
-
-        /* local a=w() */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-        lua_call(L, 0, 1);
-        assert(lua_gettop(L) == 3);
-
-        /* return e(u,e(x,e(t,f,a)),Y) */
-        const int lc937 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-        lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-        const int lc938 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 51);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
-        lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
-        lua_pushvalue(L, 3);
-        lua_call(L, 3, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc938), 1);
-        lc_getupvalue(L, lua_upvalueindex(1), 17, 148);
-        lua_call(L, 3, LUA_MULTRET);
-        return (lua_gettop(L) - lc937);
-        assert(lua_gettop(L) == 3);
-      } else {
-
-        /* elseif a==">" then */
-        enum { lc939 = 2 };
-        lua_pushliteral(L, ">");
-        const int lc940 = lua_equal(L, 2, -1);
-        lua_pop(L, 1);
-        lua_pushboolean(L, lc940);
-        const int lc941 = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        if (lc941) {
-
-          /* local a=w() */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-          lua_call(L, 0, 1);
-          assert(lua_gettop(L) == 3);
-
-          /* return e(u,e(t,f,a),Y) */
-          const int lc942 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-          lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-          lc_getupvalue(L, lua_upvalueindex(1), 27, 52);
-          lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
-          lua_pushvalue(L, 3);
-          lua_call(L, 3, 1);
-          lc_getupvalue(L, lua_upvalueindex(1), 17, 148);
-          lua_call(L, 3, LUA_MULTRET);
-          return (lua_gettop(L) - lc942);
-          assert(lua_gettop(L) == 3);
-        } else {
-
-          /* else
-           * m(a) */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
-          lua_pushvalue(L, 2);
-          lua_call(L, 1, 0);
-          assert(lua_gettop(L) == 2);
-        }
-        lua_settop(L, lc939);
-      }
-      lua_settop(L, lc934);
-      assert(lua_gettop(L) == 2);
-
-      /* local t=w() */
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-      lua_call(L, 0, 1);
-      assert(lua_gettop(L) == 3);
-
-      /* return e(u,t,Y) */
-      const int lc943 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-      lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-      lua_pushvalue(L, 3);
-      lc_getupvalue(L, lua_upvalueindex(1), 17, 148);
-      lua_call(L, 3, LUA_MULTRET);
-      return (lua_gettop(L) - lc943);
-      assert(lua_gettop(L) == 3);
-    } else {
-
-      /* elseif a=="+" then */
-      enum { lc944 = 1 };
-      lua_pushliteral(L, "+");
-      const int lc945 = lua_equal(L, 1, -1);
-      lua_pop(L, 1);
-      lua_pushboolean(L, lc945);
-      const int lc946 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc946) {
-
-        /* local t=w() */
-        lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-        lua_call(L, 0, 1);
-        assert(lua_gettop(L) == 2);
-
-        /* return e(z,t) */
-        const int lc947 = lua_gettop(L);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-        lc_getupvalue(L, lua_upvalueindex(1), 27, 53);
-        lua_pushvalue(L, 2);
-        lua_call(L, 2, LUA_MULTRET);
-        return (lua_gettop(L) - lc947);
-        assert(lua_gettop(L) == 2);
-      } else {
-
-        /* elseif a=="[" then */
-        enum { lc948 = 1 };
-        lua_pushliteral(L, "[");
-        const int lc949 = lua_equal(L, 1, -1);
-        lua_pop(L, 1);
-        lua_pushboolean(L, lc949);
-        const int lc950 = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        if (lc950) {
-
-          /* local e=w() */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-          lua_call(L, 0, 1);
-          assert(lua_gettop(L) == 2);
-
-          /* k("]") */
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
-          lua_pushliteral(L, "]");
-          lua_call(L, 1, 0);
-          assert(lua_gettop(L) == 2);
-
-          /* return G(e) */
-          const int lc951 = lua_gettop(L);
-          lc_getupvalue(L, lua_upvalueindex(1), 0, 174);
-          lua_pushvalue(L, 2);
-          lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc951);
-          assert(lua_gettop(L) == 2);
-        } else {
-
-          /* elseif a=="_" then */
-          enum { lc952 = 1 };
-          lua_pushliteral(L, "_");
-          const int lc953 = lua_equal(L, 1, -1);
-          lua_pop(L, 1);
-          lua_pushboolean(L, lc953);
-          const int lc954 = lua_toboolean(L, -1);
-          lua_pop(L, 1);
-          if (lc954) {
-
-            /* k(":") */
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 176);
-            lua_pushliteral(L, ":");
-            lua_call(L, 1, 0);
-            assert(lua_gettop(L) == 1);
-
-            /* local t=w() */
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 175);
-            lua_call(L, 0, 1);
-            assert(lua_gettop(L) == 2);
-
-            /* return e(u,t,f) */
-            const int lc955 = lua_gettop(L);
-            lc_getupvalue(L, lua_upvalueindex(1), 27, 26);
-            lc_getupvalue(L, lua_upvalueindex(1), 15, 150);
-            lua_pushvalue(L, 2);
-            lc_getupvalue(L, lua_upvalueindex(1), 16, 149);
-            lua_call(L, 3, LUA_MULTRET);
-            return (lua_gettop(L) - lc955);
-            assert(lua_gettop(L) == 2);
-          } else {
-
-            /* else
-             * m(a) */
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
-            lua_pushvalue(L, 1);
-            lua_call(L, 1, 0);
-            assert(lua_gettop(L) == 1);
-
-            /* local e=J() */
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 189);
-            lua_call(L, 0, 1);
-            assert(lua_gettop(L) == 2);
-
-            /* if e==false then */
-            enum { lc956 = 2 };
-            lua_pushboolean(L, 0);
-            const int lc957 = lua_equal(L, 2, -1);
-            lua_pop(L, 1);
-            lua_pushboolean(L, lc957);
-            const int lc958 = lua_toboolean(L, -1);
-            lua_pop(L, 1);
-            if (lc958) {
-
-              /* return false */
-              lua_pushboolean(L, 0);
-              return 1;
-              assert(lua_gettop(L) == 2);
-            }
-            lua_settop(L, lc956);
-            assert(lua_gettop(L) == 2);
-
-            /* return G(e) */
-            const int lc959 = lua_gettop(L);
-            lc_getupvalue(L, lua_upvalueindex(1), 0, 174);
-            lua_pushvalue(L, 2);
-            lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc959);
-            assert(lua_gettop(L) == 2);
-          }
-          lua_settop(L, lc952);
-        }
-        lua_settop(L, lc948);
-      }
-      lua_settop(L, lc944);
-    }
-    lua_settop(L, lc930);
-  }
-  lua_settop(L, lc920);
-  assert(lua_gettop(L) == 1);
-  return 0;
-}
-
-/* name: X
- * function() */
-static inline int lcf2_X(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* local e=Q() */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 173);
+  /* local e=G() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 174);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
   /* if e==false then */
-  enum { lc960 = 1 };
+  enum { lc966 = 1 };
   lua_pushboolean(L, 0);
-  const int lc961 = lua_equal(L, 1, -1);
+  const int lc967 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc961);
-  const int lc962 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc962) {
-
-    /* return false */
-    lua_pushboolean(L, 0);
-    return 1;
-    assert(lua_gettop(L) == 1);
-  }
-  lua_settop(L, lc960);
-  assert(lua_gettop(L) == 1);
-
-  /* if p(e) then */
-  enum { lc963 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 96);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 1);
-  const int lc964 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc964) {
-
-    /* return e */
-    lua_pushvalue(L, 1);
-    return 1;
-    assert(lua_gettop(L) == 1);
-  }
-  lua_settop(L, lc963);
-  assert(lua_gettop(L) == 1);
-
-  /* return b(e) */
-  const int lc965 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 10, 155);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc965);
-  assert(lua_gettop(L) == 1);
-}
-
-/* function() */
-static inline int lcf985(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* if c() then */
-  enum { lc967 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 195);
-  lua_call(L, 0, 1);
+  lua_pushboolean(L, lc967);
   const int lc968 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc968) {
@@ -13323,220 +13360,77 @@ static inline int lcf985(lua_State *L) {
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
-    assert(lua_gettop(L) == 0);
+    assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc967);
-  assert(lua_gettop(L) == 0);
-
-  /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 194);
-  lua_call(L, 0, 1);
+  lua_settop(L, lc966);
   assert(lua_gettop(L) == 1);
 
-  /* if e~=t then */
+  /* if p(e) then */
   enum { lc969 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 199);
-  const int lc970 = lua_equal(L, 1, -1);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 97);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  const int lc970 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc970);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc971 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc971) {
+  if (lc970) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    /* return e */
     lua_pushvalue(L, 1);
-    lua_call(L, 1, 0);
-    assert(lua_gettop(L) == 1);
-
-    /* return false */
-    lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 1);
   }
   lua_settop(L, lc969);
   assert(lua_gettop(L) == 1);
 
-  /* local e=g() */
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 188);
-  lua_call(L, 0, 1);
-  assert(lua_gettop(L) == 2);
-
-  /* if e==false then */
-  enum { lc972 = 2 };
-  lua_pushboolean(L, 0);
-  const int lc973 = lua_equal(L, 2, -1);
-  lua_pop(L, 1);
-  lua_pushboolean(L, lc973);
-  const int lc974 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc974) {
-
-    /* return h() */
-    const int lc975 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc975);
-    assert(lua_gettop(L) == 2);
-  }
-  lua_settop(L, lc972);
-  assert(lua_gettop(L) == 2);
-
-  /* if not a(e) then */
-  enum { lc976 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc977 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc977) {
-
-    /* return h() */
-    const int lc978 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc978);
-    assert(lua_gettop(L) == 2);
-  }
-  lua_settop(L, lc976);
-  assert(lua_gettop(L) == 2);
-
-  /* local t=n(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 89);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  assert(lua_gettop(L) == 3);
-
-  /* if not(a(t)and r(n(t))) then */
-  enum { lc979 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
-  lua_pushvalue(L, 3);
-  lua_call(L, 1, 1);
-  if (lua_toboolean(L, -1)) {
-    lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 28, 87);
-    const int lc980 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 28, 89);
-    lua_pushvalue(L, 3);
-    lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc980), 1);
-  }
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
-  const int lc981 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc981) {
-
-    /* return h() */
-    const int lc982 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc982);
-    assert(lua_gettop(L) == 3);
-  }
-  lua_settop(L, lc979);
-  assert(lua_gettop(L) == 3);
-
-  /* return i(o(e),o(t)) */
-  const int lc983 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 200);
-  const int lc984 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
-  lua_pushvalue(L, 3);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc984), LUA_MULTRET);
-  return (lua_gettop(L) - lc983);
-  assert(lua_gettop(L) == 3);
-}
-
-/* name: e
- * function(t,i) */
-static inline int lcf2_e(lua_State *L) {
-  enum { lc_nformalargs = 2 };
-  lua_settop(L, 2);
-  lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc966 = 3 };
-  assert((lua_gettop(L) == lc966));
+  /* return b(e) */
+  const int lc971 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 10, 156);
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 199);
-  lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 200);
-
-  /* return function()
-   * if c()then
-   * return false
-   * end
-   * local e=d()
-   * if e~=t then
-   * m(e)
-   * return false
-   * end
-   * local e=g()
-   * if e==false then
-   * return h()
-   * end
-   * if not a(e)then
-   * return h()
-   * end
-   * local t=n(e)
-   * if not(a(t)and r(n(t)))then
-   * return h()
-   * end
-   * return i(o(e),o(t))
-   * end */
-  lua_pushvalue(L, lc966);
-  lua_pushcclosure(L, lcf985, 1);
-  return 1;
-  assert(lua_gettop(L) == 3);
+  lua_call(L, 1, LUA_MULTRET);
+  return (lua_gettop(L) - lc971);
+  assert(lua_gettop(L) == 1);
 }
 
 /* function() */
-static inline int lcf1008(lua_State *L) {
+static inline int lcf991(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* if c() then */
-  enum { lc987 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 195);
+  /* if l() then */
+  enum { lc973 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 196);
   lua_call(L, 0, 1);
-  const int lc988 = lua_toboolean(L, -1);
+  const int lc974 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc988) {
+  if (lc974) {
 
     /* return false */
     lua_pushboolean(L, 0);
     return 1;
     assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc987);
+  lua_settop(L, lc973);
   assert(lua_gettop(L) == 0);
 
   /* local e=d() */
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 194);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 195);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 1);
 
   /* if e~=t then */
-  enum { lc989 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 201);
-  const int lc990 = lua_equal(L, 1, -1);
+  enum { lc975 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 200);
+  const int lc976 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc990);
+  lua_pushboolean(L, lc976);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc991 = lua_toboolean(L, -1);
+  const int lc977 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc991) {
+  if (lc977) {
 
-    /* m(e) */
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 194);
     lua_pushvalue(L, 1);
     lua_call(L, 1, 0);
     assert(lua_gettop(L) == 1);
@@ -13546,224 +13440,414 @@ static inline int lcf1008(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc989);
+  lua_settop(L, lc975);
   assert(lua_gettop(L) == 1);
 
   /* local e=g() */
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 188);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 189);
   lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
   /* if e==false then */
-  enum { lc992 = 2 };
+  enum { lc978 = 2 };
   lua_pushboolean(L, 0);
-  const int lc993 = lua_equal(L, 2, -1);
+  const int lc979 = lua_equal(L, 2, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc993);
+  lua_pushboolean(L, lc979);
+  const int lc980 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc980) {
+
+    /* return r() */
+    const int lc981 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc981);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc978);
+  assert(lua_gettop(L) == 2);
+
+  /* if not a(e) then */
+  enum { lc982 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc983 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc983) {
+
+    /* return r() */
+    const int lc984 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc984);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc982);
+  assert(lua_gettop(L) == 2);
+
+  /* local t=i(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) == 3);
+
+  /* if not(a(t)and h(i(t))) then */
+  enum { lc985 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
+  lua_pushvalue(L, 3);
+  lua_call(L, 1, 1);
+  if (lua_toboolean(L, -1)) {
+    lua_pop(L, 1);
+    lc_getupvalue(L, lua_upvalueindex(1), 28, 88);
+    const int lc986 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+    lua_pushvalue(L, 3);
+    lua_call(L, 1, LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc986), 1);
+  }
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc987 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc987) {
+
+    /* return r() */
+    const int lc988 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc988);
+    assert(lua_gettop(L) == 3);
+  }
+  lua_settop(L, lc985);
+  assert(lua_gettop(L) == 3);
+
+  /* return n(o(e),o(t)) */
+  const int lc989 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 201);
+  const int lc990 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
+  lua_pushvalue(L, 3);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc990), LUA_MULTRET);
+  return (lua_gettop(L) - lc989);
+  assert(lua_gettop(L) == 3);
+}
+
+/* name: t
+ * function(t,n) */
+static inline int lcf3_t(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+  lc_newclosuretable(L, lua_upvalueindex(1));
+  enum { lc972 = 3 };
+  assert((lua_gettop(L) == lc972));
+  lua_pushvalue(L, 1);
+  lua_rawseti(L, -2, 200);
+  lua_pushvalue(L, 2);
+  lua_rawseti(L, -2, 201);
+
+  /* return function()
+   * if l()then
+   * return false
+   * end
+   * local e=d()
+   * if e~=t then
+   * c(e)
+   * return false
+   * end
+   * local e=g()
+   * if e==false then
+   * return r()
+   * end
+   * if not a(e)then
+   * return r()
+   * end
+   * local t=i(e)
+   * if not(a(t)and h(i(t)))then
+   * return r()
+   * end
+   * return n(o(e),o(t))
+   * end */
+  lua_pushvalue(L, lc972);
+  lua_pushcclosure(L, lcf991, 1);
+  return 1;
+  assert(lua_gettop(L) == 3);
+}
+
+/* function() */
+static inline int lcf1014(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* if l() then */
+  enum { lc993 = 0 };
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 196);
+  lua_call(L, 0, 1);
   const int lc994 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc994) {
 
-    /* return h() */
-    const int lc995 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc995);
-    assert(lua_gettop(L) == 2);
+    /* return false */
+    lua_pushboolean(L, 0);
+    return 1;
+    assert(lua_gettop(L) == 0);
   }
-  lua_settop(L, lc992);
-  assert(lua_gettop(L) == 2);
+  lua_settop(L, lc993);
+  assert(lua_gettop(L) == 0);
 
-  /* if not a(e) then */
-  enum { lc996 = 2 };
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
+  /* local e=d() */
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 195);
+  lua_call(L, 0, 1);
+  assert(lua_gettop(L) == 1);
+
+  /* if e~=t then */
+  enum { lc995 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 202);
+  const int lc996 = lua_equal(L, 1, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc996);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   const int lc997 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc997) {
 
-    /* return h() */
-    const int lc998 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc998);
-    assert(lua_gettop(L) == 2);
+    /* c(e) */
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 194);
+    lua_pushvalue(L, 1);
+    lua_call(L, 1, 0);
+    assert(lua_gettop(L) == 1);
+
+    /* return false */
+    lua_pushboolean(L, 0);
+    return 1;
+    assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc996);
+  lua_settop(L, lc995);
+  assert(lua_gettop(L) == 1);
+
+  /* local e=g() */
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 189);
+  lua_call(L, 0, 1);
   assert(lua_gettop(L) == 2);
 
-  /* local t=n(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 89);
-  lua_pushvalue(L, 2);
-  lua_call(L, 1, 1);
-  assert(lua_gettop(L) == 3);
-
-  /* if not a(t) then */
-  enum { lc999 = 3 };
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
-  lua_pushvalue(L, 3);
-  lua_call(L, 1, 1);
-  lua_pushboolean(L, !(lua_toboolean(L, -1)));
-  lua_remove(L, -2);
+  /* if e==false then */
+  enum { lc998 = 2 };
+  lua_pushboolean(L, 0);
+  const int lc999 = lua_equal(L, 2, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc999);
   const int lc1000 = lua_toboolean(L, -1);
   lua_pop(L, 1);
   if (lc1000) {
 
-    /* return h() */
+    /* return r() */
     const int lc1001 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
     lua_call(L, 0, LUA_MULTRET);
     return (lua_gettop(L) - lc1001);
-    assert(lua_gettop(L) == 3);
+    assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc999);
+  lua_settop(L, lc998);
+  assert(lua_gettop(L) == 2);
+
+  /* if not a(e) then */
+  enum { lc1002 = 2 };
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc1003 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc1003) {
+
+    /* return r() */
+    const int lc1004 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc1004);
+    assert(lua_gettop(L) == 2);
+  }
+  lua_settop(L, lc1002);
+  assert(lua_gettop(L) == 2);
+
+  /* local n=i(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+  lua_pushvalue(L, 2);
+  lua_call(L, 1, 1);
   assert(lua_gettop(L) == 3);
 
-  /* local i=n(t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 89);
+  /* if not a(n) then */
+  enum { lc1005 = 3 };
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
+  lua_pushvalue(L, 3);
+  lua_call(L, 1, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  const int lc1006 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc1006) {
+
+    /* return r() */
+    const int lc1007 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc1007);
+    assert(lua_gettop(L) == 3);
+  }
+  lua_settop(L, lc1005);
+  assert(lua_gettop(L) == 3);
+
+  /* local t=i(n) */
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
   lua_pushvalue(L, 3);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 4);
 
-  /* if not(a(i)and r(n(i))) then */
-  enum { lc1002 = 4 };
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
+  /* if not(a(t)and h(i(t))) then */
+  enum { lc1008 = 4 };
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 92);
   lua_pushvalue(L, 4);
   lua_call(L, 1, 1);
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 28, 87);
-    const int lc1003 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 28, 89);
+    lc_getupvalue(L, lua_upvalueindex(1), 28, 88);
+    const int lc1009 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
     lua_pushvalue(L, 4);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc1003), 1);
+    lua_call(L, (lua_gettop(L) - lc1009), 1);
   }
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
-  const int lc1004 = lua_toboolean(L, -1);
+  const int lc1010 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1004) {
+  if (lc1010) {
 
-    /* return h() */
-    const int lc1005 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 192);
+    /* return r() */
+    const int lc1011 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 193);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc1005);
+    return (lua_gettop(L) - lc1011);
     assert(lua_gettop(L) == 4);
   }
-  lua_settop(L, lc1002);
+  lua_settop(L, lc1008);
   assert(lua_gettop(L) == 4);
 
-  /* return s(o(e),o(t),o(i)) */
-  const int lc1006 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 202);
-  const int lc1007 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+  /* return s(o(e),o(n),o(t)) */
+  const int lc1012 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 203);
+  const int lc1013 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
   lua_pushvalue(L, 3);
   lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 28, 90);
+  lc_getupvalue(L, lua_upvalueindex(1), 28, 91);
   lua_pushvalue(L, 4);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1007), LUA_MULTRET);
-  return (lua_gettop(L) - lc1006);
+  lua_call(L, (lua_gettop(L) - lc1013), LUA_MULTRET);
+  return (lua_gettop(L) - lc1012);
   assert(lua_gettop(L) == 4);
 }
 
-/* name: l
+/* name: s
  * function(t,s) */
-static inline int lcf2_l(lua_State *L) {
+static inline int lcf4_s(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc986 = 3 };
-  assert((lua_gettop(L) == lc986));
+  enum { lc992 = 3 };
+  assert((lua_gettop(L) == lc992));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 201);
-  lua_pushvalue(L, 2);
   lua_rawseti(L, -2, 202);
+  lua_pushvalue(L, 2);
+  lua_rawseti(L, -2, 203);
 
   /* return function()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~=t then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * local t=n(e)
-   * if not a(t)then
-   * return h()
+   * local n=i(e)
+   * if not a(n)then
+   * return r()
    * end
-   * local i=n(t)
-   * if not(a(i)and r(n(i)))then
-   * return h()
+   * local t=i(n)
+   * if not(a(t)and h(i(t)))then
+   * return r()
    * end
-   * return s(o(e),o(t),o(i))
+   * return s(o(e),o(n),o(t))
    * end */
-  lua_pushvalue(L, lc986);
-  lua_pushcclosure(L, lcf1008, 1);
+  lua_pushvalue(L, lc992);
+  lua_pushcclosure(L, lcf1014, 1);
   return 1;
   assert(lua_gettop(L) == 3);
 }
 
 /* function(e,t) */
-static inline int lcf1014(lua_State *L) {
+static inline int lcf1020(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* local e=se(e) */
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 162);
+  /* local e=he(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 163);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 3);
 
   /* if e==false then */
-  enum { lc1009 = 3 };
+  enum { lc1015 = 3 };
   lua_pushboolean(L, 0);
-  const int lc1010 = lua_equal(L, 3, -1);
+  const int lc1016 = lua_equal(L, 3, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc1010);
-  const int lc1011 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc1016);
+  const int lc1017 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1011) {
+  if (lc1017) {
 
-    /* return h() */
-    const int lc1012 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+    /* return r() */
+    const int lc1018 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc1012);
+    return (lua_gettop(L) - lc1018);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc1009);
+  lua_settop(L, lc1015);
   assert(lua_gettop(L) == 3);
 
-  /* return H(e,t) */
-  const int lc1013 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 76);
+  /* return S(e,t) */
+  const int lc1019 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 77);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1013);
+  return (lua_gettop(L) - lc1019);
   assert(lua_gettop(L) == 3);
 }
 
 /* function(e) */
-static inline int lcf1015(lua_State *L) {
+static inline int lcf1021(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -13774,414 +13858,414 @@ static inline int lcf1015(lua_State *L) {
 }
 
 /* function(e,e) */
-static inline int lcf1017(lua_State *L) {
+static inline int lcf1023(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return h() */
-  const int lc1016 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
+  /* return r() */
+  const int lc1022 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc1016);
-  assert(lua_gettop(L) == 2);
-}
-
-/* function(e,t) */
-static inline int lcf1019(lua_State *L) {
-  enum { lc_nformalargs = 2 };
-  lua_settop(L, 2);
-
-  /* local t=ve(t,function(e)return e end,function(e,e)return h()end) */
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 159);
-  lua_pushvalue(L, 2);
-  lua_pushcfunction(L, lcf1015);
-  lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf1017, 1);
-  lua_call(L, 3, 1);
-  assert(lua_gettop(L) == 3);
-
-  /* return j(e,t) */
-  const int lc1018 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 67);
-  lua_pushvalue(L, 1);
-  lua_pushvalue(L, 3);
-  lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1018);
-  assert(lua_gettop(L) == 3);
-}
-
-/* function(e) */
-static inline int lcf1020(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* return e */
-  lua_pushvalue(L, 1);
-  return 1;
-  assert(lua_gettop(L) == 1);
-}
-
-/* function(e,e) */
-static inline int lcf1022(lua_State *L) {
-  enum { lc_nformalargs = 2 };
-  lua_settop(L, 2);
-
-  /* return h() */
-  const int lc1021 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-  lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc1021);
-  assert(lua_gettop(L) == 2);
-}
-
-/* function(o,a,e) */
-static inline int lcf1028(lua_State *L) {
-  enum { lc_nformalargs = 3 };
-  lua_settop(L, 3);
-
-  /* local t=ve(e,function(e)return e end,function(e,e)return h()end) */
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 159);
-  lua_pushvalue(L, 3);
-  lua_pushcfunction(L, lcf1020);
-  lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf1022, 1);
-  lua_call(L, 3, 1);
-  assert(lua_gettop(L) == 4);
-
-  /* local e=se(o) */
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 162);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 1);
-  assert(lua_gettop(L) == 5);
-
-  /* if e==false then */
-  enum { lc1023 = 5 };
-  lua_pushboolean(L, 0);
-  const int lc1024 = lua_equal(L, 5, -1);
-  lua_pop(L, 1);
-  lua_pushboolean(L, lc1024);
-  const int lc1025 = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-  if (lc1025) {
-
-    /* return h() */
-    const int lc1026 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-    lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc1026);
-    assert(lua_gettop(L) == 5);
-  }
-  lua_settop(L, lc1023);
-  assert(lua_gettop(L) == 5);
-
-  /* return Ge(e,a,t) */
-  const int lc1027 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 72);
-  lua_pushvalue(L, 5);
-  lua_pushvalue(L, 2);
-  lua_pushvalue(L, 4);
-  lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc1027);
-  assert(lua_gettop(L) == 5);
-}
-
-/* function(e) */
-static inline int lcf1029(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* return e */
-  lua_pushvalue(L, 1);
-  return 1;
-  assert(lua_gettop(L) == 1);
-}
-
-/* function(e,e) */
-static inline int lcf1031(lua_State *L) {
-  enum { lc_nformalargs = 2 };
-  lua_settop(L, 2);
-
-  /* return h() */
-  const int lc1030 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 192);
-  lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc1030);
+  return (lua_gettop(L) - lc1022);
   assert(lua_gettop(L) == 2);
 }
 
 /* function(t,e) */
-static inline int lcf1033(lua_State *L) {
+static inline int lcf1025(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* local e=ve(e,function(e)return e end,function(e,e)return h()end) */
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 159);
+  /* local e=ke(e,function(e)return e end,function(e,e)return r()end) */
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 160);
   lua_pushvalue(L, 2);
-  lua_pushcfunction(L, lcf1029);
+  lua_pushcfunction(L, lcf1021);
   lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf1031, 1);
+  lua_pushcclosure(L, lcf1023, 1);
   lua_call(L, 3, 1);
   assert(lua_gettop(L) == 3);
 
-  /* return P(t,e) */
-  const int lc1032 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 63);
+  /* return q(t,e) */
+  const int lc1024 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 68);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 3);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1032);
+  return (lua_gettop(L) - lc1024);
   assert(lua_gettop(L) == 3);
 }
 
-/* function(e,t) */
-static inline int lcf1035(lua_State *L) {
+/* function(e) */
+static inline int lcf1026(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
+  /* return e */
+  lua_pushvalue(L, 1);
+  return 1;
+  assert(lua_gettop(L) == 1);
+}
+
+/* function(e,e) */
+static inline int lcf1028(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return ce(e,t) */
-  const int lc1034 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 27, 101);
+  /* return r() */
+  const int lc1027 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+  lua_call(L, 0, LUA_MULTRET);
+  return (lua_gettop(L) - lc1027);
+  assert(lua_gettop(L) == 2);
+}
+
+/* function(o,a,e) */
+static inline int lcf1034(lua_State *L) {
+  enum { lc_nformalargs = 3 };
+  lua_settop(L, 3);
+
+  /* local t=ke(e,function(e)return e end,function(e,e)return r()end) */
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 160);
+  lua_pushvalue(L, 3);
+  lua_pushcfunction(L, lcf1026);
+  lua_pushvalue(L, lua_upvalueindex(1));
+  lua_pushcclosure(L, lcf1028, 1);
+  lua_call(L, 3, 1);
+  assert(lua_gettop(L) == 4);
+
+  /* local e=he(o) */
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 163);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) == 5);
+
+  /* if e==false then */
+  enum { lc1029 = 5 };
+  lua_pushboolean(L, 0);
+  const int lc1030 = lua_equal(L, 5, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc1030);
+  const int lc1031 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc1031) {
+
+    /* return r() */
+    const int lc1032 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc1032);
+    assert(lua_gettop(L) == 5);
+  }
+  lua_settop(L, lc1029);
+  assert(lua_gettop(L) == 5);
+
+  /* return Oe(e,a,t) */
+  const int lc1033 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 73);
+  lua_pushvalue(L, 5);
+  lua_pushvalue(L, 2);
+  lua_pushvalue(L, 4);
+  lua_call(L, 3, LUA_MULTRET);
+  return (lua_gettop(L) - lc1033);
+  assert(lua_gettop(L) == 5);
+}
+
+/* function(e) */
+static inline int lcf1035(lua_State *L) {
+  enum { lc_nformalargs = 1 };
+  lua_settop(L, 1);
+
+  /* return e */
+  lua_pushvalue(L, 1);
+  return 1;
+  assert(lua_gettop(L) == 1);
+}
+
+/* function(e,e) */
+static inline int lcf1037(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+
+  /* return r() */
+  const int lc1036 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
+  lua_call(L, 0, LUA_MULTRET);
+  return (lua_gettop(L) - lc1036);
+  assert(lua_gettop(L) == 2);
+}
+
+/* function(t,e) */
+static inline int lcf1039(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+
+  /* local e=ke(e,function(e)return e end,function(e,e)return r()end) */
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 160);
+  lua_pushvalue(L, 2);
+  lua_pushcfunction(L, lcf1035);
+  lua_pushvalue(L, lua_upvalueindex(1));
+  lua_pushcclosure(L, lcf1037, 1);
+  lua_call(L, 3, 1);
+  assert(lua_gettop(L) == 3);
+
+  /* return F(t,e) */
+  const int lc1038 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 64);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 3);
+  lua_call(L, 2, LUA_MULTRET);
+  return (lua_gettop(L) - lc1038);
+  assert(lua_gettop(L) == 3);
+}
+
+/* function(t,e) */
+static inline int lcf1041(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+
+  /* return fe(t,e) */
+  const int lc1040 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 27, 102);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1034);
+  return (lua_gettop(L) - lc1040);
   assert(lua_gettop(L) == 2);
 }
 
 /* name: ee
- * function(ee) */
-static inline int lcf3_ee(lua_State *L) {
+ * function(J) */
+static inline int lcf1_ee(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local M,y,c,d,m,h,q,_,J,g,V,U,B,I,F,C,O,L,D,A,N,k,w,G,Q,X */
+  /* local D,w,l,d,c,r,j,E,B,g,O,I,N,V,C,P,R,W,M,A,U,k,f,K,G,Q */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc777 = 2 };
-  assert((lua_gettop(L) == lc777));
+  enum { lc783 = 2 };
+  assert((lua_gettop(L) == lc783));
   lua_settop(L, (lua_gettop(L) + 26));
-  lua_rawseti(L, lc777, 172);
-  lua_rawseti(L, lc777, 173);
-  lua_rawseti(L, lc777, 174);
-  lua_rawseti(L, lc777, 175);
-  lua_rawseti(L, lc777, 176);
-  lua_rawseti(L, lc777, 177);
-  lua_rawseti(L, lc777, 178);
-  lua_rawseti(L, lc777, 179);
-  lua_rawseti(L, lc777, 180);
-  lua_rawseti(L, lc777, 181);
-  lua_rawseti(L, lc777, 182);
-  lua_rawseti(L, lc777, 183);
-  lua_rawseti(L, lc777, 184);
-  lua_rawseti(L, lc777, 185);
-  lua_rawseti(L, lc777, 186);
-  lua_rawseti(L, lc777, 187);
-  lua_rawseti(L, lc777, 188);
-  lua_rawseti(L, lc777, 189);
-  lua_rawseti(L, lc777, 190);
-  lua_rawseti(L, lc777, 191);
-  lua_rawseti(L, lc777, 192);
-  lua_rawseti(L, lc777, 193);
-  lua_rawseti(L, lc777, 194);
-  lua_rawseti(L, lc777, 195);
-  lua_rawseti(L, lc777, 196);
-  lua_rawseti(L, lc777, 197);
+  lua_rawseti(L, lc783, 173);
+  lua_rawseti(L, lc783, 174);
+  lua_rawseti(L, lc783, 175);
+  lua_rawseti(L, lc783, 176);
+  lua_rawseti(L, lc783, 177);
+  lua_rawseti(L, lc783, 178);
+  lua_rawseti(L, lc783, 179);
+  lua_rawseti(L, lc783, 180);
+  lua_rawseti(L, lc783, 181);
+  lua_rawseti(L, lc783, 182);
+  lua_rawseti(L, lc783, 183);
+  lua_rawseti(L, lc783, 184);
+  lua_rawseti(L, lc783, 185);
+  lua_rawseti(L, lc783, 186);
+  lua_rawseti(L, lc783, 187);
+  lua_rawseti(L, lc783, 188);
+  lua_rawseti(L, lc783, 189);
+  lua_rawseti(L, lc783, 190);
+  lua_rawseti(L, lc783, 191);
+  lua_rawseti(L, lc783, 192);
+  lua_rawseti(L, lc783, 193);
+  lua_rawseti(L, lc783, 194);
+  lua_rawseti(L, lc783, 195);
+  lua_rawseti(L, lc783, 196);
+  lua_rawseti(L, lc783, 197);
+  lua_rawseti(L, lc783, 198);
   assert(lua_gettop(L) == 2);
 
-  /* function c()
-   * return#M==y
+  /* function l()
+   * return#D==w
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_c, 1);
-  lc_setupvalue(L, lc777, 0, 195);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_l, 1);
+  lc_setupvalue(L, lc783, 0, 196);
   assert(lua_gettop(L) == 2);
 
   /* function d()
-   * S(not c())
-   * local e=string.sub(M,y+1,y+1)
-   * y=y+1
+   * H(not l())
+   * local e=string.sub(D,w+1,w+1)
+   * w=w+1
    * return e
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf7_d, 1);
-  lc_setupvalue(L, lc777, 0, 194);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf8_d, 1);
+  lc_setupvalue(L, lc783, 0, 195);
   assert(lua_gettop(L) == 2);
 
-  /* function m(e)
-   * S(string.sub(M,y,y)==e)
-   * y=y-1
+  /* function c(e)
+   * H(string.sub(D,w,w)==e)
+   * w=w-1
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_m, 1);
-  lc_setupvalue(L, lc777, 0, 193);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_c, 1);
+  lc_setupvalue(L, lc783, 0, 194);
   assert(lua_gettop(L) == 2);
 
-  /* function h(e)
+  /* function r(e)
    * if e==nil then
    * e=""
    * end
    * error("TheLanguage parse ERROR!"..tostring(e))
    * end */
-  lua_pushcfunction(L, lcf2_h);
-  lc_setupvalue(L, lc777, 0, 192);
+  lua_pushcfunction(L, lcf3_r);
+  lc_setupvalue(L, lc783, 0, 193);
   assert(lua_gettop(L) == 2);
 
-  /* function q(e)
+  /* function j(e)
    * return e==" "or e=="\n"or e=="\t"or e=="\r"
    * end */
-  lua_pushcfunction(L, lcf2_q);
-  lc_setupvalue(L, lc777, 0, 191);
+  lua_pushcfunction(L, lcf2_j);
+  lc_setupvalue(L, lc783, 0, 192);
   assert(lua_gettop(L) == 2);
 
-  /* function _()
-   * if c()then
+  /* function E()
+   * if l()then
    * return false
    * end
    * local e=d()
-   * if not q(e)then
-   * m(e)
+   * if not j(e)then
+   * c(e)
    * return false
    * end
-   * while q(e)and not c()do
+   * while j(e)and not l()do
    * e=d()
    * end
-   * if not q(e)then
-   * m(e)
+   * if not j(e)then
+   * c(e)
    * end
    * return true
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2__, 1);
-  lc_setupvalue(L, lc777, 0, 190);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_E, 1);
+  lc_setupvalue(L, lc783, 0, 191);
   assert(lua_gettop(L) == 2);
 
-  /* function J()
-   * if c()then
+  /* function B()
+   * if l()then
    * return false
    * end
    * local e=d()
    * local t=""
-   * if not L(e)then
-   * m(e)
+   * if not W(e)then
+   * c(e)
    * return false
    * end
-   * while L(e)and not c()do
+   * while W(e)and not l()do
    * t=tostring(t)..tostring(e)
    * e=d()
    * end
-   * if L(e)then
+   * if W(e)then
    * t=tostring(t)..tostring(e)
    * else
-   * m(e)
+   * c(e)
    * end
-   * if nt(t)then
-   * return i(t)
+   * if Xe(t)then
+   * return n(t)
    * else
-   * return h("Not Symbol"..tostring(t))
+   * return r("Not Symbol"..tostring(t))
    * end
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_J, 1);
-  lc_setupvalue(L, lc777, 0, 189);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_B, 1);
+  lc_setupvalue(L, lc783, 0, 190);
   assert(lua_gettop(L) == 2);
 
   /* function g()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="("then
-   * m(e)
+   * c(e)
    * return false
    * end
-   * local t=K()
+   * local t=ge()
    * local a=t
-   * local function i(a)
-   * local e=K()
-   * W(t,s(a,e))
+   * local function o(a)
+   * local e=ge()
+   * we(t,s(a,e))
    * t=e
    * end
    * while true do
-   * _()
-   * if c()then
-   * return h()
+   * E()
+   * if l()then
+   * return r()
    * end
    * e=d()
    * if e==")"then
-   * W(t,v)
+   * we(t,y)
    * return a
    * end
    * if e=="."then
-   * _()
-   * local o=D()
-   * W(t,o)
-   * _()
-   * if c()then
-   * return h()
+   * E()
+   * local o=M()
+   * we(t,o)
+   * E()
+   * if l()then
+   * return r()
    * end
    * e=d()
    * if e~=")"then
-   * return h()
+   * return r()
    * end
    * return a
    * end
-   * m(e)
-   * local e=D()
-   * i(e)
+   * c(e)
+   * local e=M()
+   * o(e)
    * end
    * end */
-  lua_pushvalue(L, lc777);
+  lua_pushvalue(L, lc783);
   lua_pushcclosure(L, lcf2_g, 1);
-  lc_setupvalue(L, lc777, 0, 188);
+  lc_setupvalue(L, lc783, 0, 189);
   assert(lua_gettop(L) == 2);
 
-  /* function V()
-   * if c()then
+  /* function O()
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="#"then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * return E(o(e),n(e))
+   * return T(o(e),i(e))
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_V, 1);
-  lc_setupvalue(L, lc777, 0, 187);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_O, 1);
+  lc_setupvalue(L, lc783, 0, 188);
   assert(lua_gettop(L) == 2);
 
-  /* function U()
-   * if c()then
+  /* function I()
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="!"then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * return R(o(e),n(e))
+   * return L(o(e),i(e))
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_U, 1);
-  lc_setupvalue(L, lc777, 0, 186);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_I, 1);
+  lc_setupvalue(L, lc783, 0, 187);
   assert(lua_gettop(L) == 2);
 
-  /* function L(e)
-   * if q(e)then
+  /* function W(e)
+   * if j(e)then
    * return false
    * end
    * for a,t in ipairs({
@@ -14212,23 +14296,23 @@ static inline int lcf3_ee(lua_State *L) {
    * end
    * return true
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_L, 1);
-  lc_setupvalue(L, lc777, 0, 180);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_W, 1);
+  lc_setupvalue(L, lc783, 0, 181);
   assert(lua_gettop(L) == 2);
 
-  /* function D()
-   * _()
+  /* function M()
+   * E()
    * local e={
    * g,
-   * X,
-   * V,
-   * U,
-   * B,
-   * I,
-   * F,
-   * C,
+   * Q,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * for t,e in ipairs(e)do
    * local e=e()
@@ -14236,48 +14320,48 @@ static inline int lcf3_ee(lua_State *L) {
    * return e
    * end
    * end
-   * return h()
+   * return r()
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_D, 1);
-  lc_setupvalue(L, lc777, 0, 179);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf3_M, 1);
+  lc_setupvalue(L, lc783, 0, 180);
   assert(lua_gettop(L) == 2);
 
   /* function A(e)
    * if e==false then
-   * return h()
+   * return r()
    * end
    * return e
    * end */
-  lua_pushvalue(L, lc777);
+  lua_pushvalue(L, lc783);
   lua_pushcclosure(L, lcf2_A, 1);
-  lc_setupvalue(L, lc777, 0, 178);
+  lc_setupvalue(L, lc783, 0, 179);
   assert(lua_gettop(L) == 2);
 
-  /* function N()
-   * return not c()
+  /* function U()
+   * return not l()
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_N, 1);
-  lc_setupvalue(L, lc777, 0, 177);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_U, 1);
+  lc_setupvalue(L, lc783, 0, 178);
   assert(lua_gettop(L) == 2);
 
   /* function k(e)
-   * A(N())
+   * A(U())
    * A(d()==e)
    * end */
-  lua_pushvalue(L, lc777);
+  lua_pushvalue(L, lc783);
   lua_pushcclosure(L, lcf2_k, 1);
-  lc_setupvalue(L, lc777, 0, 176);
+  lc_setupvalue(L, lc783, 0, 177);
   assert(lua_gettop(L) == 2);
 
-  /* function w(t)
+  /* function f(t)
    * if t==nil then
    * t=false
    * end
    * local function a()
    * k("[")
-   * local e=w()
+   * local e=f()
    * k("]")
    * return e
    * end
@@ -14285,27 +14369,27 @@ static inline int lcf3_ee(lua_State *L) {
    * if t then
    * e={
    * g,
-   * J,
-   * a,
-   * V,
-   * U,
    * B,
-   * I,
-   * F,
-   * C,
+   * a,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * else
    * e={
    * g,
-   * Q,
-   * V,
-   * U,
-   * B,
-   * I,
-   * F,
-   * C,
+   * G,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * end
    * for t,e in ipairs(e)do
@@ -14314,114 +14398,114 @@ static inline int lcf3_ee(lua_State *L) {
    * return e
    * end
    * end
-   * return h()
+   * return r()
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_w, 1);
-  lc_setupvalue(L, lc777, 0, 175);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_f, 1);
+  lc_setupvalue(L, lc783, 0, 176);
   assert(lua_gettop(L) == 2);
 
-  /* function G(a)
-   * if c()then
+  /* function K(a)
+   * if l()then
    * return a
    * end
    * local o=d()
    * if o=="."then
-   * local o=w()
-   * return e(u,e(t,e(a),f),o)
+   * local o=f()
+   * return e(u,e(t,e(a),m),o)
    * elseif o==":"then
-   * local t=w()
+   * local t=f()
    * return e(u,t,a)
    * elseif o=="~"then
-   * return e(Z,a)
+   * return e(ae,a)
    * elseif o=="@"then
-   * local o=w()
-   * return e(u,e(t,s(a,f),f),o)
+   * local o=f()
+   * return e(u,e(t,s(a,m),m),o)
    * elseif o=="?"then
-   * return e(u,t,e(Z,a))
+   * return e(u,t,e(ae,a))
    * elseif o=="/"then
    * local t={a}
    * while true do
-   * local e=w(true)
-   * l(t,e)
-   * if c()then
+   * local e=f(true)
+   * v(t,e)
+   * if l()then
    * break
    * end
    * local e=d()
    * if e~="/"then
-   * m(e)
+   * c(e)
    * break
    * end
    * end
-   * return e(pe,T(t))
+   * return e(pe,_(t))
    * else
-   * m(o)
+   * c(o)
    * return a
    * end
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_G, 1);
-  lc_setupvalue(L, lc777, 0, 174);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_K, 1);
+  lc_setupvalue(L, lc783, 0, 175);
   assert(lua_gettop(L) == 2);
 
-  /* function Q()
-   * if c()then
+  /* function G()
+   * if l()then
    * return false
    * end
    * local a=d()
    * if a=="&"then
-   * A(N())
+   * A(U())
    * local t=d()
    * if t=="+"then
-   * local t=w()
+   * local t=f()
    * return e(x,e(z,t))
    * else
-   * m(t)
+   * c(t)
    * end
-   * local t=w()
+   * local t=f()
    * return e(x,t)
    * elseif a==":"then
-   * A(N())
+   * A(U())
    * local a=d()
    * if a=="&"then
    * k(">")
-   * local a=w()
-   * return e(u,e(x,e(t,f,a)),Y)
+   * local a=f()
+   * return e(u,e(x,e(t,m,a)),Y)
    * elseif a==">"then
-   * local a=w()
-   * return e(u,e(t,f,a),Y)
+   * local a=f()
+   * return e(u,e(t,m,a),Y)
    * else
-   * m(a)
+   * c(a)
    * end
-   * local t=w()
+   * local t=f()
    * return e(u,t,Y)
    * elseif a=="+"then
-   * local t=w()
+   * local t=f()
    * return e(z,t)
    * elseif a=="["then
-   * local e=w()
+   * local e=f()
    * k("]")
-   * return G(e)
+   * return K(e)
    * elseif a=="_"then
    * k(":")
-   * local t=w()
-   * return e(u,t,f)
+   * local t=f()
+   * return e(u,t,m)
    * else
-   * m(a)
-   * local e=J()
+   * c(a)
+   * local e=B()
    * if e==false then
    * return false
    * end
-   * return G(e)
+   * return K(e)
    * end
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_Q, 1);
-  lc_setupvalue(L, lc777, 0, 173);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_G, 1);
+  lc_setupvalue(L, lc783, 0, 174);
   assert(lua_gettop(L) == 2);
 
-  /* function X()
-   * local e=Q()
+  /* function Q()
+   * local e=G()
    * if e==false then
    * return false
    * end
@@ -14430,165 +14514,165 @@ static inline int lcf3_ee(lua_State *L) {
    * end
    * return b(e)
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_X, 1);
-  lc_setupvalue(L, lc777, 0, 172);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf2_Q, 1);
+  lc_setupvalue(L, lc783, 0, 173);
   assert(lua_gettop(L) == 2);
 
-  /* M=ee */
+  /* D=J */
   lua_pushvalue(L, 1);
-  lc_setupvalue(L, lc777, 0, 197);
+  lc_setupvalue(L, lc783, 0, 198);
   assert(lua_gettop(L) == 2);
 
-  /* y=0 */
+  /* w=0 */
   lua_pushnumber(L, 0);
-  lc_setupvalue(L, lc777, 0, 196);
+  lc_setupvalue(L, lc783, 0, 197);
   assert(lua_gettop(L) == 2);
 
-  /* local function e(t,i)
+  /* local function t(t,n)
    * return function()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~=t then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * local t=n(e)
-   * if not(a(t)and r(n(t)))then
-   * return h()
+   * local t=i(e)
+   * if not(a(t)and h(i(t)))then
+   * return r()
    * end
-   * return i(o(e),o(t))
+   * return n(o(e),o(t))
    * end
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_e, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf3_t, 1);
   assert(lua_gettop(L) == 3);
 
-  /* local function l(t,s)
+  /* local function s(t,s)
    * return function()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~=t then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * local t=n(e)
-   * if not a(t)then
-   * return h()
+   * local n=i(e)
+   * if not a(n)then
+   * return r()
    * end
-   * local i=n(t)
-   * if not(a(i)and r(n(i)))then
-   * return h()
+   * local t=i(n)
+   * if not(a(t)and h(i(t)))then
+   * return r()
    * end
-   * return s(o(e),o(t),o(i))
+   * return s(o(e),o(n),o(t))
    * end
    * end */
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf2_l, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf4_s, 1);
   assert(lua_gettop(L) == 4);
 
-  /* B=e("$",function(e,t)
-   * local e=se(e)
+  /* N=t("$",function(e,t)
+   * local e=he(e)
    * if e==false then
-   * return h()
+   * return r()
    * end
-   * return H(e,t)
+   * return S(e,t)
    * end) */
   lua_pushvalue(L, 3);
   lua_pushliteral(L, "$");
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf1014, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf1020, 1);
   lua_call(L, 2, 1);
-  lc_setupvalue(L, lc777, 0, 185);
+  lc_setupvalue(L, lc783, 0, 186);
   assert(lua_gettop(L) == 4);
 
-  /* I=e("%",function(e,t)
-   * local t=ve(t,function(e)return e end,function(e,e)return h()end)
-   * return j(e,t)
+  /* V=t("%",function(t,e)
+   * local e=ke(e,function(e)return e end,function(e,e)return r()end)
+   * return q(t,e)
    * end) */
   lua_pushvalue(L, 3);
   lua_pushliteral(L, "%");
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf1019, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf1025, 1);
   lua_call(L, 2, 1);
-  lc_setupvalue(L, lc777, 0, 184);
+  lc_setupvalue(L, lc783, 0, 185);
   assert(lua_gettop(L) == 4);
 
-  /* F=l("@",function(o,a,e)
-   * local t=ve(e,function(e)return e end,function(e,e)return h()end)
-   * local e=se(o)
+  /* C=s("@",function(o,a,e)
+   * local t=ke(e,function(e)return e end,function(e,e)return r()end)
+   * local e=he(o)
    * if e==false then
-   * return h()
+   * return r()
    * end
-   * return Ge(e,a,t)
+   * return Oe(e,a,t)
    * end) */
   lua_pushvalue(L, 4);
   lua_pushliteral(L, "@");
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf1028, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf1034, 1);
   lua_call(L, 2, 1);
-  lc_setupvalue(L, lc777, 0, 183);
+  lc_setupvalue(L, lc783, 0, 184);
   assert(lua_gettop(L) == 4);
 
-  /* C=e("^",function(t,e)
-   * local e=ve(e,function(e)return e end,function(e,e)return h()end)
-   * return P(t,e)
+  /* P=t("^",function(t,e)
+   * local e=ke(e,function(e)return e end,function(e,e)return r()end)
+   * return F(t,e)
    * end) */
   lua_pushvalue(L, 3);
   lua_pushliteral(L, "^");
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf1033, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf1039, 1);
   lua_call(L, 2, 1);
-  lc_setupvalue(L, lc777, 0, 182);
+  lc_setupvalue(L, lc783, 0, 183);
   assert(lua_gettop(L) == 4);
 
-  /* O=e(";",function(e,t)return ce(e,t)end) */
+  /* R=t(";",function(t,e)return fe(t,e)end) */
   lua_pushvalue(L, 3);
   lua_pushliteral(L, ";");
-  lua_pushvalue(L, lc777);
-  lua_pushcclosure(L, lcf1035, 1);
+  lua_pushvalue(L, lc783);
+  lua_pushcclosure(L, lcf1041, 1);
   lua_call(L, 2, 1);
-  lc_setupvalue(L, lc777, 0, 181);
+  lc_setupvalue(L, lc783, 0, 182);
   assert(lua_gettop(L) == 4);
 
-  /* return D() */
-  const int lc1036 = lua_gettop(L);
-  lc_getupvalue(L, lc777, 0, 179);
+  /* return M() */
+  const int lc1042 = lua_gettop(L);
+  lc_getupvalue(L, lc783, 0, 180);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc1036);
+  return (lua_gettop(L) - lc1042);
   assert(lua_gettop(L) == 4);
 }
 
 /* name: s
  * function(e) */
-static inline int lcf3_s(lua_State *L) {
+static inline int lcf5_s(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* if l then */
-  enum { lc1043 = 1 };
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 205);
-  const int lc1044 = lua_toboolean(L, -1);
+  enum { lc1049 = 1 };
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 206);
+  const int lc1050 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1044) {
+  if (lc1050) {
 
     /* return"["..tostring(e).."]" */
     lua_pushliteral(L, "[");
@@ -14608,40 +14692,40 @@ static inline int lcf3_s(lua_State *L) {
     return 1;
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc1043);
+  lua_settop(L, lc1049);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: i
+/* name: n
  * function(r,l) */
-static inline int lcf9_i(lua_State *L) {
+static inline int lcf8_n(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1039 = 3 };
-  assert((lua_gettop(L) == lc1039));
+  enum { lc1045 = 3 };
+  assert((lua_gettop(L) == lc1045));
   lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 205);
+  lua_rawseti(L, -2, 206);
 
   /* if p(r) then */
-  enum { lc1040 = 3 };
-  lc_getupvalue(L, lc1039, 29, 96);
+  enum { lc1046 = 3 };
+  lc_getupvalue(L, lc1045, 29, 97);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
-  const int lc1041 = lua_toboolean(L, -1);
+  const int lc1047 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1041) {
+  if (lc1047) {
 
-    /* return me(r) */
-    const int lc1042 = lua_gettop(L);
-    lc_getupvalue(L, lc1039, 29, 94);
+    /* return de(r) */
+    const int lc1048 = lua_gettop(L);
+    lc_getupvalue(L, lc1045, 29, 95);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc1042);
+    return (lua_gettop(L) - lc1048);
     assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc1040);
+  lua_settop(L, lc1046);
   assert(lua_gettop(L) == 3);
 
   /* local function s(e)
@@ -14651,80 +14735,80 @@ static inline int lcf9_i(lua_State *L) {
    * return e
    * end
    * end */
-  lua_pushvalue(L, lc1039);
-  lua_pushcclosure(L, lcf3_s, 1);
+  lua_pushvalue(L, lc1045);
+  lua_pushcclosure(L, lcf5_s, 1);
   assert(lua_gettop(L) == 4);
 
   /* local e=M(r) */
-  lc_getupvalue(L, lc1039, 7, 160);
+  lc_getupvalue(L, lc1045, 7, 161);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   assert(lua_gettop(L) == 5);
 
   /* if e~=false and#e==3 and d(e[1],u) then */
-  enum { lc1045 = 5 };
+  enum { lc1051 = 5 };
   lua_pushboolean(L, 0);
-  const int lc1046 = lua_equal(L, 5, -1);
+  const int lc1052 = lua_equal(L, 5, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc1046);
+  lua_pushboolean(L, lc1052);
   lua_pushboolean(L, !(lua_toboolean(L, -1)));
   lua_remove(L, -2);
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    const double lc1047 = lua_objlen(L, 5);
-    lua_pushnumber(L, lc1047);
+    const double lc1053 = lua_objlen(L, 5);
+    lua_pushnumber(L, lc1053);
     lua_pushnumber(L, 3);
-    const int lc1048 = lua_equal(L, -2, -1);
+    const int lc1054 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc1048);
+    lua_pushboolean(L, lc1054);
   }
   if (lua_toboolean(L, -1)) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lc1039, 4, 170);
+    lc_getupvalue(L, lc1045, 4, 171);
     lua_pushnumber(L, 1);
     lua_gettable(L, 5);
-    lc_getupvalue(L, lc1039, 17, 150);
+    lc_getupvalue(L, lc1045, 17, 151);
     lua_call(L, 2, 1);
   }
-  const int lc1049 = lua_toboolean(L, -1);
+  const int lc1055 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1049) {
+  if (lc1055) {
 
     /* local h=M(e[2]) */
-    lc_getupvalue(L, lc1039, 7, 160);
+    lc_getupvalue(L, lc1045, 7, 161);
     lua_pushnumber(L, 2);
     lua_gettable(L, 5);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 6);
 
     /* if h~=false and#h==3 and d(h[1],t) then */
-    enum { lc1050 = 6 };
+    enum { lc1056 = 6 };
     lua_pushboolean(L, 0);
-    const int lc1051 = lua_equal(L, 6, -1);
+    const int lc1057 = lua_equal(L, 6, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc1051);
+    lua_pushboolean(L, lc1057);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      const double lc1052 = lua_objlen(L, 6);
-      lua_pushnumber(L, lc1052);
+      const double lc1058 = lua_objlen(L, 6);
+      lua_pushnumber(L, lc1058);
       lua_pushnumber(L, 3);
-      const int lc1053 = lua_equal(L, -2, -1);
+      const int lc1059 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc1053);
+      lua_pushboolean(L, lc1059);
     }
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lc1039, 4, 170);
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 1);
       lua_gettable(L, 6);
-      lc_getupvalue(L, lc1039, 29, 52);
+      lc_getupvalue(L, lc1045, 29, 53);
       lua_call(L, 2, 1);
     }
-    const int lc1054 = lua_toboolean(L, -1);
+    const int lc1060 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1054) {
+    if (lc1060) {
 
       /* local t=h[2] */
       lua_pushnumber(L, 2);
@@ -14732,348 +14816,348 @@ static inline int lcf9_i(lua_State *L) {
       assert(lua_gettop(L) == 7);
 
       /* local r=M(t) */
-      lc_getupvalue(L, lc1039, 7, 160);
+      lc_getupvalue(L, lc1045, 7, 161);
       lua_pushvalue(L, 7);
       lua_call(L, 1, 1);
       assert(lua_gettop(L) == 8);
 
-      /* if r~=false and#r==1 and d(h[3],f) then */
-      enum { lc1055 = 8 };
+      /* if r~=false and#r==1 and d(h[3],m) then */
+      enum { lc1061 = 8 };
       lua_pushboolean(L, 0);
-      const int lc1056 = lua_equal(L, 8, -1);
+      const int lc1062 = lua_equal(L, 8, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc1056);
+      lua_pushboolean(L, lc1062);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
       if (lua_toboolean(L, -1)) {
         lua_pop(L, 1);
-        const double lc1057 = lua_objlen(L, 8);
-        lua_pushnumber(L, lc1057);
+        const double lc1063 = lua_objlen(L, 8);
+        lua_pushnumber(L, lc1063);
         lua_pushnumber(L, 1);
-        const int lc1058 = lua_equal(L, -2, -1);
+        const int lc1064 = lua_equal(L, -2, -1);
         lua_pop(L, 2);
-        lua_pushboolean(L, lc1058);
+        lua_pushboolean(L, lc1064);
       }
       if (lua_toboolean(L, -1)) {
         lua_pop(L, 1);
-        lc_getupvalue(L, lc1039, 4, 170);
+        lc_getupvalue(L, lc1045, 4, 171);
         lua_pushnumber(L, 3);
         lua_gettable(L, 6);
-        lc_getupvalue(L, lc1039, 18, 149);
+        lc_getupvalue(L, lc1045, 18, 150);
         lua_call(L, 2, 1);
       }
-      const int lc1059 = lua_toboolean(L, -1);
+      const int lc1065 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1059) {
+      if (lc1065) {
 
-        /* return s(tostring(i(r[1],true)).."."..tostring(i(e[3],true))) */
-        const int lc1060 = lua_gettop(L);
+        /* return s(tostring(n(r[1],true)).."."..tostring(n(e[3],true))) */
+        const int lc1066 = lua_gettop(L);
         lua_pushvalue(L, 4);
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1061 = lua_gettop(L);
-        lc_getupvalue(L, lc1039, 1, 204);
+        const int lc1067 = lua_gettop(L);
+        lc_getupvalue(L, lc1045, 1, 205);
         lua_pushnumber(L, 1);
         lua_gettable(L, 8);
         lua_pushboolean(L, 1);
         lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1061), 1);
+        lua_call(L, (lua_gettop(L) - lc1067), 1);
         lua_pushliteral(L, ".");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1062 = lua_gettop(L);
-        lc_getupvalue(L, lc1039, 1, 204);
+        const int lc1068 = lua_gettop(L);
+        lc_getupvalue(L, lc1045, 1, 205);
         lua_pushnumber(L, 3);
         lua_gettable(L, 5);
         lua_pushboolean(L, 1);
         lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1062), 1);
+        lua_call(L, (lua_gettop(L) - lc1068), 1);
         lua_concat(L, 2);
         lua_concat(L, 2);
         lua_call(L, 1, LUA_MULTRET);
-        return (lua_gettop(L) - lc1060);
+        return (lua_gettop(L) - lc1066);
         assert(lua_gettop(L) == 8);
       } else {
 
-        /* elseif a(t)and d(n(t),f)and d(h[3],f) then */
-        enum { lc1063 = 8 };
-        lc_getupvalue(L, lc1039, 29, 91);
+        /* elseif a(t)and d(i(t),m)and d(h[3],m) then */
+        enum { lc1069 = 8 };
+        lc_getupvalue(L, lc1045, 29, 92);
         lua_pushvalue(L, 7);
         lua_call(L, 1, 1);
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          lc_getupvalue(L, lc1039, 4, 170);
-          lc_getupvalue(L, lc1039, 29, 89);
+          lc_getupvalue(L, lc1045, 4, 171);
+          lc_getupvalue(L, lc1045, 29, 90);
           lua_pushvalue(L, 7);
           lua_call(L, 1, 1);
-          lc_getupvalue(L, lc1039, 18, 149);
+          lc_getupvalue(L, lc1045, 18, 150);
           lua_call(L, 2, 1);
         }
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          lc_getupvalue(L, lc1039, 4, 170);
+          lc_getupvalue(L, lc1045, 4, 171);
           lua_pushnumber(L, 3);
           lua_gettable(L, 6);
-          lc_getupvalue(L, lc1039, 18, 149);
+          lc_getupvalue(L, lc1045, 18, 150);
           lua_call(L, 2, 1);
         }
-        const int lc1064 = lua_toboolean(L, -1);
+        const int lc1070 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1064) {
+        if (lc1070) {
 
-          /* return s(tostring(i(o(t),true)).."@"..tostring(i(e[3],true))) */
-          const int lc1065 = lua_gettop(L);
+          /* return s(tostring(n(o(t),true)).."@"..tostring(n(e[3],true))) */
+          const int lc1071 = lua_gettop(L);
           lua_pushvalue(L, 4);
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          const int lc1066 = lua_gettop(L);
-          lc_getupvalue(L, lc1039, 1, 204);
-          lc_getupvalue(L, lc1039, 29, 90);
+          const int lc1072 = lua_gettop(L);
+          lc_getupvalue(L, lc1045, 1, 205);
+          lc_getupvalue(L, lc1045, 29, 91);
           lua_pushvalue(L, 7);
           lua_call(L, 1, 1);
           lua_pushboolean(L, 1);
           lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1066), 1);
+          lua_call(L, (lua_gettop(L) - lc1072), 1);
           lua_pushliteral(L, "@");
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          const int lc1067 = lua_gettop(L);
-          lc_getupvalue(L, lc1039, 1, 204);
+          const int lc1073 = lua_gettop(L);
+          lc_getupvalue(L, lc1045, 1, 205);
           lua_pushnumber(L, 3);
           lua_gettable(L, 5);
           lua_pushboolean(L, 1);
           lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1067), 1);
+          lua_call(L, (lua_gettop(L) - lc1073), 1);
           lua_concat(L, 2);
           lua_concat(L, 2);
           lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc1065);
+          return (lua_gettop(L) - lc1071);
           assert(lua_gettop(L) == 8);
         } else {
 
-          /* elseif d(t,f)and d(e[3],Y) then */
-          enum { lc1068 = 8 };
-          lc_getupvalue(L, lc1039, 4, 170);
+          /* elseif d(t,m)and d(e[3],Y) then */
+          enum { lc1074 = 8 };
+          lc_getupvalue(L, lc1045, 4, 171);
           lua_pushvalue(L, 7);
-          lc_getupvalue(L, lc1039, 18, 149);
+          lc_getupvalue(L, lc1045, 18, 150);
           lua_call(L, 2, 1);
           if (lua_toboolean(L, -1)) {
             lua_pop(L, 1);
-            lc_getupvalue(L, lc1039, 4, 170);
+            lc_getupvalue(L, lc1045, 4, 171);
             lua_pushnumber(L, 3);
             lua_gettable(L, 5);
-            lc_getupvalue(L, lc1039, 19, 148);
+            lc_getupvalue(L, lc1045, 19, 149);
             lua_call(L, 2, 1);
           }
-          const int lc1069 = lua_toboolean(L, -1);
+          const int lc1075 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1069) {
+          if (lc1075) {
 
-            /* return s(":>"..tostring(i(h[3],true))) */
-            const int lc1070 = lua_gettop(L);
+            /* return s(":>"..tostring(n(h[3],true))) */
+            const int lc1076 = lua_gettop(L);
             lua_pushvalue(L, 4);
             lua_pushliteral(L, ":>");
             lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-            const int lc1071 = lua_gettop(L);
-            lc_getupvalue(L, lc1039, 1, 204);
+            const int lc1077 = lua_gettop(L);
+            lc_getupvalue(L, lc1045, 1, 205);
             lua_pushnumber(L, 3);
             lua_gettable(L, 6);
             lua_pushboolean(L, 1);
             lua_call(L, 2, LUA_MULTRET);
-            lua_call(L, (lua_gettop(L) - lc1071), 1);
+            lua_call(L, (lua_gettop(L) - lc1077), 1);
             lua_concat(L, 2);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc1070);
+            return (lua_gettop(L) - lc1076);
             assert(lua_gettop(L) == 8);
           }
-          lua_settop(L, lc1068);
+          lua_settop(L, lc1074);
         }
-        lua_settop(L, lc1063);
+        lua_settop(L, lc1069);
       }
-      lua_settop(L, lc1055);
+      lua_settop(L, lc1061);
       assert(lua_gettop(L) == 8);
     }
-    lua_settop(L, lc1050);
+    lua_settop(L, lc1056);
     assert(lua_gettop(L) == 6);
 
     /* local a=M(e[3]) */
-    lc_getupvalue(L, lc1039, 7, 160);
+    lc_getupvalue(L, lc1045, 7, 161);
     lua_pushnumber(L, 3);
     lua_gettable(L, 5);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 7);
 
-    /* if d(e[2],t)and a~=false and#a==2 and d(a[1],Z) then */
-    enum { lc1072 = 7 };
-    lc_getupvalue(L, lc1039, 4, 170);
+    /* if d(e[2],t)and a~=false and#a==2 and d(a[1],ae) then */
+    enum { lc1078 = 7 };
+    lc_getupvalue(L, lc1045, 4, 171);
     lua_pushnumber(L, 2);
     lua_gettable(L, 5);
-    lc_getupvalue(L, lc1039, 29, 52);
+    lc_getupvalue(L, lc1045, 29, 53);
     lua_call(L, 2, 1);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
       lua_pushboolean(L, 0);
-      const int lc1073 = lua_equal(L, 7, -1);
+      const int lc1079 = lua_equal(L, 7, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc1073);
+      lua_pushboolean(L, lc1079);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
     }
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      const double lc1074 = lua_objlen(L, 7);
-      lua_pushnumber(L, lc1074);
+      const double lc1080 = lua_objlen(L, 7);
+      lua_pushnumber(L, lc1080);
       lua_pushnumber(L, 2);
-      const int lc1075 = lua_equal(L, -2, -1);
+      const int lc1081 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc1075);
+      lua_pushboolean(L, lc1081);
     }
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lc1039, 4, 170);
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 1);
       lua_gettable(L, 7);
-      lc_getupvalue(L, lc1039, 16, 151);
+      lc_getupvalue(L, lc1045, 16, 152);
       lua_call(L, 2, 1);
     }
-    const int lc1076 = lua_toboolean(L, -1);
+    const int lc1082 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1076) {
+    if (lc1082) {
 
-      /* return s(tostring(i(a[2],true)).."?") */
-      const int lc1077 = lua_gettop(L);
+      /* return s(tostring(n(a[2],true)).."?") */
+      const int lc1083 = lua_gettop(L);
       lua_pushvalue(L, 4);
       lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-      const int lc1078 = lua_gettop(L);
-      lc_getupvalue(L, lc1039, 1, 204);
+      const int lc1084 = lua_gettop(L);
+      lc_getupvalue(L, lc1045, 1, 205);
       lua_pushnumber(L, 2);
       lua_gettable(L, 7);
       lua_pushboolean(L, 1);
       lua_call(L, 2, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc1078), 1);
+      lua_call(L, (lua_gettop(L) - lc1084), 1);
       lua_pushliteral(L, "?");
       lua_concat(L, 2);
       lua_call(L, 1, LUA_MULTRET);
-      return (lua_gettop(L) - lc1077);
+      return (lua_gettop(L) - lc1083);
       assert(lua_gettop(L) == 7);
     }
-    lua_settop(L, lc1072);
+    lua_settop(L, lc1078);
     assert(lua_gettop(L) == 7);
 
     /* if h~=false and#h==2 and d(e[3],Y)and d(h[1],x) then */
-    enum { lc1079 = 7 };
+    enum { lc1085 = 7 };
     lua_pushboolean(L, 0);
-    const int lc1080 = lua_equal(L, 6, -1);
+    const int lc1086 = lua_equal(L, 6, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc1080);
+    lua_pushboolean(L, lc1086);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      const double lc1081 = lua_objlen(L, 6);
-      lua_pushnumber(L, lc1081);
+      const double lc1087 = lua_objlen(L, 6);
+      lua_pushnumber(L, lc1087);
       lua_pushnumber(L, 2);
-      const int lc1082 = lua_equal(L, -2, -1);
+      const int lc1088 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc1082);
+      lua_pushboolean(L, lc1088);
     }
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lc1039, 4, 170);
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 3);
       lua_gettable(L, 5);
-      lc_getupvalue(L, lc1039, 19, 148);
+      lc_getupvalue(L, lc1045, 19, 149);
       lua_call(L, 2, 1);
     }
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      lc_getupvalue(L, lc1039, 4, 170);
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 1);
       lua_gettable(L, 6);
-      lc_getupvalue(L, lc1039, 29, 51);
+      lc_getupvalue(L, lc1045, 29, 52);
       lua_call(L, 2, 1);
     }
-    const int lc1083 = lua_toboolean(L, -1);
+    const int lc1089 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1083) {
+    if (lc1089) {
 
       /* local e=M(h[2]) */
-      lc_getupvalue(L, lc1039, 7, 160);
+      lc_getupvalue(L, lc1045, 7, 161);
       lua_pushnumber(L, 2);
       lua_gettable(L, 6);
       lua_call(L, 1, 1);
       assert(lua_gettop(L) == 8);
 
-      /* if e~=false and#e==3 and d(e[1],t)and d(e[2],f) then */
-      enum { lc1084 = 8 };
+      /* if e~=false and#e==3 and d(e[1],t)and d(e[2],m) then */
+      enum { lc1090 = 8 };
       lua_pushboolean(L, 0);
-      const int lc1085 = lua_equal(L, 8, -1);
+      const int lc1091 = lua_equal(L, 8, -1);
       lua_pop(L, 1);
-      lua_pushboolean(L, lc1085);
+      lua_pushboolean(L, lc1091);
       lua_pushboolean(L, !(lua_toboolean(L, -1)));
       lua_remove(L, -2);
       if (lua_toboolean(L, -1)) {
         lua_pop(L, 1);
-        const double lc1086 = lua_objlen(L, 8);
-        lua_pushnumber(L, lc1086);
+        const double lc1092 = lua_objlen(L, 8);
+        lua_pushnumber(L, lc1092);
         lua_pushnumber(L, 3);
-        const int lc1087 = lua_equal(L, -2, -1);
+        const int lc1093 = lua_equal(L, -2, -1);
         lua_pop(L, 2);
-        lua_pushboolean(L, lc1087);
+        lua_pushboolean(L, lc1093);
       }
       if (lua_toboolean(L, -1)) {
         lua_pop(L, 1);
-        lc_getupvalue(L, lc1039, 4, 170);
+        lc_getupvalue(L, lc1045, 4, 171);
         lua_pushnumber(L, 1);
         lua_gettable(L, 8);
-        lc_getupvalue(L, lc1039, 29, 52);
+        lc_getupvalue(L, lc1045, 29, 53);
         lua_call(L, 2, 1);
       }
       if (lua_toboolean(L, -1)) {
         lua_pop(L, 1);
-        lc_getupvalue(L, lc1039, 4, 170);
+        lc_getupvalue(L, lc1045, 4, 171);
         lua_pushnumber(L, 2);
         lua_gettable(L, 8);
-        lc_getupvalue(L, lc1039, 18, 149);
+        lc_getupvalue(L, lc1045, 18, 150);
         lua_call(L, 2, 1);
       }
-      const int lc1088 = lua_toboolean(L, -1);
+      const int lc1094 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1088) {
+      if (lc1094) {
 
-        /* return s(":&>"..tostring(i(e[3],true))) */
-        const int lc1089 = lua_gettop(L);
+        /* return s(":&>"..tostring(n(e[3],true))) */
+        const int lc1095 = lua_gettop(L);
         lua_pushvalue(L, 4);
         lua_pushliteral(L, ":&>");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1090 = lua_gettop(L);
-        lc_getupvalue(L, lc1039, 1, 204);
+        const int lc1096 = lua_gettop(L);
+        lc_getupvalue(L, lc1045, 1, 205);
         lua_pushnumber(L, 3);
         lua_gettable(L, 8);
         lua_pushboolean(L, 1);
         lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1090), 1);
+        lua_call(L, (lua_gettop(L) - lc1096), 1);
         lua_concat(L, 2);
         lua_call(L, 1, LUA_MULTRET);
-        return (lua_gettop(L) - lc1089);
+        return (lua_gettop(L) - lc1095);
         assert(lua_gettop(L) == 8);
       }
-      lua_settop(L, lc1084);
+      lua_settop(L, lc1090);
       assert(lua_gettop(L) == 8);
     }
-    lua_settop(L, lc1079);
+    lua_settop(L, lc1085);
     assert(lua_gettop(L) == 7);
 
     /* local t */
     lua_settop(L, (lua_gettop(L) + 1));
     assert(lua_gettop(L) == 8);
 
-    /* if d(e[3],f) then */
-    enum { lc1091 = 8 };
-    lc_getupvalue(L, lc1039, 4, 170);
+    /* if d(e[3],m) then */
+    enum { lc1097 = 8 };
+    lc_getupvalue(L, lc1045, 4, 171);
     lua_pushnumber(L, 3);
     lua_gettable(L, 5);
-    lc_getupvalue(L, lc1039, 18, 149);
+    lc_getupvalue(L, lc1045, 18, 150);
     lua_call(L, 2, 1);
-    const int lc1092 = lua_toboolean(L, -1);
+    const int lc1098 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1092) {
+    if (lc1098) {
 
       /* t="_" */
       lua_pushliteral(L, "_");
@@ -15082,15 +15166,15 @@ static inline int lcf9_i(lua_State *L) {
     } else {
 
       /* elseif d(e[3],Y) then */
-      enum { lc1093 = 8 };
-      lc_getupvalue(L, lc1039, 4, 170);
+      enum { lc1099 = 8 };
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 3);
       lua_gettable(L, 5);
-      lc_getupvalue(L, lc1039, 19, 148);
+      lc_getupvalue(L, lc1045, 19, 149);
       lua_call(L, 2, 1);
-      const int lc1094 = lua_toboolean(L, -1);
+      const int lc1100 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1094) {
+      if (lc1100) {
 
         /* t="" */
         lua_pushliteral(L, "");
@@ -15099,8 +15183,8 @@ static inline int lcf9_i(lua_State *L) {
       } else {
 
         /* else
-         * t=i(e[3],true) */
-        lc_getupvalue(L, lc1039, 1, 204);
+         * t=n(e[3],true) */
+        lc_getupvalue(L, lc1045, 1, 205);
         lua_pushnumber(L, 3);
         lua_gettable(L, 5);
         lua_pushboolean(L, 1);
@@ -15108,238 +15192,238 @@ static inline int lcf9_i(lua_State *L) {
         lua_replace(L, 8);
         assert(lua_gettop(L) == 8);
       }
-      lua_settop(L, lc1093);
+      lua_settop(L, lc1099);
     }
-    lua_settop(L, lc1091);
+    lua_settop(L, lc1097);
     assert(lua_gettop(L) == 8);
 
-    /* return s(tostring(t)..":"..tostring(i(e[2],true))) */
-    const int lc1095 = lua_gettop(L);
+    /* return s(tostring(t)..":"..tostring(n(e[2],true))) */
+    const int lc1101 = lua_gettop(L);
     lua_pushvalue(L, 4);
     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
     lua_pushvalue(L, 8);
     lua_call(L, 1, 1);
     lua_pushliteral(L, ":");
     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-    const int lc1096 = lua_gettop(L);
-    lc_getupvalue(L, lc1039, 1, 204);
+    const int lc1102 = lua_gettop(L);
+    lc_getupvalue(L, lc1045, 1, 205);
     lua_pushnumber(L, 2);
     lua_gettable(L, 5);
     lua_pushboolean(L, 1);
     lua_call(L, 2, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc1096), 1);
+    lua_call(L, (lua_gettop(L) - lc1102), 1);
     lua_concat(L, 2);
     lua_concat(L, 2);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc1095);
+    return (lua_gettop(L) - lc1101);
     assert(lua_gettop(L) == 8);
   } else {
 
     /* elseif e~=false and#e==2 then */
-    enum { lc1097 = 5 };
+    enum { lc1103 = 5 };
     lua_pushboolean(L, 0);
-    const int lc1098 = lua_equal(L, 5, -1);
+    const int lc1104 = lua_equal(L, 5, -1);
     lua_pop(L, 1);
-    lua_pushboolean(L, lc1098);
+    lua_pushboolean(L, lc1104);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
     if (lua_toboolean(L, -1)) {
       lua_pop(L, 1);
-      const double lc1099 = lua_objlen(L, 5);
-      lua_pushnumber(L, lc1099);
+      const double lc1105 = lua_objlen(L, 5);
+      lua_pushnumber(L, lc1105);
       lua_pushnumber(L, 2);
-      const int lc1100 = lua_equal(L, -2, -1);
+      const int lc1106 = lua_equal(L, -2, -1);
       lua_pop(L, 2);
-      lua_pushboolean(L, lc1100);
+      lua_pushboolean(L, lc1106);
     }
-    const int lc1101 = lua_toboolean(L, -1);
+    const int lc1107 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1101) {
+    if (lc1107) {
 
       /* if d(e[1],x) then */
-      enum { lc1102 = 5 };
-      lc_getupvalue(L, lc1039, 4, 170);
+      enum { lc1108 = 5 };
+      lc_getupvalue(L, lc1045, 4, 171);
       lua_pushnumber(L, 1);
       lua_gettable(L, 5);
-      lc_getupvalue(L, lc1039, 29, 51);
+      lc_getupvalue(L, lc1045, 29, 52);
       lua_call(L, 2, 1);
-      const int lc1103 = lua_toboolean(L, -1);
+      const int lc1109 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1103) {
+      if (lc1109) {
 
         /* local t=M(e[2]) */
-        lc_getupvalue(L, lc1039, 7, 160);
+        lc_getupvalue(L, lc1045, 7, 161);
         lua_pushnumber(L, 2);
         lua_gettable(L, 5);
         lua_call(L, 1, 1);
         assert(lua_gettop(L) == 6);
 
         /* if t~=false and#t==2 and d(t[1],z) then */
-        enum { lc1104 = 6 };
+        enum { lc1110 = 6 };
         lua_pushboolean(L, 0);
-        const int lc1105 = lua_equal(L, 6, -1);
+        const int lc1111 = lua_equal(L, 6, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc1105);
+        lua_pushboolean(L, lc1111);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          const double lc1106 = lua_objlen(L, 6);
-          lua_pushnumber(L, lc1106);
+          const double lc1112 = lua_objlen(L, 6);
+          lua_pushnumber(L, lc1112);
           lua_pushnumber(L, 2);
-          const int lc1107 = lua_equal(L, -2, -1);
+          const int lc1113 = lua_equal(L, -2, -1);
           lua_pop(L, 2);
-          lua_pushboolean(L, lc1107);
+          lua_pushboolean(L, lc1113);
         }
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          lc_getupvalue(L, lc1039, 4, 170);
+          lc_getupvalue(L, lc1045, 4, 171);
           lua_pushnumber(L, 1);
           lua_gettable(L, 6);
-          lc_getupvalue(L, lc1039, 29, 53);
+          lc_getupvalue(L, lc1045, 29, 54);
           lua_call(L, 2, 1);
         }
-        const int lc1108 = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        if (lc1108) {
-
-          /* return s("&+"..tostring(i(t[2],true))) */
-          const int lc1109 = lua_gettop(L);
-          lua_pushvalue(L, 4);
-          lua_pushliteral(L, "&+");
-          lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          const int lc1110 = lua_gettop(L);
-          lc_getupvalue(L, lc1039, 1, 204);
-          lua_pushnumber(L, 2);
-          lua_gettable(L, 6);
-          lua_pushboolean(L, 1);
-          lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1110), 1);
-          lua_concat(L, 2);
-          lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc1109);
-          assert(lua_gettop(L) == 6);
-        }
-        lua_settop(L, lc1104);
-        assert(lua_gettop(L) == 6);
-
-        /* return s("&"..tostring(i(e[2],true))) */
-        const int lc1111 = lua_gettop(L);
-        lua_pushvalue(L, 4);
-        lua_pushliteral(L, "&");
-        lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1112 = lua_gettop(L);
-        lc_getupvalue(L, lc1039, 1, 204);
-        lua_pushnumber(L, 2);
-        lua_gettable(L, 5);
-        lua_pushboolean(L, 1);
-        lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1112), 1);
-        lua_concat(L, 2);
-        lua_call(L, 1, LUA_MULTRET);
-        return (lua_gettop(L) - lc1111);
-        assert(lua_gettop(L) == 6);
-      } else {
-
-        /* elseif d(e[1],Z) then */
-        enum { lc1113 = 5 };
-        lc_getupvalue(L, lc1039, 4, 170);
-        lua_pushnumber(L, 1);
-        lua_gettable(L, 5);
-        lc_getupvalue(L, lc1039, 16, 151);
-        lua_call(L, 2, 1);
         const int lc1114 = lua_toboolean(L, -1);
         lua_pop(L, 1);
         if (lc1114) {
 
-          /* return s(tostring(i(e[2],true)).."~") */
+          /* return s("&+"..tostring(n(t[2],true))) */
           const int lc1115 = lua_gettop(L);
           lua_pushvalue(L, 4);
+          lua_pushliteral(L, "&+");
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
           const int lc1116 = lua_gettop(L);
-          lc_getupvalue(L, lc1039, 1, 204);
+          lc_getupvalue(L, lc1045, 1, 205);
+          lua_pushnumber(L, 2);
+          lua_gettable(L, 6);
+          lua_pushboolean(L, 1);
+          lua_call(L, 2, LUA_MULTRET);
+          lua_call(L, (lua_gettop(L) - lc1116), 1);
+          lua_concat(L, 2);
+          lua_call(L, 1, LUA_MULTRET);
+          return (lua_gettop(L) - lc1115);
+          assert(lua_gettop(L) == 6);
+        }
+        lua_settop(L, lc1110);
+        assert(lua_gettop(L) == 6);
+
+        /* return s("&"..tostring(n(e[2],true))) */
+        const int lc1117 = lua_gettop(L);
+        lua_pushvalue(L, 4);
+        lua_pushliteral(L, "&");
+        lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+        const int lc1118 = lua_gettop(L);
+        lc_getupvalue(L, lc1045, 1, 205);
+        lua_pushnumber(L, 2);
+        lua_gettable(L, 5);
+        lua_pushboolean(L, 1);
+        lua_call(L, 2, LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc1118), 1);
+        lua_concat(L, 2);
+        lua_call(L, 1, LUA_MULTRET);
+        return (lua_gettop(L) - lc1117);
+        assert(lua_gettop(L) == 6);
+      } else {
+
+        /* elseif d(e[1],ae) then */
+        enum { lc1119 = 5 };
+        lc_getupvalue(L, lc1045, 4, 171);
+        lua_pushnumber(L, 1);
+        lua_gettable(L, 5);
+        lc_getupvalue(L, lc1045, 16, 152);
+        lua_call(L, 2, 1);
+        const int lc1120 = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        if (lc1120) {
+
+          /* return s(tostring(n(e[2],true)).."~") */
+          const int lc1121 = lua_gettop(L);
+          lua_pushvalue(L, 4);
+          lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+          const int lc1122 = lua_gettop(L);
+          lc_getupvalue(L, lc1045, 1, 205);
           lua_pushnumber(L, 2);
           lua_gettable(L, 5);
           lua_pushboolean(L, 1);
           lua_call(L, 2, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1116), 1);
+          lua_call(L, (lua_gettop(L) - lc1122), 1);
           lua_pushliteral(L, "~");
           lua_concat(L, 2);
           lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc1115);
+          return (lua_gettop(L) - lc1121);
           assert(lua_gettop(L) == 5);
         } else {
 
           /* elseif d(e[1],z) then */
-          enum { lc1117 = 5 };
-          lc_getupvalue(L, lc1039, 4, 170);
+          enum { lc1123 = 5 };
+          lc_getupvalue(L, lc1045, 4, 171);
           lua_pushnumber(L, 1);
           lua_gettable(L, 5);
-          lc_getupvalue(L, lc1039, 29, 53);
+          lc_getupvalue(L, lc1045, 29, 54);
           lua_call(L, 2, 1);
-          const int lc1118 = lua_toboolean(L, -1);
+          const int lc1124 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1118) {
+          if (lc1124) {
 
-            /* return s("+"..tostring(i(e[2],true))) */
-            const int lc1119 = lua_gettop(L);
+            /* return s("+"..tostring(n(e[2],true))) */
+            const int lc1125 = lua_gettop(L);
             lua_pushvalue(L, 4);
             lua_pushliteral(L, "+");
             lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-            const int lc1120 = lua_gettop(L);
-            lc_getupvalue(L, lc1039, 1, 204);
+            const int lc1126 = lua_gettop(L);
+            lc_getupvalue(L, lc1045, 1, 205);
             lua_pushnumber(L, 2);
             lua_gettable(L, 5);
             lua_pushboolean(L, 1);
             lua_call(L, 2, LUA_MULTRET);
-            lua_call(L, (lua_gettop(L) - lc1120), 1);
+            lua_call(L, (lua_gettop(L) - lc1126), 1);
             lua_concat(L, 2);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc1119);
+            return (lua_gettop(L) - lc1125);
             assert(lua_gettop(L) == 5);
           } else {
 
             /* elseif d(e[1],pe) then */
-            enum { lc1121 = 5 };
-            lc_getupvalue(L, lc1039, 4, 170);
+            enum { lc1127 = 5 };
+            lc_getupvalue(L, lc1045, 4, 171);
             lua_pushnumber(L, 1);
             lua_gettable(L, 5);
-            lc_getupvalue(L, lc1039, 15, 152);
+            lc_getupvalue(L, lc1045, 15, 153);
             lua_call(L, 2, 1);
-            const int lc1122 = lua_toboolean(L, -1);
+            const int lc1128 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc1122) {
+            if (lc1128) {
 
               /* local e=M(e[2]) */
-              lc_getupvalue(L, lc1039, 7, 160);
+              lc_getupvalue(L, lc1045, 7, 161);
               lua_pushnumber(L, 2);
               lua_gettable(L, 5);
               lua_call(L, 1, 1);
               assert(lua_gettop(L) == 6);
 
               /* if e~=false and#e>1 then */
-              enum { lc1123 = 6 };
+              enum { lc1129 = 6 };
               lua_pushboolean(L, 0);
-              const int lc1124 = lua_equal(L, 6, -1);
+              const int lc1130 = lua_equal(L, 6, -1);
               lua_pop(L, 1);
-              lua_pushboolean(L, lc1124);
+              lua_pushboolean(L, lc1130);
               lua_pushboolean(L, !(lua_toboolean(L, -1)));
               lua_remove(L, -2);
               if (lua_toboolean(L, -1)) {
                 lua_pop(L, 1);
                 lua_pushnumber(L, 1);
-                const double lc1125 = lua_objlen(L, 6);
-                lua_pushnumber(L, lc1125);
-                const int lc1126 = lua_lessthan(L, -2, -1);
+                const double lc1131 = lua_objlen(L, 6);
+                lua_pushnumber(L, lc1131);
+                const int lc1132 = lua_lessthan(L, -2, -1);
                 lua_pop(L, 2);
-                lua_pushboolean(L, lc1126);
+                lua_pushboolean(L, lc1132);
               }
-              const int lc1127 = lua_toboolean(L, -1);
+              const int lc1133 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc1127) {
+              if (lc1133) {
 
-                /* local a=i(e[1],true) */
-                lc_getupvalue(L, lc1039, 1, 204);
+                /* local a=n(e[1],true) */
+                lc_getupvalue(L, lc1045, 1, 205);
                 lua_pushnumber(L, 1);
                 lua_gettable(L, 6);
                 lua_pushboolean(L, 1);
@@ -15352,33 +15436,33 @@ static inline int lcf9_i(lua_State *L) {
                 assert(lua_gettop(L) == 8);
 
                 /* while t<#e do */
-                enum { lc1128 = 8 };
+                enum { lc1134 = 8 };
                 while (1) {
-                  const double lc1129 = lua_objlen(L, 6);
-                  lua_pushnumber(L, lc1129);
-                  const int lc1130 = lua_lessthan(L, 8, -1);
+                  const double lc1135 = lua_objlen(L, 6);
+                  lua_pushnumber(L, lc1135);
+                  const int lc1136 = lua_lessthan(L, 8, -1);
                   lua_pop(L, 1);
-                  lua_pushboolean(L, lc1130);
+                  lua_pushboolean(L, lc1136);
                   if (!(lua_toboolean(L, -1))) {
                     break;
                   }
                   lua_pop(L, 1);
 
-                  /* a=tostring(a).."/"..tostring(i(e[t+1],true)) */
+                  /* a=tostring(a).."/"..tostring(n(e[t+1],true)) */
                   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
                   lua_pushvalue(L, 7);
                   lua_call(L, 1, 1);
                   lua_pushliteral(L, "/");
                   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                  const int lc1131 = lua_gettop(L);
-                  lc_getupvalue(L, lc1039, 1, 204);
+                  const int lc1137 = lua_gettop(L);
+                  lc_getupvalue(L, lc1045, 1, 205);
                   lua_pushnumber(L, 1);
                   lc_add(L, 8, -1);
                   lua_remove(L, -2);
                   lua_gettable(L, 6);
                   lua_pushboolean(L, 1);
                   lua_call(L, 2, LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1131), 1);
+                  lua_call(L, (lua_gettop(L) - lc1137), 1);
                   lua_concat(L, 2);
                   lua_concat(L, 2);
                   lua_replace(L, 7);
@@ -15391,7 +15475,7 @@ static inline int lcf9_i(lua_State *L) {
                   lua_replace(L, 8);
                   assert(lua_gettop(L) == 8);
                 }
-                lua_settop(L, lc1128);
+                lua_settop(L, lc1134);
                 assert(lua_gettop(L) == 8);
 
                 /* internal: stack cleanup on scope exit */
@@ -15399,72 +15483,72 @@ static inline int lcf9_i(lua_State *L) {
                 assert(lua_gettop(L) == 7);
 
                 /* return s(a) */
-                const int lc1132 = lua_gettop(L);
+                const int lc1138 = lua_gettop(L);
                 lua_pushvalue(L, 4);
                 lua_pushvalue(L, 7);
                 lua_call(L, 1, LUA_MULTRET);
-                return (lua_gettop(L) - lc1132);
+                return (lua_gettop(L) - lc1138);
                 assert(lua_gettop(L) == 7);
               }
-              lua_settop(L, lc1123);
+              lua_settop(L, lc1129);
               assert(lua_gettop(L) == 6);
             }
-            lua_settop(L, lc1121);
+            lua_settop(L, lc1127);
           }
-          lua_settop(L, lc1117);
+          lua_settop(L, lc1123);
         }
-        lua_settop(L, lc1113);
+        lua_settop(L, lc1119);
       }
-      lua_settop(L, lc1102);
+      lua_settop(L, lc1108);
       assert(lua_gettop(L) == 5);
     }
-    lua_settop(L, lc1097);
+    lua_settop(L, lc1103);
   }
-  lua_settop(L, lc1045);
+  lua_settop(L, lc1051);
   assert(lua_gettop(L) == 5);
 
   /* if l then */
-  enum { lc1133 = 5 };
-  lc_getupvalue(L, lc1039, 0, 205);
-  const int lc1134 = lua_toboolean(L, -1);
+  enum { lc1139 = 5 };
+  lc_getupvalue(L, lc1045, 0, 206);
+  const int lc1140 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1134) {
+  if (lc1140) {
 
-    /* return w(r) */
-    const int lc1135 = lua_gettop(L);
-    lc_getupvalue(L, lc1039, 29, 2);
+    /* return f(r) */
+    const int lc1141 = lua_gettop(L);
+    lc_getupvalue(L, lc1045, 29, 3);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc1135);
+    return (lua_gettop(L) - lc1141);
     assert(lua_gettop(L) == 5);
   } else {
 
     /* else
-     * return w(b(r)) */
-    const int lc1136 = lua_gettop(L);
-    lc_getupvalue(L, lc1039, 29, 2);
-    const int lc1137 = lua_gettop(L);
-    lc_getupvalue(L, lc1039, 12, 155);
+     * return f(b(r)) */
+    const int lc1142 = lua_gettop(L);
+    lc_getupvalue(L, lc1045, 29, 3);
+    const int lc1143 = lua_gettop(L);
+    lc_getupvalue(L, lc1045, 12, 156);
     lua_pushvalue(L, 1);
     lua_call(L, 1, LUA_MULTRET);
-    lua_call(L, (lua_gettop(L) - lc1137), LUA_MULTRET);
-    return (lua_gettop(L) - lc1136);
+    lua_call(L, (lua_gettop(L) - lc1143), LUA_MULTRET);
+    return (lua_gettop(L) - lc1142);
     assert(lua_gettop(L) == 5);
   }
-  lua_settop(L, lc1133);
+  lua_settop(L, lc1139);
   assert(lua_gettop(L) == 5);
   return 0;
 }
 
-/* name: j
- * function(c) */
-static inline int lcf2_j(lua_State *L) {
+/* name: q
+ * function(w) */
+static inline int lcf2_q(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local function i(r,l)
+  /* local function n(r,l)
    * if p(r)then
-   * return me(r)
+   * return de(r)
    * end
    * local function s(e)
    * if l then
@@ -15479,52 +15563,52 @@ static inline int lcf2_j(lua_State *L) {
    * if h~=false and#h==3 and d(h[1],t)then
    * local t=h[2]
    * local r=M(t)
-   * if r~=false and#r==1 and d(h[3],f)then
-   * return s(tostring(i(r[1],true)).."."..tostring(i(e[3],true)))
-   * elseif a(t)and d(n(t),f)and d(h[3],f)then
-   * return s(tostring(i(o(t),true)).."@"..tostring(i(e[3],true)))
-   * elseif d(t,f)and d(e[3],Y)then
-   * return s(":>"..tostring(i(h[3],true)))
+   * if r~=false and#r==1 and d(h[3],m)then
+   * return s(tostring(n(r[1],true)).."."..tostring(n(e[3],true)))
+   * elseif a(t)and d(i(t),m)and d(h[3],m)then
+   * return s(tostring(n(o(t),true)).."@"..tostring(n(e[3],true)))
+   * elseif d(t,m)and d(e[3],Y)then
+   * return s(":>"..tostring(n(h[3],true)))
    * end
    * end
    * local a=M(e[3])
-   * if d(e[2],t)and a~=false and#a==2 and d(a[1],Z)then
-   * return s(tostring(i(a[2],true)).."?")
+   * if d(e[2],t)and a~=false and#a==2 and d(a[1],ae)then
+   * return s(tostring(n(a[2],true)).."?")
    * end
    * if h~=false and#h==2 and d(e[3],Y)and d(h[1],x)then
    * local e=M(h[2])
-   * if e~=false and#e==3 and d(e[1],t)and d(e[2],f)then
-   * return s(":&>"..tostring(i(e[3],true)))
+   * if e~=false and#e==3 and d(e[1],t)and d(e[2],m)then
+   * return s(":&>"..tostring(n(e[3],true)))
    * end
    * end
    * local t
-   * if d(e[3],f)then
+   * if d(e[3],m)then
    * t="_"
    * elseif d(e[3],Y)then
    * t=""
    * else
-   * t=i(e[3],true)
+   * t=n(e[3],true)
    * end
-   * return s(tostring(t)..":"..tostring(i(e[2],true)))
+   * return s(tostring(t)..":"..tostring(n(e[2],true)))
    * elseif e~=false and#e==2 then
    * if d(e[1],x)then
    * local t=M(e[2])
    * if t~=false and#t==2 and d(t[1],z)then
-   * return s("&+"..tostring(i(t[2],true)))
+   * return s("&+"..tostring(n(t[2],true)))
    * end
-   * return s("&"..tostring(i(e[2],true)))
-   * elseif d(e[1],Z)then
-   * return s(tostring(i(e[2],true)).."~")
+   * return s("&"..tostring(n(e[2],true)))
+   * elseif d(e[1],ae)then
+   * return s(tostring(n(e[2],true)).."~")
    * elseif d(e[1],z)then
-   * return s("+"..tostring(i(e[2],true)))
+   * return s("+"..tostring(n(e[2],true)))
    * elseif d(e[1],pe)then
    * local e=M(e[2])
    * if e~=false and#e>1 then
-   * local a=i(e[1],true)
+   * local a=n(e[1],true)
    * do
    * local t=1
    * while t<#e do
-   * a=tostring(a).."/"..tostring(i(e[t+1],true))
+   * a=tostring(a).."/"..tostring(n(e[t+1],true))
    * t=t+1
    * end
    * end
@@ -15533,44 +15617,44 @@ static inline int lcf2_j(lua_State *L) {
    * end
    * end
    * if l then
-   * return w(r)
+   * return f(r)
    * else
-   * return w(b(r))
+   * return f(b(r))
    * end
    * end */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1038 = 2 };
-  assert((lua_gettop(L) == lc1038));
-  lua_pushvalue(L, lc1038);
-  lua_pushcclosure(L, lcf9_i, 1);
-  lua_rawseti(L, lc1038, 204);
+  enum { lc1044 = 2 };
+  assert((lua_gettop(L) == lc1044));
+  lua_pushvalue(L, lc1044);
+  lua_pushcclosure(L, lcf8_n, 1);
+  lua_rawseti(L, lc1044, 205);
   assert(lua_gettop(L) == 2);
 
-  /* local e=ee(w(c)) */
-  lc_getupvalue(L, lc1038, 2, 171);
-  const int lc1138 = lua_gettop(L);
-  lc_getupvalue(L, lc1038, 28, 2);
+  /* local e=ee(f(w)) */
+  lc_getupvalue(L, lc1044, 2, 172);
+  const int lc1144 = lua_gettop(L);
+  lc_getupvalue(L, lc1044, 28, 3);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1138), 1);
+  lua_call(L, (lua_gettop(L) - lc1144), 1);
   assert(lua_gettop(L) == 3);
 
   /* local t="" */
   lua_pushliteral(L, "");
   assert(lua_gettop(L) == 4);
 
-  /* local h="" */
+  /* local r="" */
   lua_pushliteral(L, "");
   assert(lua_gettop(L) == 5);
 
-  /* if r(e) then */
-  enum { lc1139 = 5 };
-  lc_getupvalue(L, lc1038, 28, 87);
+  /* if h(e) then */
+  enum { lc1145 = 5 };
+  lc_getupvalue(L, lc1044, 28, 88);
   lua_pushvalue(L, 3);
   lua_call(L, 1, 1);
-  const int lc1140 = lua_toboolean(L, -1);
+  const int lc1146 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1140) {
+  if (lc1146) {
 
     /* return"()" */
     lua_pushliteral(L, "()");
@@ -15579,28 +15663,28 @@ static inline int lcf2_j(lua_State *L) {
   } else {
 
     /* elseif a(e) then */
-    enum { lc1141 = 5 };
-    lc_getupvalue(L, lc1038, 28, 91);
+    enum { lc1147 = 5 };
+    lc_getupvalue(L, lc1044, 28, 92);
     lua_pushvalue(L, 3);
     lua_call(L, 1, 1);
-    const int lc1142 = lua_toboolean(L, -1);
+    const int lc1148 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1142) {
+    if (lc1148) {
 
       /* t="(" */
       lua_pushliteral(L, "(");
       lua_replace(L, 4);
       assert(lua_gettop(L) == 5);
 
-      /* h="" */
+      /* r="" */
       lua_pushliteral(L, "");
       lua_replace(L, 5);
       assert(lua_gettop(L) == 5);
 
       /* while a(e)do */
-      enum { lc1143 = 5 };
+      enum { lc1149 = 5 };
       while (1) {
-        lc_getupvalue(L, lc1038, 28, 91);
+        lc_getupvalue(L, lc1044, 28, 92);
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
         if (!(lua_toboolean(L, -1))) {
@@ -15608,7 +15692,7 @@ static inline int lcf2_j(lua_State *L) {
         }
         lua_pop(L, 1);
 
-        /* t=tostring(t)..tostring(h)..tostring(j(o(e))) */
+        /* t=tostring(t)..tostring(r)..tostring(q(o(e))) */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushvalue(L, 4);
         lua_call(L, 1, 1);
@@ -15616,42 +15700,42 @@ static inline int lcf2_j(lua_State *L) {
         lua_pushvalue(L, 5);
         lua_call(L, 1, 1);
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1144 = lua_gettop(L);
-        lc_getupvalue(L, lc1038, 1, 203);
-        const int lc1145 = lua_gettop(L);
-        lc_getupvalue(L, lc1038, 28, 90);
+        const int lc1150 = lua_gettop(L);
+        lc_getupvalue(L, lc1044, 1, 204);
+        const int lc1151 = lua_gettop(L);
+        lc_getupvalue(L, lc1044, 28, 91);
         lua_pushvalue(L, 3);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1145), LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1144), 1);
+        lua_call(L, (lua_gettop(L) - lc1151), LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc1150), 1);
         lua_concat(L, 2);
         lua_concat(L, 2);
         lua_replace(L, 4);
         assert(lua_gettop(L) == 5);
 
-        /* h=" " */
+        /* r=" " */
         lua_pushliteral(L, " ");
         lua_replace(L, 5);
         assert(lua_gettop(L) == 5);
 
-        /* e=n(e) */
-        lc_getupvalue(L, lc1038, 28, 89);
+        /* e=i(e) */
+        lc_getupvalue(L, lc1044, 28, 90);
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
         lua_replace(L, 3);
         assert(lua_gettop(L) == 5);
       }
-      lua_settop(L, lc1143);
+      lua_settop(L, lc1149);
       assert(lua_gettop(L) == 5);
 
-      /* if r(e) then */
-      enum { lc1146 = 5 };
-      lc_getupvalue(L, lc1038, 28, 87);
+      /* if h(e) then */
+      enum { lc1152 = 5 };
+      lc_getupvalue(L, lc1044, 28, 88);
       lua_pushvalue(L, 3);
       lua_call(L, 1, 1);
-      const int lc1147 = lua_toboolean(L, -1);
+      const int lc1153 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1147) {
+      if (lc1153) {
 
         /* t=tostring(t)..")" */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
@@ -15664,17 +15748,17 @@ static inline int lcf2_j(lua_State *L) {
       } else {
 
         /* else
-         * t=tostring(t).." . "..tostring(j(e))..")" */
+         * t=tostring(t).." . "..tostring(q(e))..")" */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushvalue(L, 4);
         lua_call(L, 1, 1);
         lua_pushliteral(L, " . ");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1148 = lua_gettop(L);
-        lc_getupvalue(L, lc1038, 1, 203);
+        const int lc1154 = lua_gettop(L);
+        lc_getupvalue(L, lc1044, 1, 204);
         lua_pushvalue(L, 3);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1148), 1);
+        lua_call(L, (lua_gettop(L) - lc1154), 1);
         lua_pushliteral(L, ")");
         lua_concat(L, 2);
         lua_concat(L, 2);
@@ -15682,7 +15766,7 @@ static inline int lcf2_j(lua_State *L) {
         lua_replace(L, 4);
         assert(lua_gettop(L) == 5);
       }
-      lua_settop(L, lc1146);
+      lua_settop(L, lc1152);
       assert(lua_gettop(L) == 5);
 
       /* return t */
@@ -15691,178 +15775,178 @@ static inline int lcf2_j(lua_State *L) {
       assert(lua_gettop(L) == 5);
     } else {
 
-      /* elseif m(e) then */
-      enum { lc1149 = 5 };
-      lc_getupvalue(L, lc1038, 28, 85);
+      /* elseif c(e) then */
+      enum { lc1155 = 5 };
+      lc_getupvalue(L, lc1044, 28, 86);
       lua_pushvalue(L, 3);
       lua_call(L, 1, 1);
-      const int lc1150 = lua_toboolean(L, -1);
+      const int lc1156 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1150) {
+      if (lc1156) {
 
-        /* local t=_(e) */
-        lc_getupvalue(L, lc1038, 28, 84);
+        /* local t=E(e) */
+        lc_getupvalue(L, lc1044, 28, 85);
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
         assert(lua_gettop(L) == 6);
 
         /* local a=A(e) */
-        lc_getupvalue(L, lc1038, 28, 83);
+        lc_getupvalue(L, lc1044, 28, 84);
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
         assert(lua_gettop(L) == 7);
 
         /* local e=M(a) */
-        lc_getupvalue(L, lc1038, 6, 160);
+        lc_getupvalue(L, lc1044, 6, 161);
         lua_pushvalue(L, 7);
         lua_call(L, 1, 1);
         assert(lua_gettop(L) == 8);
 
-        /* if e~=false and#e==2 and d(t,be)and d(e[1],z) then */
-        enum { lc1151 = 8 };
+        /* if e~=false and#e==2 and d(t,ye)and d(e[1],z) then */
+        enum { lc1157 = 8 };
         lua_pushboolean(L, 0);
-        const int lc1152 = lua_equal(L, 8, -1);
+        const int lc1158 = lua_equal(L, 8, -1);
         lua_pop(L, 1);
-        lua_pushboolean(L, lc1152);
+        lua_pushboolean(L, lc1158);
         lua_pushboolean(L, !(lua_toboolean(L, -1)));
         lua_remove(L, -2);
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          const double lc1153 = lua_objlen(L, 8);
-          lua_pushnumber(L, lc1153);
+          const double lc1159 = lua_objlen(L, 8);
+          lua_pushnumber(L, lc1159);
           lua_pushnumber(L, 2);
-          const int lc1154 = lua_equal(L, -2, -1);
+          const int lc1160 = lua_equal(L, -2, -1);
           lua_pop(L, 2);
-          lua_pushboolean(L, lc1154);
+          lua_pushboolean(L, lc1160);
         }
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          lc_getupvalue(L, lc1038, 3, 170);
+          lc_getupvalue(L, lc1044, 3, 171);
           lua_pushvalue(L, 6);
-          lc_getupvalue(L, lc1038, 19, 147);
+          lc_getupvalue(L, lc1044, 19, 148);
           lua_call(L, 2, 1);
         }
         if (lua_toboolean(L, -1)) {
           lua_pop(L, 1);
-          lc_getupvalue(L, lc1038, 3, 170);
+          lc_getupvalue(L, lc1044, 3, 171);
           lua_pushnumber(L, 1);
           lua_gettable(L, 8);
-          lc_getupvalue(L, lc1038, 28, 53);
+          lc_getupvalue(L, lc1044, 28, 54);
           lua_call(L, 2, 1);
         }
-        const int lc1155 = lua_toboolean(L, -1);
+        const int lc1161 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1155) {
+        if (lc1161) {
 
-          /* return i(e[2],false) */
-          const int lc1156 = lua_gettop(L);
-          lc_getupvalue(L, lc1038, 0, 204);
+          /* return n(e[2],false) */
+          const int lc1162 = lua_gettop(L);
+          lc_getupvalue(L, lc1044, 0, 205);
           lua_pushnumber(L, 2);
           lua_gettable(L, 8);
           lua_pushboolean(L, 0);
           lua_call(L, 2, LUA_MULTRET);
-          return (lua_gettop(L) - lc1156);
+          return (lua_gettop(L) - lc1162);
           assert(lua_gettop(L) == 8);
         }
-        lua_settop(L, lc1151);
+        lua_settop(L, lc1157);
         assert(lua_gettop(L) == 8);
 
-        /* return"#"..tostring(j(s(t,a))) */
+        /* return"#"..tostring(q(s(t,a))) */
         lua_pushliteral(L, "#");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1157 = lua_gettop(L);
-        lc_getupvalue(L, lc1038, 1, 203);
-        const int lc1158 = lua_gettop(L);
-        lc_getupvalue(L, lc1038, 28, 92);
+        const int lc1163 = lua_gettop(L);
+        lc_getupvalue(L, lc1044, 1, 204);
+        const int lc1164 = lua_gettop(L);
+        lc_getupvalue(L, lc1044, 28, 93);
         lua_pushvalue(L, 6);
         lua_pushvalue(L, 7);
         lua_call(L, 2, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1158), LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1157), 1);
+        lua_call(L, (lua_gettop(L) - lc1164), LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc1163), 1);
         lua_concat(L, 2);
         return 1;
         assert(lua_gettop(L) == 8);
       } else {
 
         /* elseif g(e) then */
-        enum { lc1159 = 5 };
-        lc_getupvalue(L, lc1038, 28, 81);
+        enum { lc1165 = 5 };
+        lc_getupvalue(L, lc1044, 28, 82);
         lua_pushvalue(L, 3);
         lua_call(L, 1, 1);
-        const int lc1160 = lua_toboolean(L, -1);
+        const int lc1166 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1160) {
+        if (lc1166) {
 
-          /* return"!"..tostring(j(s(U(e),C(e)))) */
+          /* return"!"..tostring(q(s(C(e),U(e)))) */
           lua_pushliteral(L, "!");
           lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          const int lc1161 = lua_gettop(L);
-          lc_getupvalue(L, lc1038, 1, 203);
-          const int lc1162 = lua_gettop(L);
-          lc_getupvalue(L, lc1038, 28, 92);
-          const int lc1163 = lua_gettop(L);
-          lc_getupvalue(L, lc1038, 28, 80);
+          const int lc1167 = lua_gettop(L);
+          lc_getupvalue(L, lc1044, 1, 204);
+          const int lc1168 = lua_gettop(L);
+          lc_getupvalue(L, lc1044, 28, 93);
+          const int lc1169 = lua_gettop(L);
+          lc_getupvalue(L, lc1044, 28, 81);
           lua_pushvalue(L, 3);
           lua_call(L, 1, 1);
-          lc_getupvalue(L, lc1038, 28, 79);
+          lc_getupvalue(L, lc1044, 28, 80);
           lua_pushvalue(L, 3);
           lua_call(L, 1, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1163), LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1162), LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1161), 1);
+          lua_call(L, (lua_gettop(L) - lc1169), LUA_MULTRET);
+          lua_call(L, (lua_gettop(L) - lc1168), LUA_MULTRET);
+          lua_call(L, (lua_gettop(L) - lc1167), 1);
           lua_concat(L, 2);
           return 1;
           assert(lua_gettop(L) == 5);
         } else {
 
           /* elseif p(e) then */
-          enum { lc1164 = 5 };
-          lc_getupvalue(L, lc1038, 28, 96);
+          enum { lc1170 = 5 };
+          lc_getupvalue(L, lc1044, 28, 97);
           lua_pushvalue(L, 3);
           lua_call(L, 1, 1);
-          const int lc1165 = lua_toboolean(L, -1);
+          const int lc1171 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1165) {
+          if (lc1171) {
 
-            /* return me(e) */
-            const int lc1166 = lua_gettop(L);
-            lc_getupvalue(L, lc1038, 28, 94);
+            /* return de(e) */
+            const int lc1172 = lua_gettop(L);
+            lc_getupvalue(L, lc1044, 28, 95);
             lua_pushvalue(L, 3);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc1166);
+            return (lua_gettop(L) - lc1172);
             assert(lua_gettop(L) == 5);
           } else {
 
-            /* elseif O(e) then */
-            enum { lc1167 = 5 };
-            lc_getupvalue(L, lc1038, 28, 100);
+            /* elseif I(e) then */
+            enum { lc1173 = 5 };
+            lc_getupvalue(L, lc1044, 28, 101);
             lua_pushvalue(L, 3);
             lua_call(L, 1, 1);
-            const int lc1168 = lua_toboolean(L, -1);
+            const int lc1174 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc1168) {
+            if (lc1174) {
 
-              /* return";("..tostring(j(ue(e))).." "..tostring(j(X(e)))..")" */
+              /* return";("..tostring(q(oe(e))).." "..tostring(q(K(e)))..")" */
               lua_pushliteral(L, ";(");
               lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-              const int lc1169 = lua_gettop(L);
-              lc_getupvalue(L, lc1038, 1, 203);
-              const int lc1170 = lua_gettop(L);
-              lc_getupvalue(L, lc1038, 28, 99);
+              const int lc1175 = lua_gettop(L);
+              lc_getupvalue(L, lc1044, 1, 204);
+              const int lc1176 = lua_gettop(L);
+              lc_getupvalue(L, lc1044, 28, 100);
               lua_pushvalue(L, 3);
               lua_call(L, 1, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc1170), LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc1169), 1);
+              lua_call(L, (lua_gettop(L) - lc1176), LUA_MULTRET);
+              lua_call(L, (lua_gettop(L) - lc1175), 1);
               lua_pushliteral(L, " ");
               lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-              const int lc1171 = lua_gettop(L);
-              lc_getupvalue(L, lc1038, 1, 203);
-              const int lc1172 = lua_gettop(L);
-              lc_getupvalue(L, lc1038, 28, 98);
+              const int lc1177 = lua_gettop(L);
+              lc_getupvalue(L, lc1044, 1, 204);
+              const int lc1178 = lua_gettop(L);
+              lc_getupvalue(L, lc1044, 28, 99);
               lua_pushvalue(L, 3);
               lua_call(L, 1, LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc1172), LUA_MULTRET);
-              lua_call(L, (lua_gettop(L) - lc1171), 1);
+              lua_call(L, (lua_gettop(L) - lc1178), LUA_MULTRET);
+              lua_call(L, (lua_gettop(L) - lc1177), 1);
               lua_pushliteral(L, ")");
               lua_concat(L, 2);
               lua_concat(L, 2);
@@ -15872,40 +15956,40 @@ static inline int lcf2_j(lua_State *L) {
               assert(lua_gettop(L) == 5);
             } else {
 
-              /* elseif B(e) then */
-              enum { lc1173 = 5 };
-              lc_getupvalue(L, lc1038, 28, 75);
+              /* elseif Q(e) then */
+              enum { lc1179 = 5 };
+              lc_getupvalue(L, lc1044, 28, 76);
               lua_pushvalue(L, 3);
               lua_call(L, 1, 1);
-              const int lc1174 = lua_toboolean(L, -1);
+              const int lc1180 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc1174) {
+              if (lc1180) {
 
-                /* return"$("..tostring(j(D(te(e)))).."
-                 * "..tostring(j(ae(e)))..")" */
+                /* return"$("..tostring(q(R(X(e)))).." "..tostring(q(Z(e)))..")"
+                 */
                 lua_pushliteral(L, "$(");
                 lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                const int lc1175 = lua_gettop(L);
-                lc_getupvalue(L, lc1038, 1, 203);
-                const int lc1176 = lua_gettop(L);
-                lc_getupvalue(L, lc1038, 28, 14);
-                const int lc1177 = lua_gettop(L);
-                lc_getupvalue(L, lc1038, 28, 74);
+                const int lc1181 = lua_gettop(L);
+                lc_getupvalue(L, lc1044, 1, 204);
+                const int lc1182 = lua_gettop(L);
+                lc_getupvalue(L, lc1044, 28, 15);
+                const int lc1183 = lua_gettop(L);
+                lc_getupvalue(L, lc1044, 28, 75);
                 lua_pushvalue(L, 3);
                 lua_call(L, 1, LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc1177), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc1176), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc1175), 1);
+                lua_call(L, (lua_gettop(L) - lc1183), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc1182), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc1181), 1);
                 lua_pushliteral(L, " ");
                 lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                const int lc1178 = lua_gettop(L);
-                lc_getupvalue(L, lc1038, 1, 203);
-                const int lc1179 = lua_gettop(L);
-                lc_getupvalue(L, lc1038, 28, 73);
+                const int lc1184 = lua_gettop(L);
+                lc_getupvalue(L, lc1044, 1, 204);
+                const int lc1185 = lua_gettop(L);
+                lc_getupvalue(L, lc1044, 28, 74);
                 lua_pushvalue(L, 3);
                 lua_call(L, 1, LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc1179), LUA_MULTRET);
-                lua_call(L, (lua_gettop(L) - lc1178), 1);
+                lua_call(L, (lua_gettop(L) - lc1185), LUA_MULTRET);
+                lua_call(L, (lua_gettop(L) - lc1184), 1);
                 lua_pushliteral(L, ")");
                 lua_concat(L, 2);
                 lua_concat(L, 2);
@@ -15915,40 +15999,40 @@ static inline int lcf2_j(lua_State *L) {
                 assert(lua_gettop(L) == 5);
               } else {
 
-                /* elseif J(e) then */
-                enum { lc1180 = 5 };
-                lc_getupvalue(L, lc1038, 28, 66);
+                /* elseif P(e) then */
+                enum { lc1186 = 5 };
+                lc_getupvalue(L, lc1044, 28, 67);
                 lua_pushvalue(L, 3);
                 lua_call(L, 1, 1);
-                const int lc1181 = lua_toboolean(L, -1);
+                const int lc1187 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc1181) {
+                if (lc1187) {
 
-                  /* return"%("..tostring(j(le(e))).."
-                   * "..tostring(j(T(re(e))))..")" */
+                  /* return"%("..tostring(q(ue(e))).."
+                   * "..tostring(q(_(re(e))))..")" */
                   lua_pushliteral(L, "%(");
                   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                  const int lc1182 = lua_gettop(L);
-                  lc_getupvalue(L, lc1038, 1, 203);
-                  const int lc1183 = lua_gettop(L);
-                  lc_getupvalue(L, lc1038, 28, 65);
+                  const int lc1188 = lua_gettop(L);
+                  lc_getupvalue(L, lc1044, 1, 204);
+                  const int lc1189 = lua_gettop(L);
+                  lc_getupvalue(L, lc1044, 28, 66);
                   lua_pushvalue(L, 3);
                   lua_call(L, 1, LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1183), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1182), 1);
+                  lua_call(L, (lua_gettop(L) - lc1189), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc1188), 1);
                   lua_pushliteral(L, " ");
                   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                  const int lc1184 = lua_gettop(L);
-                  lc_getupvalue(L, lc1038, 1, 203);
-                  const int lc1185 = lua_gettop(L);
-                  lc_getupvalue(L, lc1038, 28, 27);
-                  const int lc1186 = lua_gettop(L);
-                  lc_getupvalue(L, lc1038, 28, 64);
+                  const int lc1190 = lua_gettop(L);
+                  lc_getupvalue(L, lc1044, 1, 204);
+                  const int lc1191 = lua_gettop(L);
+                  lc_getupvalue(L, lc1044, 28, 28);
+                  const int lc1192 = lua_gettop(L);
+                  lc_getupvalue(L, lc1044, 28, 65);
                   lua_pushvalue(L, 3);
                   lua_call(L, 1, LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1186), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1185), LUA_MULTRET);
-                  lua_call(L, (lua_gettop(L) - lc1184), 1);
+                  lua_call(L, (lua_gettop(L) - lc1192), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc1191), LUA_MULTRET);
+                  lua_call(L, (lua_gettop(L) - lc1190), 1);
                   lua_pushliteral(L, ")");
                   lua_concat(L, 2);
                   lua_concat(L, 2);
@@ -15958,53 +16042,53 @@ static inline int lcf2_j(lua_State *L) {
                   assert(lua_gettop(L) == 5);
                 } else {
 
-                  /* elseif Q(e) then */
-                  enum { lc1187 = 5 };
-                  lc_getupvalue(L, lc1038, 28, 71);
+                  /* elseif G(e) then */
+                  enum { lc1193 = 5 };
+                  lc_getupvalue(L, lc1044, 28, 72);
                   lua_pushvalue(L, 3);
                   lua_call(L, 1, 1);
-                  const int lc1188 = lua_toboolean(L, -1);
+                  const int lc1194 = lua_toboolean(L, -1);
                   lua_pop(L, 1);
-                  if (lc1188) {
+                  if (lc1194) {
 
-                    /* return"@("..tostring(j(D(_e(e)))).."
-                     * "..tostring(j(xe(e))).." "..tostring(j(T(qe(e))))..")" */
+                    /* return"@("..tostring(q(R(_e(e)))).."
+                     * "..tostring(q(Te(e))).." "..tostring(q(_(ze(e))))..")" */
                     lua_pushliteral(L, "@(");
                     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc1189 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 1, 203);
-                    const int lc1190 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 28, 14);
-                    const int lc1191 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 28, 70);
-                    lua_pushvalue(L, 3);
-                    lua_call(L, 1, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1191), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1190), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1189), 1);
-                    lua_pushliteral(L, " ");
-                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc1192 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 1, 203);
-                    const int lc1193 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 28, 69);
-                    lua_pushvalue(L, 3);
-                    lua_call(L, 1, LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1193), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1192), 1);
-                    lua_pushliteral(L, " ");
-                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                    const int lc1194 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 1, 203);
                     const int lc1195 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 28, 27);
+                    lc_getupvalue(L, lc1044, 1, 204);
                     const int lc1196 = lua_gettop(L);
-                    lc_getupvalue(L, lc1038, 28, 68);
+                    lc_getupvalue(L, lc1044, 28, 15);
+                    const int lc1197 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 28, 71);
                     lua_pushvalue(L, 3);
                     lua_call(L, 1, LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1197), LUA_MULTRET);
                     lua_call(L, (lua_gettop(L) - lc1196), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1195), LUA_MULTRET);
-                    lua_call(L, (lua_gettop(L) - lc1194), 1);
+                    lua_call(L, (lua_gettop(L) - lc1195), 1);
+                    lua_pushliteral(L, " ");
+                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                    const int lc1198 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 1, 204);
+                    const int lc1199 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 28, 70);
+                    lua_pushvalue(L, 3);
+                    lua_call(L, 1, LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1199), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1198), 1);
+                    lua_pushliteral(L, " ");
+                    lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+                    const int lc1200 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 1, 204);
+                    const int lc1201 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 28, 28);
+                    const int lc1202 = lua_gettop(L);
+                    lc_getupvalue(L, lc1044, 28, 69);
+                    lua_pushvalue(L, 3);
+                    lua_call(L, 1, LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1202), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1201), LUA_MULTRET);
+                    lua_call(L, (lua_gettop(L) - lc1200), 1);
                     lua_pushliteral(L, ")");
                     lua_concat(L, 2);
                     lua_concat(L, 2);
@@ -16016,40 +16100,40 @@ static inline int lcf2_j(lua_State *L) {
                     assert(lua_gettop(L) == 5);
                   } else {
 
-                    /* elseif G(e) then */
-                    enum { lc1197 = 5 };
-                    lc_getupvalue(L, lc1038, 28, 62);
+                    /* elseif V(e) then */
+                    enum { lc1203 = 5 };
+                    lc_getupvalue(L, lc1044, 28, 63);
                     lua_pushvalue(L, 3);
                     lua_call(L, 1, 1);
-                    const int lc1198 = lua_toboolean(L, -1);
+                    const int lc1204 = lua_toboolean(L, -1);
                     lua_pop(L, 1);
-                    if (lc1198) {
+                    if (lc1204) {
 
-                      /* return"^("..tostring(j(je(e))).."
-                       * "..tostring(j(T(Ee(e))))..")" */
+                      /* return"^("..tostring(q(je(e))).."
+                       * "..tostring(q(_(xe(e))))..")" */
                       lua_pushliteral(L, "^(");
                       lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                      const int lc1199 = lua_gettop(L);
-                      lc_getupvalue(L, lc1038, 1, 203);
-                      const int lc1200 = lua_gettop(L);
-                      lc_getupvalue(L, lc1038, 28, 61);
+                      const int lc1205 = lua_gettop(L);
+                      lc_getupvalue(L, lc1044, 1, 204);
+                      const int lc1206 = lua_gettop(L);
+                      lc_getupvalue(L, lc1044, 28, 62);
                       lua_pushvalue(L, 3);
                       lua_call(L, 1, LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc1200), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc1199), 1);
+                      lua_call(L, (lua_gettop(L) - lc1206), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc1205), 1);
                       lua_pushliteral(L, " ");
                       lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-                      const int lc1201 = lua_gettop(L);
-                      lc_getupvalue(L, lc1038, 1, 203);
-                      const int lc1202 = lua_gettop(L);
-                      lc_getupvalue(L, lc1038, 28, 27);
-                      const int lc1203 = lua_gettop(L);
-                      lc_getupvalue(L, lc1038, 28, 60);
+                      const int lc1207 = lua_gettop(L);
+                      lc_getupvalue(L, lc1044, 1, 204);
+                      const int lc1208 = lua_gettop(L);
+                      lc_getupvalue(L, lc1044, 28, 28);
+                      const int lc1209 = lua_gettop(L);
+                      lc_getupvalue(L, lc1044, 28, 61);
                       lua_pushvalue(L, 3);
                       lua_call(L, 1, LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc1203), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc1202), LUA_MULTRET);
-                      lua_call(L, (lua_gettop(L) - lc1201), 1);
+                      lua_call(L, (lua_gettop(L) - lc1209), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc1208), LUA_MULTRET);
+                      lua_call(L, (lua_gettop(L) - lc1207), 1);
                       lua_pushliteral(L, ")");
                       lua_concat(L, 2);
                       lua_concat(L, 2);
@@ -16058,48 +16142,64 @@ static inline int lcf2_j(lua_State *L) {
                       return 1;
                       assert(lua_gettop(L) == 5);
                     }
-                    lua_settop(L, lc1197);
+                    lua_settop(L, lc1203);
                   }
-                  lua_settop(L, lc1187);
+                  lua_settop(L, lc1193);
                 }
-                lua_settop(L, lc1180);
+                lua_settop(L, lc1186);
               }
-              lua_settop(L, lc1173);
+              lua_settop(L, lc1179);
             }
-            lua_settop(L, lc1167);
+            lua_settop(L, lc1173);
           }
-          lua_settop(L, lc1164);
+          lua_settop(L, lc1170);
         }
-        lua_settop(L, lc1159);
+        lua_settop(L, lc1165);
       }
-      lua_settop(L, lc1149);
+      lua_settop(L, lc1155);
     }
-    lua_settop(L, lc1141);
+    lua_settop(L, lc1147);
   }
-  lua_settop(L, lc1139);
+  lua_settop(L, lc1145);
   assert(lua_gettop(L) == 5);
 
-  /* return q() */
-  const int lc1204 = lua_gettop(L);
-  lc_getupvalue(L, lc1038, 28, 116);
+  /* return j() */
+  const int lc1210 = lua_gettop(L);
+  lc_getupvalue(L, lc1044, 28, 117);
   lua_call(L, 0, LUA_MULTRET);
-  return (lua_gettop(L) - lc1204);
+  return (lua_gettop(L) - lc1210);
   assert(lua_gettop(L) == 5);
 }
 
-/* function(e) */
-static inline int lcf1208(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
+/* name: n
+ * function() */
+static inline int lcf9_n(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
 
-  /* return W(c,e) */
-  const int lc1207 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 29, 55);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 207);
-  lua_pushvalue(L, 1);
-  lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1207);
-  assert(lua_gettop(L) == 1);
+  /* return e==0 */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 210);
+  lua_pushnumber(L, 0);
+  const int lc1213 = lua_equal(L, -2, -1);
+  lua_pop(L, 2);
+  lua_pushboolean(L, lc1213);
+  return 1;
+  assert(lua_gettop(L) == 0);
+}
+
+/* name: t
+ * function() */
+static inline int lcf4_t(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* return not n() */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 209);
+  lua_call(L, 0, 1);
+  lua_pushboolean(L, !(lua_toboolean(L, -1)));
+  lua_remove(L, -2);
+  return 1;
+  assert(lua_gettop(L) == 0);
 }
 
 /* name: a
@@ -16109,21 +16209,21 @@ static inline int lcf5_a(lua_State *L) {
   lua_settop(L, 1);
 
   /* if e==nil then */
-  enum { lc1211 = 1 };
+  enum { lc1216 = 1 };
   lua_pushnil(L);
-  const int lc1212 = lua_equal(L, 1, -1);
+  const int lc1217 = lua_equal(L, 1, -1);
   lua_pop(L, 1);
-  lua_pushboolean(L, lc1212);
-  const int lc1213 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc1217);
+  const int lc1218 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1213) {
+  if (lc1218) {
 
     /* e="" */
     lua_pushliteral(L, "");
     lua_replace(L, 1);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc1211);
+  lua_settop(L, lc1216);
   assert(lua_gettop(L) == 1);
 
   /* error("MT parse ERROR "..tostring(e)) */
@@ -16138,301 +16238,235 @@ static inline int lcf5_a(lua_State *L) {
   return 0;
 }
 
-/* name: u
+/* name: i
  * function(e) */
-static inline int lcf4_u(lua_State *L) {
+static inline int lcf2_i(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
   /* if not e then */
-  enum { lc1215 = 1 };
+  enum { lc1220 = 1 };
   lua_pushboolean(L, !(lua_toboolean(L, 1)));
-  const int lc1216 = lua_toboolean(L, -1);
+  const int lc1221 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1216) {
+  if (lc1221) {
 
     /* return a() */
-    const int lc1217 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 209);
+    const int lc1222 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 1, 211);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc1217);
+    return (lua_gettop(L) - lc1222);
     assert(lua_gettop(L) == 1);
   }
-  lua_settop(L, lc1215);
+  lua_settop(L, lc1220);
   assert(lua_gettop(L) == 1);
   return 0;
 }
 
-/* name: d
+/* name: h
  * function() */
-static inline int lcf8_d(lua_State *L) {
+static inline int lcf2_h(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* u(#r>t) */
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 210);
+  /* i(t()) */
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 212);
+  const int lc1223 = lua_gettop(L);
   lc_getupvalue(L, lua_upvalueindex(1), 2, 208);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 206);
-  const double lc1218 = lua_objlen(L, -1);
-  lua_pop(L, 1);
-  lua_pushnumber(L, lc1218);
-  const int lc1219 = lua_lessthan(L, -2, -1);
-  lua_pop(L, 2);
-  lua_pushboolean(L, lc1219);
-  lua_call(L, 1, 0);
+  lua_call(L, 0, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1223), 0);
   assert(lua_gettop(L) == 0);
 
-  /* local e=string.sub(r,t+1,t+1) */
+  /* e=e-1 */
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 210);
+  lua_pushnumber(L, 1);
+  lc_sub(L, -2, -1);
+  lua_remove(L, -2);
+  lua_remove(L, -2);
+  lc_setupvalue(L, lua_upvalueindex(1), 2, 210);
+  assert(lua_gettop(L) == 0);
+
+  /* return string.sub(o,e+1,e+1) */
+  const int lc1224 = lua_gettop(L);
   lua_getfield(L, LUA_ENVIRONINDEX, "string");
   lua_pushliteral(L, "sub");
   lua_gettable(L, -2);
   lua_remove(L, -2);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 206);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 208);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 207);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 210);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
   lua_remove(L, -2);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 208);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 210);
   lua_pushnumber(L, 1);
   lc_add(L, -2, -1);
   lua_remove(L, -2);
   lua_remove(L, -2);
-  lua_call(L, 3, 1);
-  assert(lua_gettop(L) == 1);
-
-  /* t=t+1 */
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 208);
-  lua_pushnumber(L, 1);
-  lc_add(L, -2, -1);
-  lua_remove(L, -2);
-  lua_remove(L, -2);
-  lc_setupvalue(L, lua_upvalueindex(1), 2, 208);
-  assert(lua_gettop(L) == 1);
-
-  /* return e */
-  lua_pushvalue(L, 1);
-  return 1;
-  assert(lua_gettop(L) == 1);
+  lua_call(L, 3, LUA_MULTRET);
+  return (lua_gettop(L) - lc1224);
+  assert(lua_gettop(L) == 0);
 }
 
-/* function(e) */
-static inline int lcf1229(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* return W(a,e) */
-  const int lc1228 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 36, 55);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 213);
-  lua_pushvalue(L, 1);
-  lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1228);
-  assert(lua_gettop(L) == 1);
-}
-
-/* function(t) */
-static inline int lcf1231(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* return W(e,t) */
-  const int lc1230 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 36, 55);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 214);
-  lua_pushvalue(L, 1);
-  lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1230);
-  assert(lua_gettop(L) == 1);
-}
-
-/* name: i
+/* name: o
  * function(i) */
-static inline int lcf10_i(lua_State *L) {
+static inline int lcf5_o(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* local a=K() */
-  lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1226 = 2 };
-  assert((lua_gettop(L) == lc1226));
-  lc_getupvalue(L, lua_upvalueindex(1), 34, 58);
-  lua_call(L, 0, 1);
-  lua_rawseti(L, lc1226, 213);
+  /* local o=table.remove(e) */
+  lua_getfield(L, LUA_ENVIRONINDEX, "table");
+  lua_pushliteral(L, "remove");
+  lua_gettable(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 213);
+  lua_call(L, 1, 1);
   assert(lua_gettop(L) == 2);
 
-  /* local e=K() */
-  lc_newclosuretable(L, lc1226);
-  enum { lc1227 = 3 };
-  assert((lua_gettop(L) == lc1227));
-  lc_getupvalue(L, lc1226, 35, 58);
-  lua_call(L, 0, 1);
-  lua_rawseti(L, lc1227, 214);
+  /* local t=table.remove(e) */
+  lua_getfield(L, LUA_ENVIRONINDEX, "table");
+  lua_pushliteral(L, "remove");
+  lua_gettable(L, -2);
+  lua_remove(L, -2);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 213);
+  lua_call(L, 1, 1);
   assert(lua_gettop(L) == 3);
 
-  /* l(t,function(e)return W(a,e)end) */
-  lc_getupvalue(L, lc1227, 37, 1);
-  lc_getupvalue(L, lc1227, 3, 211);
-  lua_pushvalue(L, lc1227);
-  lua_pushcclosure(L, lcf1229, 1);
-  lua_call(L, 2, 0);
-  assert(lua_gettop(L) == 3);
-
-  /* l(t,function(t)return W(e,t)end) */
-  lc_getupvalue(L, lc1227, 37, 1);
-  lc_getupvalue(L, lc1227, 3, 211);
-  lua_pushvalue(L, lc1227);
-  lua_pushcclosure(L, lcf1231, 1);
-  lua_call(L, 2, 0);
-  assert(lua_gettop(L) == 3);
-
-  /* o(i(a,e)) */
-  lc_getupvalue(L, lc1227, 2, 212);
-  const int lc1232 = lua_gettop(L);
-  lua_pushvalue(L, 1);
-  lc_getupvalue(L, lc1227, 1, 213);
-  lc_getupvalue(L, lc1227, 0, 214);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1232), 0);
-  assert(lua_gettop(L) == 3);
-  return 0;
-}
-
-/* function(e) */
-static inline int lcf1258(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* i=e */
-  lua_pushvalue(L, 1);
-  lc_setupvalue(L, lua_upvalueindex(1), 1, 215);
-  assert(lua_gettop(L) == 1);
-  return 0;
-}
-
-/* function(t) */
-static inline int lcf1259(lua_State *L) {
-  enum { lc_nformalargs = 1 };
-  lua_settop(L, 1);
-
-  /* e=t */
-  lua_pushvalue(L, 1);
-  lc_setupvalue(L, lua_upvalueindex(1), 0, 216);
-  assert(lua_gettop(L) == 1);
-  return 0;
-}
-
-/* function() */
-static inline int lcf1270(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* if i==false or e==false then */
-  enum { lc1260 = 0 };
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 215);
-  lua_pushboolean(L, 0);
-  const int lc1261 = lua_equal(L, -2, -1);
+  /* if t==nil or o==nil then */
+  enum { lc1226 = 3 };
+  lua_pushvalue(L, 3);
+  lua_pushnil(L);
+  const int lc1227 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc1261);
+  lua_pushboolean(L, lc1227);
   if (!(lua_toboolean(L, -1))) {
     lua_pop(L, 1);
-    lc_getupvalue(L, lua_upvalueindex(1), 0, 216);
-    lua_pushboolean(L, 0);
-    const int lc1262 = lua_equal(L, -2, -1);
+    lua_pushvalue(L, 2);
+    lua_pushnil(L);
+    const int lc1228 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc1262);
+    lua_pushboolean(L, lc1228);
   }
-  const int lc1263 = lua_toboolean(L, -1);
+  const int lc1229 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1263) {
+  if (lc1229) {
 
-    /* return q() */
-    const int lc1264 = lua_gettop(L);
-    lc_getupvalue(L, lua_upvalueindex(1), 36, 116);
+    /* return a() */
+    const int lc1230 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 211);
     lua_call(L, 0, LUA_MULTRET);
-    return (lua_gettop(L) - lc1264);
-    assert(lua_gettop(L) == 0);
+    return (lua_gettop(L) - lc1230);
+    assert(lua_gettop(L) == 3);
   } else {
 
     /* else
-     * local t=se(i) */
-    lc_getupvalue(L, lua_upvalueindex(1), 12, 162);
-    lc_getupvalue(L, lua_upvalueindex(1), 1, 215);
-    lua_call(L, 1, 1);
-    assert(lua_gettop(L) == 1);
-
-    /* if t==false then */
-    enum { lc1265 = 1 };
-    lua_pushboolean(L, 0);
-    const int lc1266 = lua_equal(L, 1, -1);
-    lua_pop(L, 1);
-    lua_pushboolean(L, lc1266);
-    const int lc1267 = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    if (lc1267) {
-
-      /* return a() */
-      const int lc1268 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 5, 209);
-      lua_call(L, 0, LUA_MULTRET);
-      return (lua_gettop(L) - lc1268);
-      assert(lua_gettop(L) == 1);
-    } else {
-
-      /* else
-       * o(H(t,e)) */
-      lc_getupvalue(L, lua_upvalueindex(1), 2, 212);
-      const int lc1269 = lua_gettop(L);
-      lc_getupvalue(L, lua_upvalueindex(1), 36, 76);
-      lua_pushvalue(L, 1);
-      lc_getupvalue(L, lua_upvalueindex(1), 0, 216);
-      lua_call(L, 2, LUA_MULTRET);
-      lua_call(L, (lua_gettop(L) - lc1269), 0);
-      assert(lua_gettop(L) == 1);
-    }
-    lua_settop(L, lc1265);
-    assert(lua_gettop(L) == 1);
+     * return Ne(e,i(t,o)) */
+    const int lc1231 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 33, 2);
+    const int lc1232 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 0, 213);
+    lua_pushvalue(L, 1);
+    lua_pushvalue(L, 3);
+    lua_pushvalue(L, 2);
+    lua_call(L, 2, LUA_MULTRET);
+    lua_call(L, (lua_gettop(L) - lc1232), LUA_MULTRET);
+    return (lua_gettop(L) - lc1231);
+    assert(lua_gettop(L) == 3);
   }
-  lua_settop(L, lc1260);
-  assert(lua_gettop(L) == 0);
+  lua_settop(L, lc1226);
+  assert(lua_gettop(L) == 3);
   return 0;
 }
 
-/* name: B
- * function(r) */
-static inline int lcf2_B(lua_State *L) {
-  lua_checkstack(L, 29);
+/* function(e,t) */
+static inline int lcf1262(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+
+  /* local e=he(e) */
+  lc_getupvalue(L, lua_upvalueindex(1), 8, 163);
+  lua_pushvalue(L, 1);
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) == 3);
+
+  /* if e==false then */
+  enum { lc1257 = 3 };
+  lua_pushboolean(L, 0);
+  const int lc1258 = lua_equal(L, 3, -1);
+  lua_pop(L, 1);
+  lua_pushboolean(L, lc1258);
+  const int lc1259 = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  if (lc1259) {
+
+    /* return a() */
+    const int lc1260 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 2, 211);
+    lua_call(L, 0, LUA_MULTRET);
+    return (lua_gettop(L) - lc1260);
+    assert(lua_gettop(L) == 3);
+  } else {
+
+    /* else
+     * return S(e,t) */
+    const int lc1261 = lua_gettop(L);
+    lc_getupvalue(L, lua_upvalueindex(1), 32, 77);
+    lua_pushvalue(L, 3);
+    lua_pushvalue(L, 2);
+    lua_call(L, 2, LUA_MULTRET);
+    return (lua_gettop(L) - lc1261);
+    assert(lua_gettop(L) == 3);
+  }
+  lua_settop(L, lc1257);
+  assert(lua_gettop(L) == 3);
+  return 0;
+}
+
+/* name: H
+ * function(o) */
+static inline int lcf2_H(lua_State *L) {
+  lua_checkstack(L, 21);
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1205 = 2 };
-  assert((lua_gettop(L) == lc1205));
+  enum { lc1211 = 2 };
+  assert((lua_gettop(L) == lc1211));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 206);
+  lua_rawseti(L, -2, 207);
 
-  /* local c=K() */
-  lc_newclosuretable(L, lc1205);
-  enum { lc1206 = 3 };
-  assert((lua_gettop(L) == lc1206));
-  lc_getupvalue(L, lc1205, 28, 58);
-  lua_call(L, 0, 1);
-  lua_rawseti(L, lc1206, 207);
+  /* local e,n,t */
+  lc_newclosuretable(L, lc1211);
+  enum { lc1212 = 3 };
+  assert((lua_gettop(L) == lc1212));
+  lua_settop(L, (lua_gettop(L) + 3));
+  lua_rawseti(L, lc1212, 208);
+  lua_rawseti(L, lc1212, 209);
+  lua_rawseti(L, lc1212, 210);
   assert(lua_gettop(L) == 3);
 
-  /* local h={function(e)return W(c,e)end} */
-  lua_createtable(L, 1, 0);
-  lua_pushvalue(L, lc1206);
-  lua_pushcclosure(L, lcf1208, 1);
-  lua_rawseti(L, -2, 1);
-  assert(lua_gettop(L) == 4);
+  /* function n()
+   * return e==0
+   * end */
+  lua_pushvalue(L, lc1212);
+  lua_pushcclosure(L, lcf9_n, 1);
+  lc_setupvalue(L, lc1212, 0, 209);
+  assert(lua_gettop(L) == 3);
 
-  /* local t=0 */
-  lc_newclosuretable(L, lc1206);
-  enum { lc1209 = 5 };
-  assert((lua_gettop(L) == lc1209));
-  lua_pushnumber(L, 0);
-  lua_rawseti(L, lc1209, 208);
-  assert(lua_gettop(L) == 5);
+  /* function t()
+   * return not n()
+   * end */
+  lua_pushvalue(L, lc1212);
+  lua_pushcclosure(L, lcf4_t, 1);
+  lc_setupvalue(L, lc1212, 0, 208);
+  assert(lua_gettop(L) == 3);
+
+  /* e=#o */
+  lc_getupvalue(L, lc1212, 1, 207);
+  const double lc1214 = lua_objlen(L, -1);
+  lua_pop(L, 1);
+  lua_pushnumber(L, lc1214);
+  lc_setupvalue(L, lc1212, 0, 210);
+  assert(lua_gettop(L) == 3);
 
   /* local function a(e)
    * if e==nil then
@@ -16440,497 +16474,377 @@ static inline int lcf2_B(lua_State *L) {
    * end
    * error("MT parse ERROR "..tostring(e))
    * end */
-  lc_newclosuretable(L, lc1209);
-  enum { lc1210 = 6 };
-  assert((lua_gettop(L) == lc1210));
+  lc_newclosuretable(L, lc1212);
+  enum { lc1215 = 4 };
+  assert((lua_gettop(L) == lc1215));
   lua_pushcfunction(L, lcf5_a);
-  lua_rawseti(L, lc1210, 209);
-  assert(lua_gettop(L) == 6);
+  lua_rawseti(L, lc1215, 211);
+  assert(lua_gettop(L) == 4);
 
-  /* local function u(e)
+  /* local function i(e)
    * if not e then
    * return a()
    * end
    * end */
-  lc_newclosuretable(L, lc1210);
-  enum { lc1214 = 7 };
-  assert((lua_gettop(L) == lc1214));
-  lua_pushvalue(L, lc1214);
-  lua_pushcclosure(L, lcf4_u, 1);
-  lua_rawseti(L, lc1214, 210);
+  lc_newclosuretable(L, lc1215);
+  enum { lc1219 = 5 };
+  assert((lua_gettop(L) == lc1219));
+  lua_pushvalue(L, lc1219);
+  lua_pushcclosure(L, lcf2_i, 1);
+  lua_rawseti(L, lc1219, 212);
+  assert(lua_gettop(L) == 5);
+
+  /* local function h()
+   * i(t())
+   * e=e-1
+   * return string.sub(o,e+1,e+1)
+   * end */
+  lua_pushvalue(L, lc1219);
+  lua_pushcclosure(L, lcf2_h, 1);
+  assert(lua_gettop(L) == 6);
+
+  /* local e={} */
+  lc_newclosuretable(L, lc1219);
+  enum { lc1225 = 7 };
+  assert((lua_gettop(L) == lc1225));
+  lua_newtable(L);
+  lua_rawseti(L, lc1225, 213);
   assert(lua_gettop(L) == 7);
 
-  /* local function d()
-   * u(#r>t)
-   * local e=string.sub(r,t+1,t+1)
-   * t=t+1
-   * return e
+  /* local function o(i)
+   * local o=table.remove(e)
+   * local t=table.remove(e)
+   * if t==nil or o==nil then
+   * return a()
+   * else
+   * return Ne(e,i(t,o))
+   * end
    * end */
-  lua_pushvalue(L, lc1214);
-  lua_pushcclosure(L, lcf8_d, 1);
+  lua_pushvalue(L, lc1225);
+  lua_pushcclosure(L, lcf5_o, 1);
   assert(lua_gettop(L) == 8);
 
-  /* local n={} */
-  lua_newtable(L);
-  assert(lua_gettop(L) == 9);
-
-  /* while#h~=0 do */
-  enum { lc1220 = 9 };
+  /* while t()do */
+  enum { lc1233 = 8 };
   while (1) {
-    const double lc1221 = lua_objlen(L, 4);
-    lua_pushnumber(L, lc1221);
-    lua_pushnumber(L, 0);
-    const int lc1222 = lua_equal(L, -2, -1);
-    lua_pop(L, 2);
-    lua_pushboolean(L, lc1222);
-    lua_pushboolean(L, !(lua_toboolean(L, -1)));
-    lua_remove(L, -2);
+    lc_getupvalue(L, lc1225, 3, 208);
+    lua_call(L, 0, 1);
     if (!(lua_toboolean(L, -1))) {
       break;
     }
     lua_pop(L, 1);
 
-    /* local t={} */
-    lc_newclosuretable(L, lc1214);
-    enum { lc1223 = 10 };
-    assert((lua_gettop(L) == lc1223));
-    lua_newtable(L);
-    lua_rawseti(L, lc1223, 211);
-    assert(lua_gettop(L) == 10);
+    /* local t=h() */
+    lua_pushvalue(L, 6);
+    lua_call(L, 0, 1);
+    assert(lua_gettop(L) == 9);
 
-    /* for e,o in ipairs(h)do
-     * internal: local f, s, var = explist */
-    enum { lc1224 = 10 };
-    lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
-    lua_pushvalue(L, 4);
-    lua_call(L, 1, 3);
-    while (1) {
-      lc_newclosuretable(L, lc1223);
-      enum { lc1225 = 14 };
-      assert((lua_gettop(L) == lc1225));
+    /* if t=="^" then */
+    enum { lc1234 = 9 };
+    lua_pushliteral(L, "^");
+    const int lc1235 = lua_equal(L, 9, -1);
+    lua_pop(L, 1);
+    lua_pushboolean(L, lc1235);
+    const int lc1236 = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    if (lc1236) {
 
-      /* internal: local var_1, ..., var_n = f(s, var)
-       *           if var_1 == nil then break end
-       *           var = var_1 */
-      lua_pushvalue(L, -4);
-      lua_pushvalue(L, -4);
-      lua_pushvalue(L, -4);
-      lua_call(L, 2, 2);
-      if (lua_isnil(L, -2)) {
-        break;
-      }
-      lua_pushvalue(L, -2);
-      lua_replace(L, -5);
+      /* local t="" */
+      lua_pushliteral(L, "");
+      assert(lua_gettop(L) == 10);
 
-      /* internal: upvalue-enabled local o with id 212
-       * internal: local e with idx 15 */
-      lua_rawseti(L, -3, 212);
-
-      /* local e=d() */
-      lua_pushvalue(L, 8);
-      lua_call(L, 0, 1);
-      assert(lua_gettop(L) == 16);
-
-      /* local function i(i)
-       * local a=K()
-       * local e=K()
-       * l(t,function(e)return W(a,e)end)
-       * l(t,function(t)return W(e,t)end)
-       * o(i(a,e))
-       * end */
-      lua_pushvalue(L, lc1225);
-      lua_pushcclosure(L, lcf10_i, 1);
-      assert(lua_gettop(L) == 17);
-
-      /* if e=="^" then */
-      enum { lc1233 = 17 };
-      lua_pushliteral(L, "^");
-      const int lc1234 = lua_equal(L, 16, -1);
-      lua_pop(L, 1);
-      lua_pushboolean(L, lc1234);
-      const int lc1235 = lua_toboolean(L, -1);
-      lua_pop(L, 1);
-      if (lc1235) {
-
-        /* local e="" */
-        lua_pushliteral(L, "");
-        assert(lua_gettop(L) == 18);
-
-        /* while true do */
-        enum { lc1236 = 18 };
-        while (1) {
-          lua_pushboolean(L, 1);
-          if (!(lua_toboolean(L, -1))) {
-            break;
-          }
-          lua_pop(L, 1);
-
-          /* local t=d() */
-          lua_pushvalue(L, 8);
-          lua_call(L, 0, 1);
-          assert(lua_gettop(L) == 19);
-
-          /* if t=="^" then */
-          enum { lc1237 = 19 };
-          lua_pushliteral(L, "^");
-          const int lc1238 = lua_equal(L, 19, -1);
-          lua_pop(L, 1);
-          lua_pushboolean(L, lc1238);
-          const int lc1239 = lua_toboolean(L, -1);
-          lua_pop(L, 1);
-          if (lc1239) {
-
-            /* break */
-            break;
-            assert(lua_gettop(L) == 19);
-          }
-          lua_settop(L, lc1237);
-          assert(lua_gettop(L) == 19);
-
-          /* e=tostring(e)..tostring(t) */
-          lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          lua_pushvalue(L, 18);
-          lua_call(L, 1, 1);
-          lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          lua_pushvalue(L, 19);
-          lua_call(L, 1, 1);
-          lua_concat(L, 2);
-          lua_replace(L, 18);
-          assert(lua_gettop(L) == 19);
-
-          /* internal: stack cleanup on scope exit */
-          lua_pop(L, 1);
+      /* while true do */
+      enum { lc1237 = 10 };
+      while (1) {
+        lua_pushboolean(L, 1);
+        if (!(lua_toboolean(L, -1))) {
+          break;
         }
-        lua_settop(L, lc1236);
-        assert(lua_gettop(L) == 18);
-
-        /* if ut(e) then */
-        enum { lc1240 = 18 };
-        lc_getupvalue(L, lc1225, 30, 142);
-        lua_pushvalue(L, 18);
-        lua_call(L, 1, 1);
-        const int lc1241 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1241) {
 
-          /* o(it(e)) */
-          lc_getupvalue(L, lc1225, 0, 212);
-          const int lc1242 = lua_gettop(L);
-          lc_getupvalue(L, lc1225, 29, 143);
-          lua_pushvalue(L, 18);
-          lua_call(L, 1, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1242), 0);
-          assert(lua_gettop(L) == 18);
-        } else {
+        /* local e=h() */
+        lua_pushvalue(L, 6);
+        lua_call(L, 0, 1);
+        assert(lua_gettop(L) == 11);
 
-          /* else
-           * return a("can_new_symbol_unicodechar_p(\""..tostring(e).."\") ==
-           * false") */
-          const int lc1243 = lua_gettop(L);
-          lc_getupvalue(L, lc1225, 3, 209);
-          lua_pushliteral(L, "can_new_symbol_unicodechar_p(\"");
-          lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-          lua_pushvalue(L, 18);
-          lua_call(L, 1, 1);
-          lua_pushliteral(L, "\") == false");
-          lua_concat(L, 2);
-          lua_concat(L, 2);
-          lua_call(L, 1, LUA_MULTRET);
-          return (lua_gettop(L) - lc1243);
-          assert(lua_gettop(L) == 18);
+        /* if e=="^" then */
+        enum { lc1238 = 11 };
+        lua_pushliteral(L, "^");
+        const int lc1239 = lua_equal(L, 11, -1);
+        lua_pop(L, 1);
+        lua_pushboolean(L, lc1239);
+        const int lc1240 = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        if (lc1240) {
+
+          /* break */
+          break;
+          assert(lua_gettop(L) == 11);
         }
-        lua_settop(L, lc1240);
-        assert(lua_gettop(L) == 18);
+        lua_settop(L, lc1238);
+        assert(lua_gettop(L) == 11);
+
+        /* t=tostring(e)..tostring(t) */
+        lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+        lua_pushvalue(L, 11);
+        lua_call(L, 1, 1);
+        lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+        lua_pushvalue(L, 10);
+        lua_call(L, 1, 1);
+        lua_concat(L, 2);
+        lua_replace(L, 10);
+        assert(lua_gettop(L) == 11);
+
+        /* internal: stack cleanup on scope exit */
+        lua_pop(L, 1);
+      }
+      lua_settop(L, lc1237);
+      assert(lua_gettop(L) == 10);
+
+      /* if rt(t) then */
+      enum { lc1241 = 10 };
+      lc_getupvalue(L, lc1225, 28, 143);
+      lua_pushvalue(L, 10);
+      lua_call(L, 1, 1);
+      const int lc1242 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc1242) {
+
+        /* Ne(e,Ze(t)) */
+        lc_getupvalue(L, lc1225, 33, 2);
+        const int lc1243 = lua_gettop(L);
+        lc_getupvalue(L, lc1225, 0, 213);
+        lc_getupvalue(L, lc1225, 27, 144);
+        lua_pushvalue(L, 10);
+        lua_call(L, 1, LUA_MULTRET);
+        lua_call(L, (lua_gettop(L) - lc1243), 0);
+        assert(lua_gettop(L) == 10);
       } else {
 
-        /* elseif e=="." then */
-        enum { lc1244 = 17 };
-        lua_pushliteral(L, ".");
-        const int lc1245 = lua_equal(L, 16, -1);
-        lua_pop(L, 1);
-        lua_pushboolean(L, lc1245);
-        const int lc1246 = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        if (lc1246) {
+        /* else
+         * return a("can_new_symbol_unicodechar_p(\""..tostring(t).."\") ==
+         * false") */
+        const int lc1244 = lua_gettop(L);
+        lc_getupvalue(L, lc1225, 2, 211);
+        lua_pushliteral(L, "can_new_symbol_unicodechar_p(\"");
+        lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
+        lua_pushvalue(L, 10);
+        lua_call(L, 1, 1);
+        lua_pushliteral(L, "\") == false");
+        lua_concat(L, 2);
+        lua_concat(L, 2);
+        lua_call(L, 1, LUA_MULTRET);
+        return (lua_gettop(L) - lc1244);
+        assert(lua_gettop(L) == 10);
+      }
+      lua_settop(L, lc1241);
+      assert(lua_gettop(L) == 10);
+    } else {
 
-          /* i(s) */
-          lua_pushvalue(L, 17);
-          lc_getupvalue(L, lc1225, 34, 92);
+      /* elseif t=="." then */
+      enum { lc1245 = 9 };
+      lua_pushliteral(L, ".");
+      const int lc1246 = lua_equal(L, 9, -1);
+      lua_pop(L, 1);
+      lua_pushboolean(L, lc1246);
+      const int lc1247 = lua_toboolean(L, -1);
+      lua_pop(L, 1);
+      if (lc1247) {
+
+        /* o(s) */
+        lua_pushvalue(L, 8);
+        lc_getupvalue(L, lc1225, 32, 93);
+        lua_call(L, 1, 0);
+        assert(lua_gettop(L) == 9);
+      } else {
+
+        /* elseif t=="#" then */
+        enum { lc1248 = 9 };
+        lua_pushliteral(L, "#");
+        const int lc1249 = lua_equal(L, 9, -1);
+        lua_pop(L, 1);
+        lua_pushboolean(L, lc1249);
+        const int lc1250 = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        if (lc1250) {
+
+          /* o(T) */
+          lua_pushvalue(L, 8);
+          lc_getupvalue(L, lc1225, 32, 87);
           lua_call(L, 1, 0);
-          assert(lua_gettop(L) == 17);
+          assert(lua_gettop(L) == 9);
         } else {
 
-          /* elseif e=="#" then */
-          enum { lc1247 = 17 };
-          lua_pushliteral(L, "#");
-          const int lc1248 = lua_equal(L, 16, -1);
+          /* elseif t=="!" then */
+          enum { lc1251 = 9 };
+          lua_pushliteral(L, "!");
+          const int lc1252 = lua_equal(L, 9, -1);
           lua_pop(L, 1);
-          lua_pushboolean(L, lc1248);
-          const int lc1249 = lua_toboolean(L, -1);
+          lua_pushboolean(L, lc1252);
+          const int lc1253 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1249) {
+          if (lc1253) {
 
-            /* i(E) */
-            lua_pushvalue(L, 17);
-            lc_getupvalue(L, lc1225, 34, 86);
+            /* o(L) */
+            lua_pushvalue(L, 8);
+            lc_getupvalue(L, lc1225, 32, 83);
             lua_call(L, 1, 0);
-            assert(lua_gettop(L) == 17);
+            assert(lua_gettop(L) == 9);
           } else {
 
-            /* elseif e=="!" then */
-            enum { lc1250 = 17 };
-            lua_pushliteral(L, "!");
-            const int lc1251 = lua_equal(L, 16, -1);
+            /* elseif t=="$" then */
+            enum { lc1254 = 9 };
+            lua_pushliteral(L, "$");
+            const int lc1255 = lua_equal(L, 9, -1);
             lua_pop(L, 1);
-            lua_pushboolean(L, lc1251);
-            const int lc1252 = lua_toboolean(L, -1);
+            lua_pushboolean(L, lc1255);
+            const int lc1256 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc1252) {
+            if (lc1256) {
 
-              /* i(R) */
-              lua_pushvalue(L, 17);
-              lc_getupvalue(L, lc1225, 34, 82);
+              /* o(function(e,t)
+               * local e=he(e)
+               * if e==false then
+               * return a()
+               * else
+               * return S(e,t)
+               * end
+               * end) */
+              lua_pushvalue(L, 8);
+              lua_pushvalue(L, lc1225);
+              lua_pushcclosure(L, lcf1262, 1);
               lua_call(L, 1, 0);
-              assert(lua_gettop(L) == 17);
+              assert(lua_gettop(L) == 9);
             } else {
 
-              /* elseif e=="$" then */
-              enum { lc1253 = 17 };
-              lua_pushliteral(L, "$");
-              const int lc1254 = lua_equal(L, 16, -1);
+              /* elseif t=="_" then */
+              enum { lc1263 = 9 };
+              lua_pushliteral(L, "_");
+              const int lc1264 = lua_equal(L, 9, -1);
               lua_pop(L, 1);
-              lua_pushboolean(L, lc1254);
-              const int lc1255 = lua_toboolean(L, -1);
+              lua_pushboolean(L, lc1264);
+              const int lc1265 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc1255) {
+              if (lc1265) {
 
-                /* local i=false */
-                lc_newclosuretable(L, lc1225);
-                enum { lc1256 = 18 };
-                assert((lua_gettop(L) == lc1256));
-                lua_pushboolean(L, 0);
-                lua_rawseti(L, lc1256, 215);
-                assert(lua_gettop(L) == 18);
-
-                /* local e=false */
-                lc_newclosuretable(L, lc1256);
-                enum { lc1257 = 19 };
-                assert((lua_gettop(L) == lc1257));
-                lua_pushboolean(L, 0);
-                lua_rawseti(L, lc1257, 216);
-                assert(lua_gettop(L) == 19);
-
-                /* l(t,function(e)
-                 * i=e
-                 * end) */
-                lc_getupvalue(L, lc1257, 37, 1);
-                lc_getupvalue(L, lc1257, 3, 211);
-                lua_pushvalue(L, lc1257);
-                lua_pushcclosure(L, lcf1258, 1);
+                /* Ne(e,y) */
+                lc_getupvalue(L, lc1225, 33, 2);
+                lc_getupvalue(L, lc1225, 0, 213);
+                lc_getupvalue(L, lc1225, 32, 89);
                 lua_call(L, 2, 0);
-                assert(lua_gettop(L) == 19);
-
-                /* l(t,function(t)
-                 * e=t
-                 * end) */
-                lc_getupvalue(L, lc1257, 37, 1);
-                lc_getupvalue(L, lc1257, 3, 211);
-                lua_pushvalue(L, lc1257);
-                lua_pushcclosure(L, lcf1259, 1);
-                lua_call(L, 2, 0);
-                assert(lua_gettop(L) == 19);
-
-                /* l(n,function()
-                 * if i==false or e==false then
-                 * return q()
-                 * else
-                 * local t=se(i)
-                 * if t==false then
-                 * return a()
-                 * else
-                 * o(H(t,e))
-                 * end
-                 * end
-                 * end) */
-                lc_getupvalue(L, lc1257, 37, 1);
-                lua_pushvalue(L, 9);
-                lua_pushvalue(L, lc1257);
-                lua_pushcclosure(L, lcf1270, 1);
-                lua_call(L, 2, 0);
-                assert(lua_gettop(L) == 19);
+                assert(lua_gettop(L) == 9);
               } else {
 
-                /* elseif e=="_" then */
-                enum { lc1271 = 17 };
-                lua_pushliteral(L, "_");
-                const int lc1272 = lua_equal(L, 16, -1);
-                lua_pop(L, 1);
-                lua_pushboolean(L, lc1272);
-                const int lc1273 = lua_toboolean(L, -1);
-                lua_pop(L, 1);
-                if (lc1273) {
-
-                  /* o(v) */
-                  lc_getupvalue(L, lc1225, 0, 212);
-                  lc_getupvalue(L, lc1225, 34, 88);
-                  lua_call(L, 1, 0);
-                  assert(lua_gettop(L) == 17);
-                } else {
-
-                  /* else
-                   * return a() */
-                  const int lc1274 = lua_gettop(L);
-                  lc_getupvalue(L, lc1225, 3, 209);
-                  lua_call(L, 0, LUA_MULTRET);
-                  return (lua_gettop(L) - lc1274);
-                  assert(lua_gettop(L) == 17);
-                }
-                lua_settop(L, lc1271);
+                /* else
+                 * return a() */
+                const int lc1266 = lua_gettop(L);
+                lc_getupvalue(L, lc1225, 2, 211);
+                lua_call(L, 0, LUA_MULTRET);
+                return (lua_gettop(L) - lc1266);
+                assert(lua_gettop(L) == 9);
               }
-              lua_settop(L, lc1253);
+              lua_settop(L, lc1263);
             }
-            lua_settop(L, lc1250);
+            lua_settop(L, lc1254);
           }
-          lua_settop(L, lc1247);
+          lua_settop(L, lc1251);
         }
-        lua_settop(L, lc1244);
+        lua_settop(L, lc1248);
       }
-      lua_settop(L, lc1233);
-      assert(lua_gettop(L) == 17);
-
-      /* internal: stack cleanup on scope exit */
-      lua_pop(L, 4);
+      lua_settop(L, lc1245);
     }
-    lua_settop(L, lc1224);
-    assert(lua_gettop(L) == 10);
-
-    /* h=t */
-    lc_getupvalue(L, lc1223, 0, 211);
-    lua_replace(L, 4);
-    assert(lua_gettop(L) == 10);
+    lua_settop(L, lc1234);
+    assert(lua_gettop(L) == 9);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc1220);
-  assert(lua_gettop(L) == 9);
+  lua_settop(L, lc1233);
+  assert(lua_gettop(L) == 8);
 
-  /* u(t==#r) */
-  lc_getupvalue(L, lc1214, 0, 210);
-  lc_getupvalue(L, lc1214, 2, 208);
-  lc_getupvalue(L, lc1214, 4, 206);
-  const double lc1275 = lua_objlen(L, -1);
+  /* i(n()) */
+  lc_getupvalue(L, lc1225, 1, 212);
+  const int lc1267 = lua_gettop(L);
+  lc_getupvalue(L, lc1225, 3, 209);
+  lua_call(L, 0, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1267), 0);
+  assert(lua_gettop(L) == 8);
+
+  /* i(#e==1) */
+  lc_getupvalue(L, lc1225, 1, 212);
+  lc_getupvalue(L, lc1225, 0, 213);
+  const double lc1268 = lua_objlen(L, -1);
   lua_pop(L, 1);
-  lua_pushnumber(L, lc1275);
-  const int lc1276 = lua_equal(L, -2, -1);
-  lua_pop(L, 2);
-  lua_pushboolean(L, lc1276);
-  lua_call(L, 1, 0);
-  assert(lua_gettop(L) == 9);
-
-  /* do
-   * local e=#n-1 */
-  const double lc1277 = lua_objlen(L, 9);
-  lua_pushnumber(L, lc1277);
+  lua_pushnumber(L, lc1268);
   lua_pushnumber(L, 1);
-  lc_sub(L, -2, -1);
+  const int lc1269 = lua_equal(L, -2, -1);
+  lua_pop(L, 2);
+  lua_pushboolean(L, lc1269);
+  lua_call(L, 1, 0);
+  assert(lua_gettop(L) == 8);
+
+  /* return e[1] */
+  lc_getupvalue(L, lc1225, 0, 213);
+  lua_pushnumber(L, 1);
+  lua_gettable(L, -2);
   lua_remove(L, -2);
-  lua_remove(L, -2);
-  assert(lua_gettop(L) == 10);
-
-  /* while e>=0 do */
-  enum { lc1278 = 10 };
-  while (1) {
-    lua_pushnumber(L, 0);
-    const int lc1279 = lc_le(L, -1, 10);
-    lua_pop(L, 1);
-    lua_pushboolean(L, lc1279);
-    if (!(lua_toboolean(L, -1))) {
-      break;
-    }
-    lua_pop(L, 1);
-
-    /* n[e+1]() */
-    lua_pushnumber(L, 1);
-    lc_add(L, 10, -1);
-    lua_remove(L, -2);
-    lua_gettable(L, 9);
-    lua_call(L, 0, 0);
-    assert(lua_gettop(L) == 10);
-
-    /* e=e-1 */
-    lua_pushnumber(L, 1);
-    lc_sub(L, 10, -1);
-    lua_remove(L, -2);
-    lua_replace(L, 10);
-    assert(lua_gettop(L) == 10);
-  }
-  lua_settop(L, lc1278);
-  assert(lua_gettop(L) == 10);
-
-  /* internal: stack cleanup on scope exit */
-  lua_pop(L, 1);
-  assert(lua_gettop(L) == 9);
-
-  /* return c */
-  lc_getupvalue(L, lc1214, 3, 207);
   return 1;
-  assert(lua_gettop(L) == 9);
+  assert(lua_gettop(L) == 8);
 }
 
-/* name: i
- * function(e,o,a,i) */
-static inline int lcf11_i(lua_State *L) {
+/* name: n
+ * function(e,i,a,o) */
+static inline int lcf10_n(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* t=tostring(t)..tostring(o) */
+  /* t=tostring(t)..tostring(i) */
   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 217);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 214);
   lua_call(L, 1, 1);
   lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
   lua_pushvalue(L, 2);
   lua_call(L, 1, 1);
   lua_concat(L, 2);
-  lc_setupvalue(L, lua_upvalueindex(1), 1, 217);
+  lc_setupvalue(L, lua_upvalueindex(1), 1, 214);
   assert(lua_gettop(L) == 4);
 
-  /* return l(h,a(e),i(e)) */
-  const int lc1286 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 30, 1);
-  const int lc1287 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 218);
+  /* return v(r,a(e),o(e)) */
+  const int lc1276 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 31, 1);
+  const int lc1277 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 215);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 1);
   lua_call(L, 1, 1);
   lua_pushvalue(L, 4);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1287), LUA_MULTRET);
-  return (lua_gettop(L) - lc1286);
+  lua_call(L, (lua_gettop(L) - lc1277), LUA_MULTRET);
+  return (lua_gettop(L) - lc1276);
   assert(lua_gettop(L) == 4);
 }
 
 /* function(e) */
-static inline int lcf1303(lua_State *L) {
+static inline int lcf1293(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return D(te(e)) */
-  const int lc1301 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 29, 14);
-  const int lc1302 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 29, 74);
+  /* return R(X(e)) */
+  const int lc1291 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 29, 15);
+  const int lc1292 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 29, 75);
   lua_pushvalue(L, 1);
   lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1302), LUA_MULTRET);
-  return (lua_gettop(L) - lc1301);
+  lua_call(L, (lua_gettop(L) - lc1292), LUA_MULTRET);
+  return (lua_gettop(L) - lc1291);
   assert(lua_gettop(L) == 1);
 }
 
-/* name: S
+/* name: O
  * function(e) */
-static inline int lcf2_S(lua_State *L) {
+static inline int lcf3_O(lua_State *L) {
   lua_checkstack(L, 21);
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
@@ -16943,21 +16857,21 @@ static inline int lcf2_S(lua_State *L) {
 
   /* local t="" */
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1280 = 3 };
-  assert((lua_gettop(L) == lc1280));
+  enum { lc1270 = 3 };
+  assert((lua_gettop(L) == lc1270));
   lua_pushliteral(L, "");
-  lua_rawseti(L, lc1280, 217);
+  lua_rawseti(L, lc1270, 214);
   assert(lua_gettop(L) == 3);
 
   /* while#s~=0 do */
-  enum { lc1281 = 3 };
+  enum { lc1271 = 3 };
   while (1) {
-    const double lc1282 = lua_objlen(L, 2);
-    lua_pushnumber(L, lc1282);
+    const double lc1272 = lua_objlen(L, 2);
+    lua_pushnumber(L, lc1272);
     lua_pushnumber(L, 0);
-    const int lc1283 = lua_equal(L, -2, -1);
+    const int lc1273 = lua_equal(L, -2, -1);
     lua_pop(L, 2);
-    lua_pushboolean(L, lc1283);
+    lua_pushboolean(L, lc1273);
     lua_pushboolean(L, !(lua_toboolean(L, -1)));
     lua_remove(L, -2);
     if (!(lua_toboolean(L, -1))) {
@@ -16965,17 +16879,17 @@ static inline int lcf2_S(lua_State *L) {
     }
     lua_pop(L, 1);
 
-    /* local h={} */
-    lc_newclosuretable(L, lc1280);
-    enum { lc1284 = 4 };
-    assert((lua_gettop(L) == lc1284));
+    /* local r={} */
+    lc_newclosuretable(L, lc1270);
+    enum { lc1274 = 4 };
+    assert((lua_gettop(L) == lc1274));
     lua_newtable(L);
-    lua_rawseti(L, lc1284, 218);
+    lua_rawseti(L, lc1274, 215);
     assert(lua_gettop(L) == 4);
 
-    /* for i,e in ipairs(s)do
+    /* for n,e in ipairs(s)do
      * internal: local f, s, var = explist */
-    enum { lc1285 = 4 };
+    enum { lc1275 = 4 };
     lua_getfield(L, LUA_ENVIRONINDEX, "ipairs");
     lua_pushvalue(L, 2);
     lua_call(L, 1, 3);
@@ -16994,204 +16908,204 @@ static inline int lcf2_S(lua_State *L) {
       lua_pushvalue(L, -2);
       lua_replace(L, -4);
 
-      /* internal: local i with idx 8
+      /* internal: local n with idx 8
        * internal: local e with idx 9 */
 
       /* e=N(e) */
-      lc_getupvalue(L, lc1284, 29, 25);
+      lc_getupvalue(L, lc1274, 29, 26);
       lua_pushvalue(L, 9);
       lua_call(L, 1, 1);
       lua_replace(L, 9);
       assert(lua_gettop(L) == 9);
 
-      /* local function i(e,o,a,i)
-       * t=tostring(t)..tostring(o)
-       * return l(h,a(e),i(e))
+      /* local function n(e,i,a,o)
+       * t=tostring(t)..tostring(i)
+       * return v(r,a(e),o(e))
        * end */
-      lua_pushvalue(L, lc1284);
-      lua_pushcclosure(L, lcf11_i, 1);
+      lua_pushvalue(L, lc1274);
+      lua_pushcclosure(L, lcf10_n, 1);
       assert(lua_gettop(L) == 10);
 
       /* if p(e) then */
-      enum { lc1288 = 10 };
-      lc_getupvalue(L, lc1284, 29, 96);
+      enum { lc1278 = 10 };
+      lc_getupvalue(L, lc1274, 29, 97);
       lua_pushvalue(L, 9);
       lua_call(L, 1, 1);
-      const int lc1289 = lua_toboolean(L, -1);
+      const int lc1279 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1289) {
+      if (lc1279) {
 
-        /* t=tostring(t)..tostring(("^"..tostring(fe(e)).."^")) */
+        /* t=tostring(t)..tostring(("^"..tostring(le(e)).."^")) */
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        lc_getupvalue(L, lc1284, 1, 217);
+        lc_getupvalue(L, lc1274, 1, 214);
         lua_call(L, 1, 1);
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushliteral(L, "^");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-        const int lc1290 = lua_gettop(L);
-        lc_getupvalue(L, lc1284, 29, 95);
+        const int lc1280 = lua_gettop(L);
+        lc_getupvalue(L, lc1274, 29, 96);
         lua_pushvalue(L, 9);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1290), 1);
+        lua_call(L, (lua_gettop(L) - lc1280), 1);
         lua_pushliteral(L, "^");
         lua_concat(L, 2);
         lua_concat(L, 2);
         lua_call(L, 1, 1);
         lua_concat(L, 2);
-        lc_setupvalue(L, lc1284, 1, 217);
+        lc_setupvalue(L, lc1274, 1, 214);
         assert(lua_gettop(L) == 10);
       } else {
 
         /* elseif a(e) then */
-        enum { lc1291 = 10 };
-        lc_getupvalue(L, lc1284, 29, 91);
+        enum { lc1281 = 10 };
+        lc_getupvalue(L, lc1274, 29, 92);
         lua_pushvalue(L, 9);
         lua_call(L, 1, 1);
-        const int lc1292 = lua_toboolean(L, -1);
+        const int lc1282 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1292) {
+        if (lc1282) {
 
-          /* i(e,".",o,n) */
+          /* n(e,".",o,i) */
           lua_pushvalue(L, 10);
           lua_pushvalue(L, 9);
           lua_pushliteral(L, ".");
-          lc_getupvalue(L, lc1284, 29, 90);
-          lc_getupvalue(L, lc1284, 29, 89);
+          lc_getupvalue(L, lc1274, 29, 91);
+          lc_getupvalue(L, lc1274, 29, 90);
           lua_call(L, 4, 0);
           assert(lua_gettop(L) == 10);
         } else {
 
-          /* elseif r(e) then */
-          enum { lc1293 = 10 };
-          lc_getupvalue(L, lc1284, 29, 87);
+          /* elseif h(e) then */
+          enum { lc1283 = 10 };
+          lc_getupvalue(L, lc1274, 29, 88);
           lua_pushvalue(L, 9);
           lua_call(L, 1, 1);
-          const int lc1294 = lua_toboolean(L, -1);
+          const int lc1284 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1294) {
+          if (lc1284) {
 
             /* t=tostring(t)..tostring(("_")) */
             lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
-            lc_getupvalue(L, lc1284, 1, 217);
+            lc_getupvalue(L, lc1274, 1, 214);
             lua_call(L, 1, 1);
             lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
             lua_pushliteral(L, "_");
             lua_call(L, 1, 1);
             lua_concat(L, 2);
-            lc_setupvalue(L, lc1284, 1, 217);
+            lc_setupvalue(L, lc1274, 1, 214);
             assert(lua_gettop(L) == 10);
           } else {
 
-            /* elseif m(e) then */
-            enum { lc1295 = 10 };
-            lc_getupvalue(L, lc1284, 29, 85);
+            /* elseif c(e) then */
+            enum { lc1285 = 10 };
+            lc_getupvalue(L, lc1274, 29, 86);
             lua_pushvalue(L, 9);
             lua_call(L, 1, 1);
-            const int lc1296 = lua_toboolean(L, -1);
+            const int lc1286 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc1296) {
+            if (lc1286) {
 
-              /* i(e,"#",_,A) */
+              /* n(e,"#",E,A) */
               lua_pushvalue(L, 10);
               lua_pushvalue(L, 9);
               lua_pushliteral(L, "#");
-              lc_getupvalue(L, lc1284, 29, 84);
-              lc_getupvalue(L, lc1284, 29, 83);
+              lc_getupvalue(L, lc1274, 29, 85);
+              lc_getupvalue(L, lc1274, 29, 84);
               lua_call(L, 4, 0);
               assert(lua_gettop(L) == 10);
             } else {
 
               /* elseif g(e) then */
-              enum { lc1297 = 10 };
-              lc_getupvalue(L, lc1284, 29, 81);
+              enum { lc1287 = 10 };
+              lc_getupvalue(L, lc1274, 29, 82);
               lua_pushvalue(L, 9);
               lua_call(L, 1, 1);
-              const int lc1298 = lua_toboolean(L, -1);
+              const int lc1288 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc1298) {
+              if (lc1288) {
 
-                /* i(e,"!",U,C) */
+                /* n(e,"!",C,U) */
                 lua_pushvalue(L, 10);
                 lua_pushvalue(L, 9);
                 lua_pushliteral(L, "!");
-                lc_getupvalue(L, lc1284, 29, 80);
-                lc_getupvalue(L, lc1284, 29, 79);
+                lc_getupvalue(L, lc1274, 29, 81);
+                lc_getupvalue(L, lc1274, 29, 80);
                 lua_call(L, 4, 0);
                 assert(lua_gettop(L) == 10);
               } else {
 
-                /* elseif de(e) then */
-                enum { lc1299 = 10 };
-                lc_getupvalue(L, lc1284, 29, 24);
+                /* elseif me(e) then */
+                enum { lc1289 = 10 };
+                lc_getupvalue(L, lc1274, 29, 25);
                 lua_pushvalue(L, 9);
                 lua_call(L, 1, 1);
-                const int lc1300 = lua_toboolean(L, -1);
+                const int lc1290 = lua_toboolean(L, -1);
                 lua_pop(L, 1);
-                if (lc1300) {
+                if (lc1290) {
 
                   /* local e=Ae(e) */
-                  lc_getupvalue(L, lc1284, 6, 161);
+                  lc_getupvalue(L, lc1274, 6, 162);
                   lua_pushvalue(L, 9);
                   lua_call(L, 1, 1);
                   assert(lua_gettop(L) == 11);
 
-                  /* i(e,"$",(function(e)return D(te(e))end),ae) */
+                  /* n(e,"$",(function(e)return R(X(e))end),Z) */
                   lua_pushvalue(L, 10);
                   lua_pushvalue(L, 11);
                   lua_pushliteral(L, "$");
-                  lua_pushvalue(L, lc1284);
-                  lua_pushcclosure(L, lcf1303, 1);
-                  lc_getupvalue(L, lc1284, 29, 73);
+                  lua_pushvalue(L, lc1274);
+                  lua_pushcclosure(L, lcf1293, 1);
+                  lc_getupvalue(L, lc1274, 29, 74);
                   lua_call(L, 4, 0);
                   assert(lua_gettop(L) == 11);
                 } else {
 
                   /* else
-                   * return q() */
-                  const int lc1304 = lua_gettop(L);
-                  lc_getupvalue(L, lc1284, 29, 116);
+                   * return j() */
+                  const int lc1294 = lua_gettop(L);
+                  lc_getupvalue(L, lc1274, 29, 117);
                   lua_call(L, 0, LUA_MULTRET);
-                  return (lua_gettop(L) - lc1304);
+                  return (lua_gettop(L) - lc1294);
                   assert(lua_gettop(L) == 10);
                 }
-                lua_settop(L, lc1299);
+                lua_settop(L, lc1289);
               }
-              lua_settop(L, lc1297);
+              lua_settop(L, lc1287);
             }
-            lua_settop(L, lc1295);
+            lua_settop(L, lc1285);
           }
-          lua_settop(L, lc1293);
+          lua_settop(L, lc1283);
         }
-        lua_settop(L, lc1291);
+        lua_settop(L, lc1281);
       }
-      lua_settop(L, lc1288);
+      lua_settop(L, lc1278);
       assert(lua_gettop(L) == 10);
 
       /* internal: stack cleanup on scope exit */
       lua_pop(L, 3);
     }
-    lua_settop(L, lc1285);
+    lua_settop(L, lc1275);
     assert(lua_gettop(L) == 4);
 
-    /* s=h */
-    lc_getupvalue(L, lc1284, 0, 218);
+    /* s=r */
+    lc_getupvalue(L, lc1274, 0, 215);
     lua_replace(L, 2);
     assert(lua_gettop(L) == 4);
 
     /* internal: stack cleanup on scope exit */
     lua_pop(L, 1);
   }
-  lua_settop(L, lc1281);
+  lua_settop(L, lc1271);
   assert(lua_gettop(L) == 3);
 
   /* return t */
-  lc_getupvalue(L, lc1280, 0, 217);
+  lc_getupvalue(L, lc1270, 0, 214);
   return 1;
   assert(lua_gettop(L) == 3);
 }
 
 /* function() */
-static inline int lcf1307(lua_State *L) {
+static inline int lcf1297(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -17202,35 +17116,35 @@ static inline int lcf1307(lua_State *L) {
   lua_createtable(L, 2, 0);
   lua_pushboolean(L, 0);
   lua_rawseti(L, -2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 220);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 217);
   lua_rawseti(L, -2, 2);
   return 1;
   assert(lua_gettop(L) == 0);
 }
 
-/* name: z
+/* name: j
  * function(e) */
-static inline int lcf1_z(lua_State *L) {
+static inline int lcf3_j(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1306 = 2 };
-  assert((lua_gettop(L) == lc1306));
+  enum { lc1296 = 2 };
+  assert((lua_gettop(L) == lc1296));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 220);
+  lua_rawseti(L, -2, 217);
 
   /* return function()return{
    * false,
    * e,
    * }end */
-  lua_pushvalue(L, lc1306);
-  lua_pushcclosure(L, lcf1307, 1);
+  lua_pushvalue(L, lc1296);
+  lua_pushcclosure(L, lcf1297, 1);
   return 1;
   assert(lua_gettop(L) == 2);
 }
 
 /* function() */
-static inline int lcf1311(lua_State *L) {
+static inline int lcf1301(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
@@ -17241,40 +17155,40 @@ static inline int lcf1311(lua_State *L) {
   lua_createtable(L, 2, 0);
   lua_pushboolean(L, 1);
   lua_rawseti(L, -2, 1);
-  const int lc1310 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 222);
+  const int lc1300 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 219);
   lua_call(L, 0, LUA_MULTRET);
-  while ((lua_gettop(L) > lc1310)) {
-    lua_rawseti(L, lc1310, (1 + (lua_gettop(L) - lc1310)));
+  while ((lua_gettop(L) > lc1300)) {
+    lua_rawseti(L, lc1300, (1 + (lua_gettop(L) - lc1300)));
   }
   return 1;
   assert(lua_gettop(L) == 0);
 }
 
-/* name: l
+/* name: d
  * function(e) */
-static inline int lcf3_l(lua_State *L) {
+static inline int lcf9_d(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1309 = 2 };
-  assert((lua_gettop(L) == lc1309));
+  enum { lc1299 = 2 };
+  assert((lua_gettop(L) == lc1299));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 222);
+  lua_rawseti(L, -2, 219);
 
   /* return function()return{
    * true,
    * e(),
    * }end */
-  lua_pushvalue(L, lc1309);
-  lua_pushcclosure(L, lcf1311, 1);
+  lua_pushvalue(L, lc1299);
+  lua_pushcclosure(L, lcf1301, 1);
   return 1;
   assert(lua_gettop(L) == 2);
 }
 
-/* name: I
+/* name: z
  * function(e) */
-static inline int lcf2_I(lua_State *L) {
+static inline int lcf1_z(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
@@ -17284,7 +17198,7 @@ static inline int lcf2_I(lua_State *L) {
   assert(lua_gettop(L) == 2);
 
   /* while e[1]do */
-  enum { lc1313 = 2 };
+  enum { lc1303 = 2 };
   while (1) {
     lua_pushnumber(L, 1);
     lua_gettable(L, 2);
@@ -17300,7 +17214,7 @@ static inline int lcf2_I(lua_State *L) {
     lua_replace(L, 2);
     assert(lua_gettop(L) == 2);
   }
-  lua_settop(L, lc1313);
+  lua_settop(L, lc1303);
   assert(lua_gettop(L) == 2);
 
   /* return e[2] */
@@ -17310,39 +17224,39 @@ static inline int lcf2_I(lua_State *L) {
   assert(lua_gettop(L) == 2);
 }
 
-/* name: Y
+/* name: P
  * function(a,t) */
-static inline int lcf1_Y(lua_State *L) {
+static inline int lcf2_P(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return E(q,e(a,t)) */
-  const int lc1324 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 32, 86);
-  const int lc1325 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 225);
-  lc_getupvalue(L, lua_upvalueindex(1), 32, 26);
+  /* return T(b,e(a,t)) */
+  const int lc1314 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 32, 87);
+  const int lc1315 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 222);
+  lc_getupvalue(L, lua_upvalueindex(1), 32, 27);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1325), LUA_MULTRET);
-  return (lua_gettop(L) - lc1324);
+  lua_call(L, (lua_gettop(L) - lc1315), LUA_MULTRET);
+  return (lua_gettop(L) - lc1314);
   assert(lua_gettop(L) == 2);
 }
 
-/* name: W
+/* name: Y
  * function(e) */
-static inline int lcf2_W(lua_State *L) {
+static inline int lcf1_Y(lua_State *L) {
   enum { lc_nformalargs = 1 };
   lua_settop(L, 1);
 
-  /* return E(x,e) */
-  const int lc1326 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 32, 86);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 224);
+  /* return T(x,e) */
+  const int lc1316 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 32, 87);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 221);
   lua_pushvalue(L, 1);
   lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1326);
+  return (lua_gettop(L) - lc1316);
   assert(lua_gettop(L) == 1);
 }
 
@@ -17360,823 +17274,823 @@ static inline int lcf2_p(lua_State *L) {
   return 0;
 }
 
+/* name: e
+ * function() */
+static inline int lcf2_e(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* return f(t,a) */
+  const int lc1337 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 224);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 230);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 231);
+  lua_call(L, 2, LUA_MULTRET);
+  return (lua_gettop(L) - lc1337);
+  assert(lua_gettop(L) == 0);
+}
+
+/* name: o
+ * function() */
+static inline int lcf6_o(lua_State *L) {
+  enum { lc_nformalargs = 0 };
+  lua_settop(L, 0);
+
+  /* return v(t,e,F(u,i),a) */
+  const int lc1343 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 223);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 232);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 233);
+  lc_getupvalue(L, lua_upvalueindex(1), 39, 64);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 228);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 234);
+  lua_call(L, 2, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 235);
+  lua_call(L, 4, LUA_MULTRET);
+  return (lua_gettop(L) - lc1343);
+  assert(lua_gettop(L) == 0);
+}
+
 /* name: a
  * function() */
 static inline int lcf6_a(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return f(t,e) */
-  const int lc1347 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 227);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 233);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 234);
-  lua_call(L, 2, LUA_MULTRET);
-  return (lua_gettop(L) - lc1347);
-  assert(lua_gettop(L) == 0);
-}
-
-/* name: i
- * function() */
-static inline int lcf12_i(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* return b(t,e,P(d,a),o) */
-  const int lc1353 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 226);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 235);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 236);
-  lc_getupvalue(L, lua_upvalueindex(1), 39, 63);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 231);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 237);
-  lua_call(L, 2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 238);
-  lua_call(L, 4, LUA_MULTRET);
-  return (lua_gettop(L) - lc1353);
+  /* return v(e,t,n,i,o) */
+  const int lc1363 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 7, 223);
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 236);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 237);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 238);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 240);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 239);
+  lua_call(L, 5, LUA_MULTRET);
+  return (lua_gettop(L) - lc1363);
   assert(lua_gettop(L) == 0);
 }
 
 /* name: n
  * function() */
-static inline int lcf3_n(lua_State *L) {
+static inline int lcf11_n(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return b(t,e,i,o,a) */
+  /* return v(i,o,r,s,T(t,e(e(a),p(e(ce(h),a),ce(l))))) */
+  const int lc1372 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 9, 223);
   const int lc1373 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 7, 226);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 239);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 240);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 241);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 243);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 242);
-  lua_call(L, 5, LUA_MULTRET);
-  return (lua_gettop(L) - lc1373);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 241);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 242);
+  lc_getupvalue(L, lua_upvalueindex(1), 4, 243);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 245);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 87);
+  const int lc1374 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 53);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 27);
+  const int lc1375 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 247);
+  lua_call(L, 1, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 7, 229);
+  const int lc1376 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 27);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 6);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 244);
+  lua_call(L, 1, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 247);
+  lua_call(L, 2, 1);
+  lc_getupvalue(L, lua_upvalueindex(1), 42, 6);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 246);
+  lua_call(L, 1, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1376), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1375), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1374), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1373), LUA_MULTRET);
+  return (lua_gettop(L) - lc1372);
   assert(lua_gettop(L) == 0);
 }
 
-/* name: i
- * function() */
-static inline int lcf13_i(lua_State *L) {
+/* function() */
+static inline int lcf1383(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return b(o,n,r,s,E(t,e(e(a),p(e(we(u),a),we(h))))) */
+  /* return y(m,w,f) */
   const int lc1382 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 9, 226);
-  const int lc1383 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 244);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 245);
-  lc_getupvalue(L, lua_upvalueindex(1), 4, 246);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 248);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 86);
-  const int lc1384 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 52);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 26);
-  const int lc1385 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 250);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 7, 232);
-  const int lc1386 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 26);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 5);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 247);
-  lua_call(L, 1, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 250);
-  lua_call(L, 2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 42, 5);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 249);
-  lua_call(L, 1, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1386), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1385), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1384), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1383), LUA_MULTRET);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 225);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 226);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 227);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 224);
+  lua_call(L, 3, LUA_MULTRET);
   return (lua_gettop(L) - lc1382);
   assert(lua_gettop(L) == 0);
 }
 
 /* function() */
-static inline int lcf1393(lua_State *L) {
+static inline int lcf1389(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return w(u,y,f) */
-  const int lc1392 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 228);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 229);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 230);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 227);
-  lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc1392);
-  assert(lua_gettop(L) == 0);
-}
-
-/* function() */
-static inline int lcf1399(lua_State *L) {
-  enum { lc_nformalargs = 0 };
-  lua_settop(L, 0);
-
-  /* return b(f,w,P(d,{t}),e) */
-  const int lc1398 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 3, 226);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 227);
+  /* return v(f,y,F(u,{e}),t) */
+  const int lc1388 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 3, 223);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 224);
+  lc_getupvalue(L, lua_upvalueindex(1), 2, 225);
+  lc_getupvalue(L, lua_upvalueindex(1), 36, 64);
   lc_getupvalue(L, lua_upvalueindex(1), 2, 228);
-  lc_getupvalue(L, lua_upvalueindex(1), 36, 63);
-  lc_getupvalue(L, lua_upvalueindex(1), 2, 231);
   lua_createtable(L, 1, 0);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 251);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 248);
   lua_rawseti(L, -2, 1);
   lua_call(L, 2, 1);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 252);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 249);
   lua_call(L, 4, LUA_MULTRET);
-  return (lua_gettop(L) - lc1398);
+  return (lua_gettop(L) - lc1388);
   assert(lua_gettop(L) == 0);
 }
 
-/* function(t,e) */
-static inline int lcf1400(lua_State *L) {
+/* function(e,t) */
+static inline int lcf1390(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1396 = 3 };
-  assert((lua_gettop(L) == lc1396));
+  enum { lc1386 = 3 };
+  assert((lua_gettop(L) == lc1386));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 251);
+  lua_rawseti(L, -2, 248);
   lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 252);
+  lua_rawseti(L, -2, 249);
 
-  /* return l(function()return b(f,w,P(d,{t}),e)end) */
-  const int lc1397 = lua_gettop(L);
-  lc_getupvalue(L, lc1396, 7, 221);
-  lua_pushvalue(L, lc1396);
-  lua_pushcclosure(L, lcf1399, 1);
+  /* return d(function()return v(f,y,F(u,{e}),t)end) */
+  const int lc1387 = lua_gettop(L);
+  lc_getupvalue(L, lc1386, 7, 218);
+  lua_pushvalue(L, lc1386);
+  lua_pushcclosure(L, lcf1389, 1);
   lua_call(L, 1, LUA_MULTRET);
-  return (lua_gettop(L) - lc1397);
+  return (lua_gettop(L) - lc1387);
   assert(lua_gettop(L) == 3);
 }
 
 /* function() */
-static inline int lcf1401(lua_State *L) {
+static inline int lcf1391(lua_State *L) {
   enum { lc_nformalargs = 0 };
   lua_settop(L, 0);
 
-  /* return w(u,y,function(t,e)return l(function()return
-   * b(f,w,P(d,{t}),e)end)end) */
-  const int lc1395 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 228);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 229);
-  lc_getupvalue(L, lua_upvalueindex(1), 1, 230);
+  /* return y(m,w,function(e,t)return d(function()return
+   * v(f,y,F(u,{e}),t)end)end) */
+  const int lc1385 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 225);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 226);
+  lc_getupvalue(L, lua_upvalueindex(1), 1, 227);
   lua_pushvalue(L, lua_upvalueindex(1));
-  lua_pushcclosure(L, lcf1400, 1);
+  lua_pushcclosure(L, lcf1390, 1);
   lua_call(L, 3, LUA_MULTRET);
-  return (lua_gettop(L) - lc1395);
+  return (lua_gettop(L) - lc1385);
   assert(lua_gettop(L) == 0);
 }
 
-/* name: b
- * function(f,w,u,y,d) */
-static inline int lcf2_b(lua_State *L) {
+/* name: v
+ * function(f,y,m,w,u) */
+static inline int lcf2_v(lua_State *L) {
   lua_checkstack(L, 31);
   enum { lc_nformalargs = 5 };
   lua_settop(L, 5);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1328 = 6 };
-  assert((lua_gettop(L) == lc1328));
+  enum { lc1318 = 6 };
+  assert((lua_gettop(L) == lc1318));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 227);
+  lua_rawseti(L, -2, 224);
   lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 228);
+  lua_rawseti(L, -2, 225);
   lua_pushvalue(L, 3);
-  lua_rawseti(L, -2, 229);
+  lua_rawseti(L, -2, 226);
   lua_pushvalue(L, 4);
-  lua_rawseti(L, -2, 230);
+  lua_rawseti(L, -2, 227);
   lua_pushvalue(L, 5);
-  lua_rawseti(L, -2, 231);
+  lua_rawseti(L, -2, 228);
 
-  /* if d==nil then */
-  enum { lc1329 = 6 };
-  lc_getupvalue(L, lc1328, 0, 231);
+  /* if u==nil then */
+  enum { lc1319 = 6 };
+  lc_getupvalue(L, lc1318, 0, 228);
   lua_pushnil(L);
-  const int lc1330 = lua_equal(L, -2, -1);
+  const int lc1320 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc1330);
-  const int lc1331 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc1320);
+  const int lc1321 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1331) {
+  if (lc1321) {
 
-    /* d=false */
+    /* u=false */
     lua_pushboolean(L, 0);
-    lc_setupvalue(L, lc1328, 0, 231);
+    lc_setupvalue(L, lc1318, 0, 228);
     assert(lua_gettop(L) == 6);
   }
-  lua_settop(L, lc1329);
+  lua_settop(L, lc1319);
   assert(lua_gettop(L) == 6);
 
   /* local function p(e,e)
    * error("WIP")
    * end */
-  lc_newclosuretable(L, lc1328);
-  enum { lc1332 = 7 };
-  assert((lua_gettop(L) == lc1332));
+  lc_newclosuretable(L, lc1318);
+  enum { lc1322 = 7 };
+  assert((lua_gettop(L) == lc1322));
   lua_pushcfunction(L, lcf2_p);
-  lua_rawseti(L, lc1332, 232);
+  lua_rawseti(L, lc1322, 229);
   assert(lua_gettop(L) == 7);
 
-  /* u=h(u) */
-  lc_getupvalue(L, lc1332, 35, 20);
-  lc_getupvalue(L, lc1332, 1, 229);
+  /* m=r(m) */
+  lc_getupvalue(L, lc1322, 35, 21);
+  lc_getupvalue(L, lc1322, 1, 226);
   lua_call(L, 1, 1);
-  lc_setupvalue(L, lc1332, 1, 229);
+  lc_setupvalue(L, lc1322, 1, 226);
   assert(lua_gettop(L) == 7);
 
-  /* if m(u) then */
-  enum { lc1333 = 7 };
-  lc_getupvalue(L, lc1332, 35, 85);
-  lc_getupvalue(L, lc1332, 1, 229);
+  /* if c(m) then */
+  enum { lc1323 = 7 };
+  lc_getupvalue(L, lc1322, 35, 86);
+  lc_getupvalue(L, lc1322, 1, 226);
   lua_call(L, 1, 1);
-  const int lc1334 = lua_toboolean(L, -1);
+  const int lc1324 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1334) {
+  if (lc1324) {
 
-    /* local m=_(u) */
-    lc_getupvalue(L, lc1332, 35, 84);
-    lc_getupvalue(L, lc1332, 1, 229);
+    /* local c=E(m) */
+    lc_getupvalue(L, lc1322, 35, 85);
+    lc_getupvalue(L, lc1322, 1, 226);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 8);
 
-    /* local s=A(u) */
-    lc_getupvalue(L, lc1332, 35, 83);
-    lc_getupvalue(L, lc1332, 1, 229);
+    /* local s=A(m) */
+    lc_getupvalue(L, lc1322, 35, 84);
+    lc_getupvalue(L, lc1322, 1, 226);
     lua_call(L, 1, 1);
     assert(lua_gettop(L) == 9);
 
-    /* if c(m,x) then */
-    enum { lc1335 = 9 };
-    lc_getupvalue(L, lc1332, 35, 3);
+    /* if l(c,x) then */
+    enum { lc1325 = 9 };
+    lc_getupvalue(L, lc1322, 35, 4);
     lua_pushvalue(L, 8);
-    lc_getupvalue(L, lc1332, 4, 224);
+    lc_getupvalue(L, lc1322, 4, 221);
     lua_call(L, 2, 1);
-    const int lc1336 = lua_toboolean(L, -1);
+    const int lc1326 = lua_toboolean(L, -1);
     lua_pop(L, 1);
-    if (lc1336) {
+    if (lc1326) {
 
-      /* s=h(s) */
-      lc_getupvalue(L, lc1332, 35, 20);
+      /* s=r(s) */
+      lc_getupvalue(L, lc1322, 35, 21);
       lua_pushvalue(L, 9);
       lua_call(L, 1, 1);
       lua_replace(L, 9);
       assert(lua_gettop(L) == 9);
 
       /* if a(s) then */
-      enum { lc1337 = 9 };
-      lc_getupvalue(L, lc1332, 35, 91);
+      enum { lc1327 = 9 };
+      lc_getupvalue(L, lc1322, 35, 92);
       lua_pushvalue(L, 9);
       lua_call(L, 1, 1);
-      const int lc1338 = lua_toboolean(L, -1);
+      const int lc1328 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1338) {
+      if (lc1328) {
 
         /* local a=o(s) */
-        lc_getupvalue(L, lc1332, 35, 90);
+        lc_getupvalue(L, lc1322, 35, 91);
         lua_pushvalue(L, 9);
         lua_call(L, 1, 1);
         assert(lua_gettop(L) == 10);
 
-        /* local e=h(n(s)) */
-        lc_getupvalue(L, lc1332, 35, 20);
-        const int lc1339 = lua_gettop(L);
-        lc_getupvalue(L, lc1332, 35, 89);
+        /* local e=r(i(s)) */
+        lc_getupvalue(L, lc1322, 35, 21);
+        const int lc1329 = lua_gettop(L);
+        lc_getupvalue(L, lc1322, 35, 90);
         lua_pushvalue(L, 9);
         lua_call(L, 1, LUA_MULTRET);
-        lua_call(L, (lua_gettop(L) - lc1339), 1);
+        lua_call(L, (lua_gettop(L) - lc1329), 1);
         assert(lua_gettop(L) == 11);
 
-        /* if r(e) then */
-        enum { lc1340 = 11 };
-        lc_getupvalue(L, lc1332, 35, 87);
+        /* if h(e) then */
+        enum { lc1330 = 11 };
+        lc_getupvalue(L, lc1322, 35, 88);
         lua_pushvalue(L, 11);
         lua_call(L, 1, 1);
-        const int lc1341 = lua_toboolean(L, -1);
+        const int lc1331 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1341) {
+        if (lc1331) {
 
-          /* if d==false then */
-          enum { lc1342 = 11 };
-          lc_getupvalue(L, lc1332, 1, 231);
+          /* if u==false then */
+          enum { lc1332 = 11 };
+          lc_getupvalue(L, lc1322, 1, 228);
           lua_pushboolean(L, 0);
-          const int lc1343 = lua_equal(L, -2, -1);
+          const int lc1333 = lua_equal(L, -2, -1);
           lua_pop(L, 2);
-          lua_pushboolean(L, lc1343);
-          const int lc1344 = lua_toboolean(L, -1);
+          lua_pushboolean(L, lc1333);
+          const int lc1334 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1344) {
+          if (lc1334) {
 
             /* local t=a */
-            lc_newclosuretable(L, lc1332);
-            enum { lc1345 = 12 };
-            assert((lua_gettop(L) == lc1345));
+            lc_newclosuretable(L, lc1322);
+            enum { lc1335 = 12 };
+            assert((lua_gettop(L) == lc1335));
             lua_pushvalue(L, 10);
-            lua_rawseti(L, lc1345, 233);
+            lua_rawseti(L, lc1335, 230);
             assert(lua_gettop(L) == 12);
 
-            /* local e=y */
-            lc_newclosuretable(L, lc1345);
-            enum { lc1346 = 13 };
-            assert((lua_gettop(L) == lc1346));
-            lc_getupvalue(L, lc1345, 2, 230);
-            lua_rawseti(L, lc1346, 234);
+            /* local a=w */
+            lc_newclosuretable(L, lc1335);
+            enum { lc1336 = 13 };
+            assert((lua_gettop(L) == lc1336));
+            lc_getupvalue(L, lc1335, 2, 227);
+            lua_rawseti(L, lc1336, 231);
             assert(lua_gettop(L) == 13);
 
-            /* local function a()return f(t,e)end */
-            lua_pushvalue(L, lc1346);
-            lua_pushcclosure(L, lcf6_a, 1);
+            /* local function e()return f(t,a)end */
+            lua_pushvalue(L, lc1336);
+            lua_pushcclosure(L, lcf2_e, 1);
             assert(lua_gettop(L) == 14);
 
-            /* return l(a) */
-            const int lc1348 = lua_gettop(L);
-            lc_getupvalue(L, lc1346, 8, 221);
+            /* return d(e) */
+            const int lc1338 = lua_gettop(L);
+            lc_getupvalue(L, lc1336, 8, 218);
             lua_pushvalue(L, 14);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc1348);
+            return (lua_gettop(L) - lc1338);
             assert(lua_gettop(L) == 14);
           } else {
 
             /* else
              * local t */
-            lc_newclosuretable(L, lc1332);
-            enum { lc1349 = 12 };
-            assert((lua_gettop(L) == lc1349));
+            lc_newclosuretable(L, lc1322);
+            enum { lc1339 = 12 };
+            assert((lua_gettop(L) == lc1339));
             lua_settop(L, (lua_gettop(L) + 1));
-            lua_rawseti(L, lc1349, 235);
+            lua_rawseti(L, lc1339, 232);
             assert(lua_gettop(L) == 12);
 
             /* t=f */
-            lc_getupvalue(L, lc1349, 2, 227);
-            lc_setupvalue(L, lc1349, 0, 235);
+            lc_getupvalue(L, lc1339, 2, 224);
+            lc_setupvalue(L, lc1339, 0, 232);
             assert(lua_gettop(L) == 12);
 
             /* local e */
-            lc_newclosuretable(L, lc1349);
-            enum { lc1350 = 13 };
-            assert((lua_gettop(L) == lc1350));
+            lc_newclosuretable(L, lc1339);
+            enum { lc1340 = 13 };
+            assert((lua_gettop(L) == lc1340));
             lua_settop(L, (lua_gettop(L) + 1));
-            lua_rawseti(L, lc1350, 236);
+            lua_rawseti(L, lc1340, 233);
             assert(lua_gettop(L) == 13);
 
-            /* e=w */
-            lc_getupvalue(L, lc1350, 3, 228);
-            lc_setupvalue(L, lc1350, 0, 236);
+            /* e=y */
+            lc_getupvalue(L, lc1340, 3, 225);
+            lc_setupvalue(L, lc1340, 0, 233);
             assert(lua_gettop(L) == 13);
 
-            /* local a=a */
-            lc_newclosuretable(L, lc1350);
-            enum { lc1351 = 14 };
-            assert((lua_gettop(L) == lc1351));
+            /* local i=a */
+            lc_newclosuretable(L, lc1340);
+            enum { lc1341 = 14 };
+            assert((lua_gettop(L) == lc1341));
             lua_pushvalue(L, 10);
-            lua_rawseti(L, lc1351, 237);
+            lua_rawseti(L, lc1341, 234);
             assert(lua_gettop(L) == 14);
 
-            /* local o=y */
-            lc_newclosuretable(L, lc1351);
-            enum { lc1352 = 15 };
-            assert((lua_gettop(L) == lc1352));
-            lc_getupvalue(L, lc1351, 4, 230);
-            lua_rawseti(L, lc1352, 238);
+            /* local a=w */
+            lc_newclosuretable(L, lc1341);
+            enum { lc1342 = 15 };
+            assert((lua_gettop(L) == lc1342));
+            lc_getupvalue(L, lc1341, 4, 227);
+            lua_rawseti(L, lc1342, 235);
             assert(lua_gettop(L) == 15);
 
-            /* local function i()return b(t,e,P(d,a),o)end */
-            lua_pushvalue(L, lc1352);
-            lua_pushcclosure(L, lcf12_i, 1);
+            /* local function o()return v(t,e,F(u,i),a)end */
+            lua_pushvalue(L, lc1342);
+            lua_pushcclosure(L, lcf6_o, 1);
             assert(lua_gettop(L) == 16);
 
-            /* return l(i) */
-            const int lc1354 = lua_gettop(L);
-            lc_getupvalue(L, lc1352, 10, 221);
+            /* return d(o) */
+            const int lc1344 = lua_gettop(L);
+            lc_getupvalue(L, lc1342, 10, 218);
             lua_pushvalue(L, 16);
             lua_call(L, 1, LUA_MULTRET);
-            return (lua_gettop(L) - lc1354);
+            return (lua_gettop(L) - lc1344);
             assert(lua_gettop(L) == 16);
           }
-          lua_settop(L, lc1342);
+          lua_settop(L, lc1332);
           assert(lua_gettop(L) == 11);
         }
-        lua_settop(L, lc1340);
+        lua_settop(L, lc1330);
         assert(lua_gettop(L) == 11);
       }
-      lua_settop(L, lc1337);
+      lua_settop(L, lc1327);
       assert(lua_gettop(L) == 9);
     } else {
 
-      /* elseif c(m,q) then */
-      enum { lc1355 = 9 };
-      lc_getupvalue(L, lc1332, 35, 3);
+      /* elseif l(c,b) then */
+      enum { lc1345 = 9 };
+      lc_getupvalue(L, lc1322, 35, 4);
       lua_pushvalue(L, 8);
-      lc_getupvalue(L, lc1332, 3, 225);
+      lc_getupvalue(L, lc1322, 3, 222);
       lua_call(L, 2, 1);
-      const int lc1356 = lua_toboolean(L, -1);
+      const int lc1346 = lua_toboolean(L, -1);
       lua_pop(L, 1);
-      if (lc1356) {
+      if (lc1346) {
 
-        /* s=h(s) */
-        lc_getupvalue(L, lc1332, 35, 20);
+        /* s=r(s) */
+        lc_getupvalue(L, lc1322, 35, 21);
         lua_pushvalue(L, 9);
         lua_call(L, 1, 1);
         lua_replace(L, 9);
         assert(lua_gettop(L) == 9);
 
         /* if a(s) then */
-        enum { lc1357 = 9 };
-        lc_getupvalue(L, lc1332, 35, 91);
+        enum { lc1347 = 9 };
+        lc_getupvalue(L, lc1322, 35, 92);
         lua_pushvalue(L, 9);
         lua_call(L, 1, 1);
-        const int lc1358 = lua_toboolean(L, -1);
+        const int lc1348 = lua_toboolean(L, -1);
         lua_pop(L, 1);
-        if (lc1358) {
+        if (lc1348) {
 
-          /* local u=o(s) */
-          lc_getupvalue(L, lc1332, 35, 90);
+          /* local l=o(s) */
+          lc_getupvalue(L, lc1322, 35, 91);
           lua_pushvalue(L, 9);
           lua_call(L, 1, 1);
           assert(lua_gettop(L) == 10);
 
-          /* local s=h(n(s)) */
-          lc_getupvalue(L, lc1332, 35, 20);
-          const int lc1359 = lua_gettop(L);
-          lc_getupvalue(L, lc1332, 35, 89);
+          /* local s=r(i(s)) */
+          lc_getupvalue(L, lc1322, 35, 21);
+          const int lc1349 = lua_gettop(L);
+          lc_getupvalue(L, lc1322, 35, 90);
           lua_pushvalue(L, 9);
           lua_call(L, 1, LUA_MULTRET);
-          lua_call(L, (lua_gettop(L) - lc1359), 1);
+          lua_call(L, (lua_gettop(L) - lc1349), 1);
           assert(lua_gettop(L) == 11);
 
           /* if a(s) then */
-          enum { lc1360 = 11 };
-          lc_getupvalue(L, lc1332, 35, 91);
+          enum { lc1350 = 11 };
+          lc_getupvalue(L, lc1322, 35, 92);
           lua_pushvalue(L, 11);
           lua_call(L, 1, 1);
-          const int lc1361 = lua_toboolean(L, -1);
+          const int lc1351 = lua_toboolean(L, -1);
           lua_pop(L, 1);
-          if (lc1361) {
+          if (lc1351) {
 
             /* local a=o(s) */
-            lc_getupvalue(L, lc1332, 35, 90);
+            lc_getupvalue(L, lc1322, 35, 91);
             lua_pushvalue(L, 11);
             lua_call(L, 1, 1);
             assert(lua_gettop(L) == 12);
 
-            /* local o=h(n(s)) */
-            lc_getupvalue(L, lc1332, 35, 20);
-            const int lc1362 = lua_gettop(L);
-            lc_getupvalue(L, lc1332, 35, 89);
+            /* local o=r(i(s)) */
+            lc_getupvalue(L, lc1322, 35, 21);
+            const int lc1352 = lua_gettop(L);
+            lc_getupvalue(L, lc1322, 35, 90);
             lua_pushvalue(L, 11);
             lua_call(L, 1, LUA_MULTRET);
-            lua_call(L, (lua_gettop(L) - lc1362), 1);
+            lua_call(L, (lua_gettop(L) - lc1352), 1);
             assert(lua_gettop(L) == 13);
 
-            /* if r(o) then */
-            enum { lc1363 = 13 };
-            lc_getupvalue(L, lc1332, 35, 87);
+            /* if h(o) then */
+            enum { lc1353 = 13 };
+            lc_getupvalue(L, lc1322, 35, 88);
             lua_pushvalue(L, 13);
             lua_call(L, 1, 1);
-            const int lc1364 = lua_toboolean(L, -1);
+            const int lc1354 = lua_toboolean(L, -1);
             lua_pop(L, 1);
-            if (lc1364) {
+            if (lc1354) {
 
-              /* if d==false then */
-              enum { lc1365 = 13 };
-              lc_getupvalue(L, lc1332, 1, 231);
+              /* if u==false then */
+              enum { lc1355 = 13 };
+              lc_getupvalue(L, lc1322, 1, 228);
               lua_pushboolean(L, 0);
-              const int lc1366 = lua_equal(L, -2, -1);
+              const int lc1356 = lua_equal(L, -2, -1);
               lua_pop(L, 2);
-              lua_pushboolean(L, lc1366);
-              const int lc1367 = lua_toboolean(L, -1);
+              lua_pushboolean(L, lc1356);
+              const int lc1357 = lua_toboolean(L, -1);
               lua_pop(L, 1);
-              if (lc1367) {
-
-                /* local t */
-                lc_newclosuretable(L, lc1332);
-                enum { lc1368 = 14 };
-                assert((lua_gettop(L) == lc1368));
-                lua_settop(L, (lua_gettop(L) + 1));
-                lua_rawseti(L, lc1368, 239);
-                assert(lua_gettop(L) == 14);
-
-                /* t=f */
-                lc_getupvalue(L, lc1368, 2, 227);
-                lc_setupvalue(L, lc1368, 0, 239);
-                assert(lua_gettop(L) == 14);
+              if (lc1357) {
 
                 /* local e */
-                lc_newclosuretable(L, lc1368);
-                enum { lc1369 = 15 };
-                assert((lua_gettop(L) == lc1369));
+                lc_newclosuretable(L, lc1322);
+                enum { lc1358 = 14 };
+                assert((lua_gettop(L) == lc1358));
                 lua_settop(L, (lua_gettop(L) + 1));
-                lua_rawseti(L, lc1369, 240);
+                lua_rawseti(L, lc1358, 236);
+                assert(lua_gettop(L) == 14);
+
+                /* e=f */
+                lc_getupvalue(L, lc1358, 2, 224);
+                lc_setupvalue(L, lc1358, 0, 236);
+                assert(lua_gettop(L) == 14);
+
+                /* local t */
+                lc_newclosuretable(L, lc1358);
+                enum { lc1359 = 15 };
+                assert((lua_gettop(L) == lc1359));
+                lua_settop(L, (lua_gettop(L) + 1));
+                lua_rawseti(L, lc1359, 237);
                 assert(lua_gettop(L) == 15);
 
-                /* e=w */
-                lc_getupvalue(L, lc1369, 3, 228);
-                lc_setupvalue(L, lc1369, 0, 240);
+                /* t=y */
+                lc_getupvalue(L, lc1359, 3, 225);
+                lc_setupvalue(L, lc1359, 0, 237);
                 assert(lua_gettop(L) == 15);
 
-                /* local i=u */
-                lc_newclosuretable(L, lc1369);
-                enum { lc1370 = 16 };
-                assert((lua_gettop(L) == lc1370));
+                /* local n=l */
+                lc_newclosuretable(L, lc1359);
+                enum { lc1360 = 16 };
+                assert((lua_gettop(L) == lc1360));
                 lua_pushvalue(L, 10);
-                lua_rawseti(L, lc1370, 241);
+                lua_rawseti(L, lc1360, 238);
                 assert(lua_gettop(L) == 16);
 
-                /* local a=a */
-                lc_newclosuretable(L, lc1370);
-                enum { lc1371 = 17 };
-                assert((lua_gettop(L) == lc1371));
+                /* local o=a */
+                lc_newclosuretable(L, lc1360);
+                enum { lc1361 = 17 };
+                assert((lua_gettop(L) == lc1361));
                 lua_pushvalue(L, 12);
-                lua_rawseti(L, lc1371, 242);
+                lua_rawseti(L, lc1361, 239);
                 assert(lua_gettop(L) == 17);
 
-                /* local o=y */
-                lc_newclosuretable(L, lc1371);
-                enum { lc1372 = 18 };
-                assert((lua_gettop(L) == lc1372));
-                lc_getupvalue(L, lc1371, 5, 230);
-                lua_rawseti(L, lc1372, 243);
+                /* local i=w */
+                lc_newclosuretable(L, lc1361);
+                enum { lc1362 = 18 };
+                assert((lua_gettop(L) == lc1362));
+                lc_getupvalue(L, lc1361, 5, 227);
+                lua_rawseti(L, lc1362, 240);
                 assert(lua_gettop(L) == 18);
 
-                /* local function n()return b(t,e,i,o,a)end */
-                lua_pushvalue(L, lc1372);
-                lua_pushcclosure(L, lcf3_n, 1);
+                /* local function a()return v(e,t,n,i,o)end */
+                lua_pushvalue(L, lc1362);
+                lua_pushcclosure(L, lcf6_a, 1);
                 assert(lua_gettop(L) == 19);
 
-                /* return l(n) */
-                const int lc1374 = lua_gettop(L);
-                lc_getupvalue(L, lc1372, 11, 221);
+                /* return d(a) */
+                const int lc1364 = lua_gettop(L);
+                lc_getupvalue(L, lc1362, 11, 218);
                 lua_pushvalue(L, 19);
                 lua_call(L, 1, LUA_MULTRET);
-                return (lua_gettop(L) - lc1374);
+                return (lua_gettop(L) - lc1364);
                 assert(lua_gettop(L) == 19);
               } else {
 
                 /* else
-                 * local o */
-                lc_newclosuretable(L, lc1332);
-                enum { lc1375 = 14 };
-                assert((lua_gettop(L) == lc1375));
+                 * local i */
+                lc_newclosuretable(L, lc1322);
+                enum { lc1365 = 14 };
+                assert((lua_gettop(L) == lc1365));
                 lua_settop(L, (lua_gettop(L) + 1));
-                lua_rawseti(L, lc1375, 244);
+                lua_rawseti(L, lc1365, 241);
                 assert(lua_gettop(L) == 14);
 
-                /* o=f */
-                lc_getupvalue(L, lc1375, 2, 227);
-                lc_setupvalue(L, lc1375, 0, 244);
+                /* i=f */
+                lc_getupvalue(L, lc1365, 2, 224);
+                lc_setupvalue(L, lc1365, 0, 241);
                 assert(lua_gettop(L) == 14);
 
-                /* local n */
-                lc_newclosuretable(L, lc1375);
-                enum { lc1376 = 15 };
-                assert((lua_gettop(L) == lc1376));
+                /* local o */
+                lc_newclosuretable(L, lc1365);
+                enum { lc1366 = 15 };
+                assert((lua_gettop(L) == lc1366));
                 lua_settop(L, (lua_gettop(L) + 1));
-                lua_rawseti(L, lc1376, 245);
+                lua_rawseti(L, lc1366, 242);
                 assert(lua_gettop(L) == 15);
 
-                /* n=w */
-                lc_getupvalue(L, lc1376, 3, 228);
-                lc_setupvalue(L, lc1376, 0, 245);
+                /* o=y */
+                lc_getupvalue(L, lc1366, 3, 225);
+                lc_setupvalue(L, lc1366, 0, 242);
                 assert(lua_gettop(L) == 15);
 
-                /* local r=u */
-                lc_newclosuretable(L, lc1376);
-                enum { lc1377 = 16 };
-                assert((lua_gettop(L) == lc1377));
+                /* local r=l */
+                lc_newclosuretable(L, lc1366);
+                enum { lc1367 = 16 };
+                assert((lua_gettop(L) == lc1367));
                 lua_pushvalue(L, 10);
-                lua_rawseti(L, lc1377, 246);
+                lua_rawseti(L, lc1367, 243);
                 assert(lua_gettop(L) == 16);
 
-                /* local u=a */
-                lc_newclosuretable(L, lc1377);
-                enum { lc1378 = 17 };
-                assert((lua_gettop(L) == lc1378));
+                /* local h=a */
+                lc_newclosuretable(L, lc1367);
+                enum { lc1368 = 17 };
+                assert((lua_gettop(L) == lc1368));
                 lua_pushvalue(L, 12);
-                lua_rawseti(L, lc1378, 247);
+                lua_rawseti(L, lc1368, 244);
                 assert(lua_gettop(L) == 17);
 
-                /* local s=y */
-                lc_newclosuretable(L, lc1378);
-                enum { lc1379 = 18 };
-                assert((lua_gettop(L) == lc1379));
-                lc_getupvalue(L, lc1378, 5, 230);
-                lua_rawseti(L, lc1379, 248);
+                /* local s=w */
+                lc_newclosuretable(L, lc1368);
+                enum { lc1369 = 18 };
+                assert((lua_gettop(L) == lc1369));
+                lc_getupvalue(L, lc1368, 5, 227);
+                lua_rawseti(L, lc1369, 245);
                 assert(lua_gettop(L) == 18);
 
-                /* local h=d */
-                lc_newclosuretable(L, lc1379);
-                enum { lc1380 = 19 };
-                assert((lua_gettop(L) == lc1380));
-                lc_getupvalue(L, lc1379, 6, 231);
-                lua_rawseti(L, lc1380, 249);
+                /* local l=u */
+                lc_newclosuretable(L, lc1369);
+                enum { lc1370 = 19 };
+                assert((lua_gettop(L) == lc1370));
+                lc_getupvalue(L, lc1369, 6, 228);
+                lua_rawseti(L, lc1370, 246);
                 assert(lua_gettop(L) == 19);
 
-                /* local a=i("序甲") */
-                lc_newclosuretable(L, lc1380);
-                enum { lc1381 = 20 };
-                assert((lua_gettop(L) == lc1381));
-                lc_getupvalue(L, lc1380, 34, 145);
+                /* local a=n("序甲") */
+                lc_newclosuretable(L, lc1370);
+                enum { lc1371 = 20 };
+                assert((lua_gettop(L) == lc1371));
+                lc_getupvalue(L, lc1370, 34, 146);
                 lua_pushliteral(L, "序甲");
                 lua_call(L, 1, 1);
-                lua_rawseti(L, lc1381, 250);
+                lua_rawseti(L, lc1371, 247);
                 assert(lua_gettop(L) == 20);
 
-                /* local function i()return
-                 * b(o,n,r,s,E(t,e(e(a),p(e(we(u),a),we(h)))))end */
-                lua_pushvalue(L, lc1381);
-                lua_pushcclosure(L, lcf13_i, 1);
+                /* local function n()return
+                 * v(i,o,r,s,T(t,e(e(a),p(e(ce(h),a),ce(l)))))end */
+                lua_pushvalue(L, lc1371);
+                lua_pushcclosure(L, lcf11_n, 1);
                 assert(lua_gettop(L) == 21);
 
-                /* return l(i) */
-                const int lc1387 = lua_gettop(L);
-                lc_getupvalue(L, lc1381, 13, 221);
+                /* return d(n) */
+                const int lc1377 = lua_gettop(L);
+                lc_getupvalue(L, lc1371, 13, 218);
                 lua_pushvalue(L, 21);
                 lua_call(L, 1, LUA_MULTRET);
-                return (lua_gettop(L) - lc1387);
+                return (lua_gettop(L) - lc1377);
                 assert(lua_gettop(L) == 21);
               }
-              lua_settop(L, lc1365);
+              lua_settop(L, lc1355);
               assert(lua_gettop(L) == 13);
             }
-            lua_settop(L, lc1363);
+            lua_settop(L, lc1353);
             assert(lua_gettop(L) == 13);
           }
-          lua_settop(L, lc1360);
+          lua_settop(L, lc1350);
           assert(lua_gettop(L) == 11);
         }
-        lua_settop(L, lc1357);
+        lua_settop(L, lc1347);
         assert(lua_gettop(L) == 9);
       }
-      lua_settop(L, lc1355);
+      lua_settop(L, lc1345);
     }
-    lua_settop(L, lc1335);
+    lua_settop(L, lc1325);
     assert(lua_gettop(L) == 9);
   }
-  lua_settop(L, lc1333);
+  lua_settop(L, lc1323);
   assert(lua_gettop(L) == 7);
 
-  /* if d==false then */
-  enum { lc1388 = 7 };
-  lc_getupvalue(L, lc1332, 1, 231);
+  /* if u==false then */
+  enum { lc1378 = 7 };
+  lc_getupvalue(L, lc1322, 1, 228);
   lua_pushboolean(L, 0);
-  const int lc1389 = lua_equal(L, -2, -1);
+  const int lc1379 = lua_equal(L, -2, -1);
   lua_pop(L, 2);
-  lua_pushboolean(L, lc1389);
-  const int lc1390 = lua_toboolean(L, -1);
+  lua_pushboolean(L, lc1379);
+  const int lc1380 = lua_toboolean(L, -1);
   lua_pop(L, 1);
-  if (lc1390) {
+  if (lc1380) {
 
-    /* return l(function()return w(u,y,f)end) */
-    const int lc1391 = lua_gettop(L);
-    lc_getupvalue(L, lc1332, 6, 221);
-    lua_pushvalue(L, lc1332);
-    lua_pushcclosure(L, lcf1393, 1);
+    /* return d(function()return y(m,w,f)end) */
+    const int lc1381 = lua_gettop(L);
+    lc_getupvalue(L, lc1322, 6, 218);
+    lua_pushvalue(L, lc1322);
+    lua_pushcclosure(L, lcf1383, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc1391);
+    return (lua_gettop(L) - lc1381);
     assert(lua_gettop(L) == 7);
   } else {
 
     /* else
-     * return l(function()return w(u,y,function(t,e)return l(function()return
-     * b(f,w,P(d,{t}),e)end)end)end) */
-    const int lc1394 = lua_gettop(L);
-    lc_getupvalue(L, lc1332, 6, 221);
-    lua_pushvalue(L, lc1332);
-    lua_pushcclosure(L, lcf1401, 1);
+     * return d(function()return y(m,w,function(e,t)return d(function()return
+     * v(f,y,F(u,{e}),t)end)end)end) */
+    const int lc1384 = lua_gettop(L);
+    lc_getupvalue(L, lc1322, 6, 218);
+    lua_pushvalue(L, lc1322);
+    lua_pushcclosure(L, lcf1391, 1);
     lua_call(L, 1, LUA_MULTRET);
-    return (lua_gettop(L) - lc1394);
+    return (lua_gettop(L) - lc1384);
     assert(lua_gettop(L) == 7);
   }
-  lua_settop(L, lc1388);
+  lua_settop(L, lc1378);
   assert(lua_gettop(L) == 7);
   return 0;
 }
 
-/* name: d
- * function(e,t,o,a) */
-static inline int lcf9_d(lua_State *L) {
+/* name: l
+ * function(t,e,a,o) */
+static inline int lcf3_l(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
 
-  /* return b(e,t,o,a) */
-  const int lc1402 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 226);
+  /* return v(t,e,a,o) */
+  const int lc1392 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 223);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 4);
   lua_call(L, 4, LUA_MULTRET);
-  return (lua_gettop(L) - lc1402);
+  return (lua_gettop(L) - lc1392);
   assert(lua_gettop(L) == 4);
 }
 
+/* function(t,e) */
+static inline int lcf1398(lua_State *L) {
+  enum { lc_nformalargs = 2 };
+  lua_settop(L, 2);
+
+  /* return j(a(t,e)) */
+  const int lc1396 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 6, 216);
+  const int lc1397 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 250);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1397), LUA_MULTRET);
+  return (lua_gettop(L) - lc1396);
+  assert(lua_gettop(L) == 2);
+}
+
 /* function(e,t) */
-static inline int lcf1408(lua_State *L) {
+static inline int lcf1404(lua_State *L) {
   enum { lc_nformalargs = 2 };
   lua_settop(L, 2);
 
-  /* return z(o(e,t)) */
-  const int lc1406 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 6, 219);
-  const int lc1407 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 253);
+  /* return z(a(e,t)) */
+  const int lc1402 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 5, 220);
+  const int lc1403 = lua_gettop(L);
+  lc_getupvalue(L, lua_upvalueindex(1), 0, 252);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1407), LUA_MULTRET);
-  return (lua_gettop(L) - lc1406);
+  lua_call(L, (lua_gettop(L) - lc1403), LUA_MULTRET);
+  return (lua_gettop(L) - lc1402);
   assert(lua_gettop(L) == 2);
 }
 
-/* function(e,a) */
-static inline int lcf1414(lua_State *L) {
-  enum { lc_nformalargs = 2 };
-  lua_settop(L, 2);
-
-  /* return I(t(e,a)) */
-  const int lc1412 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 5, 223);
-  const int lc1413 = lua_gettop(L);
-  lc_getupvalue(L, lua_upvalueindex(1), 0, 255);
-  lua_pushvalue(L, 1);
-  lua_pushvalue(L, 2);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1413), LUA_MULTRET);
-  return (lua_gettop(L) - lc1412);
-  assert(lua_gettop(L) == 2);
-}
-
-/* function(o,a,t) */
-static inline int lcf1415(lua_State *L) {
+/* function(e,t,a) */
+static inline int lcf1405(lua_State *L) {
   enum { lc_nformalargs = 3 };
   lua_settop(L, 3);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1409 = 4 };
-  assert((lua_gettop(L) == lc1409));
+  enum { lc1399 = 4 };
+  assert((lua_gettop(L) == lc1399));
   lua_pushvalue(L, 3);
-  lua_rawseti(L, -2, 255);
+  lua_rawseti(L, -2, 252);
 
-  /* return z(e(o,a,function(e,a)return I(t(e,a))end)) */
-  const int lc1410 = lua_gettop(L);
-  lc_getupvalue(L, lc1409, 7, 219);
-  const int lc1411 = lua_gettop(L);
-  lc_getupvalue(L, lc1409, 1, 254);
+  /* return j(i(e,t,function(e,t)return z(a(e,t))end)) */
+  const int lc1400 = lua_gettop(L);
+  lc_getupvalue(L, lc1399, 7, 216);
+  const int lc1401 = lua_gettop(L);
+  lc_getupvalue(L, lc1399, 1, 251);
   lua_pushvalue(L, 1);
   lua_pushvalue(L, 2);
-  lua_pushvalue(L, lc1409);
-  lua_pushcclosure(L, lcf1414, 1);
+  lua_pushvalue(L, lc1399);
+  lua_pushcclosure(L, lcf1404, 1);
   lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1411), LUA_MULTRET);
-  return (lua_gettop(L) - lc1410);
+  lua_call(L, (lua_gettop(L) - lc1401), LUA_MULTRET);
+  return (lua_gettop(L) - lc1400);
   assert(lua_gettop(L) == 4);
 }
 
 /* name: u
- * function(o,e,t,a) */
-static inline int lcf5_u(lua_State *L) {
+ * function(a,i,n,o) */
+static inline int lcf3_u(lua_State *L) {
   enum { lc_nformalargs = 4 };
   lua_settop(L, 4);
   lc_newclosuretable(L, lua_upvalueindex(1));
-  enum { lc1403 = 5 };
-  assert((lua_gettop(L) == lc1403));
+  enum { lc1393 = 5 };
+  assert((lua_gettop(L) == lc1393));
   lua_pushvalue(L, 1);
-  lua_rawseti(L, -2, 253);
+  lua_rawseti(L, -2, 250);
   lua_pushvalue(L, 2);
-  lua_rawseti(L, -2, 254);
+  lua_rawseti(L, -2, 251);
 
-  /* return I(b((function(e,t)return z(o(e,t))end),(function(o,a,t)return
-   * z(e(o,a,function(e,a)return I(t(e,a))end))end),t,a)) */
-  const int lc1404 = lua_gettop(L);
-  lc_getupvalue(L, lc1403, 4, 223);
-  const int lc1405 = lua_gettop(L);
-  lc_getupvalue(L, lc1403, 1, 226);
-  lua_pushvalue(L, lc1403);
-  lua_pushcclosure(L, lcf1408, 1);
-  lua_pushvalue(L, lc1403);
-  lua_pushcclosure(L, lcf1415, 1);
+  /* return z(v((function(t,e)return j(a(t,e))end),(function(e,t,a)return
+   * j(i(e,t,function(e,t)return z(a(e,t))end))end),n,o)) */
+  const int lc1394 = lua_gettop(L);
+  lc_getupvalue(L, lc1393, 4, 220);
+  const int lc1395 = lua_gettop(L);
+  lc_getupvalue(L, lc1393, 1, 223);
+  lua_pushvalue(L, lc1393);
+  lua_pushcclosure(L, lcf1398, 1);
+  lua_pushvalue(L, lc1393);
+  lua_pushcclosure(L, lcf1405, 1);
   lua_pushvalue(L, 3);
   lua_pushvalue(L, 4);
   lua_call(L, 4, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1405), LUA_MULTRET);
-  return (lua_gettop(L) - lc1404);
+  lua_call(L, (lua_gettop(L) - lc1395), LUA_MULTRET);
+  return (lua_gettop(L) - lc1394);
   assert(lua_gettop(L) == 5);
 }
 
 /* name: (main)
  * function(...) */
 static inline int lcf_main(lua_State *L) {
-  lua_checkstack(L, 83);
+  lua_checkstack(L, 84);
   enum { lc_nformalargs = 0 };
   const int lc_nactualargs = lua_gettop(L);
   const int lc_nextra = (lc_nactualargs - lc_nformalargs);
 
-  /* local function l(e,...)
+  /* local function v(e,...)
    * local t=({...})
    * for a,t in ipairs(t)do
    * e[#e+1]=t
@@ -18186,560 +18100,578 @@ static inline int lcf_main(lua_State *L) {
   lc_newclosuretable(L, lua_upvalueindex(1));
   enum { lc1 = 1 };
   assert((lua_gettop(L) == (lc1 + lc_nextra)));
-  lua_pushcfunction(L, lcf1_l);
+  lua_pushcfunction(L, lcf1_v);
   lua_rawseti(L, (lc1 + lc_nextra), 1);
   assert(lua_gettop(L) - lc_nextra == 1);
 
-  /* local
-   * q,S,f,pe,Oe,ne,he,Z,ee,ve,b,Y,Ae,ye,be,ce,O,ue,X,ze,p,fe,me,L,s,a,o,n,v,r,E,m,_,A,R,g,U,C,V,rt,H,B,te,ae,Ge,Q,_e,xe,qe,j,J,le,re,P,G,je,Ee,F,K,i,I,W,dt,z,t,x,Be,Je,Ke,Ve,Ye,Re,De,We,Me,Pe,Ne,Ce,Le,ie,Te,ke,oe,Ue,ot,M,se,ht,st,T,e,N,de,y,d,k,h,Fe,Se,ge,Ie,it,D,He,nt,tt,u,at,et,Ze,Xe,we,Qe,c,w
-   */
+  /* local function Ne(a,...)
+   * local t=({...})
+   * do
+   * local e=#t-1
+   * while e>=0 do
+   * table.insert(a,1,t[e+1])
+   * e=e-1
+   * end
+   * end
+   * return#a
+   * end */
   lc_newclosuretable(L, (lc1 + lc_nextra));
   enum { lc6 = 2 };
   assert((lua_gettop(L) == (lc6 + lc_nextra)));
-  lua_settop(L, (lua_gettop(L) + 115));
+  lua_pushcfunction(L, lcf1_Ne);
   lua_rawseti(L, (lc6 + lc_nextra), 2);
-  lua_rawseti(L, (lc6 + lc_nextra), 3);
-  lua_rawseti(L, (lc6 + lc_nextra), 4);
-  lua_rawseti(L, (lc6 + lc_nextra), 5);
-  lua_rawseti(L, (lc6 + lc_nextra), 6);
-  lua_rawseti(L, (lc6 + lc_nextra), 7);
-  lua_rawseti(L, (lc6 + lc_nextra), 8);
-  lua_rawseti(L, (lc6 + lc_nextra), 9);
-  lua_rawseti(L, (lc6 + lc_nextra), 10);
-  lua_rawseti(L, (lc6 + lc_nextra), 11);
-  lua_rawseti(L, (lc6 + lc_nextra), 12);
-  lua_rawseti(L, (lc6 + lc_nextra), 13);
-  lua_rawseti(L, (lc6 + lc_nextra), 14);
-  lua_rawseti(L, (lc6 + lc_nextra), 15);
-  lua_rawseti(L, (lc6 + lc_nextra), 16);
-  lua_rawseti(L, (lc6 + lc_nextra), 17);
-  lua_rawseti(L, (lc6 + lc_nextra), 18);
-  lua_rawseti(L, (lc6 + lc_nextra), 19);
-  lua_rawseti(L, (lc6 + lc_nextra), 20);
-  lua_rawseti(L, (lc6 + lc_nextra), 21);
-  lua_rawseti(L, (lc6 + lc_nextra), 22);
-  lua_rawseti(L, (lc6 + lc_nextra), 23);
-  lua_rawseti(L, (lc6 + lc_nextra), 24);
-  lua_rawseti(L, (lc6 + lc_nextra), 25);
-  lua_rawseti(L, (lc6 + lc_nextra), 26);
-  lua_rawseti(L, (lc6 + lc_nextra), 27);
-  lua_rawseti(L, (lc6 + lc_nextra), 28);
-  lua_rawseti(L, (lc6 + lc_nextra), 29);
-  lua_rawseti(L, (lc6 + lc_nextra), 30);
-  lua_rawseti(L, (lc6 + lc_nextra), 31);
-  lua_rawseti(L, (lc6 + lc_nextra), 32);
-  lua_rawseti(L, (lc6 + lc_nextra), 33);
-  lua_rawseti(L, (lc6 + lc_nextra), 34);
-  lua_rawseti(L, (lc6 + lc_nextra), 35);
-  lua_rawseti(L, (lc6 + lc_nextra), 36);
-  lua_rawseti(L, (lc6 + lc_nextra), 37);
-  lua_rawseti(L, (lc6 + lc_nextra), 38);
-  lua_rawseti(L, (lc6 + lc_nextra), 39);
-  lua_rawseti(L, (lc6 + lc_nextra), 40);
-  lua_rawseti(L, (lc6 + lc_nextra), 41);
-  lua_rawseti(L, (lc6 + lc_nextra), 42);
-  lua_rawseti(L, (lc6 + lc_nextra), 43);
-  lua_rawseti(L, (lc6 + lc_nextra), 44);
-  lua_rawseti(L, (lc6 + lc_nextra), 45);
-  lua_rawseti(L, (lc6 + lc_nextra), 46);
-  lua_rawseti(L, (lc6 + lc_nextra), 47);
-  lua_rawseti(L, (lc6 + lc_nextra), 48);
-  lua_rawseti(L, (lc6 + lc_nextra), 49);
-  lua_rawseti(L, (lc6 + lc_nextra), 50);
-  lua_rawseti(L, (lc6 + lc_nextra), 51);
-  lua_rawseti(L, (lc6 + lc_nextra), 52);
-  lua_rawseti(L, (lc6 + lc_nextra), 53);
-  lua_rawseti(L, (lc6 + lc_nextra), 54);
-  lua_rawseti(L, (lc6 + lc_nextra), 55);
-  lua_rawseti(L, (lc6 + lc_nextra), 56);
-  lua_rawseti(L, (lc6 + lc_nextra), 57);
-  lua_rawseti(L, (lc6 + lc_nextra), 58);
-  lua_rawseti(L, (lc6 + lc_nextra), 59);
-  lua_rawseti(L, (lc6 + lc_nextra), 60);
-  lua_rawseti(L, (lc6 + lc_nextra), 61);
-  lua_rawseti(L, (lc6 + lc_nextra), 62);
-  lua_rawseti(L, (lc6 + lc_nextra), 63);
-  lua_rawseti(L, (lc6 + lc_nextra), 64);
-  lua_rawseti(L, (lc6 + lc_nextra), 65);
-  lua_rawseti(L, (lc6 + lc_nextra), 66);
-  lua_rawseti(L, (lc6 + lc_nextra), 67);
-  lua_rawseti(L, (lc6 + lc_nextra), 68);
-  lua_rawseti(L, (lc6 + lc_nextra), 69);
-  lua_rawseti(L, (lc6 + lc_nextra), 70);
-  lua_rawseti(L, (lc6 + lc_nextra), 71);
-  lua_rawseti(L, (lc6 + lc_nextra), 72);
-  lua_rawseti(L, (lc6 + lc_nextra), 73);
-  lua_rawseti(L, (lc6 + lc_nextra), 74);
-  lua_rawseti(L, (lc6 + lc_nextra), 75);
-  lua_rawseti(L, (lc6 + lc_nextra), 76);
-  lua_rawseti(L, (lc6 + lc_nextra), 77);
-  lua_rawseti(L, (lc6 + lc_nextra), 78);
-  lua_rawseti(L, (lc6 + lc_nextra), 79);
-  lua_rawseti(L, (lc6 + lc_nextra), 80);
-  lua_rawseti(L, (lc6 + lc_nextra), 81);
-  lua_rawseti(L, (lc6 + lc_nextra), 82);
-  lua_rawseti(L, (lc6 + lc_nextra), 83);
-  lua_rawseti(L, (lc6 + lc_nextra), 84);
-  lua_rawseti(L, (lc6 + lc_nextra), 85);
-  lua_rawseti(L, (lc6 + lc_nextra), 86);
-  lua_rawseti(L, (lc6 + lc_nextra), 87);
-  lua_rawseti(L, (lc6 + lc_nextra), 88);
-  lua_rawseti(L, (lc6 + lc_nextra), 89);
-  lua_rawseti(L, (lc6 + lc_nextra), 90);
-  lua_rawseti(L, (lc6 + lc_nextra), 91);
-  lua_rawseti(L, (lc6 + lc_nextra), 92);
-  lua_rawseti(L, (lc6 + lc_nextra), 93);
-  lua_rawseti(L, (lc6 + lc_nextra), 94);
-  lua_rawseti(L, (lc6 + lc_nextra), 95);
-  lua_rawseti(L, (lc6 + lc_nextra), 96);
-  lua_rawseti(L, (lc6 + lc_nextra), 97);
-  lua_rawseti(L, (lc6 + lc_nextra), 98);
-  lua_rawseti(L, (lc6 + lc_nextra), 99);
-  lua_rawseti(L, (lc6 + lc_nextra), 100);
-  lua_rawseti(L, (lc6 + lc_nextra), 101);
-  lua_rawseti(L, (lc6 + lc_nextra), 102);
-  lua_rawseti(L, (lc6 + lc_nextra), 103);
-  lua_rawseti(L, (lc6 + lc_nextra), 104);
-  lua_rawseti(L, (lc6 + lc_nextra), 105);
-  lua_rawseti(L, (lc6 + lc_nextra), 106);
-  lua_rawseti(L, (lc6 + lc_nextra), 107);
-  lua_rawseti(L, (lc6 + lc_nextra), 108);
-  lua_rawseti(L, (lc6 + lc_nextra), 109);
-  lua_rawseti(L, (lc6 + lc_nextra), 110);
-  lua_rawseti(L, (lc6 + lc_nextra), 111);
-  lua_rawseti(L, (lc6 + lc_nextra), 112);
-  lua_rawseti(L, (lc6 + lc_nextra), 113);
-  lua_rawseti(L, (lc6 + lc_nextra), 114);
-  lua_rawseti(L, (lc6 + lc_nextra), 115);
-  lua_rawseti(L, (lc6 + lc_nextra), 116);
   assert(lua_gettop(L) - lc_nextra == 2);
 
-  /* function q()
+  /* local
+   * j,H,m,Ve,Ie,Ae,b,M,Y,ne,ae,pe,he,ye,se,fe,I,oe,K,qe,p,le,de,D,s,a,o,i,y,h,T,c,E,A,L,g,C,U,B,rt,S,Q,X,Z,Oe,G,_e,Te,ze,q,P,ue,re,F,V,je,xe,W,ge,d,O,we,lt,z,t,x,Se,dt,He,We,Fe,Ye,Pe,Me,De,Re,Le,Ue,Ce,te,be,ve,ee,ke,st,J,ie,nt,tt,_,e,N,me,w,n,k,r,Qe,Be,Ee,Ge,et,R,Ke,ot,it,u,at,ht,Ze,Xe,ce,Je,l,f
+   */
+  lc_newclosuretable(L, (lc6 + lc_nextra));
+  enum { lc12 = 3 };
+  assert((lua_gettop(L) == (lc12 + lc_nextra)));
+  lua_settop(L, (lua_gettop(L) + 115));
+  lua_rawseti(L, (lc12 + lc_nextra), 3);
+  lua_rawseti(L, (lc12 + lc_nextra), 4);
+  lua_rawseti(L, (lc12 + lc_nextra), 5);
+  lua_rawseti(L, (lc12 + lc_nextra), 6);
+  lua_rawseti(L, (lc12 + lc_nextra), 7);
+  lua_rawseti(L, (lc12 + lc_nextra), 8);
+  lua_rawseti(L, (lc12 + lc_nextra), 9);
+  lua_rawseti(L, (lc12 + lc_nextra), 10);
+  lua_rawseti(L, (lc12 + lc_nextra), 11);
+  lua_rawseti(L, (lc12 + lc_nextra), 12);
+  lua_rawseti(L, (lc12 + lc_nextra), 13);
+  lua_rawseti(L, (lc12 + lc_nextra), 14);
+  lua_rawseti(L, (lc12 + lc_nextra), 15);
+  lua_rawseti(L, (lc12 + lc_nextra), 16);
+  lua_rawseti(L, (lc12 + lc_nextra), 17);
+  lua_rawseti(L, (lc12 + lc_nextra), 18);
+  lua_rawseti(L, (lc12 + lc_nextra), 19);
+  lua_rawseti(L, (lc12 + lc_nextra), 20);
+  lua_rawseti(L, (lc12 + lc_nextra), 21);
+  lua_rawseti(L, (lc12 + lc_nextra), 22);
+  lua_rawseti(L, (lc12 + lc_nextra), 23);
+  lua_rawseti(L, (lc12 + lc_nextra), 24);
+  lua_rawseti(L, (lc12 + lc_nextra), 25);
+  lua_rawseti(L, (lc12 + lc_nextra), 26);
+  lua_rawseti(L, (lc12 + lc_nextra), 27);
+  lua_rawseti(L, (lc12 + lc_nextra), 28);
+  lua_rawseti(L, (lc12 + lc_nextra), 29);
+  lua_rawseti(L, (lc12 + lc_nextra), 30);
+  lua_rawseti(L, (lc12 + lc_nextra), 31);
+  lua_rawseti(L, (lc12 + lc_nextra), 32);
+  lua_rawseti(L, (lc12 + lc_nextra), 33);
+  lua_rawseti(L, (lc12 + lc_nextra), 34);
+  lua_rawseti(L, (lc12 + lc_nextra), 35);
+  lua_rawseti(L, (lc12 + lc_nextra), 36);
+  lua_rawseti(L, (lc12 + lc_nextra), 37);
+  lua_rawseti(L, (lc12 + lc_nextra), 38);
+  lua_rawseti(L, (lc12 + lc_nextra), 39);
+  lua_rawseti(L, (lc12 + lc_nextra), 40);
+  lua_rawseti(L, (lc12 + lc_nextra), 41);
+  lua_rawseti(L, (lc12 + lc_nextra), 42);
+  lua_rawseti(L, (lc12 + lc_nextra), 43);
+  lua_rawseti(L, (lc12 + lc_nextra), 44);
+  lua_rawseti(L, (lc12 + lc_nextra), 45);
+  lua_rawseti(L, (lc12 + lc_nextra), 46);
+  lua_rawseti(L, (lc12 + lc_nextra), 47);
+  lua_rawseti(L, (lc12 + lc_nextra), 48);
+  lua_rawseti(L, (lc12 + lc_nextra), 49);
+  lua_rawseti(L, (lc12 + lc_nextra), 50);
+  lua_rawseti(L, (lc12 + lc_nextra), 51);
+  lua_rawseti(L, (lc12 + lc_nextra), 52);
+  lua_rawseti(L, (lc12 + lc_nextra), 53);
+  lua_rawseti(L, (lc12 + lc_nextra), 54);
+  lua_rawseti(L, (lc12 + lc_nextra), 55);
+  lua_rawseti(L, (lc12 + lc_nextra), 56);
+  lua_rawseti(L, (lc12 + lc_nextra), 57);
+  lua_rawseti(L, (lc12 + lc_nextra), 58);
+  lua_rawseti(L, (lc12 + lc_nextra), 59);
+  lua_rawseti(L, (lc12 + lc_nextra), 60);
+  lua_rawseti(L, (lc12 + lc_nextra), 61);
+  lua_rawseti(L, (lc12 + lc_nextra), 62);
+  lua_rawseti(L, (lc12 + lc_nextra), 63);
+  lua_rawseti(L, (lc12 + lc_nextra), 64);
+  lua_rawseti(L, (lc12 + lc_nextra), 65);
+  lua_rawseti(L, (lc12 + lc_nextra), 66);
+  lua_rawseti(L, (lc12 + lc_nextra), 67);
+  lua_rawseti(L, (lc12 + lc_nextra), 68);
+  lua_rawseti(L, (lc12 + lc_nextra), 69);
+  lua_rawseti(L, (lc12 + lc_nextra), 70);
+  lua_rawseti(L, (lc12 + lc_nextra), 71);
+  lua_rawseti(L, (lc12 + lc_nextra), 72);
+  lua_rawseti(L, (lc12 + lc_nextra), 73);
+  lua_rawseti(L, (lc12 + lc_nextra), 74);
+  lua_rawseti(L, (lc12 + lc_nextra), 75);
+  lua_rawseti(L, (lc12 + lc_nextra), 76);
+  lua_rawseti(L, (lc12 + lc_nextra), 77);
+  lua_rawseti(L, (lc12 + lc_nextra), 78);
+  lua_rawseti(L, (lc12 + lc_nextra), 79);
+  lua_rawseti(L, (lc12 + lc_nextra), 80);
+  lua_rawseti(L, (lc12 + lc_nextra), 81);
+  lua_rawseti(L, (lc12 + lc_nextra), 82);
+  lua_rawseti(L, (lc12 + lc_nextra), 83);
+  lua_rawseti(L, (lc12 + lc_nextra), 84);
+  lua_rawseti(L, (lc12 + lc_nextra), 85);
+  lua_rawseti(L, (lc12 + lc_nextra), 86);
+  lua_rawseti(L, (lc12 + lc_nextra), 87);
+  lua_rawseti(L, (lc12 + lc_nextra), 88);
+  lua_rawseti(L, (lc12 + lc_nextra), 89);
+  lua_rawseti(L, (lc12 + lc_nextra), 90);
+  lua_rawseti(L, (lc12 + lc_nextra), 91);
+  lua_rawseti(L, (lc12 + lc_nextra), 92);
+  lua_rawseti(L, (lc12 + lc_nextra), 93);
+  lua_rawseti(L, (lc12 + lc_nextra), 94);
+  lua_rawseti(L, (lc12 + lc_nextra), 95);
+  lua_rawseti(L, (lc12 + lc_nextra), 96);
+  lua_rawseti(L, (lc12 + lc_nextra), 97);
+  lua_rawseti(L, (lc12 + lc_nextra), 98);
+  lua_rawseti(L, (lc12 + lc_nextra), 99);
+  lua_rawseti(L, (lc12 + lc_nextra), 100);
+  lua_rawseti(L, (lc12 + lc_nextra), 101);
+  lua_rawseti(L, (lc12 + lc_nextra), 102);
+  lua_rawseti(L, (lc12 + lc_nextra), 103);
+  lua_rawseti(L, (lc12 + lc_nextra), 104);
+  lua_rawseti(L, (lc12 + lc_nextra), 105);
+  lua_rawseti(L, (lc12 + lc_nextra), 106);
+  lua_rawseti(L, (lc12 + lc_nextra), 107);
+  lua_rawseti(L, (lc12 + lc_nextra), 108);
+  lua_rawseti(L, (lc12 + lc_nextra), 109);
+  lua_rawseti(L, (lc12 + lc_nextra), 110);
+  lua_rawseti(L, (lc12 + lc_nextra), 111);
+  lua_rawseti(L, (lc12 + lc_nextra), 112);
+  lua_rawseti(L, (lc12 + lc_nextra), 113);
+  lua_rawseti(L, (lc12 + lc_nextra), 114);
+  lua_rawseti(L, (lc12 + lc_nextra), 115);
+  lua_rawseti(L, (lc12 + lc_nextra), 116);
+  lua_rawseti(L, (lc12 + lc_nextra), 117);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function j()
    * error("TheLanguage PANIC")
    * end */
-  lua_pushcfunction(L, lcf1_q);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 116);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_j);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 117);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function S(e)
+  /* function H(e)
    * if not e then
-   * return q()
+   * return j()
    * end
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_S, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 115);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_H, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 116);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ce(t,e)
+  /* function fe(e,t)
    * return{
    * ye,
-   * t,
    * e,
+   * t,
    * }
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ce, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 101);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_fe, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 102);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function O(e)
+  /* function I(e)
    * return e[1]==ye
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_O, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 100);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_I, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 101);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ue(e)
+  /* function oe(e)
    * return e[2]
    * end */
-  lua_pushcfunction(L, lcf1_ue);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 99);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_oe);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 100);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function X(e)
+  /* function K(e)
    * return e[3]
    * end */
-  lua_pushcfunction(L, lcf1_X);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 98);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_K);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 99);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ze(e)
-   * while O(e)do
-   * e=X(e)
+  /* function qe(e)
+   * while I(e)do
+   * e=K(e)
    * end
    * return e
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ze, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 97);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_qe, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 98);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function p(e)
-   * return e[1]==pe
+   * return e[1]==Ve
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_p, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 96);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 97);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function fe(e)
+  /* function le(e)
    * return e[2]
    * end */
-  lua_pushcfunction(L, lcf1_fe);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 95);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_le);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 96);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function me(e)
-   * return f()[fe(e)]
+  /* function de(e)
+   * return m()[le(e)]
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_me, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 94);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_de, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 95);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function L(e,t)
-   * if e==t then
+  /* function D(t,e)
+   * if t==e then
    * return true
    * end
-   * if fe(e)==fe(t)then
-   * I(e,t)
+   * if le(t)==le(e)then
+   * O(t,e)
    * return true
    * else
    * return false
    * end
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_L, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 93);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_D, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 94);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function s(e,t)
+  /* function s(t,e)
    * return{
-   * Oe,
-   * e,
+   * Ie,
    * t,
+   * e,
    * }
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_s, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 92);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 93);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function a(e)
-   * return e[1]==Oe
+   * return e[1]==Ie
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_a, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 91);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 92);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function o(e)
    * return e[2]
    * end */
   lua_pushcfunction(L, lcf1_o);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 90);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 91);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function n(e)
+  /* function i(e)
    * return e[3]
    * end */
-  lua_pushcfunction(L, lcf1_n);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 89);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_i);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 90);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function r(e)
-   * return e[1]==ne
+  /* function h(e)
+   * return e[1]==Ae
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_r, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 87);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_h, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 88);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function E(t,e)
-   * return{
-   * he,
-   * t,
-   * e,
-   * }
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_E, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 86);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function m(e)
-   * return e[1]==he
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_m, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 85);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function _(e)
-   * return e[2]
-   * end */
-  lua_pushcfunction(L, lcf1__);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 84);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function A(e)
-   * return e[3]
-   * end */
-  lua_pushcfunction(L, lcf1_A);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 83);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function R(t,e)
-   * return{
-   * Z,
-   * t,
-   * e,
-   * }
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_R, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 82);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function g(e)
-   * return e[1]==Z
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_g, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 81);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function U(e)
-   * return e[2]
-   * end */
-  lua_pushcfunction(L, lcf1_U);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 80);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function C(e)
-   * return e[3]
-   * end */
-  lua_pushcfunction(L, lcf1_C);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 79);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function V(e)
-   * return e[1]==ee
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_V, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 78);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function rt(e)
-   * return e[2]
-   * end */
-  lua_pushcfunction(L, lcf1_rt);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 77);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function H(e,t)
-   * return{
-   * ve,
-   * e,
-   * t,
-   * }
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_H, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 76);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function B(e)
-   * return e[1]==ve
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_B, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 75);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function te(e)
-   * return e[2]
-   * end */
-  lua_pushcfunction(L, lcf1_te);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 74);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function ae(e)
-   * return e[3]
-   * end */
-  lua_pushcfunction(L, lcf1_ae);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 73);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function Ge(e,a,t)
-   * return{
-   * Y,
-   * e,
-   * a,
-   * t,
-   * }
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Ge, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 72);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function Q(e)
-   * return e[1]==Y
-   * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Q, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 71);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function _e(e)
-   * return e[2]
-   * end */
-  lua_pushcfunction(L, lcf1__e);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 70);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function xe(e)
-   * return e[3]
-   * end */
-  lua_pushcfunction(L, lcf1_xe);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 69);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function qe(e)
-   * return e[4]
-   * end */
-  lua_pushcfunction(L, lcf1_qe);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 68);
-  assert(lua_gettop(L) - lc_nextra == 2);
-
-  /* function j(t,e)
+  /* function T(t,e)
    * return{
    * b,
    * t,
    * e,
    * }
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_j, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 67);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_T, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 87);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function J(e)
+  /* function c(e)
    * return e[1]==b
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_J, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 66);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_c, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 86);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function le(e)
+  /* function E(e)
    * return e[2]
    * end */
-  lua_pushcfunction(L, lcf1_le);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 65);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_E);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 85);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function A(e)
+   * return e[3]
+   * end */
+  lua_pushcfunction(L, lcf1_A);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 84);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function L(t,e)
+   * return{
+   * M,
+   * t,
+   * e,
+   * }
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_L, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 83);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function g(e)
+   * return e[1]==M
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_g, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 82);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function C(e)
+   * return e[2]
+   * end */
+  lua_pushcfunction(L, lcf1_C);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 81);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function U(e)
+   * return e[3]
+   * end */
+  lua_pushcfunction(L, lcf1_U);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 80);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function B(e)
+   * return e[1]==Y
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_B, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 79);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function rt(e)
+   * return e[2]
+   * end */
+  lua_pushcfunction(L, lcf1_rt);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 78);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function S(t,e)
+   * return{
+   * ne,
+   * t,
+   * e,
+   * }
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_S, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 77);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function Q(e)
+   * return e[1]==ne
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Q, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 76);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function X(e)
+   * return e[2]
+   * end */
+  lua_pushcfunction(L, lcf1_X);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 75);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function Z(e)
+   * return e[3]
+   * end */
+  lua_pushcfunction(L, lcf1_Z);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 74);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function Oe(e,a,t)
+   * return{
+   * pe,
+   * e,
+   * a,
+   * t,
+   * }
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Oe, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 73);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function G(e)
+   * return e[1]==pe
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_G, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 72);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function _e(e)
+   * return e[2]
+   * end */
+  lua_pushcfunction(L, lcf1__e);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 71);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function Te(e)
+   * return e[3]
+   * end */
+  lua_pushcfunction(L, lcf1_Te);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 70);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function ze(e)
+   * return e[4]
+   * end */
+  lua_pushcfunction(L, lcf1_ze);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 69);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function q(t,e)
+   * return{
+   * ae,
+   * t,
+   * e,
+   * }
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_q, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 68);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function P(e)
+   * return e[1]==ae
+   * end */
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_P, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 67);
+  assert(lua_gettop(L) - lc_nextra == 3);
+
+  /* function ue(e)
+   * return e[2]
+   * end */
+  lua_pushcfunction(L, lcf1_ue);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 66);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function re(e)
    * return e[3]
    * end */
   lua_pushcfunction(L, lcf1_re);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 64);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 65);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function P(t,e)
+  /* function F(t,e)
    * return{
-   * Ae,
+   * he,
    * t,
    * e,
    * }
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_P, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 63);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_F, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 64);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function G(e)
-   * return e[1]==Ae
+  /* function V(e)
+   * return e[1]==he
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_G, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 62);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_V, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 63);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function je(e)
    * return e[2]
    * end */
   lua_pushcfunction(L, lcf1_je);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 61);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 62);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function Ee(e)
+  /* function xe(e)
    * return e[3]
    * end */
-  lua_pushcfunction(L, lcf1_Ee);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 60);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_xe);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 61);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function F(e)
-   * local e=h(e)
+  /* function W(e)
+   * local e=r(e)
    * local function t(e)
-   * e[2]=F(e[2])
-   * e[3]=F(e[3])
+   * e[2]=W(e[2])
+   * e[3]=W(e[3])
    * return e
    * end
-   * if m(e)then
+   * if c(e)then
    * return t(e)
    * elseif g(e)then
    * return t(e)
    * elseif a(e)then
    * return t(e)
-   * elseif O(e)then
+   * elseif I(e)then
    * return t(e)
    * end
    * return e
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_F, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 59);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_W, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 60);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function K()
-   * return{be}
+  /* function ge()
+   * return{se}
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_K, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 58);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ge, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 59);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function i(e)
-   * return e[1]==be
+  /* function d(e)
+   * return e[1]==se
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_i, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 57);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_d, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 58);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function I(e,t)
+  /* function O(e,t)
    * if e==t then
    * return
    * end
-   * e[1]=ee
+   * e[1]=Y
    * e[2]=t
    * e[3]=false
    * e[4]=false
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_I, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 56);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_O, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 57);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function W(e,t)
-   * S(i(e))
-   * S(not i(t))
+  /* function we(e,t)
+   * H(d(e))
+   * H(not d(t))
    * local e=e
    * local t=t
    * e[1]=t[1]
@@ -18747,23 +18679,23 @@ static inline int lcf_main(lua_State *L) {
    * e[3]=t[3]
    * e[4]=t[4]
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_W, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 55);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_we, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 56);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function dt(t)
-   * local e=K()
-   * W(e,t)
+  /* function lt(t)
+   * local e=ge()
+   * we(e,t)
    * return e
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_dt, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 54);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_lt, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 55);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function T(a)
-   * local t=v
+  /* function _(a)
+   * local t=y
    * do
    * local e=#a-1
    * while e>=0 do
@@ -18773,57 +18705,57 @@ static inline int lcf_main(lua_State *L) {
    * end
    * return t
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_T, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 27);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1__, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 28);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function e(...)
    * local e=({...})
-   * return T(e)
+   * return _(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_e, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 26);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 27);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function N(e)
-   * if not V(e)then
+   * if not B(e)then
    * return e
    * end
    * local e=e
    * local t={}
-   * while V(e)do
-   * l(t,e)
+   * while B(e)do
+   * v(t,e)
    * e=rt(e)
    * end
    * for a,t in ipairs(t)do
-   * I(t,e)
+   * O(t,e)
    * end
    * return e
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_N, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 25);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 26);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function de(e)
-   * return B(e)or Q(e)or J(e)or G(e)
+  /* function me(e)
+   * return Q(e)or G(e)or P(e)or V(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_de, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 24);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_me, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 25);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function y(e)
-   * return V(e)or de(e)
+  /* function w(e)
+   * return B(e)or me(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_y, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 23);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_w, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 24);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function d(o,i,t,a)
+  /* function n(o,i,t,a)
    * if i==nil then
    * i={}
    * end
@@ -18836,23 +18768,23 @@ static inline int lcf_main(lua_State *L) {
    * if a==nil then
    * a={}
    * end
-   * local e,r,n
+   * local e,r,s
    * function r(t)
-   * I(e,t)
+   * O(e,t)
    * do
    * local e=0
    * while e<#a do
-   * I(a[e+1],t)
+   * O(a[e+1],t)
    * e=e+1
    * end
    * end
    * return t
    * end
-   * function n(t)
+   * function s(t)
    * r(t)
-   * if y(t)then
-   * l(a,e)
-   * return d(t,i,{
+   * if w(t)then
+   * v(a,e)
+   * return n(t,i,{
    * false,
    * false,
    * },a)
@@ -18863,9 +18795,9 @@ static inline int lcf_main(lua_State *L) {
    * e=o
    * local function o()
    * t[2]=true
-   * return n(Je)
+   * return s(dt)
    * end
-   * local function u()
+   * local function d()
    * local e={}
    * for t in pairs(h)do
    * e[t]=true
@@ -18877,142 +18809,142 @@ static inline int lcf_main(lua_State *L) {
    * end
    * do
    * local t=0
-   * while y(e)and t<32 do
-   * l(a,e)
+   * while w(e)and t<32 do
+   * v(a,e)
    * e=k(e)
    * t=t+1
    * end
    * end
-   * while y(e)do
-   * local s=w(e)
-   * if i[s]==true then
+   * while w(e)do
+   * local r=f(e)
+   * if i[r]==true then
    * return o()
    * end
-   * if h[s]==true then
+   * if h[r]==true then
    * t[1]=true
-   * if B(e)then
+   * if Q(e)then
    * return o()
-   * elseif J(e)then
-   * local a=le(e)
+   * elseif P(e)then
+   * local a=ue(e)
    * local e=re(e)
-   * local s={
-   * Ke,
-   * Ve,
-   * Ye,
-   * Re,
-   * De,
+   * local h={
+   * He,
    * We,
-   * Me,
+   * Fe,
+   * Ye,
    * Pe,
-   * Ne,
-   * Ce,
+   * Me,
+   * De,
+   * Re,
    * Le,
+   * Ue,
+   * Ce,
    * }
    * local i=false
-   * for t,e in ipairs(s)do
-   * if c(e,a)then
+   * for t,e in ipairs(h)do
+   * if l(e,a)then
    * i=true
    * break
    * end
    * end
    * if i then
-   * S(#e==1)
-   * S(t[2]==false)
-   * local e=d(e[1],u(),t)
+   * H(#e==1)
+   * H(t[2]==false)
+   * local e=n(e[1],d(),t)
    * if t[2]then
-   * return n(j(a,{e}))
+   * return s(q(a,{e}))
    * else
-   * return q()
+   * return j()
    * end
    * end
-   * if c(a,ie)then
+   * if l(a,te)then
    * return o()
-   * elseif c(a,Te)then
+   * elseif l(a,be)then
    * return o()
-   * elseif c(a,ke)then
+   * elseif l(a,ve)then
    * return o()
-   * elseif c(a,oe)then
-   * S(#e==3)
-   * S(t[2]==false)
-   * local a=d(e[1],u(),t)
+   * elseif l(a,ee)then
+   * H(#e==3)
+   * H(t[2]==false)
+   * local a=n(e[1],d(),t)
    * if t[2]then
-   * return n(j(oe,{
+   * return s(q(ee,{
    * a,
    * e[2],
    * e[3],
    * }))
    * else
-   * return q()
+   * return j()
    * end
    * end
-   * return q()
-   * elseif Q(e)then
-   * return o()
+   * return j()
    * elseif G(e)then
    * return o()
+   * elseif V(e)then
+   * return o()
    * end
-   * return q()
+   * return j()
    * end
-   * h[s]=true
-   * l(a,e)
+   * h[r]=true
+   * v(a,e)
    * e=k(e)
    * end
    * return r(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_d, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 22);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_n, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 23);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function k(a)
    * local e=N(a)
    * local t
-   * S(not V(e))
-   * if B(e)then
-   * t=tt(te(e),ae(e),a)
-   * elseif Q(e)then
-   * t=Xe(_e(e),xe(e),qe(e),a)
-   * elseif J(e)then
-   * t=Ze(le(e),re(e),a)
+   * H(not B(e))
+   * if Q(e)then
+   * t=it(X(e),Z(e),a)
    * elseif G(e)then
-   * t=et(je(e),Ee(e),a)
+   * t=Xe(_e(e),Te(e),ze(e),a)
+   * elseif P(e)then
+   * t=Ze(ue(e),re(e),a)
+   * elseif V(e)then
+   * t=ht(je(e),xe(e),a)
    * else
    * t=e
    * end
    * t=N(t)
-   * I(e,t)
+   * O(e,t)
    * return t
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_k, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 21);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 22);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function h(e)
-   * return d(e)
+  /* function r(e)
+   * return n(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_h, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 20);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf2_r, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 21);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function Fe(e)
-   * while y(e)or O(e)do
-   * e=h(ze(e))
+  /* function Qe(e)
+   * while w(e)or I(e)do
+   * e=r(qe(e))
    * end
    * return e
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Fe, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 19);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Qe, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 20);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function ge(a,o,i)
+  /* function Ee(a,o,i)
    * local t={}
    * do
    * local e=0
    * while e<#a do
-   * if c(a[(e+0)+1],o)then
+   * if l(a[(e+0)+1],o)then
    * t[(e+0)+1]=o
    * t[(e+1)+1]=i
    * do
@@ -19035,62 +18967,62 @@ static inline int lcf_main(lua_State *L) {
    * t[(#a+1)+1]=i
    * return t
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ge, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 17);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Ee, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 18);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function Ie(t,o,a)
+  /* function Ge(t,a,o)
    * do
    * local e=0
    * while e<#t do
-   * if c(t[(e+0)+1],o)then
+   * if l(t[(e+0)+1],a)then
    * return t[(e+1)+1]
    * end
    * e=e+2
    * end
    * end
-   * return a
+   * return o
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Ie, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 16);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Ge, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 17);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function it(t,a)
+  /* function et(t,a)
    * do
    * local e=0
    * while e<#t do
-   * if c(t[(e+0)+1],a)then
+   * if l(t[(e+0)+1],a)then
    * return t[(e+1)+1]
    * end
    * e=e+2
    * end
    * end
-   * return q()
+   * return j()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_it, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 15);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_et, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 16);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function D(a)
-   * local o=v
+  /* function R(o)
+   * local a=y
    * do
    * local t=0
-   * while t<#a do
-   * o=s(e(a[(t+0)+1],a[(t+1)+1]),o)
+   * while t<#o do
+   * a=s(e(o[(t+0)+1],o[(t+1)+1]),a)
    * t=t+2
    * end
    * end
-   * return E(Be,e(o))
+   * return T(Se,e(a))
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_D, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 14);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_R, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 15);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function He(t,a)
+  /* function Ke(t,a)
    * do
    * local e=0
    * while e<#t do
@@ -19099,53 +19031,53 @@ static inline int lcf_main(lua_State *L) {
    * end
    * end
    * end */
-  lua_pushcfunction(L, lcf1_He);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 13);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushcfunction(L, lcf1_Ke);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 14);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function nt(e,d,h,u)
-   * local i={}
+  /* function ot(e,d,r,l)
    * local s={}
+   * local t={}
    * local e=N(e)
-   * local t=true
+   * local n=true
    * while true do
-   * if r(e)then
-   * return u(s,i)
-   * elseif O(e)then
-   * l(s,ue(e))
-   * e=X(e)
+   * if h(e)then
+   * return l(t,s)
+   * elseif I(e)then
+   * v(t,oe(e))
+   * e=K(e)
    * elseif a(e)then
-   * l(i,o(e))
-   * e=n(e)
-   * elseif y(e)then
-   * if t then
-   * t=false
+   * v(s,o(e))
+   * e=i(e)
+   * elseif w(e)then
+   * if n then
+   * n=false
    * e=k(e)
    * else
-   * return h()
+   * return r()
    * end
    * else
    * return d()
    * end
    * end
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_nt, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 12);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ot, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 13);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function tt(s,t,d)
-   * local i=k(t)
-   * if y(i)then
+  /* function it(s,t,d)
+   * local n=k(t)
+   * if w(n)then
    * return d
    * end
-   * local function t()return R(z,e(M,e(ke,e(D(s),i))))end
-   * if a(i)then
-   * return nt(i,t,function()return d end,function(i,e)
-   * if#i~=0 then
+   * local function t()return L(z,e(J,e(ve,e(R(s),n))))end
+   * if a(n)then
+   * return ot(n,t,function()return d end,function(n,e)
+   * if#n~=0 then
    * error("WIP")
    * end
-   * if c(e[1],se)then
+   * if l(e[1],ie)then
    * if#e==1 then
    * return t()
    * end
@@ -19154,54 +19086,54 @@ static inline int lcf_main(lua_State *L) {
    * do
    * local t=2
    * while t<#e do
-   * l(a,e[t+1])
+   * v(a,e[t+1])
    * t=t+1
    * end
    * end
-   * return Ge(s,o,a)
-   * elseif c(e[1],ht)then
+   * return Oe(s,o,a)
+   * elseif l(e[1],nt)then
    * if#e==1 then
    * return t()
    * end
-   * local h=h(H(s,e[2]))
-   * if not m(h)then
+   * local n=r(S(s,e[2]))
+   * if not c(n)then
    * return t()
    * end
-   * local i=k(_(h))
-   * if y(i)then
+   * local r=k(E(n))
+   * if w(r)then
    * return d
    * end
-   * if not p(i)then
+   * if not p(r)then
    * return t()
    * end
-   * if not L(i,x)then
+   * if not D(r,x)then
    * return t()
    * end
-   * local i=k(A(h))
-   * if y(i)then
+   * local n=k(A(n))
+   * if w(n)then
    * return d
    * end
-   * if not a(i)then
+   * if not a(n)then
    * return t()
    * end
-   * local o=o(i)
-   * local a=k(n(i))
-   * if y(a)then
+   * local o=o(n)
+   * local a=k(i(n))
+   * if w(a)then
    * return d
    * end
-   * if not r(a)then
+   * if not h(a)then
    * return t()
    * end
-   * local a={D(s)}
+   * local a={R(s)}
    * do
    * local t=2
    * while t<#e do
-   * l(a,e[t+1])
+   * v(a,e[t+1])
    * t=t+1
    * end
    * end
-   * return P(o,a)
-   * elseif c(e[1],M)then
+   * return F(o,a)
+   * elseif l(e[1],J)then
    * if#e==1 then
    * return t()
    * end
@@ -19210,90 +19142,90 @@ static inline int lcf_main(lua_State *L) {
    * do
    * local t=2
    * while t<#e do
-   * l(a,H(s,e[t+1]))
+   * v(a,S(s,e[t+1]))
    * t=t+1
    * end
    * end
-   * return j(o,a)
+   * return q(o,a)
    * else
-   * local o=H(s,e[1])
+   * local o=S(s,e[1])
    * local a={}
    * do
    * local t=1
    * while t<#e do
-   * l(a,H(s,e[t+1]))
+   * v(a,S(s,e[t+1]))
    * t=t+1
    * end
    * end
-   * return P(o,a)
+   * return F(o,a)
    * end
    * end)
-   * elseif r(i)then
-   * return i
-   * elseif u(i)then
-   * return Ie(s,i,t())
-   * elseif g(i)then
+   * elseif h(n)then
+   * return n
+   * elseif u(n)then
+   * return Ge(s,n,t())
+   * elseif g(n)then
    * return t()
    * end
-   * return q()
+   * return j()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_tt, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 11);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_it, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 12);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function u(e)
-   * return p(e)or m(e)
+   * return p(e)or c(e)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf2_u, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 10);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_u, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 11);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function et(i,l,c)
-   * local function d()return R(z,e(M,e(Te,e(i,T(l)))))end
-   * i=k(i)
-   * if y(i)then
-   * return c
+  /* function ht(l,n,m)
+   * local function d()return L(z,e(J,e(be,e(l,_(n)))))end
+   * l=k(l)
+   * if w(l)then
+   * return m
    * end
-   * if not m(i)then
+   * if not c(l)then
    * return d()
    * end
-   * local e=h(_(i))
-   * if not(p(e)and L(e,t))then
+   * local e=r(E(l))
+   * if not(p(e)and D(e,t))then
    * return d()
    * end
-   * local t=h(A(i))
+   * local t=r(A(l))
    * if not a(t)then
    * return d()
    * end
-   * local e=F(o(t))
-   * local t=h(n(t))
-   * if not(a(t)and r(h(n(t))))then
+   * local e=W(o(t))
+   * local t=r(i(t))
+   * if not(a(t)and h(r(i(t))))then
    * return d()
    * end
-   * local h=o(t)
-   * local i=Se
+   * local l=o(t)
+   * local r=Be
    * local t=0
-   * while not r(e)do
+   * while not h(e)do
    * if u(e)then
-   * local a=v
+   * local a=y
    * do
-   * local e=#l-1
+   * local e=#n-1
    * while e>=t do
-   * a=s(l[e+1],a)
+   * a=s(n[e+1],a)
    * e=e-1
    * end
    * end
-   * i=ge(i,e,a)
-   * t=#l
-   * e=v
+   * r=Ee(r,e,a)
+   * t=#n
+   * e=y
    * elseif a(e)then
-   * if t<#l then
-   * local a=l[t+1]
+   * if t<#n then
+   * local a=n[t+1]
    * t=t+1
-   * i=ge(i,o(e),a)
-   * e=n(e)
+   * r=Ee(r,o(e),a)
+   * e=i(e)
    * else
    * return d()
    * end
@@ -19301,20 +19233,20 @@ static inline int lcf_main(lua_State *L) {
    * return d()
    * end
    * end
-   * if#l~=t then
+   * if#n~=t then
    * return d()
    * end
-   * return H(i,h)
+   * return S(r,l)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_et, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 8);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ht, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 9);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function Ze(i,t,o)
-   * local function a()return R(z,e(M,e(i,T(t))))end
+   * local function a()return L(z,e(J,e(i,_(t))))end
    * for n,e in ipairs(at)do
-   * if c(i,e[1])then
+   * if l(i,e[1])then
    * if#t~=e[2]then
    * return a()
    * end
@@ -19325,84 +19257,84 @@ static inline int lcf_main(lua_State *L) {
    * elseif e[2]==3 then
    * return e[3](t[1],t[2],t[3],a,o)
    * end
-   * return q()
+   * return j()
    * end
    * end
    * return a()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_Ze, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 7);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 8);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
   /* function Xe(i,o,t,a)
-   * local function a()return R(z,e(se,e(D(i),o,T(t))))end
-   * if c(o,Ue)then
+   * local function a()return L(z,e(ie,e(R(i),o,_(t))))end
+   * if l(o,ke)then
    * if#t~=1 then
    * return a()
    * end
    * return t[1]
-   * elseif c(o,ot)then
+   * elseif l(o,st)then
    * if#t~=2 then
    * return a()
    * end
-   * return Qe(i,t[1],t[2],a)
-   * elseif c(o,st)then
+   * return Je(i,t[1],t[2],a)
+   * elseif l(o,tt)then
    * if#t~=2 then
    * return a()
    * end
-   * return ce(t[1],H(i,t[2]))
+   * return fe(t[1],S(i,t[2]))
    * end
    * return a()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
+  lua_pushvalue(L, (lc12 + lc_nextra));
   lua_pushcclosure(L, lcf1_Xe, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 6);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 7);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function we(t)
-   * return e(se,Ue,t)
+  /* function ce(t)
+   * return e(ie,ke,t)
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_we, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 5);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ce, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 6);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function Qe(m,d,y,w)
-   * d=F(d)
-   * local h={}
-   * local f=false
-   * local i=d
-   * while not r(i)do
-   * if u(i)then
-   * l(h,i)
-   * f=true
-   * i=v
-   * elseif a(i)then
-   * l(h,o(i))
-   * i=n(i)
+  /* function Je(m,d,f,w)
+   * d=W(d)
+   * local r={}
+   * local c=false
+   * local n=d
+   * while not h(n)do
+   * if u(n)then
+   * v(r,n)
+   * c=true
+   * n=y
+   * elseif a(n)then
+   * v(r,o(n))
+   * n=i(n)
    * else
    * return w()
    * end
    * end
    * local o
-   * if f then
-   * o=T(h)
+   * if c then
+   * o=_(r)
    * else
    * o=d
    * end
    * local a={}
-   * He(m,function(t,e)
+   * Ke(m,function(t,e)
    * do
    * local e=0
-   * while e<#h do
-   * if c(h[e+1],t)then
+   * while e<#r do
+   * if l(r[e+1],t)then
    * return
    * end
    * e=e+1
    * end
    * end
-   * l(a,t)
+   * v(a,t)
    * end)
    * local i=o
    * do
@@ -19416,114 +19348,114 @@ static inline int lcf_main(lua_State *L) {
    * do
    * local e=#a-1
    * while e>=0 do
-   * o=s(we(it(m,a[e+1])),o)
+   * o=s(ce(et(m,a[e+1])),o)
    * e=e-1
    * end
    * end
-   * return E(t,e(d,s(we(E(t,e(i,y))),o)))
+   * return T(t,e(d,s(ce(T(t,e(i,f))),o)))
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Qe, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 4);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Je, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 5);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function c(t,e)
-   * if t==e then
+  /* function l(e,t)
+   * if e==t then
    * return true
    * end
-   * t=h(t)
-   * e=h(e)
-   * if t==e then
+   * e=r(e)
+   * t=r(t)
+   * if e==t then
    * return true
    * end
-   * local function i(e,t,a,o)
-   * if c(a(e),a(t))and c(o(e),o(t))then
-   * I(e,t)
+   * local function n(t,e,o,a)
+   * if l(o(t),o(e))and l(a(t),a(e))then
+   * O(t,e)
    * return true
    * else
    * return false
    * end
    * end
-   * if r(t)then
-   * if not r(e)then
+   * if h(e)then
+   * if not h(t)then
    * return false
    * end
-   * I(t,v)
-   * I(e,v)
+   * O(e,y)
+   * O(t,y)
    * return true
-   * elseif p(t)then
-   * if not p(e)then
+   * elseif p(e)then
+   * if not p(t)then
    * return false
    * end
-   * return L(t,e)
-   * elseif a(t)then
-   * if not a(e)then
+   * return D(e,t)
+   * elseif a(e)then
+   * if not a(t)then
    * return false
    * end
-   * return i(t,e,o,n)
-   * elseif g(t)then
-   * if not g(e)then
+   * return n(e,t,o,i)
+   * elseif g(e)then
+   * if not g(t)then
    * return false
    * end
-   * return i(t,e,U,C)
-   * elseif m(t)then
-   * if not m(e)then
+   * return n(e,t,C,U)
+   * elseif c(e)then
+   * if not c(t)then
    * return false
    * end
-   * return i(t,e,_,A)
+   * return n(e,t,E,A)
    * end
-   * return q()
+   * return j()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_c, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 3);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_l, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 4);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* function w(e)
+  /* function f(e)
    * e=N(e)
    * local t=""
-   * local i=""
-   * if r(e)then
+   * local n=""
+   * if h(e)then
    * return"()"
    * elseif a(e)then
    * t="("
-   * i=""
+   * n=""
    * while a(e)do
-   * t=tostring(t)..tostring(i)..tostring(w(o(e)))
-   * i=" "
-   * e=N(n(e))
+   * t=tostring(t)..tostring(n)..tostring(f(o(e)))
+   * n=" "
+   * e=N(i(e))
    * end
-   * if r(e)then
+   * if h(e)then
    * t=tostring(t)..")"
    * else
-   * t=tostring(t).." . "..tostring(w(e))..")"
+   * t=tostring(t).." . "..tostring(f(e))..")"
    * end
    * return t
-   * elseif m(e)then
-   * return"#"..tostring(w(s(_(e),A(e))))
+   * elseif c(e)then
+   * return"#"..tostring(f(s(E(e),A(e))))
    * elseif g(e)then
-   * return"!"..tostring(w(s(U(e),C(e))))
+   * return"!"..tostring(f(s(C(e),U(e))))
    * elseif p(e)then
-   * return me(e)
-   * elseif O(e)then
-   * return";("..tostring(w(ue(e))).." "..tostring(w(X(e)))..")"
-   * elseif B(e)then
-   * return"$("..tostring(w(D(te(e)))).." "..tostring(w(ae(e)))..")"
-   * elseif J(e)then
-   * return"%("..tostring(w(le(e))).." "..tostring(w(T(re(e))))..")"
+   * return de(e)
+   * elseif I(e)then
+   * return";("..tostring(f(oe(e))).." "..tostring(f(K(e)))..")"
    * elseif Q(e)then
-   * return"@("..tostring(w(D(_e(e)))).." "..tostring(w(xe(e))).."
-   * "..tostring(w(T(qe(e))))..")" elseif G(e)then
-   * return"^("..tostring(w(je(e))).." "..tostring(w(T(Ee(e))))..")"
+   * return"$("..tostring(f(R(X(e)))).." "..tostring(f(Z(e)))..")"
+   * elseif P(e)then
+   * return"%("..tostring(f(ue(e))).." "..tostring(f(_(re(e))))..")"
+   * elseif G(e)then
+   * return"@("..tostring(f(R(_e(e)))).." "..tostring(f(Te(e))).."
+   * "..tostring(f(_(ze(e))))..")" elseif V(e)then
+   * return"^("..tostring(f(je(e))).." "..tostring(f(_(xe(e))))..")"
    * end
-   * return q()
+   * return j()
    * end */
-  lua_pushvalue(L, (lc6 + lc_nextra));
-  lua_pushcclosure(L, lcf1_w, 1);
-  lc_setupvalue(L, (lc6 + lc_nextra), 0, 2);
-  assert(lua_gettop(L) - lc_nextra == 2);
+  lua_pushvalue(L, (lc12 + lc_nextra));
+  lua_pushcclosure(L, lcf1_f, 1);
+  lc_setupvalue(L, (lc12 + lc_nextra), 0, 3);
+  assert(lua_gettop(L) - lc_nextra == 3);
 
-  /* local function u()
+  /* local function n()
    * return{
    * ["0"]="0",
    * ["1"]="1",
@@ -19626,14 +19558,14 @@ static inline int lcf_main(lua_State *L) {
    * ["首始"]="𩠐",
    * }
    * end */
-  lc_newclosuretable(L, (lc6 + lc_nextra));
-  enum { lc507 = 3 };
-  assert((lua_gettop(L) == (lc507 + lc_nextra)));
-  lua_pushcfunction(L, lcf3_u);
-  lua_rawseti(L, (lc507 + lc_nextra), 137);
-  assert(lua_gettop(L) - lc_nextra == 3);
+  lc_newclosuretable(L, (lc12 + lc_nextra));
+  enum { lc513 = 4 };
+  assert((lua_gettop(L) == (lc513 + lc_nextra)));
+  lua_pushcfunction(L, lcf3_n);
+  lua_rawseti(L, (lc513 + lc_nextra), 138);
+  assert(lua_gettop(L) - lc_nextra == 4);
 
-  /* local function i()
+  /* local function u()
    * return{
    * ["0"]="0",
    * ["1"]="1",
@@ -19736,161 +19668,161 @@ static inline int lcf_main(lua_State *L) {
    * ["𩠐"]="首始",
    * }
    * end */
-  lc_newclosuretable(L, (lc507 + lc_nextra));
-  enum { lc508 = 4 };
-  assert((lua_gettop(L) == (lc508 + lc_nextra)));
-  lua_pushcfunction(L, lcf3_i);
-  lua_rawseti(L, (lc508 + lc_nextra), 138);
-  assert(lua_gettop(L) - lc_nextra == 4);
+  lc_newclosuretable(L, (lc513 + lc_nextra));
+  enum { lc514 = 5 };
+  assert((lua_gettop(L) == (lc514 + lc_nextra)));
+  lua_pushcfunction(L, lcf2_u);
+  lua_rawseti(L, (lc514 + lc_nextra), 139);
+  assert(lua_gettop(L) - lc_nextra == 5);
 
   /* local function d()
-   * local e=u()
+   * local e=n()
    * function d()return e end
    * return e
    * end */
-  lc_newclosuretable(L, (lc508 + lc_nextra));
-  enum { lc509 = 5 };
-  assert((lua_gettop(L) == (lc509 + lc_nextra)));
-  lua_pushvalue(L, (lc509 + lc_nextra));
-  lua_pushcclosure(L, lcf4_d, 1);
-  lua_rawseti(L, (lc509 + lc_nextra), 139);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_newclosuretable(L, (lc514 + lc_nextra));
+  enum { lc515 = 6 };
+  assert((lua_gettop(L) == (lc515 + lc_nextra)));
+  lua_pushvalue(L, (lc515 + lc_nextra));
+  lua_pushcclosure(L, lcf5_d, 1);
+  lua_rawseti(L, (lc515 + lc_nextra), 140);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* function f()
-   * local e=i()
-   * function f()return e end
+  /* function m()
+   * local e=u()
+   * function m()return e end
    * return e
    * end */
-  lua_pushvalue(L, (lc509 + lc_nextra));
-  lua_pushcclosure(L, lcf2_f, 1);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 114);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lua_pushvalue(L, (lc515 + lc_nextra));
+  lua_pushcclosure(L, lcf2_m, 1);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 115);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* pe=0 */
+  /* Ve=0 */
   lua_pushnumber(L, 0);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 113);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 114);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* Oe=1 */
+  /* Ie=1 */
   lua_pushnumber(L, 1);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 112);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 113);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* ne=2 */
+  /* Ae=2 */
   lua_pushnumber(L, 2);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 111);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 112);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* he=3 */
+  /* b=3 */
   lua_pushnumber(L, 3);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 110);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 111);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* Z=4 */
+  /* M=4 */
   lua_pushnumber(L, 4);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 109);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 110);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* ee=5 */
+  /* Y=5 */
   lua_pushnumber(L, 5);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 108);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 109);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* ve=6 */
+  /* ne=6 */
   lua_pushnumber(L, 6);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 107);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 108);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* b=7 */
+  /* ae=7 */
   lua_pushnumber(L, 7);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 106);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 107);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* Y=8 */
+  /* pe=8 */
   lua_pushnumber(L, 8);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 105);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 106);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* Ae=9 */
+  /* he=9 */
   lua_pushnumber(L, 9);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 104);
-  assert(lua_gettop(L) - lc_nextra == 5);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 105);
+  assert(lua_gettop(L) - lc_nextra == 6);
 
   /* ye=11 */
   lua_pushnumber(L, 11);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 103);
-  assert(lua_gettop(L) - lc_nextra == 5);
-
-  /* be=10 */
-  lua_pushnumber(L, 10);
-  lc_setupvalue(L, (lc509 + lc_nextra), 3, 102);
-  assert(lua_gettop(L) - lc_nextra == 5);
-
-  /* local function ut(e)
-   * return f()[e]~=nil
-   * end */
-  lc_newclosuretable(L, (lc509 + lc_nextra));
-  enum { lc512 = 6 };
-  assert((lua_gettop(L) == (lc512 + lc_nextra)));
-  lua_pushvalue(L, (lc512 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ut, 1);
-  lua_rawseti(L, (lc512 + lc_nextra), 142);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 104);
   assert(lua_gettop(L) - lc_nextra == 6);
 
-  /* local function it(e)
+  /* se=10 */
+  lua_pushnumber(L, 10);
+  lc_setupvalue(L, (lc515 + lc_nextra), 3, 103);
+  assert(lua_gettop(L) - lc_nextra == 6);
+
+  /* local function rt(e)
+   * return m()[e]~=nil
+   * end */
+  lc_newclosuretable(L, (lc515 + lc_nextra));
+  enum { lc518 = 7 };
+  assert((lua_gettop(L) == (lc518 + lc_nextra)));
+  lua_pushvalue(L, (lc518 + lc_nextra));
+  lua_pushcclosure(L, lcf2_rt, 1);
+  lua_rawseti(L, (lc518 + lc_nextra), 143);
+  assert(lua_gettop(L) - lc_nextra == 7);
+
+  /* local function Ze(e)
    * return{
-   * pe,
+   * Ve,
    * e,
    * }
    * end */
-  lc_newclosuretable(L, (lc512 + lc_nextra));
-  enum { lc514 = 7 };
-  assert((lua_gettop(L) == (lc514 + lc_nextra)));
-  lua_pushvalue(L, (lc514 + lc_nextra));
-  lua_pushcclosure(L, lcf2_it, 1);
-  lua_rawseti(L, (lc514 + lc_nextra), 143);
-  assert(lua_gettop(L) - lc_nextra == 7);
-
-  /* local function nt(e)
-   * return d()[e]~=nil
-   * end */
-  lc_newclosuretable(L, (lc514 + lc_nextra));
-  enum { lc515 = 8 };
-  assert((lua_gettop(L) == (lc515 + lc_nextra)));
-  lua_pushvalue(L, (lc515 + lc_nextra));
-  lua_pushcclosure(L, lcf2_nt, 1);
-  lua_rawseti(L, (lc515 + lc_nextra), 144);
+  lc_newclosuretable(L, (lc518 + lc_nextra));
+  enum { lc520 = 8 };
+  assert((lua_gettop(L) == (lc520 + lc_nextra)));
+  lua_pushvalue(L, (lc520 + lc_nextra));
+  lua_pushcclosure(L, lcf2_Ze, 1);
+  lua_rawseti(L, (lc520 + lc_nextra), 144);
   assert(lua_gettop(L) - lc_nextra == 8);
 
-  /* local function i(e)
-   * return it(d()[e])
+  /* local function Xe(e)
+   * return d()[e]~=nil
    * end */
-  lc_newclosuretable(L, (lc515 + lc_nextra));
-  enum { lc517 = 9 };
-  assert((lua_gettop(L) == (lc517 + lc_nextra)));
-  lua_pushvalue(L, (lc517 + lc_nextra));
-  lua_pushcclosure(L, lcf4_i, 1);
-  lua_rawseti(L, (lc517 + lc_nextra), 145);
+  lc_newclosuretable(L, (lc520 + lc_nextra));
+  enum { lc521 = 9 };
+  assert((lua_gettop(L) == (lc521 + lc_nextra)));
+  lua_pushvalue(L, (lc521 + lc_nextra));
+  lua_pushcclosure(L, lcf2_Xe, 1);
+  lua_rawseti(L, (lc521 + lc_nextra), 145);
   assert(lua_gettop(L) - lc_nextra == 9);
 
-  /* v={ne} */
+  /* local function n(e)
+   * return Ze(d()[e])
+   * end */
+  lc_newclosuretable(L, (lc521 + lc_nextra));
+  enum { lc523 = 10 };
+  assert((lua_gettop(L) == (lc523 + lc_nextra)));
+  lua_pushvalue(L, (lc523 + lc_nextra));
+  lua_pushcclosure(L, lcf4_n, 1);
+  lua_rawseti(L, (lc523 + lc_nextra), 146);
+  assert(lua_gettop(L) - lc_nextra == 10);
+
+  /* y={Ae} */
   lua_createtable(L, 1, 0);
-  lc_getupvalue(L, (lc517 + lc_nextra), 7, 111);
+  lc_getupvalue(L, (lc523 + lc_nextra), 7, 112);
   lua_rawseti(L, -2, 1);
-  lc_setupvalue(L, (lc517 + lc_nextra), 7, 88);
-  assert(lua_gettop(L) - lc_nextra == 9);
+  lc_setupvalue(L, (lc523 + lc_nextra), 7, 89);
+  assert(lua_gettop(L) - lc_nextra == 10);
 
-  /* local function Oe(e)
-   * local t=Fe(e)
+  /* local function Ve(e)
+   * local t=Qe(e)
    * local function o(e)
-   * e[2]=F(e[2])
-   * e[3]=F(e[3])
-   * if O(e[2])or O(e[3])then
-   * local t=dt(e)
+   * e[2]=W(e[2])
+   * e[3]=W(e[3])
+   * if I(e[2])or I(e[3])then
+   * local t=lt(e)
    * local a=e[2]
    * local e=e[3]
-   * local a=Oe(a)
-   * local e=Oe(e)
+   * local a=Ve(a)
+   * local e=Ve(e)
    * t[2]=a
    * t[3]=e
    * return t
@@ -19898,7 +19830,7 @@ static inline int lcf_main(lua_State *L) {
    * return e
    * end
    * end
-   * if m(t)then
+   * if c(t)then
    * return o(t)
    * elseif g(t)then
    * return o(t)
@@ -19907,700 +19839,700 @@ static inline int lcf_main(lua_State *L) {
    * end
    * return t
    * end */
-  lc_newclosuretable(L, (lc517 + lc_nextra));
-  enum { lc519 = 10 };
-  assert((lua_gettop(L) == (lc519 + lc_nextra)));
-  lua_pushvalue(L, (lc519 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Oe, 1);
-  lua_rawseti(L, (lc519 + lc_nextra), 146);
-  assert(lua_gettop(L) - lc_nextra == 10);
+  lc_newclosuretable(L, (lc523 + lc_nextra));
+  enum { lc525 = 11 };
+  assert((lua_gettop(L) == (lc525 + lc_nextra)));
+  lua_pushvalue(L, (lc525 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Ve, 1);
+  lua_rawseti(L, (lc525 + lc_nextra), 147);
+  assert(lua_gettop(L) - lc_nextra == 11);
 
-  /* z=i("太始初核") */
-  lc_getupvalue(L, (lc519 + lc_nextra), 1, 145);
+  /* z=n("太始初核") */
+  lc_getupvalue(L, (lc525 + lc_nextra), 1, 146);
   lua_pushliteral(L, "太始初核");
   lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc519 + lc_nextra), 8, 53);
-  assert(lua_gettop(L) - lc_nextra == 10);
+  lc_setupvalue(L, (lc525 + lc_nextra), 8, 54);
+  assert(lua_gettop(L) - lc_nextra == 11);
 
-  /* local be=i("符名") */
-  lc_newclosuretable(L, (lc519 + lc_nextra));
-  enum { lc531 = 11 };
-  assert((lua_gettop(L) == (lc531 + lc_nextra)));
-  lc_getupvalue(L, (lc519 + lc_nextra), 1, 145);
+  /* local ye=n("符名") */
+  lc_newclosuretable(L, (lc525 + lc_nextra));
+  enum { lc537 = 12 };
+  assert((lua_gettop(L) == (lc537 + lc_nextra)));
+  lc_getupvalue(L, (lc525 + lc_nextra), 1, 146);
   lua_pushliteral(L, "符名");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc531 + lc_nextra), 147);
-  assert(lua_gettop(L) - lc_nextra == 11);
-
-  /* t=i("化滅") */
-  lc_getupvalue(L, (lc531 + lc_nextra), 2, 145);
-  lua_pushliteral(L, "化滅");
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc531 + lc_nextra), 9, 52);
-  assert(lua_gettop(L) - lc_nextra == 11);
-
-  /* x=i("式形") */
-  lc_getupvalue(L, (lc531 + lc_nextra), 2, 145);
-  lua_pushliteral(L, "式形");
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc531 + lc_nextra), 9, 51);
-  assert(lua_gettop(L) - lc_nextra == 11);
-
-  /* local vt=i("等同") */
-  lc_getupvalue(L, (lc531 + lc_nextra), 2, 145);
-  lua_pushliteral(L, "等同");
-  lua_call(L, 1, 1);
+  lua_rawseti(L, (lc537 + lc_nextra), 148);
   assert(lua_gettop(L) - lc_nextra == 12);
 
-  /* local gt=i("解算") */
-  lc_getupvalue(L, (lc531 + lc_nextra), 2, 145);
-  lua_pushliteral(L, "解算");
+  /* t=n("化滅") */
+  lc_getupvalue(L, (lc537 + lc_nextra), 2, 146);
+  lua_pushliteral(L, "化滅");
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc537 + lc_nextra), 9, 53);
+  assert(lua_gettop(L) - lc_nextra == 12);
+
+  /* x=n("式形") */
+  lc_getupvalue(L, (lc537 + lc_nextra), 2, 146);
+  lua_pushliteral(L, "式形");
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc537 + lc_nextra), 9, 52);
+  assert(lua_gettop(L) - lc_nextra == 12);
+
+  /* local pt=n("等同") */
+  lc_getupvalue(L, (lc537 + lc_nextra), 2, 146);
+  lua_pushliteral(L, "等同");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 13);
 
-  /* local Y=i("特定其物") */
-  lc_newclosuretable(L, (lc531 + lc_nextra));
-  enum { lc532 = 14 };
-  assert((lua_gettop(L) == (lc532 + lc_nextra)));
-  lc_getupvalue(L, (lc531 + lc_nextra), 2, 145);
-  lua_pushliteral(L, "特定其物");
+  /* local vt=n("解算") */
+  lc_getupvalue(L, (lc537 + lc_nextra), 2, 146);
+  lua_pushliteral(L, "解算");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc532 + lc_nextra), 148);
   assert(lua_gettop(L) - lc_nextra == 14);
 
-  /* local f=i("省略一物") */
-  lc_newclosuretable(L, (lc532 + lc_nextra));
-  enum { lc533 = 15 };
-  assert((lua_gettop(L) == (lc533 + lc_nextra)));
-  lc_getupvalue(L, (lc532 + lc_nextra), 3, 145);
+  /* local Y=n("特定其物") */
+  lc_newclosuretable(L, (lc537 + lc_nextra));
+  enum { lc538 = 15 };
+  assert((lua_gettop(L) == (lc538 + lc_nextra)));
+  lc_getupvalue(L, (lc537 + lc_nextra), 2, 146);
+  lua_pushliteral(L, "特定其物");
+  lua_call(L, 1, 1);
+  lua_rawseti(L, (lc538 + lc_nextra), 149);
+  assert(lua_gettop(L) - lc_nextra == 15);
+
+  /* local m=n("省略一物") */
+  lc_newclosuretable(L, (lc538 + lc_nextra));
+  enum { lc539 = 16 };
+  assert((lua_gettop(L) == (lc539 + lc_nextra)));
+  lc_getupvalue(L, (lc538 + lc_nextra), 3, 146);
   lua_pushliteral(L, "省略一物");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc533 + lc_nextra), 149);
-  assert(lua_gettop(L) - lc_nextra == 15);
-
-  /* Be=i("映表") */
-  lc_getupvalue(L, (lc533 + lc_nextra), 4, 145);
-  lua_pushliteral(L, "映表");
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc533 + lc_nextra), 11, 50);
-  assert(lua_gettop(L) - lc_nextra == 15);
-
-  /* local bt=i("如若") */
-  lc_getupvalue(L, (lc533 + lc_nextra), 4, 145);
-  lua_pushliteral(L, "如若");
-  lua_call(L, 1, 1);
+  lua_rawseti(L, (lc539 + lc_nextra), 150);
   assert(lua_gettop(L) - lc_nextra == 16);
 
-  /* local u=i("一類何物") */
-  lc_newclosuretable(L, (lc533 + lc_nextra));
-  enum { lc534 = 17 };
-  assert((lua_gettop(L) == (lc534 + lc_nextra)));
-  lc_getupvalue(L, (lc533 + lc_nextra), 4, 145);
-  lua_pushliteral(L, "一類何物");
+  /* Se=n("映表") */
+  lc_getupvalue(L, (lc539 + lc_nextra), 4, 146);
+  lua_pushliteral(L, "映表");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc534 + lc_nextra), 150);
+  lc_setupvalue(L, (lc539 + lc_nextra), 11, 51);
+  assert(lua_gettop(L) - lc_nextra == 16);
+
+  /* local yt=n("如若") */
+  lc_getupvalue(L, (lc539 + lc_nextra), 4, 146);
+  lua_pushliteral(L, "如若");
+  lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 17);
 
-  /* local Z=i("是非") */
-  lc_newclosuretable(L, (lc534 + lc_nextra));
-  enum { lc535 = 18 };
-  assert((lua_gettop(L) == (lc535 + lc_nextra)));
-  lc_getupvalue(L, (lc534 + lc_nextra), 5, 145);
-  lua_pushliteral(L, "是非");
+  /* local u=n("一類何物") */
+  lc_newclosuretable(L, (lc539 + lc_nextra));
+  enum { lc540 = 18 };
+  assert((lua_gettop(L) == (lc540 + lc_nextra)));
+  lc_getupvalue(L, (lc539 + lc_nextra), 4, 146);
+  lua_pushliteral(L, "一類何物");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc535 + lc_nextra), 151);
+  lua_rawseti(L, (lc540 + lc_nextra), 151);
   assert(lua_gettop(L) - lc_nextra == 18);
 
-  /* local pe=i("其子") */
-  lc_newclosuretable(L, (lc535 + lc_nextra));
-  enum { lc536 = 19 };
-  assert((lua_gettop(L) == (lc536 + lc_nextra)));
-  lc_getupvalue(L, (lc535 + lc_nextra), 6, 145);
-  lua_pushliteral(L, "其子");
+  /* local ae=n("是非") */
+  lc_newclosuretable(L, (lc540 + lc_nextra));
+  enum { lc541 = 19 };
+  assert((lua_gettop(L) == (lc541 + lc_nextra)));
+  lc_getupvalue(L, (lc540 + lc_nextra), 5, 146);
+  lua_pushliteral(L, "是非");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc536 + lc_nextra), 152);
+  lua_rawseti(L, (lc541 + lc_nextra), 152);
   assert(lua_gettop(L) - lc_nextra == 19);
 
-  /* local et=i("爻陽") */
-  lc_newclosuretable(L, (lc536 + lc_nextra));
-  enum { lc537 = 20 };
-  assert((lua_gettop(L) == (lc537 + lc_nextra)));
-  lc_getupvalue(L, (lc536 + lc_nextra), 7, 145);
-  lua_pushliteral(L, "爻陽");
+  /* local pe=n("其子") */
+  lc_newclosuretable(L, (lc541 + lc_nextra));
+  enum { lc542 = 20 };
+  assert((lua_gettop(L) == (lc542 + lc_nextra)));
+  lc_getupvalue(L, (lc541 + lc_nextra), 6, 146);
+  lua_pushliteral(L, "其子");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc537 + lc_nextra), 153);
+  lua_rawseti(L, (lc542 + lc_nextra), 153);
   assert(lua_gettop(L) - lc_nextra == 20);
 
-  /* local tt=i("爻陰") */
-  lc_newclosuretable(L, (lc537 + lc_nextra));
-  enum { lc538 = 21 };
-  assert((lua_gettop(L) == (lc538 + lc_nextra)));
-  lc_getupvalue(L, (lc537 + lc_nextra), 8, 145);
-  lua_pushliteral(L, "爻陰");
+  /* local Je=n("爻陽") */
+  lc_newclosuretable(L, (lc542 + lc_nextra));
+  enum { lc543 = 21 };
+  assert((lua_gettop(L) == (lc543 + lc_nextra)));
+  lc_getupvalue(L, (lc542 + lc_nextra), 7, 146);
+  lua_pushliteral(L, "爻陽");
   lua_call(L, 1, 1);
-  lua_rawseti(L, (lc538 + lc_nextra), 154);
+  lua_rawseti(L, (lc543 + lc_nextra), 154);
   assert(lua_gettop(L) - lc_nextra == 21);
 
-  /* local pt=i("引用") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "引用");
+  /* local et=n("爻陰") */
+  lc_newclosuretable(L, (lc543 + lc_nextra));
+  enum { lc544 = 22 };
+  assert((lua_gettop(L) == (lc544 + lc_nextra)));
+  lc_getupvalue(L, (lc543 + lc_nextra), 8, 146);
+  lua_pushliteral(L, "爻陰");
   lua_call(L, 1, 1);
+  lua_rawseti(L, (lc544 + lc_nextra), 155);
   assert(lua_gettop(L) - lc_nextra == 22);
 
-  /* local mt=i("應用") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "應用");
+  /* local gt=n("引用") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "引用");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 23);
 
-  /* local ct=i("間空") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "間空");
+  /* local wt=n("應用") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "應用");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 24);
 
-  /* local ye=i("連頸") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "連頸");
+  /* local bt=n("間空") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "間空");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 25);
 
-  /* local ne=i("構物") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "構物");
+  /* local ne=n("連頸") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "連頸");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 26);
 
-  /* local he=i("謬誤") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "謬誤");
+  /* local se=n("構物") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "構物");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 27);
 
-  /* local wt=i("詞素") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "詞素");
+  /* local he=n("謬誤") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "謬誤");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 28);
 
-  /* local ve=i("列序") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "列序");
+  /* local ft=n("詞素") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "詞素");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 29);
 
-  /* local ft=i("首始") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "首始");
+  /* local Ie=n("列序") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "列序");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 30);
 
-  /* local yt=i("尾末") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "尾末");
+  /* local ct=n("首始") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "首始");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 31);
 
-  /* local Xe=i("之物") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "之物");
+  /* local mt=n("尾末") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "尾末");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 32);
 
-  /* local d=i("宇宙亡矣") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "宇宙亡矣");
+  /* local ht=n("之物") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "之物");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 33);
 
-  /* local Ze=i("效應") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
-  lua_pushliteral(L, "效應");
+  /* local d=n("宇宙亡矣") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "宇宙亡矣");
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 34);
 
-  /* local Qe=i("註疏") */
-  lc_getupvalue(L, (lc538 + lc_nextra), 9, 145);
+  /* local ot=n("效應") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
+  lua_pushliteral(L, "效應");
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) - lc_nextra == 35);
+
+  /* local it=n("註疏") */
+  lc_getupvalue(L, (lc544 + lc_nextra), 9, 146);
   lua_pushliteral(L, "註疏");
   lua_call(L, 1, 1);
-  assert(lua_gettop(L) - lc_nextra == 35);
-
-  /* Je=R(z,e(d,f)) */
-  lc_getupvalue(L, (lc538 + lc_nextra), 16, 82);
-  const int lc539 = lua_gettop(L);
-  lc_getupvalue(L, (lc538 + lc_nextra), 16, 53);
-  lc_getupvalue(L, (lc538 + lc_nextra), 16, 26);
-  lua_pushvalue(L, (33 + lc_nextra));
-  lc_getupvalue(L, (lc538 + lc_nextra), 5, 149);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc539), 1);
-  lc_setupvalue(L, (lc538 + lc_nextra), 16, 49);
-  assert(lua_gettop(L) - lc_nextra == 35);
-
-  /* local function b(e)
-   * return E(be,s(z,s(e,v)))
-   * end */
-  lc_newclosuretable(L, (lc538 + lc_nextra));
-  enum { lc540 = 36 };
-  assert((lua_gettop(L) == (lc540 + lc_nextra)));
-  lua_pushvalue(L, (lc540 + lc_nextra));
-  lua_pushcclosure(L, lcf1_b, 1);
-  lua_rawseti(L, (lc540 + lc_nextra), 155);
   assert(lua_gettop(L) - lc_nextra == 36);
 
-  /* local function Ae(a)
-   * return b(e(u,e(t,f,a),Y))
+  /* dt=L(z,e(d,m)) */
+  lc_getupvalue(L, (lc544 + lc_nextra), 16, 83);
+  const int lc545 = lua_gettop(L);
+  lc_getupvalue(L, (lc544 + lc_nextra), 16, 54);
+  lc_getupvalue(L, (lc544 + lc_nextra), 16, 27);
+  lua_pushvalue(L, (34 + lc_nextra));
+  lc_getupvalue(L, (lc544 + lc_nextra), 5, 150);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc545), 1);
+  lc_setupvalue(L, (lc544 + lc_nextra), 16, 50);
+  assert(lua_gettop(L) - lc_nextra == 36);
+
+  /* local function b(e)
+   * return T(ye,s(z,s(e,y)))
    * end */
-  lua_pushvalue(L, (lc540 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Ae, 1);
+  lc_newclosuretable(L, (lc544 + lc_nextra));
+  enum { lc546 = 37 };
+  assert((lua_gettop(L) == (lc546 + lc_nextra)));
+  lua_pushvalue(L, (lc546 + lc_nextra));
+  lua_pushcclosure(L, lcf1_b, 1);
+  lua_rawseti(L, (lc546 + lc_nextra), 156);
   assert(lua_gettop(L) - lc_nextra == 37);
 
-  /* local function d(o,a)
-   * return b(e(u,e(t,e(o),f),a))
+  /* local function Ae(a)
+   * return b(e(u,e(t,m,a),Y))
    * end */
-  lua_pushvalue(L, (lc540 + lc_nextra));
-  lua_pushcclosure(L, lcf5_d, 1);
+  lua_pushvalue(L, (lc546 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Ae, 1);
   assert(lua_gettop(L) - lc_nextra == 38);
 
-  /* local function ee(a)
-   * return b(e(u,t,e(Z,e(u,a,f))))
+  /* local function d(a,o)
+   * return b(e(u,e(t,e(a),m),o))
    * end */
-  lua_pushvalue(L, (lc540 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ee, 1);
+  lua_pushvalue(L, (lc546 + lc_nextra));
+  lua_pushcclosure(L, lcf6_d, 1);
   assert(lua_gettop(L) - lc_nextra == 39);
 
-  /* local dt=Ae(ne) */
-  lua_pushvalue(L, (37 + lc_nextra));
-  lua_pushvalue(L, (26 + lc_nextra));
-  lua_call(L, 1, 1);
+  /* local function M(a)
+   * return b(e(u,t,e(ae,e(u,a,m))))
+   * end */
+  lua_pushvalue(L, (lc546 + lc_nextra));
+  lua_pushcclosure(L, lcf1_M, 1);
   assert(lua_gettop(L) - lc_nextra == 40);
 
-  /* Ke=d(ne,be) */
+  /* local dt=Ae(se) */
   lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (26 + lc_nextra));
-  lc_getupvalue(L, (lc540 + lc_nextra), 8, 147);
-  lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 48);
-  assert(lua_gettop(L) - lc_nextra == 40);
-
-  /* Ve=d(ne,ve) */
-  lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (26 + lc_nextra));
-  lua_pushvalue(L, (29 + lc_nextra));
-  lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 47);
-  assert(lua_gettop(L) - lc_nextra == 40);
-
-  /* Ye=ee(ne) */
-  lua_pushvalue(L, (39 + lc_nextra));
-  lua_pushvalue(L, (26 + lc_nextra));
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 46);
-  assert(lua_gettop(L) - lc_nextra == 40);
-
-  /* local rt=Ae(he) */
-  lua_pushvalue(L, (37 + lc_nextra));
   lua_pushvalue(L, (27 + lc_nextra));
   lua_call(L, 1, 1);
   assert(lua_gettop(L) - lc_nextra == 41);
 
-  /* Re=d(he,be) */
-  lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (27 + lc_nextra));
-  lc_getupvalue(L, (lc540 + lc_nextra), 8, 147);
-  lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 45);
-  assert(lua_gettop(L) - lc_nextra == 41);
-
-  /* De=d(he,ve) */
-  lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (27 + lc_nextra));
-  lua_pushvalue(L, (29 + lc_nextra));
-  lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 44);
-  assert(lua_gettop(L) - lc_nextra == 41);
-
-  /* We=ee(he) */
+  /* He=d(se,ye) */
   lua_pushvalue(L, (39 + lc_nextra));
   lua_pushvalue(L, (27 + lc_nextra));
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 43);
+  lc_getupvalue(L, (lc546 + lc_nextra), 8, 148);
+  lua_call(L, 2, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 49);
   assert(lua_gettop(L) - lc_nextra == 41);
 
-  /* local lt=Ae(ye) */
-  lua_pushvalue(L, (37 + lc_nextra));
-  lua_pushvalue(L, (25 + lc_nextra));
-  lua_call(L, 1, 1);
-  assert(lua_gettop(L) - lc_nextra == 42);
-
-  /* Me=ee(ye) */
+  /* We=d(se,Ie) */
   lua_pushvalue(L, (39 + lc_nextra));
-  lua_pushvalue(L, (25 + lc_nextra));
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 42);
-  assert(lua_gettop(L) - lc_nextra == 42);
-
-  /* Pe=d(ye,ft) */
-  lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (25 + lc_nextra));
+  lua_pushvalue(L, (27 + lc_nextra));
   lua_pushvalue(L, (30 + lc_nextra));
   lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 41);
-  assert(lua_gettop(L) - lc_nextra == 42);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 48);
+  assert(lua_gettop(L) - lc_nextra == 41);
 
-  /* Ne=d(ye,yt) */
+  /* Fe=M(se) */
+  lua_pushvalue(L, (40 + lc_nextra));
+  lua_pushvalue(L, (27 + lc_nextra));
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 47);
+  assert(lua_gettop(L) - lc_nextra == 41);
+
+  /* local lt=Ae(he) */
   lua_pushvalue(L, (38 + lc_nextra));
-  lua_pushvalue(L, (25 + lc_nextra));
-  lua_pushvalue(L, (31 + lc_nextra));
-  lua_call(L, 2, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 40);
-  assert(lua_gettop(L) - lc_nextra == 42);
-
-  /* Ce=ee(wt) */
-  lua_pushvalue(L, (39 + lc_nextra));
   lua_pushvalue(L, (28 + lc_nextra));
   lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 39);
   assert(lua_gettop(L) - lc_nextra == 42);
 
-  /* Le=ee(ct) */
+  /* Ye=d(he,ye) */
   lua_pushvalue(L, (39 + lc_nextra));
-  lua_pushvalue(L, (24 + lc_nextra));
-  lua_call(L, 1, 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 38);
-  assert(lua_gettop(L) - lc_nextra == 42);
-
-  /* ie=b(e(u,t,e(Z,vt))) */
-  lc_getupvalue(L, (lc540 + lc_nextra), 0, 155);
-  const int lc552 = lua_gettop(L);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  const int lc553 = lua_gettop(L);
-  lc_getupvalue(L, (lc540 + lc_nextra), 5, 150);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 52);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  lc_getupvalue(L, (lc540 + lc_nextra), 4, 151);
-  lua_pushvalue(L, (12 + lc_nextra));
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc553), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc552), 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 37);
-  assert(lua_gettop(L) - lc_nextra == 42);
-
-  /* Te=b(e(u,e(t,s(t,f),f),mt)) */
-  lc_getupvalue(L, (lc540 + lc_nextra), 0, 155);
-  const int lc554 = lua_gettop(L);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  lc_getupvalue(L, (lc540 + lc_nextra), 5, 150);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 52);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 92);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 52);
-  lc_getupvalue(L, (lc540 + lc_nextra), 6, 149);
+  lua_pushvalue(L, (28 + lc_nextra));
+  lc_getupvalue(L, (lc546 + lc_nextra), 8, 148);
   lua_call(L, 2, 1);
-  lc_getupvalue(L, (lc540 + lc_nextra), 6, 149);
-  lua_call(L, 3, 1);
-  lua_pushvalue(L, (23 + lc_nextra));
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc554), 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 36);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 46);
   assert(lua_gettop(L) - lc_nextra == 42);
 
-  /* ke=b(e(u,t,gt)) */
-  lc_getupvalue(L, (lc540 + lc_nextra), 0, 155);
-  const int lc555 = lua_gettop(L);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  lc_getupvalue(L, (lc540 + lc_nextra), 5, 150);
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 52);
-  lua_pushvalue(L, (13 + lc_nextra));
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc555), 1);
-  lc_setupvalue(L, (lc540 + lc_nextra), 17, 35);
+  /* Pe=d(he,Ie) */
+  lua_pushvalue(L, (39 + lc_nextra));
+  lua_pushvalue(L, (28 + lc_nextra));
+  lua_pushvalue(L, (30 + lc_nextra));
+  lua_call(L, 2, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 45);
   assert(lua_gettop(L) - lc_nextra == 42);
 
-  /* local Je=d(ve,e(u,Xe,f)) */
-  lc_newclosuretable(L, (lc540 + lc_nextra));
-  enum { lc556 = 43 };
-  assert((lua_gettop(L) == (lc556 + lc_nextra)));
+  /* Me=M(he) */
+  lua_pushvalue(L, (40 + lc_nextra));
+  lua_pushvalue(L, (28 + lc_nextra));
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 44);
+  assert(lua_gettop(L) - lc_nextra == 42);
+
+  /* local ut=Ae(ne) */
   lua_pushvalue(L, (38 + lc_nextra));
-  const int lc557 = lua_gettop(L);
-  lua_pushvalue(L, (29 + lc_nextra));
-  lc_getupvalue(L, (lc540 + lc_nextra), 17, 26);
-  lc_getupvalue(L, (lc540 + lc_nextra), 5, 150);
+  lua_pushvalue(L, (26 + lc_nextra));
+  lua_call(L, 1, 1);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* De=M(ne) */
+  lua_pushvalue(L, (40 + lc_nextra));
+  lua_pushvalue(L, (26 + lc_nextra));
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 43);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* Re=d(ne,ct) */
+  lua_pushvalue(L, (39 + lc_nextra));
+  lua_pushvalue(L, (26 + lc_nextra));
+  lua_pushvalue(L, (31 + lc_nextra));
+  lua_call(L, 2, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 42);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* Le=d(ne,mt) */
+  lua_pushvalue(L, (39 + lc_nextra));
+  lua_pushvalue(L, (26 + lc_nextra));
   lua_pushvalue(L, (32 + lc_nextra));
-  lc_getupvalue(L, (lc540 + lc_nextra), 6, 149);
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc557), 1);
-  lua_rawseti(L, (lc556 + lc_nextra), 156);
+  lua_call(L, 2, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 41);
   assert(lua_gettop(L) - lc_nextra == 43);
 
-  /* oe=b(e(u,t,bt)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  /* Ue=M(ft) */
+  lua_pushvalue(L, (40 + lc_nextra));
+  lua_pushvalue(L, (29 + lc_nextra));
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 40);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* Ce=M(bt) */
+  lua_pushvalue(L, (40 + lc_nextra));
+  lua_pushvalue(L, (25 + lc_nextra));
+  lua_call(L, 1, 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 39);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* te=b(e(u,t,e(ae,pt))) */
+  lc_getupvalue(L, (lc546 + lc_nextra), 0, 156);
   const int lc558 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 6, 150);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 52);
-  lua_pushvalue(L, (16 + lc_nextra));
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc558), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 34);
-  assert(lua_gettop(L) - lc_nextra == 43);
-
-  /* Ue=b(e(u,x,pt)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
   const int lc559 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 6, 150);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lua_pushvalue(L, (22 + lc_nextra));
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc559), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 33);
+  lc_getupvalue(L, (lc546 + lc_nextra), 5, 151);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 53);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
+  lc_getupvalue(L, (lc546 + lc_nextra), 4, 152);
+  lua_pushvalue(L, (13 + lc_nextra));
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc559), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc558), 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 38);
   assert(lua_gettop(L) - lc_nextra == 43);
 
-  /* ot=b(e(u,e(x,e(t,f,t)),Y)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  /* be=b(e(u,e(t,s(t,m),m),wt)) */
+  lc_getupvalue(L, (lc546 + lc_nextra), 0, 156);
   const int lc560 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 6, 150);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  const int lc561 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 52);
-  lc_getupvalue(L, (lc556 + lc_nextra), 7, 149);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 52);
-  lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc561), 1);
-  lc_getupvalue(L, (lc556 + lc_nextra), 8, 148);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
+  lc_getupvalue(L, (lc546 + lc_nextra), 5, 151);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 53);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 93);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 53);
+  lc_getupvalue(L, (lc546 + lc_nextra), 6, 150);
+  lua_call(L, 2, 1);
+  lc_getupvalue(L, (lc546 + lc_nextra), 6, 150);
+  lua_call(L, 3, 1);
+  lua_pushvalue(L, (24 + lc_nextra));
   lua_call(L, 3, LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc560), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 32);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 37);
   assert(lua_gettop(L) - lc_nextra == 43);
 
-  /* M=b(e(x,e(z,t))) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
-  const int lc562 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
+  /* ve=b(e(u,t,vt)) */
+  lc_getupvalue(L, (lc546 + lc_nextra), 0, 156);
+  const int lc561 = lua_gettop(L);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
+  lc_getupvalue(L, (lc546 + lc_nextra), 5, 151);
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 53);
+  lua_pushvalue(L, (14 + lc_nextra));
+  lua_call(L, 3, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc561), 1);
+  lc_setupvalue(L, (lc546 + lc_nextra), 17, 36);
+  assert(lua_gettop(L) - lc_nextra == 43);
+
+  /* local Ie=d(Ie,e(u,ht,m)) */
+  lc_newclosuretable(L, (lc546 + lc_nextra));
+  enum { lc562 = 44 };
+  assert((lua_gettop(L) == (lc562 + lc_nextra)));
+  lua_pushvalue(L, (39 + lc_nextra));
   const int lc563 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 53);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 52);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc563), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc562), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 31);
-  assert(lua_gettop(L) - lc_nextra == 43);
+  lua_pushvalue(L, (30 + lc_nextra));
+  lc_getupvalue(L, (lc546 + lc_nextra), 17, 27);
+  lc_getupvalue(L, (lc546 + lc_nextra), 5, 151);
+  lua_pushvalue(L, (33 + lc_nextra));
+  lc_getupvalue(L, (lc546 + lc_nextra), 6, 150);
+  lua_call(L, 3, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc563), 1);
+  lua_rawseti(L, (lc562 + lc_nextra), 157);
+  assert(lua_gettop(L) - lc_nextra == 44);
 
-  /* se=b(e(x,e(z,x))) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  /* ee=b(e(u,t,yt)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
   const int lc564 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  const int lc565 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 53);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc565), LUA_MULTRET);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 6, 151);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 53);
+  lua_pushvalue(L, (17 + lc_nextra));
+  lua_call(L, 3, LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc564), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 30);
-  assert(lua_gettop(L) - lc_nextra == 43);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 35);
+  assert(lua_gettop(L) - lc_nextra == 44);
 
-  /* ht=b(e(x,x)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  /* ke=b(e(u,x,gt)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
+  const int lc565 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 6, 151);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lua_pushvalue(L, (23 + lc_nextra));
+  lua_call(L, 3, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc565), 1);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 34);
+  assert(lua_gettop(L) - lc_nextra == 44);
+
+  /* st=b(e(u,e(x,e(t,m,t)),Y)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
   const int lc566 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc566), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 29);
-  assert(lua_gettop(L) - lc_nextra == 43);
-
-  /* local ot=b(e(u,t,Qe)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 6, 151);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
   const int lc567 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 6, 150);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 52);
-  lua_pushvalue(L, (35 + lc_nextra));
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 53);
+  lc_getupvalue(L, (lc562 + lc_nextra), 7, 150);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 53);
   lua_call(L, 3, LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc567), 1);
-  assert(lua_gettop(L) - lc_nextra == 44);
-
-  /* st=b(e(u,x,Qe)) */
-  lc_getupvalue(L, (lc556 + lc_nextra), 1, 155);
-  const int lc568 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lc_getupvalue(L, (lc556 + lc_nextra), 6, 150);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 51);
-  lua_pushvalue(L, (35 + lc_nextra));
+  lc_getupvalue(L, (lc562 + lc_nextra), 8, 149);
   lua_call(L, 3, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc568), 1);
-  lc_setupvalue(L, (lc556 + lc_nextra), 18, 28);
+  lua_call(L, (lua_gettop(L) - lc566), 1);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 33);
   assert(lua_gettop(L) - lc_nextra == 44);
 
-  /* local d=E(tt,e()) */
-  lc_newclosuretable(L, (lc556 + lc_nextra));
-  enum { lc569 = 45 };
-  assert((lua_gettop(L) == (lc569 + lc_nextra)));
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 86);
+  /* J=b(e(x,e(z,t))) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
+  const int lc568 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  const int lc569 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 54);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 53);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc569), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc568), 1);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 32);
+  assert(lua_gettop(L) - lc_nextra == 44);
+
+  /* ie=b(e(x,e(z,x))) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
   const int lc570 = lua_gettop(L);
-  lc_getupvalue(L, (lc556 + lc_nextra), 2, 154);
-  lc_getupvalue(L, (lc556 + lc_nextra), 18, 26);
-  lua_call(L, 0, LUA_MULTRET);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  const int lc571 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 54);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc571), LUA_MULTRET);
   lua_call(L, (lua_gettop(L) - lc570), 1);
-  lua_rawseti(L, (lc569 + lc_nextra), 157);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 31);
+  assert(lua_gettop(L) - lc_nextra == 44);
+
+  /* nt=b(e(x,x)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
+  const int lc572 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc572), 1);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 30);
+  assert(lua_gettop(L) - lc_nextra == 44);
+
+  /* local nt=b(e(u,t,it)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
+  const int lc573 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 6, 151);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 53);
+  lua_pushvalue(L, (36 + lc_nextra));
+  lua_call(L, 3, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc573), 1);
   assert(lua_gettop(L) - lc_nextra == 45);
 
-  /* local he=E(et,e()) */
-  lc_newclosuretable(L, (lc569 + lc_nextra));
-  enum { lc571 = 46 };
-  assert((lua_gettop(L) == (lc571 + lc_nextra)));
-  lc_getupvalue(L, (lc569 + lc_nextra), 19, 86);
-  const int lc572 = lua_gettop(L);
-  lc_getupvalue(L, (lc569 + lc_nextra), 4, 153);
-  lc_getupvalue(L, (lc569 + lc_nextra), 19, 26);
+  /* tt=b(e(u,x,it)) */
+  lc_getupvalue(L, (lc562 + lc_nextra), 1, 156);
+  const int lc574 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
+  lc_getupvalue(L, (lc562 + lc_nextra), 6, 151);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 52);
+  lua_pushvalue(L, (36 + lc_nextra));
+  lua_call(L, 3, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc574), 1);
+  lc_setupvalue(L, (lc562 + lc_nextra), 18, 29);
+  assert(lua_gettop(L) - lc_nextra == 45);
+
+  /* local d=T(et,e()) */
+  lc_newclosuretable(L, (lc562 + lc_nextra));
+  enum { lc575 = 46 };
+  assert((lua_gettop(L) == (lc575 + lc_nextra)));
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 87);
+  const int lc576 = lua_gettop(L);
+  lc_getupvalue(L, (lc562 + lc_nextra), 2, 155);
+  lc_getupvalue(L, (lc562 + lc_nextra), 18, 27);
   lua_call(L, 0, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc572), 1);
-  lua_rawseti(L, (lc571 + lc_nextra), 158);
+  lua_call(L, (lua_gettop(L) - lc576), 1);
+  lua_rawseti(L, (lc575 + lc_nextra), 158);
   assert(lua_gettop(L) - lc_nextra == 46);
 
-  /* local function ve(e,s,i)
-   * local t={}
-   * while a(e)do
-   * l(t,o(e))
-   * e=n(e)
-   * end
-   * if r(e)then
-   * return s(t)
-   * end
-   * return i(t,e)
-   * end */
-  lc_newclosuretable(L, (lc571 + lc_nextra));
-  enum { lc573 = 47 };
-  assert((lua_gettop(L) == (lc573 + lc_nextra)));
-  lua_pushvalue(L, (lc573 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ve, 1);
-  lua_rawseti(L, (lc573 + lc_nextra), 159);
+  /* local se=T(Je,e()) */
+  lc_newclosuretable(L, (lc575 + lc_nextra));
+  enum { lc577 = 47 };
+  assert((lua_gettop(L) == (lc577 + lc_nextra)));
+  lc_getupvalue(L, (lc575 + lc_nextra), 19, 87);
+  const int lc578 = lua_gettop(L);
+  lc_getupvalue(L, (lc575 + lc_nextra), 4, 154);
+  lc_getupvalue(L, (lc575 + lc_nextra), 19, 27);
+  lua_call(L, 0, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc578), 1);
+  lua_rawseti(L, (lc577 + lc_nextra), 159);
   assert(lua_gettop(L) - lc_nextra == 47);
 
-  /* local function M(e)
-   * return ve(e,function(e)return e end,function(e,e)return false end)
+  /* local function ke(e,n,s)
+   * local t={}
+   * while a(e)do
+   * v(t,o(e))
+   * e=i(e)
+   * end
+   * if h(e)then
+   * return n(t)
+   * end
+   * return s(t,e)
    * end */
-  lc_newclosuretable(L, (lc573 + lc_nextra));
-  enum { lc580 = 48 };
-  assert((lua_gettop(L) == (lc580 + lc_nextra)));
-  lua_pushvalue(L, (lc580 + lc_nextra));
-  lua_pushcclosure(L, lcf1_M, 1);
-  lua_rawseti(L, (lc580 + lc_nextra), 160);
+  lc_newclosuretable(L, (lc577 + lc_nextra));
+  enum { lc579 = 48 };
+  assert((lua_gettop(L) == (lc579 + lc_nextra)));
+  lua_pushvalue(L, (lc579 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ke, 1);
+  lua_rawseti(L, (lc579 + lc_nextra), 160);
   assert(lua_gettop(L) - lc_nextra == 48);
 
-  /* local function Ue(e)
-   * while V(e)or O(e)do
-   * e=N(ze(e))
-   * end
-   * return e
+  /* local function M(e)
+   * return ke(e,function(e)return e end,function(e,e)return false end)
    * end */
-  lua_pushvalue(L, (lc580 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Ue, 1);
-  assert(lua_gettop(L) - lc_nextra == 49);
-
-  /* local function Ae(e)
-   * if B(e)then
-   * return e
-   * elseif Q(e)then
-   * error("WIP")
-   * elseif J(e)then
-   * error("WIP")
-   * elseif G(e)then
-   * error("WIP")
-   * end
-   * return q()
-   * end */
-  lc_newclosuretable(L, (lc580 + lc_nextra));
-  enum { lc586 = 50 };
+  lc_newclosuretable(L, (lc579 + lc_nextra));
+  enum { lc586 = 49 };
   assert((lua_gettop(L) == (lc586 + lc_nextra)));
   lua_pushvalue(L, (lc586 + lc_nextra));
-  lua_pushcclosure(L, lcf2_Ae, 1);
+  lua_pushcclosure(L, lcf2_M, 1);
   lua_rawseti(L, (lc586 + lc_nextra), 161);
+  assert(lua_gettop(L) - lc_nextra == 49);
+
+  /* local function tt(e)
+   * while B(e)or I(e)do
+   * e=N(qe(e))
+   * end
+   * return e
+   * end */
+  lua_pushvalue(L, (lc586 + lc_nextra));
+  lua_pushcclosure(L, lcf1_tt, 1);
   assert(lua_gettop(L) - lc_nextra == 50);
 
-  /* local function Qe(e)
-   * return te(Ae(e))
+  /* local function Ae(e)
+   * if Q(e)then
+   * return e
+   * elseif G(e)then
+   * error("WIP")
+   * elseif P(e)then
+   * error("WIP")
+   * elseif V(e)then
+   * error("WIP")
+   * end
+   * return j()
    * end */
-  lua_pushvalue(L, (lc586 + lc_nextra));
-  lua_pushcclosure(L, lcf2_Qe, 1);
+  lc_newclosuretable(L, (lc586 + lc_nextra));
+  enum { lc592 = 51 };
+  assert((lua_gettop(L) == (lc592 + lc_nextra)));
+  lua_pushvalue(L, (lc592 + lc_nextra));
+  lua_pushcclosure(L, lcf2_Ae, 1);
+  lua_rawseti(L, (lc592 + lc_nextra), 162);
   assert(lua_gettop(L) - lc_nextra == 51);
 
-  /* local function st(e)
-   * return ae(Ae(e))
+  /* local function it(e)
+   * return X(Ae(e))
    * end */
-  lua_pushvalue(L, (lc586 + lc_nextra));
-  lua_pushcclosure(L, lcf1_st, 1);
+  lua_pushvalue(L, (lc592 + lc_nextra));
+  lua_pushcclosure(L, lcf2_it, 1);
   assert(lua_gettop(L) - lc_nextra == 52);
 
-  /* local function ht(e)
-   * if O(e)then
-   * return X(e)
+  /* local function ct(e)
+   * return Z(Ae(e))
+   * end */
+  lua_pushvalue(L, (lc592 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ct, 1);
+  assert(lua_gettop(L) - lc_nextra == 53);
+
+  /* local function st(e)
+   * if I(e)then
+   * return K(e)
    * else
    * return k(e)
    * end
    * end */
-  lua_pushvalue(L, (lc586 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ht, 1);
-  assert(lua_gettop(L) - lc_nextra == 53);
+  lua_pushvalue(L, (lc592 + lc_nextra));
+  lua_pushcclosure(L, lcf1_st, 1);
+  assert(lua_gettop(L) - lc_nextra == 54);
 
-  /* Se={} */
+  /* Be={} */
   lua_newtable(L);
-  lc_setupvalue(L, (lc586 + lc_nextra), 23, 18);
-  assert(lua_gettop(L) - lc_nextra == 53);
+  lc_setupvalue(L, (lc592 + lc_nextra), 23, 19);
+  assert(lua_gettop(L) - lc_nextra == 54);
 
-  /* local function se(t)
-   * t=h(t)
-   * if not m(t)then
+  /* local function he(t)
+   * t=r(t)
+   * if not c(t)then
    * return false
    * end
-   * local e=h(_(t))
+   * local e=r(E(t))
    * if not p(e)then
    * return false
    * end
-   * if not L(e,Be)then
+   * if not D(e,Se)then
    * return false
    * end
-   * e=h(A(t))
+   * e=r(A(t))
    * if not a(e)then
    * return false
    * end
-   * if not r(h(n(e)))then
+   * if not h(r(i(e)))then
    * return false
    * end
    * local t={}
-   * local i=h(o(e))
-   * while not r(i)do
-   * if not a(i)then
+   * local n=r(o(e))
+   * while not h(n)do
+   * if not a(n)then
    * return false
    * end
-   * local e=h(o(i))
-   * i=h(n(i))
+   * local e=r(o(n))
+   * n=r(i(n))
    * if not a(e)then
    * return false
    * end
-   * local i=o(e)
-   * e=h(n(e))
+   * local n=o(e)
+   * e=r(i(e))
    * if not a(e)then
    * return false
    * end
    * local o=o(e)
-   * if not r(h(n(e)))then
+   * if not h(r(i(e)))then
    * return false
    * end
    * local a=true
    * do
    * local e=0
    * while e<#t do
-   * if c(t[(e+0)+1],i)then
+   * if l(t[(e+0)+1],n)then
    * t[(e+1)+1]=o
    * a=false
    * break
@@ -20609,192 +20541,192 @@ static inline int lcf_main(lua_State *L) {
    * end
    * end
    * if a then
-   * l(t,i)
-   * l(t,o)
+   * v(t,n)
+   * v(t,o)
    * end
    * end
    * return t
    * end */
-  lc_newclosuretable(L, (lc586 + lc_nextra));
-  enum { lc604 = 54 };
-  assert((lua_gettop(L) == (lc604 + lc_nextra)));
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf1_se, 1);
-  lua_rawseti(L, (lc604 + lc_nextra), 162);
-  assert(lua_gettop(L) - lc_nextra == 54);
+  lc_newclosuretable(L, (lc592 + lc_nextra));
+  enum { lc610 = 55 };
+  assert((lua_gettop(L) == (lc610 + lc_nextra)));
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf1_he, 1);
+  lua_rawseti(L, (lc610 + lc_nextra), 163);
+  assert(lua_gettop(L) - lc_nextra == 55);
 
-  /* local function ne(t,a)
+  /* local function ie(t,a)
    * return{
    * t,
    * 1,
    * function(e)
    * e=k(e)
-   * if y(e)then
-   * return j(t,{e})
+   * if w(e)then
+   * return q(t,{e})
    * end
    * if a(e)then
-   * return he
+   * return se
    * end
    * return d
    * end,
    * }
    * end */
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf1_ne, 1);
-  assert(lua_gettop(L) - lc_nextra == 55);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ie, 1);
+  assert(lua_gettop(L) - lc_nextra == 56);
 
-  /* local function ee(t,i,o)
+  /* local function J(t,a,o)
    * return{
    * t,
    * 1,
-   * function(e,a)
+   * function(e,i)
    * e=k(e)
-   * if y(e)then
-   * return j(t,{e})
+   * if w(e)then
+   * return q(t,{e})
    * end
-   * if i(e)then
+   * if a(e)then
    * return o(e)
    * end
-   * return a()
+   * return i()
    * end,
    * }
    * end */
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf2_ee, 1);
-  assert(lua_gettop(L) - lc_nextra == 56);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf1_J, 1);
+  assert(lua_gettop(L) - lc_nextra == 57);
 
   /* at={
-   * ne(Ye,m),
+   * ie(Fe,c),
    * {
    * dt,
    * 2,
-   * E,
+   * T,
    * },
-   * ee(Ke,m,_),
-   * ee(Ve,m,A),
-   * ne(We,g),
-   * {
-   * rt,
-   * 2,
-   * R,
-   * },
-   * ee(Re,g,U),
-   * ee(De,g,C),
-   * ne(Le,r),
+   * J(He,c,E),
+   * J(We,c,A),
+   * ie(Me,g),
    * {
    * lt,
    * 2,
+   * L,
+   * },
+   * J(Ye,g,C),
+   * J(Pe,g,U),
+   * ie(Ce,h),
+   * {
+   * ut,
+   * 2,
    * s,
    * },
-   * ne(Me,a),
-   * ee(Pe,a,o),
-   * ee(Ne,a,n),
+   * ie(De,a),
+   * J(Re,a,o),
+   * J(Le,a,i),
    * {
-   * ie,
+   * te,
    * 2,
-   * function(e,t,i)
+   * function(e,t,n)
    * if e==t then
-   * return he
+   * return se
    * end
    * e=k(e)
    * t=k(t)
-   * if y(e)or y(t)then
-   * return j(ie,{
+   * if w(e)or w(t)then
+   * return q(te,{
    * e,
    * t,
    * })
    * end
    * if e==t then
-   * return he
+   * return se
    * end
-   * local function i(t,e,a)
-   * return j(oe,{
+   * local function n(a,t,e)
+   * return q(ee,{
+   * a,
    * t,
    * e,
-   * a,
    * })
    * end
-   * local function s(e,t)
-   * return i(e,t,d)
+   * local function s(t,e)
+   * return n(t,e,d)
    * end
-   * S(not y(e))
-   * local function i(o,a,e,t)
-   * return s(j(ie,{
-   * e(o),
-   * e(a),
-   * }),j(ie,{
+   * H(not w(e))
+   * local function n(e,o,t,a)
+   * return s(q(te,{
+   * t(e),
    * t(o),
-   * t(a),
+   * }),q(te,{
+   * a(e),
+   * a(o),
    * }))
    * end
-   * if r(e)then
-   * if not r(e)then
+   * if h(e)then
+   * if not h(e)then
    * return d
    * end
-   * return he
+   * return se
    * elseif p(e)then
    * if not p(t)then
    * return d
    * end
-   * if L(e,t)then
-   * return he
+   * if D(e,t)then
+   * return se
    * else
    * return d
    * end
-   * elseif m(e)then
-   * if not m(t)then
+   * elseif c(e)then
+   * if not c(t)then
    * return d
    * end
-   * return i(e,t,_,A)
+   * return n(e,t,E,A)
    * elseif a(e)then
    * if not a(t)then
    * return d
    * end
-   * return i(e,t,o,n)
+   * return n(e,t,o,i)
    * elseif g(e)then
    * if not g(t)then
    * return d
    * end
-   * return i(e,t,U,C)
+   * return n(e,t,C,U)
    * end
-   * return q()
+   * return j()
    * end,
    * },
    * {
-   * Te,
+   * be,
    * 2,
-   * function(i,e,s)
+   * function(n,e,s)
    * local t={}
-   * local e=h(e)
+   * local e=r(e)
    * while a(e)do
-   * l(t,o(e))
-   * e=h(n(e))
+   * v(t,o(e))
+   * e=r(i(e))
    * end
-   * if not r(e)then
+   * if not h(e)then
    * return s()
    * end
-   * return P(i,t)
+   * return F(n,t)
    * end,
    * },
    * {
-   * ke,
+   * ve,
    * 2,
    * function(e,a,t)
-   * local e=se(e)
+   * local e=he(e)
    * if e==false then
    * return t()
    * end
-   * return H(e,a)
+   * return S(e,a)
    * end,
    * },
-   * ne(Ce,p),
+   * ie(Ue,p),
    * {
-   * Je,
+   * Ie,
    * 1,
    * function(e,t)
    * e=k(e)
-   * if y(e)then
-   * return j(Je,{e})
+   * if w(e)then
+   * return q(Ie,{e})
    * end
    * if not a(e)then
    * return t()
@@ -20803,189 +20735,189 @@ static inline int lcf_main(lua_State *L) {
    * end,
    * },
    * {
-   * oe,
+   * ee,
    * 3,
    * function(e,a,o,t)
    * e=k(e)
-   * if y(e)then
-   * return j(oe,{
+   * if w(e)then
+   * return q(ee,{
    * e,
    * a,
    * o,
    * })
    * end
-   * if not m(e)then
+   * if not c(e)then
    * return t()
    * end
-   * local e=h(_(e))
+   * local e=r(E(e))
    * if not p(e)then
    * return t()
    * end
-   * if L(e,et)then
+   * if D(e,Je)then
    * return a
    * end
-   * if L(e,tt)then
+   * if D(e,et)then
    * return o
    * end
    * return t()
    * end,
    * },
    * {
-   * ot,
+   * nt,
    * 2,
-   * ce,
+   * fe,
    * },
    * } */
   lua_createtable(L, 20, 0);
-  lua_pushvalue(L, (55 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 46);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 85);
+  lua_pushvalue(L, (56 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 47);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 86);
   lua_call(L, 2, 1);
   lua_rawseti(L, -2, 1);
-  lua_createtable(L, 3, 0);
-  lua_pushvalue(L, (40 + lc_nextra));
-  lua_rawseti(L, -2, 1);
-  lua_pushnumber(L, 2);
-  lua_rawseti(L, -2, 2);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 86);
-  lua_rawseti(L, -2, 3);
-  lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 48);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 85);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 84);
-  lua_call(L, 3, 1);
-  lua_rawseti(L, -2, 3);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 47);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 85);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 83);
-  lua_call(L, 3, 1);
-  lua_rawseti(L, -2, 4);
-  lua_pushvalue(L, (55 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 43);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 81);
-  lua_call(L, 2, 1);
-  lua_rawseti(L, -2, 5);
   lua_createtable(L, 3, 0);
   lua_pushvalue(L, (41 + lc_nextra));
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 82);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 87);
   lua_rawseti(L, -2, 3);
-  lua_rawseti(L, -2, 6);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 45);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 81);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 80);
+  lua_rawseti(L, -2, 2);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 49);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 86);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 85);
   lua_call(L, 3, 1);
-  lua_rawseti(L, -2, 7);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 44);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 81);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 79);
+  lua_rawseti(L, -2, 3);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 48);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 86);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 84);
   lua_call(L, 3, 1);
-  lua_rawseti(L, -2, 8);
-  lua_pushvalue(L, (55 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 38);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 87);
+  lua_rawseti(L, -2, 4);
+  lua_pushvalue(L, (56 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 44);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 82);
   lua_call(L, 2, 1);
-  lua_rawseti(L, -2, 9);
+  lua_rawseti(L, -2, 5);
   lua_createtable(L, 3, 0);
   lua_pushvalue(L, (42 + lc_nextra));
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 92);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 83);
+  lua_rawseti(L, -2, 3);
+  lua_rawseti(L, -2, 6);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 46);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 82);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 81);
+  lua_call(L, 3, 1);
+  lua_rawseti(L, -2, 7);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 45);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 82);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 80);
+  lua_call(L, 3, 1);
+  lua_rawseti(L, -2, 8);
+  lua_pushvalue(L, (56 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 39);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 88);
+  lua_call(L, 2, 1);
+  lua_rawseti(L, -2, 9);
+  lua_createtable(L, 3, 0);
+  lua_pushvalue(L, (43 + lc_nextra));
+  lua_rawseti(L, -2, 1);
+  lua_pushnumber(L, 2);
+  lua_rawseti(L, -2, 2);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 93);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 10);
-  lua_pushvalue(L, (55 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 42);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 91);
+  lua_pushvalue(L, (56 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 43);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 92);
   lua_call(L, 2, 1);
   lua_rawseti(L, -2, 11);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 41);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 91);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 90);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 42);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 92);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 91);
   lua_call(L, 3, 1);
   lua_rawseti(L, -2, 12);
-  lua_pushvalue(L, (56 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 40);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 91);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 89);
+  lua_pushvalue(L, (57 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 41);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 92);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 90);
   lua_call(L, 3, 1);
   lua_rawseti(L, -2, 13);
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 37);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 38);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf699, 1);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf705, 1);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 14);
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 36);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 37);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf707, 1);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf713, 1);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 15);
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 35);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 36);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf713, 1);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf719, 1);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 16);
-  lua_pushvalue(L, (55 + lc_nextra));
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 39);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 96);
+  lua_pushvalue(L, (56 + lc_nextra));
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 40);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 97);
   lua_call(L, 2, 1);
   lua_rawseti(L, -2, 17);
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, (lc604 + lc_nextra), 6, 156);
+  lc_getupvalue(L, (lc610 + lc_nextra), 6, 157);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 1);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf721, 1);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf727, 1);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 18);
   lua_createtable(L, 3, 0);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 34);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 35);
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 3);
   lua_rawseti(L, -2, 2);
-  lua_pushvalue(L, (lc604 + lc_nextra));
-  lua_pushcclosure(L, lcf737, 1);
+  lua_pushvalue(L, (lc610 + lc_nextra));
+  lua_pushcclosure(L, lcf743, 1);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 19);
   lua_createtable(L, 3, 0);
-  lua_pushvalue(L, (44 + lc_nextra));
+  lua_pushvalue(L, (45 + lc_nextra));
   lua_rawseti(L, -2, 1);
   lua_pushnumber(L, 2);
   lua_rawseti(L, -2, 2);
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 101);
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 102);
   lua_rawseti(L, -2, 3);
   lua_rawseti(L, -2, 20);
-  lc_setupvalue(L, (lc604 + lc_nextra), 24, 9);
-  assert(lua_gettop(L) - lc_nextra == 56);
+  lc_setupvalue(L, (lc610 + lc_nextra), 24, 10);
+  assert(lua_gettop(L) - lc_nextra == 57);
 
-  /* local oe */
+  /* local J */
   lua_settop(L, (lua_gettop(L) + 1));
-  assert(lua_gettop(L) - lc_nextra == 57);
+  assert(lua_gettop(L) - lc_nextra == 58);
 
-  /* oe=c */
-  lc_getupvalue(L, (lc604 + lc_nextra), 24, 3);
-  lua_replace(L, (57 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 57);
+  /* J=l */
+  lc_getupvalue(L, (lc610 + lc_nextra), 24, 4);
+  lua_replace(L, (58 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 58);
 
   /* local function d(e,t)
    * if e==t then
@@ -20996,203 +20928,203 @@ static inline int lcf_main(lua_State *L) {
    * if e==t then
    * return true
    * end
-   * local function i(t,e,a,o)
-   * if d(a(t),a(e))and d(o(t),o(e))then
-   * I(t,e)
+   * local function n(e,t,a,o)
+   * if d(a(e),a(t))and d(o(e),o(t))then
+   * O(e,t)
    * return true
    * else
    * return false
    * end
    * end
-   * if r(e)then
-   * if not r(t)then
+   * if h(e)then
+   * if not h(t)then
    * return false
    * end
-   * I(e,v)
-   * I(t,v)
+   * O(e,y)
+   * O(t,y)
    * return true
    * elseif p(e)then
    * if not p(t)then
    * return false
    * end
-   * return L(e,t)
+   * return D(e,t)
    * elseif a(e)then
    * if not a(t)then
    * return false
    * end
-   * return i(e,t,o,n)
+   * return n(e,t,o,i)
    * elseif g(e)then
    * if not g(t)then
    * return false
    * end
-   * return i(e,t,U,C)
-   * elseif m(e)then
-   * if not m(t)then
+   * return n(e,t,C,U)
+   * elseif c(e)then
+   * if not c(t)then
    * return false
    * end
-   * return i(e,t,_,A)
-   * elseif de(e)then
+   * return n(e,t,E,A)
+   * elseif me(e)then
    * return false
    * end
-   * return q()
+   * return j()
    * end */
-  lc_newclosuretable(L, (lc604 + lc_nextra));
-  enum { lc738 = 58 };
-  assert((lua_gettop(L) == (lc738 + lc_nextra)));
-  lua_pushvalue(L, (lc738 + lc_nextra));
-  lua_pushcclosure(L, lcf6_d, 1);
-  lua_rawseti(L, (lc738 + lc_nextra), 170);
-  assert(lua_gettop(L) - lc_nextra == 58);
+  lc_newclosuretable(L, (lc610 + lc_nextra));
+  enum { lc744 = 59 };
+  assert((lua_gettop(L) == (lc744 + lc_nextra)));
+  lua_pushvalue(L, (lc744 + lc_nextra));
+  lua_pushcclosure(L, lcf7_d, 1);
+  lua_rawseti(L, (lc744 + lc_nextra), 171);
+  assert(lua_gettop(L) - lc_nextra == 59);
 
-  /* local function ee(ee)
-   * local M,y,c,d,m,h,q,_,J,g,V,U,B,I,F,C,O,L,D,A,N,k,w,G,Q,X
-   * function c()
-   * return#M==y
+  /* local function ee(J)
+   * local D,w,l,d,c,r,j,E,B,g,O,I,N,V,C,P,R,W,M,A,U,k,f,K,G,Q
+   * function l()
+   * return#D==w
    * end
    * function d()
-   * S(not c())
-   * local e=string.sub(M,y+1,y+1)
-   * y=y+1
+   * H(not l())
+   * local e=string.sub(D,w+1,w+1)
+   * w=w+1
    * return e
    * end
-   * function m(e)
-   * S(string.sub(M,y,y)==e)
-   * y=y-1
+   * function c(e)
+   * H(string.sub(D,w,w)==e)
+   * w=w-1
    * end
-   * function h(e)
+   * function r(e)
    * if e==nil then
    * e=""
    * end
    * error("TheLanguage parse ERROR!"..tostring(e))
    * end
-   * function q(e)
+   * function j(e)
    * return e==" "or e=="\n"or e=="\t"or e=="\r"
    * end
-   * function _()
-   * if c()then
+   * function E()
+   * if l()then
    * return false
    * end
    * local e=d()
-   * if not q(e)then
-   * m(e)
+   * if not j(e)then
+   * c(e)
    * return false
    * end
-   * while q(e)and not c()do
+   * while j(e)and not l()do
    * e=d()
    * end
-   * if not q(e)then
-   * m(e)
+   * if not j(e)then
+   * c(e)
    * end
    * return true
    * end
-   * function J()
-   * if c()then
+   * function B()
+   * if l()then
    * return false
    * end
    * local e=d()
    * local t=""
-   * if not L(e)then
-   * m(e)
+   * if not W(e)then
+   * c(e)
    * return false
    * end
-   * while L(e)and not c()do
+   * while W(e)and not l()do
    * t=tostring(t)..tostring(e)
    * e=d()
    * end
-   * if L(e)then
+   * if W(e)then
    * t=tostring(t)..tostring(e)
    * else
-   * m(e)
+   * c(e)
    * end
-   * if nt(t)then
-   * return i(t)
+   * if Xe(t)then
+   * return n(t)
    * else
-   * return h("Not Symbol"..tostring(t))
+   * return r("Not Symbol"..tostring(t))
    * end
    * end
    * function g()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="("then
-   * m(e)
+   * c(e)
    * return false
    * end
-   * local t=K()
+   * local t=ge()
    * local a=t
-   * local function i(a)
-   * local e=K()
-   * W(t,s(a,e))
+   * local function o(a)
+   * local e=ge()
+   * we(t,s(a,e))
    * t=e
    * end
    * while true do
-   * _()
-   * if c()then
-   * return h()
+   * E()
+   * if l()then
+   * return r()
    * end
    * e=d()
    * if e==")"then
-   * W(t,v)
+   * we(t,y)
    * return a
    * end
    * if e=="."then
-   * _()
-   * local o=D()
-   * W(t,o)
-   * _()
-   * if c()then
-   * return h()
+   * E()
+   * local o=M()
+   * we(t,o)
+   * E()
+   * if l()then
+   * return r()
    * end
    * e=d()
    * if e~=")"then
-   * return h()
+   * return r()
    * end
    * return a
    * end
-   * m(e)
-   * local e=D()
-   * i(e)
+   * c(e)
+   * local e=M()
+   * o(e)
    * end
    * end
-   * function V()
-   * if c()then
+   * function O()
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="#"then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * return E(o(e),n(e))
+   * return T(o(e),i(e))
    * end
-   * function U()
-   * if c()then
+   * function I()
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~="!"then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * return R(o(e),n(e))
+   * return L(o(e),i(e))
    * end
-   * function L(e)
-   * if q(e)then
+   * function W(e)
+   * if j(e)then
    * return false
    * end
    * for a,t in ipairs({
@@ -21223,18 +21155,18 @@ static inline int lcf_main(lua_State *L) {
    * end
    * return true
    * end
-   * function D()
-   * _()
+   * function M()
+   * E()
    * local e={
    * g,
-   * X,
-   * V,
-   * U,
-   * B,
-   * I,
-   * F,
-   * C,
+   * Q,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * for t,e in ipairs(e)do
    * local e=e()
@@ -21242,28 +21174,28 @@ static inline int lcf_main(lua_State *L) {
    * return e
    * end
    * end
-   * return h()
+   * return r()
    * end
    * function A(e)
    * if e==false then
-   * return h()
+   * return r()
    * end
    * return e
    * end
-   * function N()
-   * return not c()
+   * function U()
+   * return not l()
    * end
    * function k(e)
-   * A(N())
+   * A(U())
    * A(d()==e)
    * end
-   * function w(t)
+   * function f(t)
    * if t==nil then
    * t=false
    * end
    * local function a()
    * k("[")
-   * local e=w()
+   * local e=f()
    * k("]")
    * return e
    * end
@@ -21271,27 +21203,27 @@ static inline int lcf_main(lua_State *L) {
    * if t then
    * e={
    * g,
-   * J,
-   * a,
-   * V,
-   * U,
    * B,
-   * I,
-   * F,
-   * C,
+   * a,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * else
    * e={
    * g,
-   * Q,
-   * V,
-   * U,
-   * B,
-   * I,
-   * F,
-   * C,
+   * G,
    * O,
+   * I,
+   * N,
+   * V,
+   * C,
+   * P,
+   * R,
    * }
    * end
    * for t,e in ipairs(e)do
@@ -21300,99 +21232,99 @@ static inline int lcf_main(lua_State *L) {
    * return e
    * end
    * end
-   * return h()
+   * return r()
    * end
-   * function G(a)
-   * if c()then
+   * function K(a)
+   * if l()then
    * return a
    * end
    * local o=d()
    * if o=="."then
-   * local o=w()
-   * return e(u,e(t,e(a),f),o)
+   * local o=f()
+   * return e(u,e(t,e(a),m),o)
    * elseif o==":"then
-   * local t=w()
+   * local t=f()
    * return e(u,t,a)
    * elseif o=="~"then
-   * return e(Z,a)
+   * return e(ae,a)
    * elseif o=="@"then
-   * local o=w()
-   * return e(u,e(t,s(a,f),f),o)
+   * local o=f()
+   * return e(u,e(t,s(a,m),m),o)
    * elseif o=="?"then
-   * return e(u,t,e(Z,a))
+   * return e(u,t,e(ae,a))
    * elseif o=="/"then
    * local t={a}
    * while true do
-   * local e=w(true)
-   * l(t,e)
-   * if c()then
+   * local e=f(true)
+   * v(t,e)
+   * if l()then
    * break
    * end
    * local e=d()
    * if e~="/"then
-   * m(e)
+   * c(e)
    * break
    * end
    * end
-   * return e(pe,T(t))
+   * return e(pe,_(t))
    * else
-   * m(o)
+   * c(o)
    * return a
    * end
    * end
-   * function Q()
-   * if c()then
+   * function G()
+   * if l()then
    * return false
    * end
    * local a=d()
    * if a=="&"then
-   * A(N())
+   * A(U())
    * local t=d()
    * if t=="+"then
-   * local t=w()
+   * local t=f()
    * return e(x,e(z,t))
    * else
-   * m(t)
+   * c(t)
    * end
-   * local t=w()
+   * local t=f()
    * return e(x,t)
    * elseif a==":"then
-   * A(N())
+   * A(U())
    * local a=d()
    * if a=="&"then
    * k(">")
-   * local a=w()
-   * return e(u,e(x,e(t,f,a)),Y)
+   * local a=f()
+   * return e(u,e(x,e(t,m,a)),Y)
    * elseif a==">"then
-   * local a=w()
-   * return e(u,e(t,f,a),Y)
+   * local a=f()
+   * return e(u,e(t,m,a),Y)
    * else
-   * m(a)
+   * c(a)
    * end
-   * local t=w()
+   * local t=f()
    * return e(u,t,Y)
    * elseif a=="+"then
-   * local t=w()
+   * local t=f()
    * return e(z,t)
    * elseif a=="["then
-   * local e=w()
+   * local e=f()
    * k("]")
-   * return G(e)
+   * return K(e)
    * elseif a=="_"then
    * k(":")
-   * local t=w()
-   * return e(u,t,f)
+   * local t=f()
+   * return e(u,t,m)
    * else
-   * m(a)
-   * local e=J()
+   * c(a)
+   * local e=B()
    * if e==false then
    * return false
    * end
-   * return G(e)
+   * return K(e)
    * end
    * end
-   * function X()
-   * local e=Q()
+   * function Q()
+   * local e=G()
    * if e==false then
    * return false
    * end
@@ -21401,98 +21333,98 @@ static inline int lcf_main(lua_State *L) {
    * end
    * return b(e)
    * end
-   * M=ee
-   * y=0
-   * local function e(t,i)
+   * D=J
+   * w=0
+   * local function t(t,n)
    * return function()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~=t then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * local t=n(e)
-   * if not(a(t)and r(n(t)))then
-   * return h()
+   * local t=i(e)
+   * if not(a(t)and h(i(t)))then
+   * return r()
    * end
-   * return i(o(e),o(t))
+   * return n(o(e),o(t))
    * end
    * end
-   * local function l(t,s)
+   * local function s(t,s)
    * return function()
-   * if c()then
+   * if l()then
    * return false
    * end
    * local e=d()
    * if e~=t then
-   * m(e)
+   * c(e)
    * return false
    * end
    * local e=g()
    * if e==false then
-   * return h()
+   * return r()
    * end
    * if not a(e)then
-   * return h()
+   * return r()
    * end
-   * local t=n(e)
-   * if not a(t)then
-   * return h()
+   * local n=i(e)
+   * if not a(n)then
+   * return r()
    * end
-   * local i=n(t)
-   * if not(a(i)and r(n(i)))then
-   * return h()
+   * local t=i(n)
+   * if not(a(t)and h(i(t)))then
+   * return r()
    * end
-   * return s(o(e),o(t),o(i))
+   * return s(o(e),o(n),o(t))
    * end
    * end
-   * B=e("$",function(e,t)
-   * local e=se(e)
+   * N=t("$",function(e,t)
+   * local e=he(e)
    * if e==false then
-   * return h()
+   * return r()
    * end
-   * return H(e,t)
+   * return S(e,t)
    * end)
-   * I=e("%",function(e,t)
-   * local t=ve(t,function(e)return e end,function(e,e)return h()end)
-   * return j(e,t)
+   * V=t("%",function(t,e)
+   * local e=ke(e,function(e)return e end,function(e,e)return r()end)
+   * return q(t,e)
    * end)
-   * F=l("@",function(o,a,e)
-   * local t=ve(e,function(e)return e end,function(e,e)return h()end)
-   * local e=se(o)
+   * C=s("@",function(o,a,e)
+   * local t=ke(e,function(e)return e end,function(e,e)return r()end)
+   * local e=he(o)
    * if e==false then
-   * return h()
+   * return r()
    * end
-   * return Ge(e,a,t)
+   * return Oe(e,a,t)
    * end)
-   * C=e("^",function(t,e)
-   * local e=ve(e,function(e)return e end,function(e,e)return h()end)
-   * return P(t,e)
+   * P=t("^",function(t,e)
+   * local e=ke(e,function(e)return e end,function(e,e)return r()end)
+   * return F(t,e)
    * end)
-   * O=e(";",function(e,t)return ce(e,t)end)
-   * return D()
+   * R=t(";",function(t,e)return fe(t,e)end)
+   * return M()
    * end */
-  lc_newclosuretable(L, (lc738 + lc_nextra));
-  enum { lc776 = 59 };
-  assert((lua_gettop(L) == (lc776 + lc_nextra)));
-  lua_pushvalue(L, (lc776 + lc_nextra));
-  lua_pushcclosure(L, lcf3_ee, 1);
-  lua_rawseti(L, (lc776 + lc_nextra), 171);
-  assert(lua_gettop(L) - lc_nextra == 59);
+  lc_newclosuretable(L, (lc744 + lc_nextra));
+  enum { lc782 = 60 };
+  assert((lua_gettop(L) == (lc782 + lc_nextra)));
+  lua_pushvalue(L, (lc782 + lc_nextra));
+  lua_pushcclosure(L, lcf1_ee, 1);
+  lua_rawseti(L, (lc782 + lc_nextra), 172);
+  assert(lua_gettop(L) - lc_nextra == 60);
 
-  /* local function j(c)
-   * local function i(r,l)
+  /* local function q(w)
+   * local function n(r,l)
    * if p(r)then
-   * return me(r)
+   * return de(r)
    * end
    * local function s(e)
    * if l then
@@ -21507,52 +21439,52 @@ static inline int lcf_main(lua_State *L) {
    * if h~=false and#h==3 and d(h[1],t)then
    * local t=h[2]
    * local r=M(t)
-   * if r~=false and#r==1 and d(h[3],f)then
-   * return s(tostring(i(r[1],true)).."."..tostring(i(e[3],true)))
-   * elseif a(t)and d(n(t),f)and d(h[3],f)then
-   * return s(tostring(i(o(t),true)).."@"..tostring(i(e[3],true)))
-   * elseif d(t,f)and d(e[3],Y)then
-   * return s(":>"..tostring(i(h[3],true)))
+   * if r~=false and#r==1 and d(h[3],m)then
+   * return s(tostring(n(r[1],true)).."."..tostring(n(e[3],true)))
+   * elseif a(t)and d(i(t),m)and d(h[3],m)then
+   * return s(tostring(n(o(t),true)).."@"..tostring(n(e[3],true)))
+   * elseif d(t,m)and d(e[3],Y)then
+   * return s(":>"..tostring(n(h[3],true)))
    * end
    * end
    * local a=M(e[3])
-   * if d(e[2],t)and a~=false and#a==2 and d(a[1],Z)then
-   * return s(tostring(i(a[2],true)).."?")
+   * if d(e[2],t)and a~=false and#a==2 and d(a[1],ae)then
+   * return s(tostring(n(a[2],true)).."?")
    * end
    * if h~=false and#h==2 and d(e[3],Y)and d(h[1],x)then
    * local e=M(h[2])
-   * if e~=false and#e==3 and d(e[1],t)and d(e[2],f)then
-   * return s(":&>"..tostring(i(e[3],true)))
+   * if e~=false and#e==3 and d(e[1],t)and d(e[2],m)then
+   * return s(":&>"..tostring(n(e[3],true)))
    * end
    * end
    * local t
-   * if d(e[3],f)then
+   * if d(e[3],m)then
    * t="_"
    * elseif d(e[3],Y)then
    * t=""
    * else
-   * t=i(e[3],true)
+   * t=n(e[3],true)
    * end
-   * return s(tostring(t)..":"..tostring(i(e[2],true)))
+   * return s(tostring(t)..":"..tostring(n(e[2],true)))
    * elseif e~=false and#e==2 then
    * if d(e[1],x)then
    * local t=M(e[2])
    * if t~=false and#t==2 and d(t[1],z)then
-   * return s("&+"..tostring(i(t[2],true)))
+   * return s("&+"..tostring(n(t[2],true)))
    * end
-   * return s("&"..tostring(i(e[2],true)))
-   * elseif d(e[1],Z)then
-   * return s(tostring(i(e[2],true)).."~")
+   * return s("&"..tostring(n(e[2],true)))
+   * elseif d(e[1],ae)then
+   * return s(tostring(n(e[2],true)).."~")
    * elseif d(e[1],z)then
-   * return s("+"..tostring(i(e[2],true)))
+   * return s("+"..tostring(n(e[2],true)))
    * elseif d(e[1],pe)then
    * local e=M(e[2])
    * if e~=false and#e>1 then
-   * local a=i(e[1],true)
+   * local a=n(e[1],true)
    * do
    * local t=1
    * while t<#e do
-   * a=tostring(a).."/"..tostring(i(e[t+1],true))
+   * a=tostring(a).."/"..tostring(n(e[t+1],true))
    * t=t+1
    * end
    * end
@@ -21561,857 +21493,841 @@ static inline int lcf_main(lua_State *L) {
    * end
    * end
    * if l then
-   * return w(r)
+   * return f(r)
    * else
-   * return w(b(r))
+   * return f(b(r))
    * end
    * end
-   * local e=ee(w(c))
+   * local e=ee(f(w))
    * local t=""
-   * local h=""
-   * if r(e)then
+   * local r=""
+   * if h(e)then
    * return"()"
    * elseif a(e)then
    * t="("
-   * h=""
+   * r=""
    * while a(e)do
-   * t=tostring(t)..tostring(h)..tostring(j(o(e)))
-   * h=" "
-   * e=n(e)
+   * t=tostring(t)..tostring(r)..tostring(q(o(e)))
+   * r=" "
+   * e=i(e)
    * end
-   * if r(e)then
+   * if h(e)then
    * t=tostring(t)..")"
    * else
-   * t=tostring(t).." . "..tostring(j(e))..")"
+   * t=tostring(t).." . "..tostring(q(e))..")"
    * end
    * return t
-   * elseif m(e)then
-   * local t=_(e)
+   * elseif c(e)then
+   * local t=E(e)
    * local a=A(e)
    * local e=M(a)
-   * if e~=false and#e==2 and d(t,be)and d(e[1],z)then
-   * return i(e[2],false)
+   * if e~=false and#e==2 and d(t,ye)and d(e[1],z)then
+   * return n(e[2],false)
    * end
-   * return"#"..tostring(j(s(t,a)))
+   * return"#"..tostring(q(s(t,a)))
    * elseif g(e)then
-   * return"!"..tostring(j(s(U(e),C(e))))
+   * return"!"..tostring(q(s(C(e),U(e))))
    * elseif p(e)then
-   * return me(e)
-   * elseif O(e)then
-   * return";("..tostring(j(ue(e))).." "..tostring(j(X(e)))..")"
-   * elseif B(e)then
-   * return"$("..tostring(j(D(te(e)))).." "..tostring(j(ae(e)))..")"
-   * elseif J(e)then
-   * return"%("..tostring(j(le(e))).." "..tostring(j(T(re(e))))..")"
+   * return de(e)
+   * elseif I(e)then
+   * return";("..tostring(q(oe(e))).." "..tostring(q(K(e)))..")"
    * elseif Q(e)then
-   * return"@("..tostring(j(D(_e(e)))).." "..tostring(j(xe(e))).."
-   * "..tostring(j(T(qe(e))))..")" elseif G(e)then
-   * return"^("..tostring(j(je(e))).." "..tostring(j(T(Ee(e))))..")"
+   * return"$("..tostring(q(R(X(e)))).." "..tostring(q(Z(e)))..")"
+   * elseif P(e)then
+   * return"%("..tostring(q(ue(e))).." "..tostring(q(_(re(e))))..")"
+   * elseif G(e)then
+   * return"@("..tostring(q(R(_e(e)))).." "..tostring(q(Te(e))).."
+   * "..tostring(q(_(ze(e))))..")" elseif V(e)then
+   * return"^("..tostring(q(je(e))).." "..tostring(q(_(xe(e))))..")"
    * end
-   * return q()
+   * return j()
    * end */
-  lc_newclosuretable(L, (lc776 + lc_nextra));
-  enum { lc1037 = 60 };
-  assert((lua_gettop(L) == (lc1037 + lc_nextra)));
-  lua_pushvalue(L, (lc1037 + lc_nextra));
-  lua_pushcclosure(L, lcf2_j, 1);
-  lua_rawseti(L, (lc1037 + lc_nextra), 203);
-  assert(lua_gettop(L) - lc_nextra == 60);
+  lc_newclosuretable(L, (lc782 + lc_nextra));
+  enum { lc1043 = 61 };
+  assert((lua_gettop(L) == (lc1043 + lc_nextra)));
+  lua_pushvalue(L, (lc1043 + lc_nextra));
+  lua_pushcclosure(L, lcf2_q, 1);
+  lua_rawseti(L, (lc1043 + lc_nextra), 204);
+  assert(lua_gettop(L) - lc_nextra == 61);
 
-  /* local function B(r)
-   * local c=K()
-   * local h={function(e)return W(c,e)end}
-   * local t=0
+  /* local function H(o)
+   * local e,n,t
+   * function n()
+   * return e==0
+   * end
+   * function t()
+   * return not n()
+   * end
+   * e=#o
    * local function a(e)
    * if e==nil then
    * e=""
    * end
    * error("MT parse ERROR "..tostring(e))
    * end
-   * local function u(e)
+   * local function i(e)
    * if not e then
    * return a()
    * end
    * end
-   * local function d()
-   * u(#r>t)
-   * local e=string.sub(r,t+1,t+1)
-   * t=t+1
-   * return e
+   * local function h()
+   * i(t())
+   * e=e-1
+   * return string.sub(o,e+1,e+1)
    * end
-   * local n={}
-   * while#h~=0 do
-   * local t={}
-   * for e,o in ipairs(h)do
-   * local e=d()
-   * local function i(i)
-   * local a=K()
-   * local e=K()
-   * l(t,function(e)return W(a,e)end)
-   * l(t,function(t)return W(e,t)end)
-   * o(i(a,e))
+   * local e={}
+   * local function o(i)
+   * local o=table.remove(e)
+   * local t=table.remove(e)
+   * if t==nil or o==nil then
+   * return a()
+   * else
+   * return Ne(e,i(t,o))
    * end
-   * if e=="^"then
-   * local e=""
-   * while true do
-   * local t=d()
+   * end
+   * while t()do
+   * local t=h()
    * if t=="^"then
+   * local t=""
+   * while true do
+   * local e=h()
+   * if e=="^"then
    * break
    * end
-   * e=tostring(e)..tostring(t)
+   * t=tostring(e)..tostring(t)
    * end
-   * if ut(e)then
-   * o(it(e))
+   * if rt(t)then
+   * Ne(e,Ze(t))
    * else
-   * return a("can_new_symbol_unicodechar_p(\""..tostring(e).."\") == false")
+   * return a("can_new_symbol_unicodechar_p(\""..tostring(t).."\") == false")
    * end
-   * elseif e=="."then
-   * i(s)
-   * elseif e=="#"then
-   * i(E)
-   * elseif e=="!"then
-   * i(R)
-   * elseif e=="$"then
-   * local i=false
-   * local e=false
-   * l(t,function(e)
-   * i=e
-   * end)
-   * l(t,function(t)
-   * e=t
-   * end)
-   * l(n,function()
-   * if i==false or e==false then
-   * return q()
-   * else
-   * local t=se(i)
-   * if t==false then
+   * elseif t=="."then
+   * o(s)
+   * elseif t=="#"then
+   * o(T)
+   * elseif t=="!"then
+   * o(L)
+   * elseif t=="$"then
+   * o(function(e,t)
+   * local e=he(e)
+   * if e==false then
    * return a()
    * else
-   * o(H(t,e))
-   * end
+   * return S(e,t)
    * end
    * end)
-   * elseif e=="_"then
-   * o(v)
+   * elseif t=="_"then
+   * Ne(e,y)
    * else
    * return a()
    * end
    * end
-   * h=t
-   * end
-   * u(t==#r)
-   * do
-   * local e=#n-1
-   * while e>=0 do
-   * n[e+1]()
-   * e=e-1
-   * end
-   * end
-   * return c
+   * i(n())
+   * i(#e==1)
+   * return e[1]
    * end */
-  lua_pushvalue(L, (lc1037 + lc_nextra));
-  lua_pushcclosure(L, lcf2_B, 1);
-  assert(lua_gettop(L) - lc_nextra == 61);
+  lua_pushvalue(L, (lc1043 + lc_nextra));
+  lua_pushcclosure(L, lcf2_H, 1);
+  assert(lua_gettop(L) - lc_nextra == 62);
 
-  /* local function S(e)
+  /* local function O(e)
    * local s={e}
    * local t=""
    * while#s~=0 do
-   * local h={}
-   * for i,e in ipairs(s)do
+   * local r={}
+   * for n,e in ipairs(s)do
    * e=N(e)
-   * local function i(e,o,a,i)
-   * t=tostring(t)..tostring(o)
-   * return l(h,a(e),i(e))
+   * local function n(e,i,a,o)
+   * t=tostring(t)..tostring(i)
+   * return v(r,a(e),o(e))
    * end
    * if p(e)then
-   * t=tostring(t)..tostring(("^"..tostring(fe(e)).."^"))
+   * t=tostring(t)..tostring(("^"..tostring(le(e)).."^"))
    * elseif a(e)then
-   * i(e,".",o,n)
-   * elseif r(e)then
+   * n(e,".",o,i)
+   * elseif h(e)then
    * t=tostring(t)..tostring(("_"))
-   * elseif m(e)then
-   * i(e,"#",_,A)
+   * elseif c(e)then
+   * n(e,"#",E,A)
    * elseif g(e)then
-   * i(e,"!",U,C)
-   * elseif de(e)then
+   * n(e,"!",C,U)
+   * elseif me(e)then
    * local e=Ae(e)
-   * i(e,"$",(function(e)return D(te(e))end),ae)
+   * n(e,"$",(function(e)return R(X(e))end),Z)
    * else
-   * return q()
+   * return j()
    * end
    * end
-   * s=h
+   * s=r
    * end
    * return t
    * end */
-  lua_pushvalue(L, (lc1037 + lc_nextra));
-  lua_pushcclosure(L, lcf2_S, 1);
-  assert(lua_gettop(L) - lc_nextra == 62);
+  lua_pushvalue(L, (lc1043 + lc_nextra));
+  lua_pushcclosure(L, lcf3_O, 1);
+  assert(lua_gettop(L) - lc_nextra == 63);
 
-  /* local function z(e)
+  /* local function j(e)
    * return function()return{
    * false,
    * e,
    * }end
    * end */
-  lc_newclosuretable(L, (lc1037 + lc_nextra));
-  enum { lc1305 = 63 };
-  assert((lua_gettop(L) == (lc1305 + lc_nextra)));
-  lua_pushcfunction(L, lcf1_z);
-  lua_rawseti(L, (lc1305 + lc_nextra), 219);
-  assert(lua_gettop(L) - lc_nextra == 63);
+  lc_newclosuretable(L, (lc1043 + lc_nextra));
+  enum { lc1295 = 64 };
+  assert((lua_gettop(L) == (lc1295 + lc_nextra)));
+  lua_pushcfunction(L, lcf3_j);
+  lua_rawseti(L, (lc1295 + lc_nextra), 216);
+  assert(lua_gettop(L) - lc_nextra == 64);
 
-  /* local function l(e)
+  /* local function d(e)
    * return function()return{
    * true,
    * e(),
    * }end
    * end */
-  lc_newclosuretable(L, (lc1305 + lc_nextra));
-  enum { lc1308 = 64 };
-  assert((lua_gettop(L) == (lc1308 + lc_nextra)));
-  lua_pushcfunction(L, lcf3_l);
-  lua_rawseti(L, (lc1308 + lc_nextra), 221);
-  assert(lua_gettop(L) - lc_nextra == 64);
+  lc_newclosuretable(L, (lc1295 + lc_nextra));
+  enum { lc1298 = 65 };
+  assert((lua_gettop(L) == (lc1298 + lc_nextra)));
+  lua_pushcfunction(L, lcf9_d);
+  lua_rawseti(L, (lc1298 + lc_nextra), 218);
+  assert(lua_gettop(L) - lc_nextra == 65);
 
-  /* local function I(e)
+  /* local function z(e)
    * local e=e()
    * while e[1]do
    * e=e[2]()
    * end
    * return e[2]
    * end */
-  lc_newclosuretable(L, (lc1308 + lc_nextra));
-  enum { lc1312 = 65 };
-  assert((lua_gettop(L) == (lc1312 + lc_nextra)));
-  lua_pushcfunction(L, lcf2_I);
-  lua_rawseti(L, (lc1312 + lc_nextra), 223);
-  assert(lua_gettop(L) - lc_nextra == 65);
-
-  /* local x=b(s(pe,s(s(Ze,s(s(u,s(Xe,s(f,v))),v)),v))) */
-  lc_newclosuretable(L, (lc1312 + lc_nextra));
-  enum { lc1314 = 66 };
-  assert((lua_gettop(L) == (lc1314 + lc_nextra)));
-  lc_getupvalue(L, (lc1312 + lc_nextra), 13, 155);
-  const int lc1315 = lua_gettop(L);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  const int lc1316 = lua_gettop(L);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 16, 152);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  const int lc1317 = lua_gettop(L);
-  lua_pushvalue(L, (34 + lc_nextra));
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  const int lc1318 = lua_gettop(L);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 18, 150);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  const int lc1319 = lua_gettop(L);
-  lua_pushvalue(L, (32 + lc_nextra));
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 92);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 19, 149);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 88);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1319), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1318), 1);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 88);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1317), 1);
-  lc_getupvalue(L, (lc1312 + lc_nextra), 30, 88);
-  lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1316), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1315), 1);
-  lua_rawseti(L, (lc1314 + lc_nextra), 224);
+  lc_newclosuretable(L, (lc1298 + lc_nextra));
+  enum { lc1302 = 66 };
+  assert((lua_gettop(L) == (lc1302 + lc_nextra)));
+  lua_pushcfunction(L, lcf1_z);
+  lua_rawseti(L, (lc1302 + lc_nextra), 220);
   assert(lua_gettop(L) - lc_nextra == 66);
 
-  /* local q=b(s(pe,s(s(Ze,s(ye,v)),v))) */
-  lc_newclosuretable(L, (lc1314 + lc_nextra));
-  enum { lc1320 = 67 };
-  assert((lua_gettop(L) == (lc1320 + lc_nextra)));
-  lc_getupvalue(L, (lc1314 + lc_nextra), 14, 155);
-  const int lc1321 = lua_gettop(L);
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 92);
-  const int lc1322 = lua_gettop(L);
-  lc_getupvalue(L, (lc1314 + lc_nextra), 17, 152);
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 92);
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 92);
-  const int lc1323 = lua_gettop(L);
-  lua_pushvalue(L, (34 + lc_nextra));
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 92);
-  lua_pushvalue(L, (25 + lc_nextra));
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 88);
+  /* local x=b(s(pe,s(s(ot,s(s(u,s(ht,s(m,y))),y)),y))) */
+  lc_newclosuretable(L, (lc1302 + lc_nextra));
+  enum { lc1304 = 67 };
+  assert((lua_gettop(L) == (lc1304 + lc_nextra)));
+  lc_getupvalue(L, (lc1302 + lc_nextra), 13, 156);
+  const int lc1305 = lua_gettop(L);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  const int lc1306 = lua_gettop(L);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 16, 153);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  const int lc1307 = lua_gettop(L);
+  lua_pushvalue(L, (35 + lc_nextra));
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  const int lc1308 = lua_gettop(L);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 18, 151);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  const int lc1309 = lua_gettop(L);
+  lua_pushvalue(L, (33 + lc_nextra));
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 93);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 19, 150);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 89);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1323), 1);
-  lc_getupvalue(L, (lc1314 + lc_nextra), 31, 88);
+  lua_call(L, (lua_gettop(L) - lc1309), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1308), 1);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 89);
   lua_call(L, 2, LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1322), LUA_MULTRET);
-  lua_call(L, (lua_gettop(L) - lc1321), 1);
-  lua_rawseti(L, (lc1320 + lc_nextra), 225);
+  lua_call(L, (lua_gettop(L) - lc1307), 1);
+  lc_getupvalue(L, (lc1302 + lc_nextra), 30, 89);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1306), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1305), 1);
+  lua_rawseti(L, (lc1304 + lc_nextra), 221);
   assert(lua_gettop(L) - lc_nextra == 67);
 
-  /* local function Y(a,t)
-   * return E(q,e(a,t))
-   * end */
-  lua_pushvalue(L, (lc1320 + lc_nextra));
-  lua_pushcclosure(L, lcf1_Y, 1);
+  /* local b=b(s(pe,s(s(ot,s(ne,y)),y))) */
+  lc_newclosuretable(L, (lc1304 + lc_nextra));
+  enum { lc1310 = 68 };
+  assert((lua_gettop(L) == (lc1310 + lc_nextra)));
+  lc_getupvalue(L, (lc1304 + lc_nextra), 14, 156);
+  const int lc1311 = lua_gettop(L);
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 93);
+  const int lc1312 = lua_gettop(L);
+  lc_getupvalue(L, (lc1304 + lc_nextra), 17, 153);
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 93);
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 93);
+  const int lc1313 = lua_gettop(L);
+  lua_pushvalue(L, (35 + lc_nextra));
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 93);
+  lua_pushvalue(L, (26 + lc_nextra));
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 89);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1313), 1);
+  lc_getupvalue(L, (lc1304 + lc_nextra), 31, 89);
+  lua_call(L, 2, LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1312), LUA_MULTRET);
+  lua_call(L, (lua_gettop(L) - lc1311), 1);
+  lua_rawseti(L, (lc1310 + lc_nextra), 222);
   assert(lua_gettop(L) - lc_nextra == 68);
 
-  /* local function W(e)
-   * return E(x,e)
+  /* local function P(a,t)
+   * return T(b,e(a,t))
    * end */
-  lua_pushvalue(L, (lc1320 + lc_nextra));
-  lua_pushcclosure(L, lcf2_W, 1);
+  lua_pushvalue(L, (lc1310 + lc_nextra));
+  lua_pushcclosure(L, lcf2_P, 1);
   assert(lua_gettop(L) - lc_nextra == 69);
 
-  /* local function b(f,w,u,y,d)
-   * if d==nil then
-   * d=false
+  /* local function Y(e)
+   * return T(x,e)
+   * end */
+  lua_pushvalue(L, (lc1310 + lc_nextra));
+  lua_pushcclosure(L, lcf1_Y, 1);
+  assert(lua_gettop(L) - lc_nextra == 70);
+
+  /* local function v(f,y,m,w,u)
+   * if u==nil then
+   * u=false
    * end
    * local function p(e,e)
    * error("WIP")
    * end
-   * u=h(u)
-   * if m(u)then
-   * local m=_(u)
-   * local s=A(u)
-   * if c(m,x)then
-   * s=h(s)
+   * m=r(m)
+   * if c(m)then
+   * local c=E(m)
+   * local s=A(m)
+   * if l(c,x)then
+   * s=r(s)
    * if a(s)then
    * local a=o(s)
-   * local e=h(n(s))
-   * if r(e)then
-   * if d==false then
+   * local e=r(i(s))
+   * if h(e)then
+   * if u==false then
    * local t=a
-   * local e=y
-   * local function a()return f(t,e)end
-   * return l(a)
+   * local a=w
+   * local function e()return f(t,a)end
+   * return d(e)
    * else
    * local t
    * t=f
    * local e
-   * e=w
-   * local a=a
-   * local o=y
-   * local function i()return b(t,e,P(d,a),o)end
-   * return l(i)
+   * e=y
+   * local i=a
+   * local a=w
+   * local function o()return v(t,e,F(u,i),a)end
+   * return d(o)
    * end
    * end
    * end
-   * elseif c(m,q)then
-   * s=h(s)
+   * elseif l(c,b)then
+   * s=r(s)
    * if a(s)then
-   * local u=o(s)
-   * local s=h(n(s))
+   * local l=o(s)
+   * local s=r(i(s))
    * if a(s)then
    * local a=o(s)
-   * local o=h(n(s))
-   * if r(o)then
-   * if d==false then
-   * local t
-   * t=f
+   * local o=r(i(s))
+   * if h(o)then
+   * if u==false then
    * local e
-   * e=w
-   * local i=u
-   * local a=a
-   * local o=y
-   * local function n()return b(t,e,i,o,a)end
-   * return l(n)
+   * e=f
+   * local t
+   * t=y
+   * local n=l
+   * local o=a
+   * local i=w
+   * local function a()return v(e,t,n,i,o)end
+   * return d(a)
    * else
+   * local i
+   * i=f
    * local o
-   * o=f
-   * local n
-   * n=w
-   * local r=u
-   * local u=a
-   * local s=y
-   * local h=d
-   * local a=i("序甲")
-   * local function i()return b(o,n,r,s,E(t,e(e(a),p(e(we(u),a),we(h)))))end
-   * return l(i)
+   * o=y
+   * local r=l
+   * local h=a
+   * local s=w
+   * local l=u
+   * local a=n("序甲")
+   * local function n()return v(i,o,r,s,T(t,e(e(a),p(e(ce(h),a),ce(l)))))end
+   * return d(n)
    * end
    * end
    * end
    * end
    * end
    * end
-   * if d==false then
-   * return l(function()return w(u,y,f)end)
+   * if u==false then
+   * return d(function()return y(m,w,f)end)
    * else
-   * return l(function()return w(u,y,function(t,e)return l(function()return
-   * b(f,w,P(d,{t}),e)end)end)end) end end */
-  lc_newclosuretable(L, (lc1320 + lc_nextra));
-  enum { lc1327 = 70 };
-  assert((lua_gettop(L) == (lc1327 + lc_nextra)));
-  lua_pushvalue(L, (lc1327 + lc_nextra));
-  lua_pushcclosure(L, lcf2_b, 1);
-  lua_rawseti(L, (lc1327 + lc_nextra), 226);
-  assert(lua_gettop(L) - lc_nextra == 70);
-
-  /* local function d(e,t,o,a)
-   * return b(e,t,o,a)
-   * end */
-  lua_pushvalue(L, (lc1327 + lc_nextra));
-  lua_pushcclosure(L, lcf9_d, 1);
+   * return d(function()return y(m,w,function(e,t)return d(function()return
+   * v(f,y,F(u,{e}),t)end)end)end) end end */
+  lc_newclosuretable(L, (lc1310 + lc_nextra));
+  enum { lc1317 = 71 };
+  assert((lua_gettop(L) == (lc1317 + lc_nextra)));
+  lua_pushvalue(L, (lc1317 + lc_nextra));
+  lua_pushcclosure(L, lcf2_v, 1);
+  lua_rawseti(L, (lc1317 + lc_nextra), 223);
   assert(lua_gettop(L) - lc_nextra == 71);
 
-  /* local function u(o,e,t,a)
-   * return I(b((function(e,t)return z(o(e,t))end),(function(o,a,t)return
-   * z(e(o,a,function(e,a)return I(t(e,a))end))end),t,a)) end */
-  lua_pushvalue(L, (lc1327 + lc_nextra));
-  lua_pushcclosure(L, lcf5_u, 1);
+  /* local function l(t,e,a,o)
+   * return v(t,e,a,o)
+   * end */
+  lua_pushvalue(L, (lc1317 + lc_nextra));
+  lua_pushcclosure(L, lcf3_l, 1);
   assert(lua_gettop(L) - lc_nextra == 72);
+
+  /* local function u(a,i,n,o)
+   * return z(v((function(t,e)return j(a(t,e))end),(function(e,t,a)return
+   * j(i(e,t,function(e,t)return z(a(e,t))end))end),n,o)) end */
+  lua_pushvalue(L, (lc1317 + lc_nextra));
+  lua_pushcclosure(L, lcf3_u, 1);
+  assert(lua_gettop(L) - lc_nextra == 73);
 
   /* local t={} */
   lua_newtable(L);
-  assert(lua_gettop(L) - lc_nextra == 73);
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_comment=ce */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 101);
+  /* t.new_comment=fe */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 102);
   lua_pushliteral(L, "new_comment");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.comment_p=O */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 100);
+  /* t.comment_p=I */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 101);
   lua_pushliteral(L, "comment_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.comment_comment=ue */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 99);
+  /* t.comment_comment=oe */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 100);
   lua_pushliteral(L, "comment_comment");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.comment_x=X */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 98);
+  /* t.comment_x=K */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 99);
   lua_pushliteral(L, "comment_x");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.un_comment_all=ze */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 97);
+  /* t.un_comment_all=qe */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 98);
   lua_pushliteral(L, "un_comment_all");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.can_new_symbol_p=nt */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 27, 144);
+  /* t.can_new_symbol_p=Xe */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 27, 145);
   lua_pushliteral(L, "can_new_symbol_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_symbol=i */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 26, 145);
+  /* t.new_symbol=n */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 26, 146);
   lua_pushliteral(L, "new_symbol");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.symbol_p=p */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 96);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 97);
   lua_pushliteral(L, "symbol_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.un_symbol=me */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 94);
+  /* t.un_symbol=de */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 95);
   lua_pushliteral(L, "un_symbol");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.symbol_equal_p=L */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 93);
+  /* t.symbol_equal_p=D */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 94);
   lua_pushliteral(L, "symbol_equal_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.new_construction=s */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 92);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 93);
   lua_pushliteral(L, "new_construction");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.construction_p=a */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 91);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 92);
   lua_pushliteral(L, "construction_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.construction_head=o */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 90);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 91);
   lua_pushliteral(L, "construction_head");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.construction_tail=n */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 89);
+  /* t.construction_tail=i */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 90);
   lua_pushliteral(L, "construction_tail");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.null_v=v */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 88);
+  /* t.null_v=y */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 89);
   lua_pushliteral(L, "null_v");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.null_p=r */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 87);
+  /* t.null_p=h */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 88);
   lua_pushliteral(L, "null_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_data=E */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 86);
+  /* t.new_data=T */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 87);
   lua_pushliteral(L, "new_data");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.data_p=m */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 85);
+  /* t.data_p=c */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 86);
   lua_pushliteral(L, "data_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.data_name=_ */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 84);
+  /* t.data_name=E */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 85);
   lua_pushliteral(L, "data_name");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.data_list=A */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 83);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 84);
   lua_pushliteral(L, "data_list");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_error=R */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 82);
+  /* t.new_error=L */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 83);
   lua_pushliteral(L, "new_error");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.error_p=g */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 81);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 82);
   lua_pushliteral(L, "error_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.error_name=U */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 80);
+  /* t.error_name=C */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 81);
   lua_pushliteral(L, "error_name");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.error_list=C */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 79);
+  /* t.error_list=U */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 80);
   lua_pushliteral(L, "error_list");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.just_p=V */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 78);
+  /* t.just_p=B */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 79);
   lua_pushliteral(L, "just_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.evaluate=H */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 76);
+  /* t.evaluate=S */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 77);
   lua_pushliteral(L, "evaluate");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.apply=P */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 63);
+  /* t.apply=F */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 64);
   lua_pushliteral(L, "apply");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.force_all_rec=F */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 59);
+  /* t.force_all_rec=W */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 60);
   lua_pushliteral(L, "force_all_rec");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.force_uncomment_all_rec=Oe */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 25, 146);
+  /* t.force_uncomment_all_rec=Ve */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 25, 147);
   lua_pushliteral(L, "force_uncomment_all_rec");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.jsArray_to_list=T */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 27);
+  /* t.jsArray_to_list=_ */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 28);
   lua_pushliteral(L, "jsArray_to_list");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.maybe_list_to_jsArray=M */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 11, 160);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 11, 161);
   lua_pushliteral(L, "maybe_list_to_jsArray");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.new_list=e */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 26);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 27);
   lua_pushliteral(L, "new_list");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.un_just_all=N */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 25);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 26);
   lua_pushliteral(L, "un_just_all");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.un_just_comment_all=Ue */
-  lua_pushvalue(L, (49 + lc_nextra));
+  /* t.un_just_comment_all=tt */
+  lua_pushvalue(L, (50 + lc_nextra));
   lua_pushliteral(L, "un_just_comment_all");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.delay_p=de */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 24);
+  /* t.delay_p=me */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 25);
   lua_pushliteral(L, "delay_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.delay_just_p=y */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 23);
+  /* t.delay_just_p=w */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 24);
   lua_pushliteral(L, "delay_just_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.delay_env=Qe */
-  lua_pushvalue(L, (51 + lc_nextra));
+  /* t.delay_env=it */
+  lua_pushvalue(L, (52 + lc_nextra));
   lua_pushliteral(L, "delay_env");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.delay_x=st */
-  lua_pushvalue(L, (52 + lc_nextra));
+  /* t.delay_x=ct */
+  lua_pushvalue(L, (53 + lc_nextra));
   lua_pushliteral(L, "delay_x");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.force_all=h */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 20);
+  /* t.force_all=r */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 21);
   lua_pushliteral(L, "force_all");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.force1=k */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 21);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 22);
   lua_pushliteral(L, "force1");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.force_uncomment1=ht */
-  lua_pushvalue(L, (53 + lc_nextra));
+  /* t.force_uncomment1=st */
+  lua_pushvalue(L, (54 + lc_nextra));
   lua_pushliteral(L, "force_uncomment1");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.force_uncomment_all=Fe */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 19);
+  /* t.force_uncomment_all=Qe */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 20);
   lua_pushliteral(L, "force_uncomment_all");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.env_null_v=Se */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 18);
+  /* t.env_null_v=Be */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 19);
   lua_pushliteral(L, "env_null_v");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.env_set=ge */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 17);
+  /* t.env_set=Ee */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 18);
   lua_pushliteral(L, "env_set");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.env_get=Ie */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 16);
+  /* t.env_get=Ge */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 17);
   lua_pushliteral(L, "env_get");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.env2val=D */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 14);
+  /* t.env2val=R */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 15);
   lua_pushliteral(L, "env2val");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.env_foreach=He */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 13);
+  /* t.env_foreach=Ke */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 14);
   lua_pushliteral(L, "env_foreach");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.val2env=se */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 9, 162);
+  /* t.val2env=he */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 9, 163);
   lua_pushliteral(L, "val2env");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.equal_p=oe */
-  lua_pushvalue(L, (57 + lc_nextra));
+  /* t.equal_p=J */
+  lua_pushvalue(L, (58 + lc_nextra));
   lua_pushliteral(L, "equal_p");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.simple_print=w */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 33, 2);
+  /* t.simple_print=f */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 33, 3);
   lua_pushliteral(L, "simple_print");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.complex_parse=ee */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 7, 171);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 7, 172);
   lua_pushliteral(L, "complex_parse");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.complex_print=j */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 6, 203);
+  /* t.complex_print=q */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 6, 204);
   lua_pushliteral(L, "complex_print");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.machinetext_parse=B */
-  lua_pushvalue(L, (61 + lc_nextra));
+  /* t.machinetext_parse=H */
+  lua_pushvalue(L, (62 + lc_nextra));
   lua_pushliteral(L, "machinetext_parse");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.machinetext_print=S */
-  lua_pushvalue(L, (62 + lc_nextra));
+  /* t.machinetext_print=O */
+  lua_pushvalue(L, (63 + lc_nextra));
   lua_pushliteral(L, "machinetext_print");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.trampoline_return=z */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 5, 219);
+  /* t.trampoline_return=j */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 5, 216);
   lua_pushliteral(L, "trampoline_return");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.trampoline_delay=l */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 4, 221);
+  /* t.trampoline_delay=d */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 4, 218);
   lua_pushliteral(L, "trampoline_delay");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.run_trampoline=I */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 3, 223);
+  /* t.run_trampoline=z */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 3, 220);
   lua_pushliteral(L, "run_trampoline");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.return_effect_systemName=x */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 2, 224);
+  lc_getupvalue(L, (lc1317 + lc_nextra), 2, 221);
   lua_pushliteral(L, "return_effect_systemName");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.bind_effect_systemName=q */
-  lc_getupvalue(L, (lc1327 + lc_nextra), 1, 225);
+  /* t.bind_effect_systemName=b */
+  lc_getupvalue(L, (lc1317 + lc_nextra), 1, 222);
   lua_pushliteral(L, "bind_effect_systemName");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_effect_bind=Y */
-  lua_pushvalue(L, (68 + lc_nextra));
+  /* t.new_effect_bind=P */
+  lua_pushvalue(L, (69 + lc_nextra));
   lua_pushliteral(L, "new_effect_bind");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_effect_return=W */
-  lua_pushvalue(L, (69 + lc_nextra));
+  /* t.new_effect_return=Y */
+  lua_pushvalue(L, (70 + lc_nextra));
   lua_pushliteral(L, "new_effect_return");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.run_monad_trampoline=d */
-  lua_pushvalue(L, (71 + lc_nextra));
+  /* t.run_monad_trampoline=l */
+  lua_pushvalue(L, (72 + lc_nextra));
   lua_pushliteral(L, "run_monad_trampoline");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* t.run_monad_stackoverflow=u */
-  lua_pushvalue(L, (72 + lc_nextra));
+  lua_pushvalue(L, (73 + lc_nextra));
   lua_pushliteral(L, "run_monad_stackoverflow");
   lua_insert(L, -2);
-  lua_settable(L, (73 + lc_nextra));
-  assert(lua_gettop(L) - lc_nextra == 73);
+  lua_settable(L, (74 + lc_nextra));
+  assert(lua_gettop(L) - lc_nextra == 74);
 
   /* return t */
-  lua_pushvalue(L, (73 + lc_nextra));
+  lua_pushvalue(L, (74 + lc_nextra));
   return 1;
-  assert(lua_gettop(L) - lc_nextra == 73);
+  assert(lua_gettop(L) - lc_nextra == 74);
 }
 /*-- #include "src.cpp/lang.h" start --*/
 
@@ -28406,18 +28322,25 @@ static inline void luaC_linkupval (lua_State *L, UpVal *uv) {
 ** See Copyright Notice in lua.h
 */
 
+
 #define linit_c
 #define LUA_LIB
 
 /*-- #include "src.cpp/lua.h" start --*/
 
-/*-- #include "src.cpp/lauxlib.h" start --*/
 /*-- #include "src.cpp/lualib.h" start --*/
+/*-- #include "src.cpp/lauxlib.h" start --*/
+
 
 static const luaL_Reg lualibs[] = {
-    {"", luaopen_base}, {LUA_STRLIBNAME, luaopen_string}, {NULL, NULL}};
+  {"", luaopen_base},
+  {LUA_TABLIBNAME, luaopen_table},
+  {LUA_STRLIBNAME, luaopen_string},
+  {NULL, NULL}
+};
 
-LUALIB_API void luaL_openlibs(lua_State *L) {
+
+LUALIB_API void luaL_openlibs (lua_State *L) {
   const luaL_Reg *lib = lualibs;
   for (; lib->func; lib++) {
     lua_pushcfunction(L, lib->func);
@@ -28425,6 +28348,7 @@ LUALIB_API void luaL_openlibs(lua_State *L) {
     lua_call(L, 1, 0);
   }
 }
+
 
 /*-- File: src.cpp/linit.cpp end --*/
 /*-- File: src.cpp/llex.cpp start --*/
@@ -29883,6 +29807,296 @@ int luaH_isdummy (Node *n) { return n == dummynode; }
 
 /*-- File: src.cpp/ltable.cpp end --*/
 /*-- #include "src.cpp/ltable.h" start --*/
+/*-- File: src.cpp/ltablib.cpp start --*/
+/*
+** $Id: ltablib.c,v 1.38.1.3 2008/02/14 16:46:58 roberto Exp $
+** Library for Table Manipulation
+** See Copyright Notice in lua.h
+*/
+
+
+/*-- #include "src.cpp/stddef.h" start --*/
+
+#define ltablib_c
+#define LUA_LIB
+
+/*-- #include "src.cpp/lua.h" start --*/
+
+/*-- #include "src.cpp/lauxlib.h" start --*/
+/*-- #include "src.cpp/lualib.h" start --*/
+
+
+#define aux_getn(L,n)	(luaL_checktype(L, n, LUA_TTABLE), luaL_getn(L, n))
+
+
+static inline int foreachi (lua_State *L) {
+  int i;
+  int n = aux_getn(L, 1);
+  luaL_checktype(L, 2, LUA_TFUNCTION);
+  for (i=1; i <= n; i++) {
+    lua_pushvalue(L, 2);  /* function */
+    lua_pushinteger(L, i);  /* 1st argument */
+    lua_rawgeti(L, 1, i);  /* 2nd argument */
+    lua_call(L, 2, 1);
+    if (!lua_isnil(L, -1))
+      return 1;
+    lua_pop(L, 1);  /* remove nil result */
+  }
+  return 0;
+}
+
+
+static inline int foreach (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  luaL_checktype(L, 2, LUA_TFUNCTION);
+  lua_pushnil(L);  /* first key */
+  while (lua_next(L, 1)) {
+    lua_pushvalue(L, 2);  /* function */
+    lua_pushvalue(L, -3);  /* key */
+    lua_pushvalue(L, -3);  /* value */
+    lua_call(L, 2, 1);
+    if (!lua_isnil(L, -1))
+      return 1;
+    lua_pop(L, 2);  /* remove value and result */
+  }
+  return 0;
+}
+
+
+static inline int maxn (lua_State *L) {
+  lua_Number max = 0;
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_pushnil(L);  /* first key */
+  while (lua_next(L, 1)) {
+    lua_pop(L, 1);  /* remove value */
+    if (lua_type(L, -1) == LUA_TNUMBER) {
+      lua_Number v = lua_tonumber(L, -1);
+      if (v > max) max = v;
+    }
+  }
+  lua_pushnumber(L, max);
+  return 1;
+}
+
+
+static inline int getn (lua_State *L) {
+  lua_pushinteger(L, aux_getn(L, 1));
+  return 1;
+}
+
+
+static inline int setn (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+#ifndef luaL_setn
+  luaL_setn(L, 1, luaL_checkint(L, 2));
+#else
+  luaL_error(L, LUA_QL("setn") " is obsolete");
+#endif
+  lua_pushvalue(L, 1);
+  return 1;
+}
+
+
+static inline int tinsert (lua_State *L) {
+  int e = aux_getn(L, 1) + 1;  /* first empty element */
+  int pos;  /* where to insert new element */
+  switch (lua_gettop(L)) {
+    case 2: {  /* called with only 2 arguments */
+      pos = e;  /* insert new element at the end */
+      break;
+    }
+    case 3: {
+      int i;
+      pos = luaL_checkint(L, 2);  /* 2nd argument is the position */
+      if (pos > e) e = pos;  /* `grow' array if necessary */
+      for (i = e; i > pos; i--) {  /* move up elements */
+        lua_rawgeti(L, 1, i-1);
+        lua_rawseti(L, 1, i);  /* t[i] = t[i-1] */
+      }
+      break;
+    }
+    default: {
+      return luaL_error(L, "wrong number of arguments to " LUA_QL("insert"));
+    }
+  }
+  luaL_setn(L, 1, e);  /* new size */
+  lua_rawseti(L, 1, pos);  /* t[pos] = v */
+  return 0;
+}
+
+
+static inline int tremove (lua_State *L) {
+  int e = aux_getn(L, 1);
+  int pos = luaL_optint(L, 2, e);
+  if (!(1 <= pos && pos <= e))  /* position is outside bounds? */
+   return 0;  /* nothing to remove */
+  luaL_setn(L, 1, e - 1);  /* t.n = n-1 */
+  lua_rawgeti(L, 1, pos);  /* result = t[pos] */
+  for ( ;pos<e; pos++) {
+    lua_rawgeti(L, 1, pos+1);
+    lua_rawseti(L, 1, pos);  /* t[pos] = t[pos+1] */
+  }
+  lua_pushnil(L);
+  lua_rawseti(L, 1, e);  /* t[e] = nil */
+  return 1;
+}
+
+
+static inline void addfield (lua_State *L, luaL_Buffer *b, int i) {
+  lua_rawgeti(L, 1, i);
+  if (!lua_isstring(L, -1))
+    luaL_error(L, "invalid value (%s) at index %d in table for "
+                  LUA_QL("concat"), luaL_typename(L, -1), i);
+    luaL_addvalue(b);
+}
+
+
+static inline int tconcat (lua_State *L) {
+  luaL_Buffer b;
+  size_t lsep;
+  int i, last;
+  const char *sep = luaL_optlstring(L, 2, "", &lsep);
+  luaL_checktype(L, 1, LUA_TTABLE);
+  i = luaL_optint(L, 3, 1);
+  last = luaL_opt(L, luaL_checkint, 4, luaL_getn(L, 1));
+  luaL_buffinit(L, &b);
+  for (; i < last; i++) {
+    addfield(L, &b, i);
+    luaL_addlstring(&b, sep, lsep);
+  }
+  if (i == last)  /* add last value (if interval was not empty) */
+    addfield(L, &b, i);
+  luaL_pushresult(&b);
+  return 1;
+}
+
+
+
+/*
+** {======================================================
+** Quicksort
+** (based on `Algorithms in MODULA-3', Robert Sedgewick;
+**  Addison-Wesley, 1993.)
+*/
+
+
+static inline void set2 (lua_State *L, int i, int j) {
+  lua_rawseti(L, 1, i);
+  lua_rawseti(L, 1, j);
+}
+
+static inline int sort_comp (lua_State *L, int a, int b) {
+  if (!lua_isnil(L, 2)) {  /* function? */
+    int res;
+    lua_pushvalue(L, 2);
+    lua_pushvalue(L, a-1);  /* -1 to compensate function */
+    lua_pushvalue(L, b-2);  /* -2 to compensate function and `a' */
+    lua_call(L, 2, 1);
+    res = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return res;
+  }
+  else  /* a < b? */
+    return lua_lessthan(L, a, b);
+}
+
+static inline void auxsort (lua_State *L, int l, int u) {
+  while (l < u) {  /* for tail recursion */
+    int i, j;
+    /* sort elements a[l], a[(l+u)/2] and a[u] */
+    lua_rawgeti(L, 1, l);
+    lua_rawgeti(L, 1, u);
+    if (sort_comp(L, -1, -2))  /* a[u] < a[l]? */
+      set2(L, l, u);  /* swap a[l] - a[u] */
+    else
+      lua_pop(L, 2);
+    if (u-l == 1) break;  /* only 2 elements */
+    i = (l+u)/2;
+    lua_rawgeti(L, 1, i);
+    lua_rawgeti(L, 1, l);
+    if (sort_comp(L, -2, -1))  /* a[i]<a[l]? */
+      set2(L, i, l);
+    else {
+      lua_pop(L, 1);  /* remove a[l] */
+      lua_rawgeti(L, 1, u);
+      if (sort_comp(L, -1, -2))  /* a[u]<a[i]? */
+        set2(L, i, u);
+      else
+        lua_pop(L, 2);
+    }
+    if (u-l == 2) break;  /* only 3 elements */
+    lua_rawgeti(L, 1, i);  /* Pivot */
+    lua_pushvalue(L, -1);
+    lua_rawgeti(L, 1, u-1);
+    set2(L, i, u-1);
+    /* a[l] <= P == a[u-1] <= a[u], only need to sort from l+1 to u-2 */
+    i = l; j = u-1;
+    for (;;) {  /* invariant: a[l..i] <= P <= a[j..u] */
+      /* repeat ++i until a[i] >= P */
+      while (lua_rawgeti(L, 1, ++i), sort_comp(L, -1, -2)) {
+        if (i>u) luaL_error(L, "invalid order function for sorting");
+        lua_pop(L, 1);  /* remove a[i] */
+      }
+      /* repeat --j until a[j] <= P */
+      while (lua_rawgeti(L, 1, --j), sort_comp(L, -3, -1)) {
+        if (j<l) luaL_error(L, "invalid order function for sorting");
+        lua_pop(L, 1);  /* remove a[j] */
+      }
+      if (j<i) {
+        lua_pop(L, 3);  /* pop pivot, a[i], a[j] */
+        break;
+      }
+      set2(L, i, j);
+    }
+    lua_rawgeti(L, 1, u-1);
+    lua_rawgeti(L, 1, i);
+    set2(L, u-1, i);  /* swap pivot (a[u-1]) with a[i] */
+    /* a[l..i-1] <= a[i] == P <= a[i+1..u] */
+    /* adjust so that smaller half is in [j..i] and larger one in [l..u] */
+    if (i-l < u-i) {
+      j=l; i=i-1; l=i+2;
+    }
+    else {
+      j=i+1; i=u; u=j-2;
+    }
+    auxsort(L, j, i);  /* call recursively the smaller one */
+  }  /* repeat the routine for the larger one */
+}
+
+static inline int sort (lua_State *L) {
+  int n = aux_getn(L, 1);
+  luaL_checkstack(L, 40, "");  /* assume array is smaller than 2^40 */
+  if (!lua_isnoneornil(L, 2))  /* is there a 2nd argument? */
+    luaL_checktype(L, 2, LUA_TFUNCTION);
+  lua_settop(L, 2);  /* make sure there is two arguments */
+  auxsort(L, 1, n);
+  return 0;
+}
+
+/* }====================================================== */
+
+
+static const luaL_Reg tab_funcs[] = {
+  {"concat", tconcat},
+  {"foreach", foreach},
+  {"foreachi", foreachi},
+  {"getn", getn},
+  {"maxn", maxn},
+  {"insert", tinsert},
+  {"remove", tremove},
+  {"setn", setn},
+  {"sort", sort},
+  {NULL, NULL}
+};
+
+
+LUALIB_API int luaopen_table (lua_State *L) {
+  luaL_register(L, LUA_TABLIBNAME, tab_funcs);
+  return 1;
+}
+
+
+/*-- File: src.cpp/ltablib.cpp end --*/
 /*-- File: src.cpp/ltm.cpp start --*/
 /*
 ** $Id: ltm.c,v 2.8.1.1 2007/12/27 13:02:25 roberto Exp $

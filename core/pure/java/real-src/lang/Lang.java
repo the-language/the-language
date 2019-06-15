@@ -25,7 +25,7 @@ import org.luaj.vm2.lib.BaseLib;
 // import org.luaj.vm2.lib.OsLib;
 // import org.luaj.vm2.lib.PackageLib;
 import org.luaj.vm2.lib.StringLib;
-// import org.luaj.vm2.lib.TableLib;
+import org.luaj.vm2.lib.TableLib;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Globals;
@@ -48,7 +48,7 @@ public final class Lang {
 	// globals.load(new Bit32Lib());
 	// globals.load(new OsLib());
 	// globals.load(new MathLib());
-	// globals.load(new TableLib());
+	globals.load(new TableLib());
 	globals.load(new StringLib());
 	// globals.load(new CoroutineLib());
 	// LoadState.install(globals);

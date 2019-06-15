@@ -1,30 +1,33 @@
 package lang;
-public class Lang$luaj$machinetext_parse$conslike extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$machinetext_parse$conslike extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
-    org.luaj.vm2.LuaValue u4;
+    final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
+    
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("table");
+        k1 = org.luaj.vm2.LuaString.valueOf("remove");
+    }
     
     public Lang$luaj$machinetext_parse$conslike() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
-        org.luaj.vm2.LuaValue a0 = this.u0.call();
-        org.luaj.vm2.LuaValue a1 = this.u0.call();
-        org.luaj.vm2.LuaValue a2 = this.u1;
-        org.luaj.vm2.LuaValue a3 = this.u2;
-        Lang$luaj$machinetext_parse$conslike$0 a4 = new Lang$luaj$machinetext_parse$conslike$0();
-        a4.u0 = this.u3;
-        a4.u1 = a0;
-        a2.call(a3, (org.luaj.vm2.LuaValue)a4);
-        org.luaj.vm2.LuaValue a5 = this.u1;
-        org.luaj.vm2.LuaValue a6 = this.u2;
-        Lang$luaj$machinetext_parse$conslike$1 a7 = new Lang$luaj$machinetext_parse$conslike$1();
-        a7.u0 = this.u3;
-        a7.u1 = a1;
-        a5.call(a6, (org.luaj.vm2.LuaValue)a7);
-        this.u4.invoke(a.invoke(a0, (org.luaj.vm2.Varargs)a1).subargs(1));
-        return org.luaj.vm2.LuaValue.NONE;
+    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
+        org.luaj.vm2.LuaValue a0 = a.arg(1);
+        a.subargs(2);
+        org.luaj.vm2.LuaValue a1 = this.u0.get(k0).get(k1).call(this.u1);
+        org.luaj.vm2.LuaValue a2 = this.u0.get(k0).get(k1).call(this.u1);
+        if (!a2.eq_b(org.luaj.vm2.LuaValue.NIL) && !a1.eq_b(org.luaj.vm2.LuaValue.NIL)) {
+            org.luaj.vm2.LuaValue a3 = this.u3;
+            org.luaj.vm2.LuaValue a4 = this.u1;
+            org.luaj.vm2.Varargs a5 = a0.invoke(a2, (org.luaj.vm2.Varargs)a1);
+            org.luaj.vm2.LuaValue[] a6 = new org.luaj.vm2.LuaValue[1];
+            a6[0] = a4;
+            return org.luaj.vm2.LuaValue.tailcallOf(a3, org.luaj.vm2.LuaValue.varargsOf(a6, a5));
+        }
+        return org.luaj.vm2.LuaValue.tailcallOf(this.u2, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
     }
 }

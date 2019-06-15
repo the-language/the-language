@@ -218,7 +218,7 @@
              cp lang.h ./src
 
              cp ./patch/tailor/* ./src
-             rm ./src/loslib.c ./src/lmathlib.c ./src/ltablib.c ./src/liolib.c ./src/ldblib.c ./src/loadlib.c
+             rm ./src/loslib.c ./src/lmathlib.c ./src/liolib.c ./src/ldblib.c ./src/loadlib.c
 
              ./gen.single.sh
              (define single (++

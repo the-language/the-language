@@ -1966,9 +1966,7 @@ export { complex_print };
 // {{{ 相對獨立的部分。machinetext parse/print
 // 註疏系統WIP
 function machinetext_parse(rawstr) {
-    const result = new_hole_do();
-    let stack = [(x) => hole_set_do(result, x)];
-    let state = 0;
+    let state = rawstr.length;
     function parse_error(x = "") {
         throw 'MT parse ERROR ' + x;
     }
@@ -1978,82 +1976,75 @@ function machinetext_parse(rawstr) {
         }
     }
     function get_do() {
-        parse_assert(rawstr.length > state);
-        const result = rawstr[state];
-        state++;
-        return result;
+        parse_assert(is_not_eof());
+        state--;
+        return rawstr[state];
     }
-    let callbacks = [];
-    while (stack.length !== 0) {
-        const new_stack = [];
-        for (const hol of stack) {
-            const chr = get_do();
-            const conslike = (c) => {
-                const hol1 = new_hole_do();
-                const hol2 = new_hole_do();
-                new_stack.push((x) => hole_set_do(hol1, x));
-                new_stack.push((x) => hole_set_do(hol2, x));
-                hol(c(hol1, hol2));
-            };
-            if (chr === '^') {
-                let tmp = '';
-                while (true) {
-                    const chr = get_do();
-                    if (chr === '^') {
-                        break;
-                    }
-                    tmp += chr;
+    function is_eof() {
+        return state === 0;
+    }
+    function is_not_eof() {
+        return !is_eof();
+    }
+    const stack = [];
+    function conslike(c) {
+        const y = stack.pop();
+        const x = stack.pop();
+        if (x === undefined || y === undefined) {
+            return parse_error();
+        }
+        else {
+            return stack.unshift(c(x, y));
+        }
+    }
+    while (is_not_eof()) {
+        const chr = get_do();
+        if (chr === '^') {
+            let tmp = '';
+            while (true) {
+                const chr = get_do();
+                if (chr === '^') {
+                    break;
                 }
-                if (can_new_symbol_unicodechar_p(tmp)) {
-                    hol(new_symbol_unicodechar(tmp));
-                }
-                else {
-                    return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false');
-                }
+                tmp = chr + tmp;
             }
-            else if (chr === '.') {
-                conslike(new_construction);
-            }
-            else if (chr === '#') {
-                conslike(new_data);
-            }
-            else if (chr === '!') {
-                conslike(new_error);
-            }
-            else if (chr === '$') {
-                let env = false;
-                let v_x = false;
-                new_stack.push((x) => { env = x; });
-                new_stack.push((x) => { v_x = x; });
-                callbacks.push(() => {
-                    if (env === false || v_x === false) {
-                        return LANG_ERROR();
-                    }
-                    else {
-                        const r_env = val2env(env);
-                        if (r_env === false) {
-                            return parse_error();
-                        }
-                        else {
-                            hol(evaluate(r_env, v_x));
-                        }
-                    }
-                });
-            }
-            else if (chr === '_') {
-                hol(null_v);
+            if (can_new_symbol_unicodechar_p(tmp)) {
+                stack.unshift(new_symbol_unicodechar(tmp));
             }
             else {
-                return parse_error();
+                return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false');
             }
         }
-        stack = new_stack;
+        else if (chr === '.') {
+            conslike(new_construction);
+        }
+        else if (chr === '#') {
+            conslike(new_data);
+        }
+        else if (chr === '!') {
+            conslike(new_error);
+        }
+        else if (chr === '$') {
+            conslike((env, val) => {
+                const r_env = val2env(env);
+                if (r_env === false) {
+                    return parse_error();
+                }
+                else {
+                    return evaluate(r_env, val);
+                }
+            });
+        }
+        else if (chr === '_') {
+            stack.unshift(null_v);
+        }
+        else {
+            return parse_error();
+        }
     }
-    parse_assert(state === rawstr.length);
-    for (let i = callbacks.length - 1; i >= 0; i--) { //順序有關。
-        callbacks[i]();
-    }
-    return result;
+    parse_assert(is_eof());
+    parse_assert(stack.length === 1);
+    return stack[0];
 }
 // 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）

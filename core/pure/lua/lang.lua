@@ -27,6 +27,19 @@ local function __TS__ArrayPush(arr, ...)
     return #arr
 end
 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local function __TS__ArrayUnshift(arr, ...)
+    local items = ({...})
+    do
+        local i = #items - 1
+        while i >= 0 do
+            table.insert(arr, 1, items[i + 1])
+            i = i - 1
+        end
+    end
+    return #arr
+end
+
 local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, symbol_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
@@ -2153,9 +2166,14 @@ local function complex_print(val)
     return LANG_ERROR()
 end
 local function machinetext_parse(rawstr)
-    local result = new_hole_do()
-    local stack = {function(x) return hole_set_do(result, x) end}
-    local state = 0
+    local state, is_eof, is_not_eof
+    function is_eof()
+        return state == 0
+    end
+    function is_not_eof()
+        return not is_eof()
+    end
+    state = #rawstr
     local function parse_error(x)
         if x == nil then
             x = ""
@@ -2168,81 +2186,60 @@ local function machinetext_parse(rawstr)
         end
     end
     local function get_do()
-        parse_assert(#rawstr > state)
-        local result = string.sub(rawstr, state + 1, state + 1)
-        state = state + 1
-        return result
+        parse_assert(is_not_eof())
+        state = state - 1
+        return string.sub(rawstr, state + 1, state + 1)
     end
-    local callbacks = {}
-    while #stack ~= 0 do
-        local new_stack = {}
-        for ____, hol in ipairs(stack) do
-            local chr = get_do()
-            local function conslike(c)
-                local hol1 = new_hole_do()
-                local hol2 = new_hole_do()
-                __TS__ArrayPush(new_stack, function(x) return hole_set_do(hol1, x) end)
-                __TS__ArrayPush(new_stack, function(x) return hole_set_do(hol2, x) end)
-                hol(c(hol1, hol2))
+    local stack = {}
+    local function conslike(c)
+        local y = table.remove(stack)
+        local x = table.remove(stack)
+        if x == nil or y == nil then
+            return parse_error()
+        else
+            return __TS__ArrayUnshift(stack, c(x, y))
+        end
+    end
+    while is_not_eof() do
+        local chr = get_do()
+        if chr == "^" then
+            local tmp = ""
+            while true do
+                local chr = get_do()
+                if chr == "^" then
+                    break
+                end
+                tmp = tostring(chr) .. tostring(tmp)
             end
-            if chr == "^" then
-                local tmp = ""
-                while true do
-                    local chr = get_do()
-                    if chr == "^" then
-                        break
-                    end
-                    tmp = tostring(tmp) .. tostring(chr)
-                end
-                if can_new_symbol_unicodechar_p(tmp) then
-                    hol(new_symbol_unicodechar(tmp))
-                else
-                    return parse_error("can_new_symbol_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
-                end
-            elseif chr == "." then
-                conslike(new_construction)
-            elseif chr == "#" then
-                conslike(new_data)
-            elseif chr == "!" then
-                conslike(new_error)
-            elseif chr == "$" then
-                local env = false
-                local v_x = false
-                __TS__ArrayPush(new_stack, function(x)
-                    env = x
-                end)
-                __TS__ArrayPush(new_stack, function(x)
-                    v_x = x
-                end)
-                __TS__ArrayPush(callbacks, function()
-                    if env == false or v_x == false then
-                        return LANG_ERROR()
-                    else
-                        local r_env = val2env(env)
-                        if r_env == false then
-                            return parse_error()
-                        else
-                            hol(evaluate(r_env, v_x))
-                        end
-                    end
-                end)
-            elseif chr == "_" then
-                hol(null_v)
+            if can_new_symbol_unicodechar_p(tmp) then
+                __TS__ArrayUnshift(stack, new_symbol_unicodechar(tmp))
             else
-                return parse_error()
+                return parse_error("can_new_symbol_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
             end
+        elseif chr == "." then
+            conslike(new_construction)
+        elseif chr == "#" then
+            conslike(new_data)
+        elseif chr == "!" then
+            conslike(new_error)
+        elseif chr == "$" then
+            conslike(function(env, val)
+                local r_env = val2env(env)
+                if r_env == false then
+                    return parse_error()
+                else
+                    return evaluate(r_env, val)
+                end
+            end)
+        elseif chr == "_" then
+            __TS__ArrayUnshift(stack, null_v)
+        else
+            return parse_error()
         end
-        stack = new_stack
     end
-    parse_assert(state == #rawstr)
-    do
-        local i = #callbacks - 1
-        while i >= 0 do
-            callbacks[i + 1]()
-            i = i - 1
-        end
-    end
-    return result
+    parse_assert(is_eof())
+    parse_assert(#stack == 1)
+    return stack[1]
 end
 local function machinetext_print(x)
     local stack = {x}

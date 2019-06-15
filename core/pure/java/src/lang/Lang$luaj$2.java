@@ -1,21 +1,19 @@
 package lang;
-public class Lang$luaj$2 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$2 extends org.luaj.vm2.lib.ZeroArgFunction {
     org.luaj.vm2.LuaValue u0;
+    final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
+    
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("error");
+        k1 = org.luaj.vm2.LuaString.valueOf("TheLanguage PANIC");
+    }
     
     public Lang$luaj$2() {
     }
     
-    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        org.luaj.vm2.LuaValue a0 = a.arg(1);
-        a.subargs(2);
-        if (a0.toboolean()) {
-            org.luaj.vm2.Varargs a1 = org.luaj.vm2.LuaValue.NONE;
-            return a1;
-        }
-        return org.luaj.vm2.LuaValue.tailcallOf(this.u0, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
-    }
-    
-    final public void initupvalue1(org.luaj.vm2.LuaValue a) {
-        this.u0 = a;
+    final public org.luaj.vm2.LuaValue call() {
+        this.u0.get(k0).call(k1);
+        return org.luaj.vm2.LuaValue.NONE;
     }
 }

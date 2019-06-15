@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "lua2php": "^0.3.4"
+    "lua2php": "^0.4.1"
   }
 }

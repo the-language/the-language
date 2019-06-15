@@ -21,9 +21,7 @@
 // {{{ 相對獨立的部分。machinetext parse/print
 // 註疏系統WIP
 function machinetext_parse(rawstr: string): LangVal {
-    const result = new_hole_do()
-    let stack: Array<(x: LangVal) => void> = [(x) => hole_set_do(result, x)]
-    let state = 0
+    let state = rawstr.length
     function parse_error(x: string = ""): never {
         throw 'MT parse ERROR ' + x
     }
@@ -31,71 +29,64 @@ function machinetext_parse(rawstr: string): LangVal {
         if (!x) { return parse_error() }
     }
     function get_do(): string {
-        parse_assert(rawstr.length > state)
-        const result: string = rawstr[state]
-        state++
-        return result
+        parse_assert(is_not_eof())
+        state--
+        return rawstr[state]
     }
-    let callbacks: Array<() => void> = []
-    while (stack.length !== 0) {
-        const new_stack: Array<(x: LangVal) => void> = []
-        for (const hol of stack) {
-            const chr: string = get_do()
-            const conslike = (c: (x: LangVal, y: LangVal) => LangVal) => {
-                const hol1 = new_hole_do()
-                const hol2 = new_hole_do()
-                new_stack.push((x) => hole_set_do(hol1, x))
-                new_stack.push((x) => hole_set_do(hol2, x))
-                hol(c(hol1, hol2))
-            }
-            if (chr === '^') {
-                let tmp: string = ''
-                while (true) {
-                    const chr: string = get_do()
-                    if (chr === '^') { break }
-                    tmp += chr
-                }
-                if (can_new_symbol_unicodechar_p(tmp)) {
-                    hol(new_symbol_unicodechar(tmp))
-                } else {
-                    return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false')
-                }
-            } else if (chr === '.') {
-                conslike(new_construction)
-            } else if (chr === '#') {
-                conslike(new_data)
-            } else if (chr === '!') {
-                conslike(new_error)
-            } else if (chr === '$') {
-                let env: OrFalse<LangVal> = false
-                let v_x: OrFalse<LangVal> = false
-                new_stack.push((x) => { env = x })
-                new_stack.push((x) => { v_x = x })
-                callbacks.push(() => {
-                    if (env === false || v_x === false) {
-                        return LANG_ERROR()
-                    } else {
-                        const r_env = val2env(env)
-                        if (r_env === false) {
-                            return parse_error()
-                        } else {
-                            hol(evaluate(r_env, v_x))
-                        }
-                    }
-                })
-            } else if (chr === '_') {
-                hol(null_v)
-            } else {
-                return parse_error()
-            }
+    function is_eof(): boolean {
+        return state === 0
+    }
+    function is_not_eof(): boolean {
+        return !is_eof()
+    }
+    const stack: Array<LangVal> = []
+    function conslike(c: (x: LangVal, y: LangVal) => LangVal) {
+        const y = stack.pop()
+        const x = stack.pop()
+        if (x === undefined || y === undefined) {
+            return parse_error()
+        } else {
+            return stack.unshift(c(x, y))
         }
-        stack = new_stack
     }
-    parse_assert(state === rawstr.length)
-    for (let i = callbacks.length - 1; i >= 0; i--) {//順序有關。
-        callbacks[i]()
+    while (is_not_eof()) {
+        const chr = get_do()
+        if (chr === '^') {
+            let tmp: string = ''
+            while (true) {
+                const chr: string = get_do()
+                if (chr === '^') { break }
+                tmp = chr + tmp
+            }
+            if (can_new_symbol_unicodechar_p(tmp)) {
+                stack.unshift(new_symbol_unicodechar(tmp))
+            } else {
+                return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false')
+            }
+        } else if (chr === '.') {
+            conslike(new_construction)
+        } else if (chr === '#') {
+            conslike(new_data)
+        } else if (chr === '!') {
+            conslike(new_error)
+        } else if (chr === '$') {
+            conslike((env, val) => {
+                const r_env = val2env(env)
+                if (r_env === false) {
+                    return parse_error()
+                } else {
+                    return evaluate(r_env, val)
+                }
+            })
+        } else if (chr === '_') {
+            stack.unshift(null_v)
+        } else {
+            return parse_error()
+        }
     }
-    return result
+    parse_assert(is_eof())
+    parse_assert(stack.length === 1)
+    return stack[0]
 }
 // 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）

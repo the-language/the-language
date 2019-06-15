@@ -19,16 +19,29 @@
 
 */
 $__TS__ArrayPush = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
-    $items = ((object)$lUa_Vararg_LuA);
+    $items = ((object)["array" => $lUa_Vararg_LuA]);
     $lUaTmP_1_LuAtMp = $items;
-    $lUaTmP_2_LuAtMp = (is_string($lUaTmP_1_LuAtMp) ? strlen($lUaTmP_1_LuAtMp) : count((array)$lUaTmP_1_LuAtMp));
+    $lUaTmP_2_LuAtMp = (is_string($lUaTmP_1_LuAtMp) ? strlen($lUaTmP_1_LuAtMp) : count($lUaTmP_1_LuAtMp->array));
     $lUaTmP_3_LuAtMp = 1;
     for ($lUa_I_LuA = 1; $lUaTmP_3_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_2_LuAtMp : $lUa_I_LuA >= $lUaTmP_2_LuAtMp; $lUa_I_LuA += $lUaTmP_3_LuAtMp) {
         $____ = $lUa_I_LuA;
-        $item = ($lUaTmP_1_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
-        $arr->{count((array)$arr)} = $item;
+        $item = $lUaTmP_1_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+        $arr->array[count($arr->array)] = $item;
     }
-    return (is_string($arr) ? strlen($arr) : count((array)$arr));
+    return (is_string($arr) ? strlen($arr) : count($arr->array));
+});
+$__TS__ArrayUnshift = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
+    $items = ((object)["array" => $lUa_Vararg_LuA]);
+    
+    {
+        $i = ((is_string($items) ? strlen($items) : count($items->array)) - 1);
+        while (($i >= 0)) {
+            array_splice($arr->array, 0, 0, [$items->array[($i + 0)]]);
+            $i = ($i - 1);
+        }
+    }
+
+    return (is_string($arr) ? strlen($arr) : count($arr->array));
 });
 $LANG_ERROR = NULL;
 $LANG_ASSERT = NULL;
@@ -154,16 +167,16 @@ $LANG_ASSERT = (function ($x = NULL) use (&$LANG_ERROR) {
     }
 });
 $new_comment = (function ($comment = NULL, $x = NULL) use (&$comment_t) {
-    return ((object)[$comment_t, $comment, $x]);
+    return ((object)["array" => [$comment_t, $comment, $x]]);
 });
 $comment_p = (function ($x = NULL) use (&$comment_t) {
-    return (($x->{0}) == $comment_t);
+    return ($x->array[0] == $comment_t);
 });
 $comment_comment = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $comment_x = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $un_comment_all = (function ($x = NULL) use (&$comment_p, &$comment_x) {
     while ($comment_p($x)) {
@@ -172,14 +185,14 @@ $un_comment_all = (function ($x = NULL) use (&$comment_p, &$comment_x) {
     return $x;
 });
 $symbol_p = (function ($x = NULL) use (&$symbol_t) {
-    return (($x->{0}) == $symbol_t);
+    return ($x->array[0] == $symbol_t);
 });
 $un_symbol_unicodechar = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $un_symbol = (function ($x = NULL) use (&$symbols_set_neg, &$un_symbol_unicodechar) {
     $lUaTmP_4_LuAtMp = $un_symbol_unicodechar($x);
-    return ($symbols_set_neg()->{(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)});
+    return $symbols_set_neg()->array[(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)];
 });
 $symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symbol_unicodechar) {
     if (($x == $y)) {
@@ -194,106 +207,106 @@ $symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symb
 
 });
 $new_construction = (function ($x = NULL, $y = NULL) use (&$construction_t) {
-    return ((object)[$construction_t, $x, $y]);
+    return ((object)["array" => [$construction_t, $x, $y]]);
 });
 $construction_p = (function ($x = NULL) use (&$construction_t) {
-    return (($x->{0}) == $construction_t);
+    return ($x->array[0] == $construction_t);
 });
 $construction_head = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $construction_tail = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $null_p = (function ($x = NULL) use (&$null_t) {
-    return (($x->{0}) == $null_t);
+    return ($x->array[0] == $null_t);
 });
 $new_data = (function ($x = NULL, $y = NULL) use (&$data_t) {
-    return ((object)[$data_t, $x, $y]);
+    return ((object)["array" => [$data_t, $x, $y]]);
 });
 $data_p = (function ($x = NULL) use (&$data_t) {
-    return (($x->{0}) == $data_t);
+    return ($x->array[0] == $data_t);
 });
 $data_name = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $data_list = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $new_error = (function ($x = NULL, $y = NULL) use (&$error_t) {
-    return ((object)[$error_t, $x, $y]);
+    return ((object)["array" => [$error_t, $x, $y]]);
 });
 $error_p = (function ($x = NULL) use (&$error_t) {
-    return (($x->{0}) == $error_t);
+    return ($x->array[0] == $error_t);
 });
 $error_name = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $error_list = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $just_p = (function ($x = NULL) use (&$just_t) {
-    return (($x->{0}) == $just_t);
+    return ($x->array[0] == $just_t);
 });
 $un_just = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $evaluate = (function ($x = NULL, $y = NULL) use (&$delay_evaluate_t) {
-    return ((object)[$delay_evaluate_t, $x, $y]);
+    return ((object)["array" => [$delay_evaluate_t, $x, $y]]);
 });
 $delay_evaluate_p = (function ($x = NULL) use (&$delay_evaluate_t) {
-    return (($x->{0}) == $delay_evaluate_t);
+    return ($x->array[0] == $delay_evaluate_t);
 });
 $delay_evaluate_env = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $delay_evaluate_x = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $builtin_form_apply = (function ($x = NULL, $y = NULL, $z = NULL) use (&$delay_builtin_form_t) {
-    return ((object)[$delay_builtin_form_t, $x, $y, $z]);
+    return ((object)["array" => [$delay_builtin_form_t, $x, $y, $z]]);
 });
 $delay_builtin_form_p = (function ($x = NULL) use (&$delay_builtin_form_t) {
-    return (($x->{0}) == $delay_builtin_form_t);
+    return ($x->array[0] == $delay_builtin_form_t);
 });
 $delay_builtin_form_env = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $delay_builtin_form_f = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $delay_builtin_form_xs = (function ($x = NULL) {
-    return ($x->{3});
+    return $x->array[3];
 });
 $builtin_func_apply = (function ($x = NULL, $y = NULL) use (&$delay_builtin_func_t) {
-    return ((object)[$delay_builtin_func_t, $x, $y]);
+    return ((object)["array" => [$delay_builtin_func_t, $x, $y]]);
 });
 $delay_builtin_func_p = (function ($x = NULL) use (&$delay_builtin_func_t) {
-    return (($x->{0}) == $delay_builtin_func_t);
+    return ($x->array[0] == $delay_builtin_func_t);
 });
 $delay_builtin_func_f = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $delay_builtin_func_xs = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $apply = (function ($f = NULL, $xs = NULL) use (&$delay_apply_t) {
-    return ((object)[$delay_apply_t, $f, $xs]);
+    return ((object)["array" => [$delay_apply_t, $f, $xs]]);
 });
 $delay_apply_p = (function ($x = NULL) use (&$delay_apply_t) {
-    return (($x->{0}) == $delay_apply_t);
+    return ($x->array[0] == $delay_apply_t);
 });
 $delay_apply_f = (function ($x = NULL) {
-    return ($x->{1});
+    return $x->array[1];
 });
 $delay_apply_xs = (function ($x = NULL) {
-    return ($x->{2});
+    return $x->array[2];
 });
 $force_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all, &$force_all_rec) {
     $x = $force_all($raw);
     $conslike = (function ($xx = NULL) use (&$force_all_rec) {
-        $xx->{1} = $force_all_rec(($xx->{1}));
-        $xx->{2} = $force_all_rec(($xx->{2}));
+        $xx->array[1] = $force_all_rec($xx->array[1]);
+        $xx->array[2] = $force_all_rec($xx->array[2]);
         return $xx;
     });
     if ($data_p($x)) {
@@ -308,29 +321,29 @@ $force_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$d
     return $x;
 });
 $new_hole_do = (function () use (&$hole_t) {
-    return ((object)[$hole_t]);
+    return ((object)["array" => [$hole_t]]);
 });
 $hole_p = (function ($x = NULL) use (&$hole_t) {
-    return (($x->{0}) == $hole_t);
+    return ($x->array[0] == $hole_t);
 });
 $lang_set_do = (function ($x = NULL, $y = NULL) use (&$just_t) {
     if (($x == $y)) {
         return;
     }
-    $x->{0} = $just_t;
-    $x->{1} = $y;
-    $x->{2} = false;
-    $x->{3} = false;
+    $x->array[0] = $just_t;
+    $x->array[1] = $y;
+    $x->array[2] = false;
+    $x->array[3] = false;
 });
 $hole_set_do = (function ($rawx = NULL, $rawy = NULL) use (&$LANG_ASSERT, &$hole_p) {
     $LANG_ASSERT($hole_p($rawx));
     $LANG_ASSERT(!($hole_p($rawy)));
     $x = $rawx;
     $y = $rawy;
-    $x->{0} = ($y->{0});
-    $x->{1} = ($y->{1});
-    $x->{2} = ($y->{2});
-    $x->{3} = ($y->{3});
+    $x->array[0] = $y->array[0];
+    $x->array[1] = $y->array[1];
+    $x->array[2] = $y->array[2];
+    $x->array[3] = $y->array[3];
 });
 $lang_copy_do = (function ($x = NULL) use (&$hole_set_do, &$new_hole_do) {
     $ret = $new_hole_do();
@@ -341,9 +354,9 @@ $jsArray_to_list = (function ($xs = NULL) use (&$new_construction, &$null_v) {
     $ret = $null_v;
     
     {
-        $i = ((is_string($xs) ? strlen($xs) : count((array)$xs)) - 1);
+        $i = ((is_string($xs) ? strlen($xs) : count($xs->array)) - 1);
         while (($i >= 0)) {
-            $ret = $new_construction(($xs->{($i + 0)}), $ret);
+            $ret = $new_construction($xs->array[($i + 0)], $ret);
             $i = ($i - 1);
         }
     }
@@ -351,7 +364,7 @@ $jsArray_to_list = (function ($xs = NULL) use (&$new_construction, &$null_v) {
     return $ret;
 });
 $new_list = (function (...$lUa_Vararg_LuA) use (&$jsArray_to_list) {
-    $xs = ((object)$lUa_Vararg_LuA);
+    $xs = ((object)["array" => $lUa_Vararg_LuA]);
     return $jsArray_to_list($xs);
 });
 $un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_set_do, &$un_just) {
@@ -359,17 +372,17 @@ $un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_
         return $raw;
     }
     $x = $raw;
-    $xs = ((object)[]);
+    $xs = ((object)["array" => []]);
     while ($just_p($x)) {
         $__TS__ArrayPush($xs, $x);
         $x = $un_just($x);
     }
     $lUaTmP_5_LuAtMp = $xs;
-    $lUaTmP_6_LuAtMp = (is_string($lUaTmP_5_LuAtMp) ? strlen($lUaTmP_5_LuAtMp) : count((array)$lUaTmP_5_LuAtMp));
+    $lUaTmP_6_LuAtMp = (is_string($lUaTmP_5_LuAtMp) ? strlen($lUaTmP_5_LuAtMp) : count($lUaTmP_5_LuAtMp->array));
     $lUaTmP_7_LuAtMp = 1;
     for ($lUa_I_LuA = 1; $lUaTmP_7_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_6_LuAtMp : $lUa_I_LuA >= $lUaTmP_6_LuAtMp; $lUa_I_LuA += $lUaTmP_7_LuAtMp) {
         $____ = $lUa_I_LuA;
-        $v = ($lUaTmP_5_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+        $v = $lUaTmP_5_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
         $lang_set_do($v, $x);
     }
     return $x;
@@ -384,13 +397,13 @@ $delay_just_p = (function ($x = NULL) use (&$delay_p, &$just_p) {
 });
 $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$symbol_p_function_builtin_systemName, &$the_world_stopped_v) {
     if (($parents_history == NULL)) {
-        $parents_history = ((object)[]);
+        $parents_history = ((object)["array" => []]);
     }
     if (($ref_novalue_replace == NULL)) {
-        $ref_novalue_replace = ((object)[false, false]);
+        $ref_novalue_replace = ((object)["array" => [false, false]]);
     }
     if (($xs == NULL)) {
-        $xs = ((object)[]);
+        $xs = ((object)["array" => []]);
     }
     $x = NULL;
     $do_rewrite = NULL;
@@ -400,8 +413,8 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
         
         {
             $i = 0;
-            while (($i < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                $lang_set_do(($xs->{($i + 0)}), $newval);
+            while (($i < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                $lang_set_do($xs->array[($i + 0)], $newval);
                 $i = ($i + 1);
             }
         }
@@ -412,25 +425,25 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
         $do_rewrite($newval);
         if ($delay_just_p($newval)) {
             $__TS__ArrayPush($xs, $x);
-            return $force_all_inner($newval, $parents_history, ((object)[false, false]), $xs);
+            return $force_all_inner($newval, $parents_history, ((object)["array" => [false, false]]), $xs);
         }
         return $newval;
     });
-    $history = ((object)[]);
+    $history = ((object)["array" => []]);
     $x = $raw;
     $replace_this_with_stopped = (function () use (&$do_rewrite_force_all, &$ref_novalue_replace, &$the_world_stopped_v) {
-        $ref_novalue_replace->{1} = true;
+        $ref_novalue_replace->array[1] = true;
         return $do_rewrite_force_all($the_world_stopped_v);
     });
     $make_history = (function () use (&$history, &$parents_history) {
-        $ret = ((object)[]);
+        $ret = ((object)["array" => []]);
         foreach ($history as $lUa_I_LuA => $lUa_V_LuA) {
             $x_id = $lUa_I_LuA;
-            $ret->{(is_int($x_id) ? $x_id - 1 : $x_id)} = true;
+            $ret->array[(is_int($x_id) ? $x_id - 1 : $x_id)] = true;
         }
         foreach ($parents_history as $lUa_I_LuA => $lUa_V_LuA) {
             $x_id_1 = $lUa_I_LuA;
-            $ret->{(is_int($x_id_1) ? $x_id_1 - 1 : $x_id_1)} = true;
+            $ret->array[(is_int($x_id_1) ? $x_id_1 - 1 : $x_id_1)] = true;
         }
         return $ret;
     });
@@ -446,47 +459,49 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
 
     while ($delay_just_p($x)) {
         $x_id = $simple_print($x);
-        if ((($parents_history->{(is_int($x_id) ? $x_id - 1 : $x_id)}) == true)) {
+        if (($parents_history->array[(is_int($x_id) ? $x_id - 1 : $x_id)] == true)) {
             return $replace_this_with_stopped();
         }
-        if ((($history->{(is_int($x_id) ? $x_id - 1 : $x_id)}) == true)) {
-            $ref_novalue_replace->{0} = true;
+        if (($history->array[(is_int($x_id) ? $x_id - 1 : $x_id)] == true)) {
+            $ref_novalue_replace->array[0] = true;
             if ($delay_evaluate_p($x)) {
                 return $replace_this_with_stopped();
             } elseif ($delay_builtin_func_p($x)) {
                 $f = $delay_builtin_func_f($x);
                 $xs_1 = $delay_builtin_func_xs($x);
                 $elim_s = ((object)[
-                    $data_name_function_builtin_systemName,
-                    $data_list_function_builtin_systemName,
-                    $data_p_function_builtin_systemName,
-                    $error_name_function_builtin_systemName,
-                    $error_list_function_builtin_systemName,
-                    $error_p_function_builtin_systemName,
-                    $construction_p_function_builtin_systemName,
-                    $construction_head_function_builtin_systemName,
-                    $construction_tail_function_builtin_systemName,
-                    $symbol_p_function_builtin_systemName,
-                    $null_p_function_builtin_systemName
+                    "array" => [
+                        $data_name_function_builtin_systemName,
+                        $data_list_function_builtin_systemName,
+                        $data_p_function_builtin_systemName,
+                        $error_name_function_builtin_systemName,
+                        $error_list_function_builtin_systemName,
+                        $error_p_function_builtin_systemName,
+                        $construction_p_function_builtin_systemName,
+                        $construction_head_function_builtin_systemName,
+                        $construction_tail_function_builtin_systemName,
+                        $symbol_p_function_builtin_systemName,
+                        $null_p_function_builtin_systemName
+                    ]
                 ]);
                 $is_elim = false;
                 $lUaTmP_8_LuAtMp = $elim_s;
-                $lUaTmP_9_LuAtMp = (is_string($lUaTmP_8_LuAtMp) ? strlen($lUaTmP_8_LuAtMp) : count((array)$lUaTmP_8_LuAtMp));
+                $lUaTmP_9_LuAtMp = (is_string($lUaTmP_8_LuAtMp) ? strlen($lUaTmP_8_LuAtMp) : count($lUaTmP_8_LuAtMp->array));
                 $lUaTmP_10_LuAtMp = 1;
                 for ($lUa_I_LuA = 1; $lUaTmP_10_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_9_LuAtMp : $lUa_I_LuA >= $lUaTmP_9_LuAtMp; $lUa_I_LuA += $lUaTmP_10_LuAtMp) {
                     $____ = $lUa_I_LuA;
-                    $elim_s_v = ($lUaTmP_8_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+                    $elim_s_v = $lUaTmP_8_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
                     if ($jsbool_equal_p($elim_s_v, $f)) {
                         $is_elim = true;
                         break;
                     }
                 }
                 if ($is_elim) {
-                    $LANG_ASSERT(((is_string($xs_1) ? strlen($xs_1) : count((array)$xs_1)) == 1));
-                    $LANG_ASSERT((($ref_novalue_replace->{1}) == false));
-                    $inner = $force_all_inner(($xs_1->{0}), $make_history(), $ref_novalue_replace);
-                    if (($ref_novalue_replace->{1})) {
-                        return $do_rewrite_force_all($builtin_func_apply($f, ((object)[$inner])));
+                    $LANG_ASSERT(((is_string($xs_1) ? strlen($xs_1) : count($xs_1->array)) == 1));
+                    $LANG_ASSERT(($ref_novalue_replace->array[1] == false));
+                    $inner = $force_all_inner($xs_1->array[0], $make_history(), $ref_novalue_replace);
+                    if ($ref_novalue_replace->array[1]) {
+                        return $do_rewrite_force_all($builtin_func_apply($f, ((object)["array" => [$inner]])));
                     } else {
                         return $LANG_ERROR();
                     }
@@ -499,13 +514,14 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
                 } elseif ($jsbool_equal_p($f, $evaluate_function_builtin_systemName)) {
                     return $replace_this_with_stopped();
                 } elseif ($jsbool_equal_p($f, $if_function_builtin_systemName)) {
-                    $LANG_ASSERT(((is_string($xs_1) ? strlen($xs_1) : count((array)$xs_1)) == 3));
-                    $LANG_ASSERT((($ref_novalue_replace->{1}) == false));
-                    $tf = $force_all_inner(($xs_1->{0}), $make_history(), $ref_novalue_replace);
-                    if (($ref_novalue_replace->{1})) {
-                        return $do_rewrite_force_all(
-                            $builtin_func_apply($if_function_builtin_systemName, ((object)[$tf, ($xs_1->{1}), ($xs_1->{2})]))
-                        );
+                    $LANG_ASSERT(((is_string($xs_1) ? strlen($xs_1) : count($xs_1->array)) == 3));
+                    $LANG_ASSERT(($ref_novalue_replace->array[1] == false));
+                    $tf = $force_all_inner($xs_1->array[0], $make_history(), $ref_novalue_replace);
+                    if ($ref_novalue_replace->array[1]) {
+                        return $do_rewrite_force_all($builtin_func_apply(
+                            $if_function_builtin_systemName,
+                            ((object)["array" => [$tf, $xs_1->array[1], $xs_1->array[2]]])
+                        ));
                     } else {
                         return $LANG_ERROR();
                     }
@@ -519,7 +535,7 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
             }
             return $LANG_ERROR();
         }
-        $history->{(is_int($x_id) ? $x_id - 1 : $x_id)} = true;
+        $history->array[(is_int($x_id) ? $x_id - 1 : $x_id)] = true;
         $__TS__ArrayPush($xs, $x);
         $x = $force1($x);
     }
@@ -560,45 +576,45 @@ $force_uncomment_all = (function ($x = NULL) use (&$comment_p, &$delay_just_p, &
     return $x;
 });
 $env_set = (function ($env = NULL, $key = NULL, $val = NULL) use (&$jsbool_equal_p) {
-    $ret = ((object)[]);
+    $ret = ((object)["array" => []]);
     
     {
         $i = 0;
-        while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-            if ($jsbool_equal_p(($env->{(($i + 0) + 0)}), $key)) {
-                $ret->{(($i + 0) + 0)} = $key;
-                $ret->{(($i + 1) + 0)} = $val;
+        while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+                $ret->array[(($i + 0) + 0)] = $key;
+                $ret->array[(($i + 1) + 0)] = $val;
                 
                 {
                     $i = ($i + 2);
-                    while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-                        $ret->{(($i + 0) + 0)} = ($env->{(($i + 0) + 0)});
-                        $ret->{(($i + 1) + 0)} = ($env->{(($i + 1) + 0)});
+                    while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+                        $ret->array[(($i + 0) + 0)] = $env->array[(($i + 0) + 0)];
+                        $ret->array[(($i + 1) + 0)] = $env->array[(($i + 1) + 0)];
                         $i = ($i + 2);
                     }
                 }
 
                 return $ret;
             } else {
-                $ret->{(($i + 0) + 0)} = ($env->{(($i + 0) + 0)});
-                $ret->{(($i + 1) + 0)} = ($env->{(($i + 1) + 0)});
+                $ret->array[(($i + 0) + 0)] = $env->array[(($i + 0) + 0)];
+                $ret->array[(($i + 1) + 0)] = $env->array[(($i + 1) + 0)];
             }
 
             $i = ($i + 2);
         }
     }
 
-    $ret->{(((is_string($env) ? strlen($env) : count((array)$env)) + 0) + 0)} = $key;
-    $ret->{(((is_string($env) ? strlen($env) : count((array)$env)) + 1) + 0)} = $val;
+    $ret->array[(((is_string($env) ? strlen($env) : count($env->array)) + 0) + 0)] = $key;
+    $ret->array[(((is_string($env) ? strlen($env) : count($env->array)) + 1) + 0)] = $val;
     return $ret;
 });
 $env_get = (function ($env = NULL, $key = NULL, $default_v = NULL) use (&$jsbool_equal_p) {
     
     {
         $i = 0;
-        while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-            if ($jsbool_equal_p(($env->{(($i + 0) + 0)}), $key)) {
-                return ($env->{(($i + 1) + 0)});
+        while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+                return $env->array[(($i + 1) + 0)];
             }
             $i = ($i + 2);
         }
@@ -610,9 +626,9 @@ $must_env_get = (function ($env = NULL, $key = NULL) use (&$LANG_ERROR, &$jsbool
     
     {
         $i = 0;
-        while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-            if ($jsbool_equal_p(($env->{(($i + 0) + 0)}), $key)) {
-                return ($env->{(($i + 1) + 0)});
+        while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+                return $env->array[(($i + 1) + 0)];
             }
             $i = ($i + 2);
         }
@@ -625,8 +641,8 @@ $env2val = (function ($env = NULL) use (&$mapping_symbol, &$new_construction, &$
     
     {
         $i = 0;
-        while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-            $ret = $new_construction($new_list(($env->{(($i + 0) + 0)}), ($env->{(($i + 1) + 0)})), $ret);
+        while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+            $ret = $new_construction($new_list($env->array[(($i + 0) + 0)], $env->array[(($i + 1) + 0)]), $ret);
             $i = ($i + 2);
         }
     }
@@ -637,16 +653,16 @@ $env_foreach = (function ($env = NULL, $f = NULL) {
     
     {
         $i = 0;
-        while (($i < (is_string($env) ? strlen($env) : count((array)$env)))) {
-            $f(($env->{(($i + 0) + 0)}), ($env->{(($i + 1) + 0)}));
+        while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
+            $f($env->array[(($i + 0) + 0)], $env->array[(($i + 1) + 0)]);
             $i = ($i + 2);
         }
     }
 
 });
 $force_uncomment_list_1 = (function ($list = NULL, $not_list_k = NULL, $delay_just_k = NULL, $k = NULL) use (&$__TS__ArrayPush, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$delay_just_p, &$force1, &$null_p, &$un_just_all) {
-    $ret = ((object)[]);
-    $comments = ((object)[]);
+    $ret = ((object)["array" => []]);
+    $comments = ((object)["array" => []]);
     $i = $un_just_all($list);
     $not_forced = true;
     while (true) {
@@ -687,30 +703,30 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
         return $force_uncomment_list_1($x, $error_v, (function () use (&$selfvalraw) {
             return $selfvalraw;
         }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env, &$env2val, &$error_v, &$evaluate, &$force1, &$force_all, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$null_p, &$selfvalraw, &$symbol_equal_p, &$symbol_p) {
-            if (((is_string($comments) ? strlen($comments) : count((array)$comments)) != 0)) {
+            if (((is_string($comments) ? strlen($comments) : count($comments->array)) != 0)) {
                 throw new Exception("WIP");
             }
-            if ($jsbool_equal_p(($xs->{0}), $form_builtin_use_systemName)) {
-                if (((is_string($xs) ? strlen($xs) : count((array)$xs)) == 1)) {
+            if ($jsbool_equal_p($xs->array[0], $form_builtin_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
-                $f = ($xs->{1});
-                $args = ((object)[]);
+                $f = $xs->array[1];
+                $args = ((object)["array" => []]);
                 
                 {
                     $i = 2;
-                    while (($i < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                        $__TS__ArrayPush($args, ($xs->{($i + 0)}));
+                    while (($i < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                        $__TS__ArrayPush($args, $xs->array[($i + 0)]);
                         $i = ($i + 1);
                     }
                 }
 
                 return $builtin_form_apply($env, $f, $args);
-            } elseif ($jsbool_equal_p(($xs->{0}), $form_use_systemName)) {
-                if (((is_string($xs) ? strlen($xs) : count((array)$xs)) == 1)) {
+            } elseif ($jsbool_equal_p($xs->array[0], $form_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
-                $f_1 = $force_all($evaluate($env, ($xs->{1})));
+                $f_1 = $force_all($evaluate($env, $xs->array[1]));
                 if (!($data_p($f_1))) {
                     return $error_v();
                 }
@@ -739,41 +755,41 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
                 if (!($null_p($f_list_cdr))) {
                     return $error_v();
                 }
-                $args_1 = ((object)[$env2val($env)]);
+                $args_1 = ((object)["array" => [$env2val($env)]]);
                 
                 {
                     $i_1 = 2;
-                    while (($i_1 < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                        $__TS__ArrayPush($args_1, ($xs->{($i_1 + 0)}));
+                    while (($i_1 < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                        $__TS__ArrayPush($args_1, $xs->array[($i_1 + 0)]);
                         $i_1 = ($i_1 + 1);
                     }
                 }
 
                 return $apply($f_x, $args_1);
-            } elseif ($jsbool_equal_p(($xs->{0}), $function_builtin_use_systemName)) {
-                if (((is_string($xs) ? strlen($xs) : count((array)$xs)) == 1)) {
+            } elseif ($jsbool_equal_p($xs->array[0], $function_builtin_use_systemName)) {
+                if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
-                $f_2 = ($xs->{1});
-                $args_2 = ((object)[]);
+                $f_2 = $xs->array[1];
+                $args_2 = ((object)["array" => []]);
                 
                 {
                     $i_2 = 2;
-                    while (($i_2 < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                        $__TS__ArrayPush($args_2, $evaluate($env, ($xs->{($i_2 + 0)})));
+                    while (($i_2 < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                        $__TS__ArrayPush($args_2, $evaluate($env, $xs->array[($i_2 + 0)]));
                         $i_2 = ($i_2 + 1);
                     }
                 }
 
                 return $builtin_func_apply($f_2, $args_2);
             } else {
-                $f_3 = $evaluate($env, ($xs->{0}));
-                $args_3 = ((object)[]);
+                $f_3 = $evaluate($env, $xs->array[0]);
+                $args_3 = ((object)["array" => []]);
                 
                 {
                     $i_3 = 1;
-                    while (($i_3 < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                        $__TS__ArrayPush($args_3, $evaluate($env, ($xs->{($i_3 + 0)})));
+                    while (($i_3 < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                        $__TS__ArrayPush($args_3, $evaluate($env, $xs->array[($i_3 + 0)]));
                         $i_3 = ($i_3 + 1);
                     }
                 }
@@ -830,19 +846,19 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
             $x = $null_v;
             
             {
-                $i = ((is_string($xs) ? strlen($xs) : count((array)$xs)) - 1);
+                $i = ((is_string($xs) ? strlen($xs) : count($xs->array)) - 1);
                 while (($i >= $xs_i)) {
-                    $x = $new_construction(($xs->{($i + 0)}), $x);
+                    $x = $new_construction($xs->array[($i + 0)], $x);
                     $i = ($i - 1);
                 }
             }
 
             $env = $env_set($env, $args_pat, $x);
-            $xs_i = (is_string($xs) ? strlen($xs) : count((array)$xs));
+            $xs_i = (is_string($xs) ? strlen($xs) : count($xs->array));
             $args_pat = $null_v;
         } elseif ($construction_p($args_pat)) {
-            if (($xs_i < (is_string($xs) ? strlen($xs) : count((array)$xs)))) {
-                $x_1 = ($xs->{($xs_i + 0)});
+            if (($xs_i < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
+                $x_1 = $xs->array[($xs_i + 0)];
                 $xs_i = ($xs_i + 1);
                 $env = $env_set($env, $construction_head($args_pat), $x_1);
                 $args_pat = $construction_tail($args_pat);
@@ -855,7 +871,7 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
         }
 
     }
-    if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != $xs_i)) {
+    if (((is_string($xs) ? strlen($xs) : count($xs->array)) != $xs_i)) {
         return $error_v();
     }
     return $evaluate($env, $f_code);
@@ -868,21 +884,21 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
         );
     });
     $lUaTmP_11_LuAtMp = $real_builtin_func_apply_s;
-    $lUaTmP_12_LuAtMp = (is_string($lUaTmP_11_LuAtMp) ? strlen($lUaTmP_11_LuAtMp) : count((array)$lUaTmP_11_LuAtMp));
+    $lUaTmP_12_LuAtMp = (is_string($lUaTmP_11_LuAtMp) ? strlen($lUaTmP_11_LuAtMp) : count($lUaTmP_11_LuAtMp->array));
     $lUaTmP_13_LuAtMp = 1;
     for ($lUa_I_LuA = 1; $lUaTmP_13_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_12_LuAtMp : $lUa_I_LuA >= $lUaTmP_12_LuAtMp; $lUa_I_LuA += $lUaTmP_13_LuAtMp) {
         $____ = $lUa_I_LuA;
-        $xx = ($lUaTmP_11_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
-        if ($jsbool_equal_p($f, ($xx->{0}))) {
-            if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != ($xx->{1}))) {
+        $xx = $lUaTmP_11_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+        if ($jsbool_equal_p($f, $xx->array[0])) {
+            if (((is_string($xs) ? strlen($xs) : count($xs->array)) != $xx->array[1])) {
                 return $error_v();
             }
-            if ((($xx->{1}) == 1)) {
-                return ($xx->{2})(($xs->{0}), $error_v, $selfvalraw);
-            } elseif ((($xx->{1}) == 2)) {
-                return ($xx->{2})(($xs->{0}), ($xs->{1}), $error_v, $selfvalraw);
-            } elseif ((($xx->{1}) == 3)) {
-                return ($xx->{2})(($xs->{0}), ($xs->{1}), ($xs->{2}), $error_v, $selfvalraw);
+            if (($xx->array[1] == 1)) {
+                return $xx->array[2]($xs->array[0], $error_v, $selfvalraw);
+            } elseif (($xx->array[1] == 2)) {
+                return $xx->array[2]($xs->array[0], $xs->array[1], $error_v, $selfvalraw);
+            } elseif (($xx->array[1] == 3)) {
+                return $xx->array[2]($xs->array[0], $xs->array[1], $xs->array[2], $error_v, $selfvalraw);
             }
             return $LANG_ERROR();
         }
@@ -897,20 +913,20 @@ $real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfv
         ));
     });
     if ($jsbool_equal_p($f, $quote_form_builtin_systemName)) {
-        if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != 1)) {
+        if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 1)) {
             return $error_v();
         }
-        return ($xs->{0});
+        return $xs->array[0];
     } elseif ($jsbool_equal_p($f, $lambda_form_builtin_systemName)) {
-        if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != 2)) {
+        if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 2)) {
             return $error_v();
         }
-        return $new_lambda($env, ($xs->{0}), ($xs->{1}), $error_v);
+        return $new_lambda($env, $xs->array[0], $xs->array[1], $error_v);
     } elseif ($jsbool_equal_p($f, $comment_form_builtin_systemName)) {
-        if (((is_string($xs) ? strlen($xs) : count((array)$xs)) != 2)) {
+        if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 2)) {
             return $error_v();
         }
-        return $new_comment(($xs->{0}), $evaluate($env, ($xs->{1})));
+        return $new_comment($xs->array[0], $evaluate($env, $xs->array[1]));
     }
     return $error_v();
 });
@@ -919,7 +935,7 @@ $make_quote = (function ($x = NULL) use (&$form_builtin_use_systemName, &$new_li
 });
 $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$force_all_rec, &$function_symbol, &$jsArray_to_list, &$jsbool_equal_p, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v) {
     $args_pat = $force_all_rec($args_pat);
-    $args_pat_vars = ((object)[]);
+    $args_pat_vars = ((object)["array" => []]);
     $args_pat_is_dot = false;
     $args_pat_iter = $args_pat;
     while (!($null_p($args_pat_iter))) {
@@ -942,7 +958,7 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
         $args_pat_vars_val = $args_pat;
     }
 
-    $env_vars = ((object)[]);
+    $env_vars = ((object)["array" => []]);
     $env_foreach(
         $env,
         (function ($k = NULL, $v = NULL) use (&$__TS__ArrayPush, &$args_pat_vars, &$env_vars, &$jsbool_equal_p) {
@@ -950,8 +966,8 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
             {
                 $i = 0;
                 while (($i <
-                    (is_string($args_pat_vars) ? strlen($args_pat_vars) : count((array)$args_pat_vars)))) {
-                    if ($jsbool_equal_p(($args_pat_vars->{($i + 0)}), $k)) {
+                    (is_string($args_pat_vars) ? strlen($args_pat_vars) : count($args_pat_vars->array)))) {
+                    if ($jsbool_equal_p($args_pat_vars->array[($i + 0)], $k)) {
                         return;
                     }
                     $i = ($i + 1);
@@ -964,9 +980,9 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
     $new_args_pat = $args_pat_vars_val;
     
     {
-        $i = ((is_string($env_vars) ? strlen($env_vars) : count((array)$env_vars)) - 1);
+        $i = ((is_string($env_vars) ? strlen($env_vars) : count($env_vars->array)) - 1);
         while (($i >= 0)) {
-            $new_args_pat = $new_construction(($env_vars->{($i + 0)}), $new_args_pat);
+            $new_args_pat = $new_construction($env_vars->array[($i + 0)], $new_args_pat);
             $i = ($i - 1);
         }
     }
@@ -974,9 +990,9 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
     $new_args = $args_pat_vars_val;
     
     {
-        $i_1 = ((is_string($env_vars) ? strlen($env_vars) : count((array)$env_vars)) - 1);
+        $i_1 = ((is_string($env_vars) ? strlen($env_vars) : count($env_vars->array)) - 1);
         while (($i_1 >= 0)) {
-            $new_args = $new_construction($make_quote($must_env_get($env, ($env_vars->{($i_1 + 0)}))), $new_args);
+            $new_args = $new_construction($make_quote($must_env_get($env, $env_vars->array[($i_1 + 0)])), $new_args);
             $i_1 = ($i_1 - 1);
         }
     }
@@ -1092,208 +1108,212 @@ $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$co
 });
 $symbols_set_init = (function () {
     return ((object)[
-        "0" => "0",
-        "1" => "1",
-        "2" => "2",
-        "3" => "3",
-        "4" => "4",
-        "5" => "5",
-        "6" => "6",
-        "7" => "7",
-        "8" => "8",
-        "9" => "9",
-        "A" => "A",
-        "B" => "B",
-        "C" => "C",
-        "D" => "D",
-        "E" => "E",
-        "F" => "F",
-        "G" => "G",
-        "H" => "H",
-        "I" => "I",
-        "J" => "J",
-        "K" => "K",
-        "L" => "L",
-        "M" => "M",
-        "N" => "N",
-        "O" => "O",
-        "P" => "P",
-        "Q" => "Q",
-        "R" => "R",
-        "S" => "S",
-        "T" => "T",
-        "U" => "U",
-        "V" => "V",
-        "W" => "W",
-        "X" => "X",
-        "Y" => "Y",
-        "Z" => "Z",
-        "a" => "a",
-        "b" => "b",
-        "c" => "c",
-        "d" => "d",
-        "e" => "e",
-        "f" => "f",
-        "g" => "g",
-        "h" => "h",
-        "i" => "i",
-        "j" => "j",
-        "k" => "k",
-        "l" => "l",
-        "m" => "m",
-        "n" => "n",
-        "o" => "o",
-        "p" => "p",
-        "q" => "q",
-        "r" => "r",
-        "s" => "s",
-        "t" => "t",
-        "u" => "u",
-        "v" => "v",
-        "w" => "w",
-        "x" => "x",
-        "y" => "y",
-        "z" => "z",
-        "一類何物" => "㝉",
-        "之物" => "𫙦",
-        "其子" => "𦮪",
-        "出入改滅" => "𢒟",
-        "列序" => "𠜺",
-        "化滅" => "𠏁",
-        "參形" => "𠫰",
-        "吾自" => "𦣹",
-        "太始初核" => "𣝗",
-        "如若" => "𦱡",
-        "宇宙亡矣" => "𨹹",
-        "尾末" => "𡲵",
-        "序丁" => "𠆤",
-        "序丙" => "𠇮",
-        "序乙" => "㐈",
-        "序甲" => "𠇚",
-        "式形" => "佱",
-        "引用" => "㧈",
-        "應用" => "𤰆",
-        "效應" => "効",
-        "映表" => "𤅔",
-        "是非" => "欤",
-        "構物" => "𡒫",
-        "為符名連" => "‐",
-        "爻陰" => "侌",
-        "爻陽" => "𣆄",
-        "特定其物" => "亓",
-        "省略一物" => "畧",
-        "符名" => "謼",
-        "等同" => "弌",
-        "解算" => "筭",
-        "註疏" => "疎",
-        "詞素" => "𧥝",
-        "謬誤" => "䥘",
-        "連頸" => "丩",
-        "間空" => "𣣓",
-        "首始" => "𩠐"
+        "array" => [
+            "0" => "0",
+            "1" => "1",
+            "2" => "2",
+            "3" => "3",
+            "4" => "4",
+            "5" => "5",
+            "6" => "6",
+            "7" => "7",
+            "8" => "8",
+            "9" => "9",
+            "A" => "A",
+            "B" => "B",
+            "C" => "C",
+            "D" => "D",
+            "E" => "E",
+            "F" => "F",
+            "G" => "G",
+            "H" => "H",
+            "I" => "I",
+            "J" => "J",
+            "K" => "K",
+            "L" => "L",
+            "M" => "M",
+            "N" => "N",
+            "O" => "O",
+            "P" => "P",
+            "Q" => "Q",
+            "R" => "R",
+            "S" => "S",
+            "T" => "T",
+            "U" => "U",
+            "V" => "V",
+            "W" => "W",
+            "X" => "X",
+            "Y" => "Y",
+            "Z" => "Z",
+            "a" => "a",
+            "b" => "b",
+            "c" => "c",
+            "d" => "d",
+            "e" => "e",
+            "f" => "f",
+            "g" => "g",
+            "h" => "h",
+            "i" => "i",
+            "j" => "j",
+            "k" => "k",
+            "l" => "l",
+            "m" => "m",
+            "n" => "n",
+            "o" => "o",
+            "p" => "p",
+            "q" => "q",
+            "r" => "r",
+            "s" => "s",
+            "t" => "t",
+            "u" => "u",
+            "v" => "v",
+            "w" => "w",
+            "x" => "x",
+            "y" => "y",
+            "z" => "z",
+            "一類何物" => "㝉",
+            "之物" => "𫙦",
+            "其子" => "𦮪",
+            "出入改滅" => "𢒟",
+            "列序" => "𠜺",
+            "化滅" => "𠏁",
+            "參形" => "𠫰",
+            "吾自" => "𦣹",
+            "太始初核" => "𣝗",
+            "如若" => "𦱡",
+            "宇宙亡矣" => "𨹹",
+            "尾末" => "𡲵",
+            "序丁" => "𠆤",
+            "序丙" => "𠇮",
+            "序乙" => "㐈",
+            "序甲" => "𠇚",
+            "式形" => "佱",
+            "引用" => "㧈",
+            "應用" => "𤰆",
+            "效應" => "効",
+            "映表" => "𤅔",
+            "是非" => "欤",
+            "構物" => "𡒫",
+            "為符名連" => "‐",
+            "爻陰" => "侌",
+            "爻陽" => "𣆄",
+            "特定其物" => "亓",
+            "省略一物" => "畧",
+            "符名" => "謼",
+            "等同" => "弌",
+            "解算" => "筭",
+            "註疏" => "疎",
+            "詞素" => "𧥝",
+            "謬誤" => "䥘",
+            "連頸" => "丩",
+            "間空" => "𣣓",
+            "首始" => "𩠐"
+        ]
     ]);
 });
 $symbols_set_neg_init = (function () {
     return ((object)[
-        "0" => "0",
-        "1" => "1",
-        "2" => "2",
-        "3" => "3",
-        "4" => "4",
-        "5" => "5",
-        "6" => "6",
-        "7" => "7",
-        "8" => "8",
-        "9" => "9",
-        "A" => "A",
-        "B" => "B",
-        "C" => "C",
-        "D" => "D",
-        "E" => "E",
-        "F" => "F",
-        "G" => "G",
-        "H" => "H",
-        "I" => "I",
-        "J" => "J",
-        "K" => "K",
-        "L" => "L",
-        "M" => "M",
-        "N" => "N",
-        "O" => "O",
-        "P" => "P",
-        "Q" => "Q",
-        "R" => "R",
-        "S" => "S",
-        "T" => "T",
-        "U" => "U",
-        "V" => "V",
-        "W" => "W",
-        "X" => "X",
-        "Y" => "Y",
-        "Z" => "Z",
-        "a" => "a",
-        "b" => "b",
-        "c" => "c",
-        "d" => "d",
-        "e" => "e",
-        "f" => "f",
-        "g" => "g",
-        "h" => "h",
-        "i" => "i",
-        "j" => "j",
-        "k" => "k",
-        "l" => "l",
-        "m" => "m",
-        "n" => "n",
-        "o" => "o",
-        "p" => "p",
-        "q" => "q",
-        "r" => "r",
-        "s" => "s",
-        "t" => "t",
-        "u" => "u",
-        "v" => "v",
-        "w" => "w",
-        "x" => "x",
-        "y" => "y",
-        "z" => "z",
-        "㝉" => "一類何物",
-        "𫙦" => "之物",
-        "𦮪" => "其子",
-        "𢒟" => "出入改滅",
-        "𠜺" => "列序",
-        "𠏁" => "化滅",
-        "𠫰" => "參形",
-        "𦣹" => "吾自",
-        "𣝗" => "太始初核",
-        "𦱡" => "如若",
-        "𨹹" => "宇宙亡矣",
-        "𡲵" => "尾末",
-        "𠆤" => "序丁",
-        "𠇮" => "序丙",
-        "㐈" => "序乙",
-        "𠇚" => "序甲",
-        "佱" => "式形",
-        "㧈" => "引用",
-        "𤰆" => "應用",
-        "効" => "效應",
-        "𤅔" => "映表",
-        "欤" => "是非",
-        "𡒫" => "構物",
-        "‐" => "為符名連",
-        "侌" => "爻陰",
-        "𣆄" => "爻陽",
-        "亓" => "特定其物",
-        "畧" => "省略一物",
-        "謼" => "符名",
-        "弌" => "等同",
-        "筭" => "解算",
-        "疎" => "註疏",
-        "𧥝" => "詞素",
-        "䥘" => "謬誤",
-        "丩" => "連頸",
-        "𣣓" => "間空",
-        "𩠐" => "首始"
+        "array" => [
+            "0" => "0",
+            "1" => "1",
+            "2" => "2",
+            "3" => "3",
+            "4" => "4",
+            "5" => "5",
+            "6" => "6",
+            "7" => "7",
+            "8" => "8",
+            "9" => "9",
+            "A" => "A",
+            "B" => "B",
+            "C" => "C",
+            "D" => "D",
+            "E" => "E",
+            "F" => "F",
+            "G" => "G",
+            "H" => "H",
+            "I" => "I",
+            "J" => "J",
+            "K" => "K",
+            "L" => "L",
+            "M" => "M",
+            "N" => "N",
+            "O" => "O",
+            "P" => "P",
+            "Q" => "Q",
+            "R" => "R",
+            "S" => "S",
+            "T" => "T",
+            "U" => "U",
+            "V" => "V",
+            "W" => "W",
+            "X" => "X",
+            "Y" => "Y",
+            "Z" => "Z",
+            "a" => "a",
+            "b" => "b",
+            "c" => "c",
+            "d" => "d",
+            "e" => "e",
+            "f" => "f",
+            "g" => "g",
+            "h" => "h",
+            "i" => "i",
+            "j" => "j",
+            "k" => "k",
+            "l" => "l",
+            "m" => "m",
+            "n" => "n",
+            "o" => "o",
+            "p" => "p",
+            "q" => "q",
+            "r" => "r",
+            "s" => "s",
+            "t" => "t",
+            "u" => "u",
+            "v" => "v",
+            "w" => "w",
+            "x" => "x",
+            "y" => "y",
+            "z" => "z",
+            "㝉" => "一類何物",
+            "𫙦" => "之物",
+            "𦮪" => "其子",
+            "𢒟" => "出入改滅",
+            "𠜺" => "列序",
+            "𠏁" => "化滅",
+            "𠫰" => "參形",
+            "𦣹" => "吾自",
+            "𣝗" => "太始初核",
+            "𦱡" => "如若",
+            "𨹹" => "宇宙亡矣",
+            "𡲵" => "尾末",
+            "𠆤" => "序丁",
+            "𠇮" => "序丙",
+            "㐈" => "序乙",
+            "𠇚" => "序甲",
+            "佱" => "式形",
+            "㧈" => "引用",
+            "𤰆" => "應用",
+            "効" => "效應",
+            "𤅔" => "映表",
+            "欤" => "是非",
+            "𡒫" => "構物",
+            "‐" => "為符名連",
+            "侌" => "爻陰",
+            "𣆄" => "爻陽",
+            "亓" => "特定其物",
+            "畧" => "省略一物",
+            "謼" => "符名",
+            "弌" => "等同",
+            "筭" => "解算",
+            "疎" => "註疏",
+            "𧥝" => "詞素",
+            "䥘" => "謬誤",
+            "丩" => "連頸",
+            "𣣓" => "間空",
+            "𩠐" => "首始"
+        ]
     ]);
 });
 $symbols_set = (function () use (&$symbols_set, &$symbols_set_init) {
@@ -1323,31 +1343,31 @@ $delay_apply_t = 9;
 $comment_t = 11;
 $hole_t = 10;
 $can_new_symbol_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
-    return (($symbols_set_neg()->{(is_int($x) ? $x - 1 : $x)}) != NULL);
+    return ($symbols_set_neg()->array[(is_int($x) ? $x - 1 : $x)] != NULL);
 });
 $new_symbol_unicodechar = (function ($x = NULL) use (&$symbol_t) {
-    return ((object)[$symbol_t, $x]);
+    return ((object)["array" => [$symbol_t, $x]]);
 });
 $can_new_symbol_p = (function ($x = NULL) use (&$symbols_set) {
-    return (($symbols_set()->{(is_int($x) ? $x - 1 : $x)}) != NULL);
+    return ($symbols_set()->array[(is_int($x) ? $x - 1 : $x)] != NULL);
 });
 $new_symbol = (function ($x = NULL) use (&$new_symbol_unicodechar, &$symbols_set) {
-    return $new_symbol_unicodechar(($symbols_set()->{(is_int($x) ? $x - 1 : $x)}));
+    return $new_symbol_unicodechar($symbols_set()->array[(is_int($x) ? $x - 1 : $x)]);
 });
-$null_v = ((object)[$null_t]);
+$null_v = ((object)["array" => [$null_t]]);
 $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all_rec, &$force_uncomment_all, &$force_uncomment_all_rec, &$lang_copy_do) {
     $x = $force_uncomment_all($raw);
     $conslike = (function ($xx = NULL) use (&$comment_p, &$force_all_rec, &$force_uncomment_all_rec, &$lang_copy_do) {
-        $xx->{1} = $force_all_rec(($xx->{1}));
-        $xx->{2} = $force_all_rec(($xx->{2}));
-        if (($comment_p(($xx->{1})) || $comment_p(($xx->{2})))) {
+        $xx->array[1] = $force_all_rec($xx->array[1]);
+        $xx->array[2] = $force_all_rec($xx->array[2]);
+        if (($comment_p($xx->array[1]) || $comment_p($xx->array[2]))) {
             $ret = $lang_copy_do($xx);
-            $a = ($xx->{1});
-            $d = ($xx->{2});
+            $a = $xx->array[1];
+            $d = $xx->array[2];
             $a1 = $force_uncomment_all_rec($a);
             $d1 = $force_uncomment_all_rec($d);
-            $ret->{1} = $a1;
-            $ret->{2} = $d1;
+            $ret->array[1] = $a1;
+            $ret->array[2] = $d1;
             return $ret;
         } else {
             return $xx;
@@ -1458,7 +1478,7 @@ $comment_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_sy
 $false_v = $new_data($false_symbol, $new_list());
 $true_v = $new_data($true_symbol, $new_list());
 $list_to_jsArray = (function ($xs = NULL, $k_done = NULL, $k_tail = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$null_p) {
-    $ret = ((object)[]);
+    $ret = ((object)["array" => []]);
     while ($construction_p($xs)) {
         $__TS__ArrayPush($ret, $construction_head($xs));
         $xs = $construction_tail($xs);
@@ -1507,7 +1527,7 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
     }
 
 });
-$env_null_v = ((object)[]);
+$env_null_v = ((object)["array" => []]);
 $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_symbol, &$null_p, &$symbol_equal_p, &$symbol_p) {
     $x = $force_all($x);
     if (!($data_p($x))) {
@@ -1527,7 +1547,7 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$
     if (!($null_p($force_all($construction_tail($s))))) {
         return false;
     }
-    $ret = ((object)[]);
+    $ret = ((object)["array" => []]);
     $xs = $force_all($construction_head($s));
     while (!($null_p($xs))) {
         if (!($construction_p($xs))) {
@@ -1551,9 +1571,9 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$
         
         {
             $i = 0;
-            while (($i < (is_string($ret) ? strlen($ret) : count((array)$ret)))) {
-                if ($jsbool_equal_p(($ret->{(($i + 0) + 0)}), $k)) {
-                    $ret->{(($i + 1) + 0)} = $v;
+            while (($i < (is_string($ret) ? strlen($ret) : count($ret->array)))) {
+                if ($jsbool_equal_p($ret->array[(($i + 0) + 0)], $k)) {
+                    $ret->array[(($i + 1) + 0)] = $v;
                     $not_breaked = false;
                     break;
                 }
@@ -1570,187 +1590,203 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$
 });
 $make_builtin_p_func = (function ($p_sym = NULL, $p_jsfunc = NULL) use (&$builtin_func_apply, &$delay_just_p, &$false_v, &$force1, &$true_v) {
     return ((object)[
-        $p_sym,
-        1,
-        (function ($x = NULL) use (&$builtin_func_apply, &$delay_just_p, &$false_v, &$force1, &$p_jsfunc, &$p_sym, &$true_v) {
-            $x = $force1($x);
-            if ($delay_just_p($x)) {
-                return $builtin_func_apply($p_sym, ((object)[$x]));
-            }
-            if ($p_jsfunc($x)) {
-                return $true_v;
-            }
-            return $false_v;
-        })
+        "array" => [
+            $p_sym,
+            1,
+            (function ($x = NULL) use (&$builtin_func_apply, &$delay_just_p, &$false_v, &$force1, &$p_jsfunc, &$p_sym, &$true_v) {
+                $x = $force1($x);
+                if ($delay_just_p($x)) {
+                    return $builtin_func_apply($p_sym, ((object)["array" => [$x]]));
+                }
+                if ($p_jsfunc($x)) {
+                    return $true_v;
+                }
+                return $false_v;
+            })
+        ]
     ]);
 });
 $make_builtin_get_func = (function ($f_sym = NULL, $p_jsfunc = NULL, $f_jsfunc = NULL) use (&$builtin_func_apply, &$delay_just_p, &$force1) {
     return ((object)[
-        $f_sym,
-        1,
-        (function ($x = NULL, $error_v = NULL) use (&$builtin_func_apply, &$delay_just_p, &$f_jsfunc, &$f_sym, &$force1, &$p_jsfunc) {
-            $x = $force1($x);
-            if ($delay_just_p($x)) {
-                return $builtin_func_apply($f_sym, ((object)[$x]));
-            }
-            if ($p_jsfunc($x)) {
-                return $f_jsfunc($x);
-            }
-            return $error_v();
-        })
+        "array" => [
+            $f_sym,
+            1,
+            (function ($x = NULL, $error_v = NULL) use (&$builtin_func_apply, &$delay_just_p, &$f_jsfunc, &$f_sym, &$force1, &$p_jsfunc) {
+                $x = $force1($x);
+                if ($delay_just_p($x)) {
+                    return $builtin_func_apply($f_sym, ((object)["array" => [$x]]));
+                }
+                if ($p_jsfunc($x)) {
+                    return $f_jsfunc($x);
+                }
+                return $error_v();
+            })
+        ]
     ]);
 });
 $real_builtin_func_apply_s = ((object)[
-    $make_builtin_p_func($data_p_function_builtin_systemName, $data_p),
-    ((object)[$new_data_function_builtin_systemName, 2, $new_data]),
-    $make_builtin_get_func($data_name_function_builtin_systemName, $data_p, $data_name),
-    $make_builtin_get_func($data_list_function_builtin_systemName, $data_p, $data_list),
-    $make_builtin_p_func($error_p_function_builtin_systemName, $error_p),
-    ((object)[$new_error_function_builtin_systemName, 2, $new_error]),
-    $make_builtin_get_func($error_name_function_builtin_systemName, $error_p, $error_name),
-    $make_builtin_get_func($error_list_function_builtin_systemName, $error_p, $error_list),
-    $make_builtin_p_func($null_p_function_builtin_systemName, $null_p),
-    ((object)[$new_construction_function_builtin_systemName, 2, $new_construction]),
-    $make_builtin_p_func($construction_p_function_builtin_systemName, $construction_p),
-    $make_builtin_get_func(
-        $construction_head_function_builtin_systemName,
-        $construction_p,
-        $construction_head
-    ),
-    $make_builtin_get_func(
-        $construction_tail_function_builtin_systemName,
-        $construction_p,
-        $construction_tail
-    ),
-    ((object)[
-        $equal_p_function_builtin_systemName,
-        2,
-        (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$symbol_equal_p, &$symbol_p, &$true_v) {
-            if (($x == $y)) {
-                return $true_v;
-            }
-            $x = $force1($x);
-            $y = $force1($y);
-            if (($delay_just_p($x) || $delay_just_p($y))) {
-                return $builtin_func_apply($equal_p_function_builtin_systemName, ((object)[$x, $y]));
-            }
-            if (($x == $y)) {
-                return $true_v;
-            }
-            $H_if = (function ($b = NULL, $xx = NULL, $yy = NULL) use (&$builtin_func_apply, &$if_function_builtin_systemName) {
-                return $builtin_func_apply($if_function_builtin_systemName, ((object)[$b, $xx, $yy]));
-            });
-            $H_and = (function ($xx = NULL, $yy = NULL) use (&$H_if, &$false_v) {
-                return $H_if($xx, $yy, $false_v);
-            });
-            $LANG_ASSERT(!($delay_just_p($x)));
-            $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$H_and, &$builtin_func_apply, &$equal_p_function_builtin_systemName) {
-                return $H_and(
-                    $builtin_func_apply($equal_p_function_builtin_systemName, ((object)[$f1($xx), $f1($yy)])),
-                    $builtin_func_apply($equal_p_function_builtin_systemName, ((object)[$f2($xx), $f2($yy)]))
-                );
-            });
-            if ($null_p($x)) {
-                if (!($null_p($x))) {
-                    return $false_v;
-                }
-                return $true_v;
-            } elseif ($symbol_p($x)) {
-                if (!($symbol_p($y))) {
-                    return $false_v;
-                }
-                if ($symbol_equal_p($x, $y)) {
-                    return $true_v;
-                } else {
-                    return $false_v;
-                }
+    "array" => [
+        $make_builtin_p_func($data_p_function_builtin_systemName, $data_p),
+        ((object)["array" => [$new_data_function_builtin_systemName, 2, $new_data]]),
+        $make_builtin_get_func($data_name_function_builtin_systemName, $data_p, $data_name),
+        $make_builtin_get_func($data_list_function_builtin_systemName, $data_p, $data_list),
+        $make_builtin_p_func($error_p_function_builtin_systemName, $error_p),
+        ((object)["array" => [$new_error_function_builtin_systemName, 2, $new_error]]),
+        $make_builtin_get_func($error_name_function_builtin_systemName, $error_p, $error_name),
+        $make_builtin_get_func($error_list_function_builtin_systemName, $error_p, $error_list),
+        $make_builtin_p_func($null_p_function_builtin_systemName, $null_p),
+        ((object)["array" => [$new_construction_function_builtin_systemName, 2, $new_construction]]),
+        $make_builtin_p_func($construction_p_function_builtin_systemName, $construction_p),
+        $make_builtin_get_func(
+            $construction_head_function_builtin_systemName,
+            $construction_p,
+            $construction_head
+        ),
+        $make_builtin_get_func(
+            $construction_tail_function_builtin_systemName,
+            $construction_p,
+            $construction_tail
+        ),
+        ((object)[
+            "array" => [
+                $equal_p_function_builtin_systemName,
+                2,
+                (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$symbol_equal_p, &$symbol_p, &$true_v) {
+                    if (($x == $y)) {
+                        return $true_v;
+                    }
+                    $x = $force1($x);
+                    $y = $force1($y);
+                    if (($delay_just_p($x) || $delay_just_p($y))) {
+                        return $builtin_func_apply($equal_p_function_builtin_systemName, ((object)["array" => [$x, $y]]));
+                    }
+                    if (($x == $y)) {
+                        return $true_v;
+                    }
+                    $H_if = (function ($b = NULL, $xx = NULL, $yy = NULL) use (&$builtin_func_apply, &$if_function_builtin_systemName) {
+                        return $builtin_func_apply($if_function_builtin_systemName, ((object)["array" => [$b, $xx, $yy]]));
+                    });
+                    $H_and = (function ($xx = NULL, $yy = NULL) use (&$H_if, &$false_v) {
+                        return $H_if($xx, $yy, $false_v);
+                    });
+                    $LANG_ASSERT(!($delay_just_p($x)));
+                    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$H_and, &$builtin_func_apply, &$equal_p_function_builtin_systemName) {
+                        return $H_and(
+                            $builtin_func_apply($equal_p_function_builtin_systemName, ((object)["array" => [$f1($xx), $f1($yy)]])),
+                            $builtin_func_apply($equal_p_function_builtin_systemName, ((object)["array" => [$f2($xx), $f2($yy)]]))
+                        );
+                    });
+                    if ($null_p($x)) {
+                        if (!($null_p($x))) {
+                            return $false_v;
+                        }
+                        return $true_v;
+                    } elseif ($symbol_p($x)) {
+                        if (!($symbol_p($y))) {
+                            return $false_v;
+                        }
+                        if ($symbol_equal_p($x, $y)) {
+                            return $true_v;
+                        } else {
+                            return $false_v;
+                        }
 
-            } elseif ($data_p($x)) {
-                if (!($data_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $data_name, $data_list);
-            } elseif ($construction_p($x)) {
-                if (!($construction_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $construction_head, $construction_tail);
-            } elseif ($error_p($x)) {
-                if (!($error_p($y))) {
-                    return $false_v;
-                }
-                return $end_2($x, $y, $error_name, $error_list);
-            }
-            return $LANG_ERROR();
-        })
-    ]),
-    ((object)[
-        $apply_function_builtin_systemName,
-        2,
-        (function ($f = NULL, $xs = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$apply, &$construction_head, &$construction_p, &$construction_tail, &$force_all, &$null_p) {
-            $jslist = ((object)[]);
-            $iter = $force_all($xs);
-            while ($construction_p($iter)) {
-                $__TS__ArrayPush($jslist, $construction_head($iter));
-                $iter = $force_all($construction_tail($iter));
-            }
-            if (!($null_p($iter))) {
-                return $error_v();
-            }
-            return $apply($f, $jslist);
-        })
-    ]),
-    ((object)[
-        $evaluate_function_builtin_systemName,
-        2,
-        (function ($env = NULL, $x = NULL, $error_v = NULL) use (&$evaluate, &$val2env) {
-            $maybeenv = $val2env($env);
-            if (($maybeenv == false)) {
-                return $error_v();
-            }
-            return $evaluate($maybeenv, $x);
-        })
-    ]),
-    $make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
-    ((object)[
-        $list_chooseOne_function_builtin_systemName,
-        1,
-        (function ($xs = NULL, $error_v = NULL) use (&$builtin_func_apply, &$construction_head, &$construction_p, &$delay_just_p, &$force1, &$list_chooseOne_function_builtin_systemName) {
-            $xs = $force1($xs);
-            if ($delay_just_p($xs)) {
-                return $builtin_func_apply($list_chooseOne_function_builtin_systemName, ((object)[$xs]));
-            }
-            if (!($construction_p($xs))) {
-                return $error_v();
-            }
-            return $construction_head($xs);
-        })
-    ]),
-    ((object)[
-        $if_function_builtin_systemName,
-        3,
-        (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$builtin_func_apply, &$data_name, &$data_p, &$delay_just_p, &$false_symbol, &$force1, &$force_all, &$if_function_builtin_systemName, &$symbol_equal_p, &$symbol_p, &$true_symbol) {
-            $b = $force1($b);
-            if ($delay_just_p($b)) {
-                return $builtin_func_apply($if_function_builtin_systemName, ((object)[$b, $x, $y]));
-            }
-            if (!($data_p($b))) {
-                return $error_v();
-            }
-            $nam = $force_all($data_name($b));
-            if (!($symbol_p($nam))) {
-                return $error_v();
-            }
-            if ($symbol_equal_p($nam, $true_symbol)) {
-                return $x;
-            }
-            if ($symbol_equal_p($nam, $false_symbol)) {
-                return $y;
-            }
-            return $error_v();
-        })
-    ]),
-    ((object)[$comment_function_builtin_systemName, 2, $new_comment])
+                    } elseif ($data_p($x)) {
+                        if (!($data_p($y))) {
+                            return $false_v;
+                        }
+                        return $end_2($x, $y, $data_name, $data_list);
+                    } elseif ($construction_p($x)) {
+                        if (!($construction_p($y))) {
+                            return $false_v;
+                        }
+                        return $end_2($x, $y, $construction_head, $construction_tail);
+                    } elseif ($error_p($x)) {
+                        if (!($error_p($y))) {
+                            return $false_v;
+                        }
+                        return $end_2($x, $y, $error_name, $error_list);
+                    }
+                    return $LANG_ERROR();
+                })
+            ]
+        ]),
+        ((object)[
+            "array" => [
+                $apply_function_builtin_systemName,
+                2,
+                (function ($f = NULL, $xs = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$apply, &$construction_head, &$construction_p, &$construction_tail, &$force_all, &$null_p) {
+                    $jslist = ((object)["array" => []]);
+                    $iter = $force_all($xs);
+                    while ($construction_p($iter)) {
+                        $__TS__ArrayPush($jslist, $construction_head($iter));
+                        $iter = $force_all($construction_tail($iter));
+                    }
+                    if (!($null_p($iter))) {
+                        return $error_v();
+                    }
+                    return $apply($f, $jslist);
+                })
+            ]
+        ]),
+        ((object)[
+            "array" => [
+                $evaluate_function_builtin_systemName,
+                2,
+                (function ($env = NULL, $x = NULL, $error_v = NULL) use (&$evaluate, &$val2env) {
+                    $maybeenv = $val2env($env);
+                    if (($maybeenv == false)) {
+                        return $error_v();
+                    }
+                    return $evaluate($maybeenv, $x);
+                })
+            ]
+        ]),
+        $make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
+        ((object)[
+            "array" => [
+                $list_chooseOne_function_builtin_systemName,
+                1,
+                (function ($xs = NULL, $error_v = NULL) use (&$builtin_func_apply, &$construction_head, &$construction_p, &$delay_just_p, &$force1, &$list_chooseOne_function_builtin_systemName) {
+                    $xs = $force1($xs);
+                    if ($delay_just_p($xs)) {
+                        return $builtin_func_apply($list_chooseOne_function_builtin_systemName, ((object)["array" => [$xs]]));
+                    }
+                    if (!($construction_p($xs))) {
+                        return $error_v();
+                    }
+                    return $construction_head($xs);
+                })
+            ]
+        ]),
+        ((object)[
+            "array" => [
+                $if_function_builtin_systemName,
+                3,
+                (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$builtin_func_apply, &$data_name, &$data_p, &$delay_just_p, &$false_symbol, &$force1, &$force_all, &$if_function_builtin_systemName, &$symbol_equal_p, &$symbol_p, &$true_symbol) {
+                    $b = $force1($b);
+                    if ($delay_just_p($b)) {
+                        return $builtin_func_apply($if_function_builtin_systemName, ((object)["array" => [$b, $x, $y]]));
+                    }
+                    if (!($data_p($b))) {
+                        return $error_v();
+                    }
+                    $nam = $force_all($data_name($b));
+                    if (!($symbol_p($nam))) {
+                        return $error_v();
+                    }
+                    if ($symbol_equal_p($nam, $true_symbol)) {
+                        return $x;
+                    }
+                    if ($symbol_equal_p($nam, $false_symbol)) {
+                        return $y;
+                    }
+                    return $error_v();
+                })
+            ]
+        ]),
+        ((object)["array" => [$comment_function_builtin_systemName, 2, $new_comment]])
+    ]
 ]);
 $equal_p = NULL;
 $equal_p = $jsbool_equal_p;
@@ -1833,7 +1869,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     $readsysname_no_pack = NULL;
     $readsysname = NULL;
     $eof = (function () use (&$state, &$state_const) {
-        return ((is_string($state_const) ? strlen($state_const) : count((array)$state_const)) ==
+        return ((is_string($state_const) ? strlen($state_const) : count($state_const->array)) ==
             $state);
     });
     $get = (function () use (&$LANG_ASSERT, &$eof, &$state, &$state_const) {
@@ -1986,12 +2022,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         if ($a_space_p($chr)) {
             return false;
         }
-        $lUaTmP_16_LuAtMp = ((object)["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]);
-        $lUaTmP_17_LuAtMp = (is_string($lUaTmP_16_LuAtMp) ? strlen($lUaTmP_16_LuAtMp) : count((array)$lUaTmP_16_LuAtMp));
+        $lUaTmP_16_LuAtMp = ((object)[
+            "array" => ["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]
+        ]);
+        $lUaTmP_17_LuAtMp = (is_string($lUaTmP_16_LuAtMp) ? strlen($lUaTmP_16_LuAtMp) : count($lUaTmP_16_LuAtMp->array));
         $lUaTmP_18_LuAtMp = 1;
         for ($lUa_I_LuA = 1; $lUaTmP_18_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_17_LuAtMp : $lUa_I_LuA >= $lUaTmP_17_LuAtMp; $lUa_I_LuA += $lUaTmP_18_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $v = ($lUaTmP_16_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+            $v = $lUaTmP_16_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             if (($v == $chr)) {
                 return false;
             }
@@ -2001,22 +2039,24 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     $val = (function () use (&$data, &$parse_error, &$readapply, &$readcomment, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname, &$space) {
         $space();
         $fs = ((object)[
-            $readlist,
-            $readsysname,
-            $data,
-            $readerror,
-            $readeval,
-            $readfuncapply,
-            $readformbuiltin,
-            $readapply,
-            $readcomment
+            "array" => [
+                $readlist,
+                $readsysname,
+                $data,
+                $readerror,
+                $readeval,
+                $readfuncapply,
+                $readformbuiltin,
+                $readapply,
+                $readcomment
+            ]
         ]);
         $lUaTmP_19_LuAtMp = $fs;
-        $lUaTmP_20_LuAtMp = (is_string($lUaTmP_19_LuAtMp) ? strlen($lUaTmP_19_LuAtMp) : count((array)$lUaTmP_19_LuAtMp));
+        $lUaTmP_20_LuAtMp = (is_string($lUaTmP_19_LuAtMp) ? strlen($lUaTmP_19_LuAtMp) : count($lUaTmP_19_LuAtMp->array));
         $lUaTmP_21_LuAtMp = 1;
         for ($lUa_I_LuA = 1; $lUaTmP_21_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_20_LuAtMp : $lUa_I_LuA >= $lUaTmP_20_LuAtMp; $lUa_I_LuA += $lUaTmP_21_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $f = ($lUaTmP_19_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+            $f = $lUaTmP_19_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $f();
             if (($x_1 != false)) {
                 return $x_1;
@@ -2050,37 +2090,41 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         $fs = NULL;
         if ($strict) {
             $fs = ((object)[
-                $readlist,
-                $symbol,
-                $readsysname_no_pack_bracket,
-                $data,
-                $readerror,
-                $readeval,
-                $readfuncapply,
-                $readformbuiltin,
-                $readapply,
-                $readcomment
+                "array" => [
+                    $readlist,
+                    $symbol,
+                    $readsysname_no_pack_bracket,
+                    $data,
+                    $readerror,
+                    $readeval,
+                    $readfuncapply,
+                    $readformbuiltin,
+                    $readapply,
+                    $readcomment
+                ]
             ]);
         } else {
             $fs = ((object)[
-                $readlist,
-                $readsysname_no_pack,
-                $data,
-                $readerror,
-                $readeval,
-                $readfuncapply,
-                $readformbuiltin,
-                $readapply,
-                $readcomment
+                "array" => [
+                    $readlist,
+                    $readsysname_no_pack,
+                    $data,
+                    $readerror,
+                    $readeval,
+                    $readfuncapply,
+                    $readformbuiltin,
+                    $readapply,
+                    $readcomment
+                ]
             ]);
         }
 
         $lUaTmP_22_LuAtMp = $fs;
-        $lUaTmP_23_LuAtMp = (is_string($lUaTmP_22_LuAtMp) ? strlen($lUaTmP_22_LuAtMp) : count((array)$lUaTmP_22_LuAtMp));
+        $lUaTmP_23_LuAtMp = (is_string($lUaTmP_22_LuAtMp) ? strlen($lUaTmP_22_LuAtMp) : count($lUaTmP_22_LuAtMp->array));
         $lUaTmP_24_LuAtMp = 1;
         for ($lUa_I_LuA = 1; $lUaTmP_24_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_23_LuAtMp : $lUa_I_LuA >= $lUaTmP_23_LuAtMp; $lUa_I_LuA += $lUaTmP_24_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $f = ($lUaTmP_22_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+            $f = $lUaTmP_22_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $f();
             if (($x_1 != false)) {
                 return $x_1;
@@ -2115,7 +2159,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         } elseif (($head == "?")) {
             return $new_list($typeAnnotation_symbol, $function_symbol, $new_list($isOrNot_symbol, $vl));
         } elseif (($head == "/")) {
-            $ys = ((object)[$vl]);
+            $ys = ((object)["array" => [$vl]]);
             while (true) {
                 $y_3 = $readsysname_no_pack_inner_must(true);
                 $__TS__ArrayPush($ys, $y_3);
@@ -2328,91 +2372,91 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
         });
         $maybe_xs = $maybe_list_to_jsArray($x);
         if (((($maybe_xs != false) &&
-            ((is_string($maybe_xs) ? strlen($maybe_xs) : count((array)$maybe_xs)) == 3)) &&
-            $jsbool_no_force_equal_p(($maybe_xs->{0}), $typeAnnotation_symbol))) {
-            $maybe_lst_2 = $maybe_list_to_jsArray(($maybe_xs->{1}));
+            ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 3)) &&
+            $jsbool_no_force_equal_p($maybe_xs->array[0], $typeAnnotation_symbol))) {
+            $maybe_lst_2 = $maybe_list_to_jsArray($maybe_xs->array[1]);
             if (((($maybe_lst_2 != false) &&
-                ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count((array)$maybe_lst_2)) ==
+                ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 3)) &&
-                $jsbool_no_force_equal_p(($maybe_lst_2->{0}), $function_symbol))) {
-                $var_2_1 = ($maybe_lst_2->{1});
+                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $function_symbol))) {
+                $var_2_1 = $maybe_lst_2->array[1];
                 $maybe_lst_3 = $maybe_list_to_jsArray($var_2_1);
                 if (((($maybe_lst_3 != false) &&
-                    ((is_string($maybe_lst_3) ? strlen($maybe_lst_3) : count((array)$maybe_lst_3)) ==
+                    ((is_string($maybe_lst_3) ? strlen($maybe_lst_3) : count($maybe_lst_3->array)) ==
                     1)) &&
-                    $jsbool_no_force_equal_p(($maybe_lst_2->{2}), $something_symbol))) {
-                    return $inner_bracket((((string)$print_sys_name(($maybe_lst_3->{0}), true)) .
-                        ("." . ((string)$print_sys_name(($maybe_xs->{2}), true)))));
+                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_symbol))) {
+                    return $inner_bracket((((string)$print_sys_name($maybe_lst_3->array[0], true)) .
+                        ("." . ((string)$print_sys_name($maybe_xs->array[2], true)))));
                 } elseif ((($construction_p($var_2_1) &&
                     $jsbool_no_force_equal_p($construction_tail($var_2_1), $something_symbol)) &&
-                    $jsbool_no_force_equal_p(($maybe_lst_2->{2}), $something_symbol))) {
+                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_symbol))) {
                     return $inner_bracket((((string)$print_sys_name($construction_head($var_2_1), true)) .
-                        ("@" . ((string)$print_sys_name(($maybe_xs->{2}), true)))));
+                        ("@" . ((string)$print_sys_name($maybe_xs->array[2], true)))));
                 } elseif (($jsbool_no_force_equal_p($var_2_1, $something_symbol) &&
-                    $jsbool_no_force_equal_p(($maybe_xs->{2}), $theThing_symbol))) {
-                    return $inner_bracket((":>" . ((string)$print_sys_name(($maybe_lst_2->{2}), true))));
+                    $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol))) {
+                    return $inner_bracket((":>" . ((string)$print_sys_name($maybe_lst_2->array[2], true))));
                 }
             }
-            $maybe_lst_44 = $maybe_list_to_jsArray(($maybe_xs->{2}));
-            if (((($jsbool_no_force_equal_p(($maybe_xs->{1}), $function_symbol) &&
+            $maybe_lst_44 = $maybe_list_to_jsArray($maybe_xs->array[2]);
+            if (((($jsbool_no_force_equal_p($maybe_xs->array[1], $function_symbol) &&
                 ($maybe_lst_44 != false)) &&
-                ((is_string($maybe_lst_44) ? strlen($maybe_lst_44) : count((array)$maybe_lst_44)) ==
+                ((is_string($maybe_lst_44) ? strlen($maybe_lst_44) : count($maybe_lst_44->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p(($maybe_lst_44->{0}), $isOrNot_symbol))) {
-                return $inner_bracket((((string)$print_sys_name(($maybe_lst_44->{1}), true)) . "?"));
+                $jsbool_no_force_equal_p($maybe_lst_44->array[0], $isOrNot_symbol))) {
+                return $inner_bracket((((string)$print_sys_name($maybe_lst_44->array[1], true)) . "?"));
             }
             if ((((($maybe_lst_2 != false) &&
-                ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count((array)$maybe_lst_2)) ==
+                ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p(($maybe_xs->{2}), $theThing_symbol)) &&
-                $jsbool_no_force_equal_p(($maybe_lst_2->{0}), $form_symbol))) {
-                $maybe_lst_88 = $maybe_list_to_jsArray(($maybe_lst_2->{1}));
+                $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol)) &&
+                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $form_symbol))) {
+                $maybe_lst_88 = $maybe_list_to_jsArray($maybe_lst_2->array[1]);
                 if ((((($maybe_lst_88 != false) &&
-                    ((is_string($maybe_lst_88) ? strlen($maybe_lst_88) : count((array)$maybe_lst_88)) ==
+                    ((is_string($maybe_lst_88) ? strlen($maybe_lst_88) : count($maybe_lst_88->array)) ==
                     3)) &&
-                    $jsbool_no_force_equal_p(($maybe_lst_88->{0}), $function_symbol)) &&
-                    $jsbool_no_force_equal_p(($maybe_lst_88->{1}), $something_symbol))) {
-                    return $inner_bracket((":&>" . ((string)$print_sys_name(($maybe_lst_88->{2}), true))));
+                    $jsbool_no_force_equal_p($maybe_lst_88->array[0], $function_symbol)) &&
+                    $jsbool_no_force_equal_p($maybe_lst_88->array[1], $something_symbol))) {
+                    return $inner_bracket((":&>" . ((string)$print_sys_name($maybe_lst_88->array[2], true))));
                 }
             }
             $hd = NULL;
-            if ($jsbool_no_force_equal_p(($maybe_xs->{2}), $something_symbol)) {
+            if ($jsbool_no_force_equal_p($maybe_xs->array[2], $something_symbol)) {
                 $hd = "_";
-            } elseif ($jsbool_no_force_equal_p(($maybe_xs->{2}), $theThing_symbol)) {
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol)) {
                 $hd = "";
             } else {
-                $hd = $print_sys_name(($maybe_xs->{2}), true);
+                $hd = $print_sys_name($maybe_xs->array[2], true);
             }
 
-            return $inner_bracket((((string)$hd) . (":" . ((string)$print_sys_name(($maybe_xs->{1}), true)))));
+            return $inner_bracket((((string)$hd) . (":" . ((string)$print_sys_name($maybe_xs->array[1], true)))));
         } elseif ((($maybe_xs != false) &&
-            ((is_string($maybe_xs) ? strlen($maybe_xs) : count((array)$maybe_xs)) == 2))) {
-            if ($jsbool_no_force_equal_p(($maybe_xs->{0}), $form_symbol)) {
-                $maybe_lst_288 = $maybe_list_to_jsArray(($maybe_xs->{1}));
+            ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2))) {
+            if ($jsbool_no_force_equal_p($maybe_xs->array[0], $form_symbol)) {
+                $maybe_lst_288 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if (((($maybe_lst_288 != false) &&
-                    ((is_string($maybe_lst_288) ? strlen($maybe_lst_288) : count((array)$maybe_lst_288)) ==
+                    ((is_string($maybe_lst_288) ? strlen($maybe_lst_288) : count($maybe_lst_288->array)) ==
                     2)) &&
-                    $jsbool_no_force_equal_p(($maybe_lst_288->{0}), $system_symbol))) {
-                    return $inner_bracket(("&+" . ((string)$print_sys_name(($maybe_lst_288->{1}), true))));
+                    $jsbool_no_force_equal_p($maybe_lst_288->array[0], $system_symbol))) {
+                    return $inner_bracket(("&+" . ((string)$print_sys_name($maybe_lst_288->array[1], true))));
                 }
-                return $inner_bracket(("&" . ((string)$print_sys_name(($maybe_xs->{1}), true))));
-            } elseif ($jsbool_no_force_equal_p(($maybe_xs->{0}), $isOrNot_symbol)) {
-                return $inner_bracket((((string)$print_sys_name(($maybe_xs->{1}), true)) . "~"));
-            } elseif ($jsbool_no_force_equal_p(($maybe_xs->{0}), $system_symbol)) {
-                return $inner_bracket(("+" . ((string)$print_sys_name(($maybe_xs->{1}), true))));
-            } elseif ($jsbool_no_force_equal_p(($maybe_xs->{0}), $sub_symbol)) {
-                $maybe_lst_8934 = $maybe_list_to_jsArray(($maybe_xs->{1}));
+                return $inner_bracket(("&" . ((string)$print_sys_name($maybe_xs->array[1], true))));
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $isOrNot_symbol)) {
+                return $inner_bracket((((string)$print_sys_name($maybe_xs->array[1], true)) . "~"));
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $system_symbol)) {
+                return $inner_bracket(("+" . ((string)$print_sys_name($maybe_xs->array[1], true))));
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $sub_symbol)) {
+                $maybe_lst_8934 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if ((($maybe_lst_8934 != false) &&
-                    ((is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count((array)$maybe_lst_8934)) >
+                    ((is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count($maybe_lst_8934->array)) >
                     1))) {
-                    $tmp = $print_sys_name(($maybe_lst_8934->{0}), true);
+                    $tmp = $print_sys_name($maybe_lst_8934->array[0], true);
                     
                     {
                         $i = 1;
                         while (($i <
-                            (is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count((array)$maybe_lst_8934)))) {
+                            (is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count($maybe_lst_8934->array)))) {
                             $tmp = (((string)$tmp) .
-                                ("/" . ((string)$print_sys_name(($maybe_lst_8934->{($i + 0)}), true))));
+                                ("/" . ((string)$print_sys_name($maybe_lst_8934->array[($i + 0)], true))));
                             $i = ($i + 1);
                         }
                     }
@@ -2454,10 +2498,10 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
         $list = $data_list($x);
         $maybe_xs = $maybe_list_to_jsArray($list);
         if ((((($maybe_xs != false) &&
-            ((is_string($maybe_xs) ? strlen($maybe_xs) : count((array)$maybe_xs)) == 2)) &&
+            ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2)) &&
             $jsbool_no_force_equal_p($name, $name_symbol)) &&
-            $jsbool_no_force_equal_p(($maybe_xs->{0}), $system_symbol))) {
-            return $print_sys_name(($maybe_xs->{1}), false);
+            $jsbool_no_force_equal_p($maybe_xs->array[0], $system_symbol))) {
+            return $print_sys_name($maybe_xs->array[1], false);
         }
         return ("#" . ((string)$complex_print($new_construction($name, $list))));
     } elseif ($error_p($x)) {
@@ -2492,14 +2536,17 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
     }
     return $LANG_ERROR();
 });
-$machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$can_new_symbol_unicodechar_p, &$evaluate, &$hole_set_do, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_symbol_unicodechar, &$null_v, &$val2env) {
-    $result = $new_hole_do();
-    $stack = ((object)[
-        (function ($x = NULL) use (&$hole_set_do, &$result) {
-            return $hole_set_do($result, $x);
-        })
-    ]);
-    $state = 0;
+$machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$can_new_symbol_unicodechar_p, &$evaluate, &$new_construction, &$new_data, &$new_error, &$new_symbol_unicodechar, &$null_v, &$val2env) {
+    $state = NULL;
+    $is_eof = NULL;
+    $is_not_eof = NULL;
+    $is_eof = (function () use (&$state) {
+        return ($state == 0);
+    });
+    $is_not_eof = (function () use (&$is_eof) {
+        return !($is_eof());
+    });
+    $state = (is_string($rawstr) ? strlen($rawstr) : count($rawstr->array));
     $parse_error = (function ($x = NULL) {
         if (($x == NULL)) {
             $x = "";
@@ -2511,113 +2558,80 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
             return $parse_error();
         }
     });
-    $get_do = (function () use (&$parse_assert, &$rawstr, &$state) {
-        $parse_assert(((is_string($rawstr) ? strlen($rawstr) : count((array)$rawstr)) > $state));
+    $get_do = (function () use (&$is_not_eof, &$parse_assert, &$rawstr, &$state) {
+        $parse_assert($is_not_eof());
+        $state = ($state - 1);
         $lUaTmP_25_LuAtMp = ($state + 0);
-        $result_1 = substr($rawstr, $lUaTmP_25_LuAtMp, ($state + 1) - $lUaTmP_25_LuAtMp);
-        $state = ($state + 1);
-        return $result_1;
+        return substr($rawstr, $lUaTmP_25_LuAtMp, ($state + 1) - $lUaTmP_25_LuAtMp);
     });
-    $callbacks = ((object)[]);
-    while (((is_string($stack) ? strlen($stack) : count((array)$stack)) != 0)) {
-        $new_stack = ((object)[]);
+    $stack = ((object)["array" => []]);
+    $conslike = (function ($c = NULL) use (&$__TS__ArrayUnshift, &$parse_error, &$stack) {
+        $y = array_pop($stack->array);
+        $x = array_pop($stack->array);
+        if ((($x == NULL) || ($y == NULL))) {
+            return $parse_error();
+        } else {
+            return $__TS__ArrayUnshift($stack, $c($x, $y));
+        }
+
+    });
+    while ($is_not_eof()) {
+        $chr = $get_do();
+        if (($chr == "^")) {
+            $tmp = "";
+            while (true) {
+                $chr_1 = $get_do();
+                if (($chr_1 == "^")) {
+                    break;
+                }
+                $tmp = (((string)$chr_1) . ((string)$tmp));
+            }
+            if ($can_new_symbol_unicodechar_p($tmp)) {
+                $__TS__ArrayUnshift($stack, $new_symbol_unicodechar($tmp));
+            } else {
+                return $parse_error(("can_new_symbol_unicodechar_p(\"" . (((string)$tmp) . "\") == false")));
+            }
+
+        } elseif (($chr == ".")) {
+            $conslike($new_construction);
+        } elseif (($chr == "#")) {
+            $conslike($new_data);
+        } elseif (($chr == "!")) {
+            $conslike($new_error);
+        } elseif (($chr == "\$")) {
+            $conslike(
+                (function ($env = NULL, $val = NULL) use (&$evaluate, &$parse_error, &$val2env) {
+                    $r_env = $val2env($env);
+                    if (($r_env == false)) {
+                        return $parse_error();
+                    } else {
+                        return $evaluate($r_env, $val);
+                    }
+
+                })
+            );
+        } elseif (($chr == "_")) {
+            $__TS__ArrayUnshift($stack, $null_v);
+        } else {
+            return $parse_error();
+        }
+
+    }
+    $parse_assert($is_eof());
+    $parse_assert(((is_string($stack) ? strlen($stack) : count($stack->array)) == 1));
+    return $stack->array[0];
+});
+$machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
+    $stack = ((object)["array" => [$x]]);
+    $result = "";
+    while (((is_string($stack) ? strlen($stack) : count($stack->array)) != 0)) {
+        $new_stack = ((object)["array" => []]);
         $lUaTmP_26_LuAtMp = $stack;
-        $lUaTmP_27_LuAtMp = (is_string($lUaTmP_26_LuAtMp) ? strlen($lUaTmP_26_LuAtMp) : count((array)$lUaTmP_26_LuAtMp));
+        $lUaTmP_27_LuAtMp = (is_string($lUaTmP_26_LuAtMp) ? strlen($lUaTmP_26_LuAtMp) : count($lUaTmP_26_LuAtMp->array));
         $lUaTmP_28_LuAtMp = 1;
         for ($lUa_I_LuA = 1; $lUaTmP_28_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_27_LuAtMp : $lUa_I_LuA >= $lUaTmP_27_LuAtMp; $lUa_I_LuA += $lUaTmP_28_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $hol = ($lUaTmP_26_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
-            $chr = $get_do();
-            $conslike = (function ($c = NULL) use (&$__TS__ArrayPush, &$hol, &$hole_set_do, &$new_hole_do, &$new_stack) {
-                $hol1 = $new_hole_do();
-                $hol2 = $new_hole_do();
-                $__TS__ArrayPush($new_stack, (function ($x = NULL) use (&$hol1, &$hole_set_do) {
-                    return $hole_set_do($hol1, $x);
-                }));
-                $__TS__ArrayPush($new_stack, (function ($x = NULL) use (&$hol2, &$hole_set_do) {
-                    return $hole_set_do($hol2, $x);
-                }));
-                $hol($c($hol1, $hol2));
-            });
-            if (($chr == "^")) {
-                $tmp = "";
-                while (true) {
-                    $chr_1 = $get_do();
-                    if (($chr_1 == "^")) {
-                        break;
-                    }
-                    $tmp = (((string)$tmp) . ((string)$chr_1));
-                }
-                if ($can_new_symbol_unicodechar_p($tmp)) {
-                    $hol($new_symbol_unicodechar($tmp));
-                } else {
-                    return $parse_error(("can_new_symbol_unicodechar_p(\"" . (((string)$tmp) . "\") == false")));
-                }
-
-            } elseif (($chr == ".")) {
-                $conslike($new_construction);
-            } elseif (($chr == "#")) {
-                $conslike($new_data);
-            } elseif (($chr == "!")) {
-                $conslike($new_error);
-            } elseif (($chr == "\$")) {
-                $env = false;
-                $v_x = false;
-                $__TS__ArrayPush($new_stack, (function ($x = NULL) use (&$env) {
-                    $env = $x;
-                }));
-                $__TS__ArrayPush($new_stack, (function ($x = NULL) use (&$v_x) {
-                    $v_x = $x;
-                }));
-                $__TS__ArrayPush(
-                    $callbacks,
-                    (function () use (&$LANG_ERROR, &$env, &$evaluate, &$hol, &$parse_error, &$v_x, &$val2env) {
-                        if ((($env == false) || ($v_x == false))) {
-                            return $LANG_ERROR();
-                        } else {
-                            $r_env = $val2env($env);
-                            if (($r_env == false)) {
-                                return $parse_error();
-                            } else {
-                                $hol($evaluate($r_env, $v_x));
-                            }
-
-                        }
-
-                    })
-                );
-            } elseif (($chr == "_")) {
-                $hol($null_v);
-            } else {
-                return $parse_error();
-            }
-
-        }
-        $stack = $new_stack;
-    }
-    $parse_assert(($state == (is_string($rawstr) ? strlen($rawstr) : count((array)$rawstr))));
-    
-    {
-        $i = ((is_string($callbacks) ? strlen($callbacks) : count((array)$callbacks)) - 1);
-        while (($i >= 0)) {
-            ($callbacks->{($i + 0)})();
-            $i = ($i - 1);
-        }
-    }
-
-    return $result;
-});
-$machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
-    $stack = ((object)[$x]);
-    $result = "";
-    while (((is_string($stack) ? strlen($stack) : count((array)$stack)) != 0)) {
-        $new_stack = ((object)[]);
-        $lUaTmP_29_LuAtMp = $stack;
-        $lUaTmP_30_LuAtMp = (is_string($lUaTmP_29_LuAtMp) ? strlen($lUaTmP_29_LuAtMp) : count((array)$lUaTmP_29_LuAtMp));
-        $lUaTmP_31_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_31_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_30_LuAtMp : $lUa_I_LuA >= $lUaTmP_30_LuAtMp; $lUa_I_LuA += $lUaTmP_31_LuAtMp) {
-            $____ = $lUa_I_LuA;
-            $x_1 = ($lUaTmP_29_LuAtMp->{(is_int($____) ? $____ - 1 : $____)});
+            $x_1 = $lUaTmP_26_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $un_just_all($x_1);
             $conslike = (function ($xx = NULL, $s = NULL, $g1 = NULL, $g2 = NULL) use (&$__TS__ArrayPush, &$new_stack, &$result) {
                 $result = (((string)$result) . ((string)$s));
@@ -2650,20 +2664,20 @@ $machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush,
 });
 $trampoline_return = (function ($x = NULL) {
     return (function () use (&$x) {
-        return ((object)[false, $x]);
+        return ((object)["array" => [false, $x]]);
     });
 });
 $trampoline_delay = (function ($x = NULL) {
     return (function () use (&$x) {
-        return ((object)[true, $x()]);
+        return ((object)["array" => [true, $x()]]);
     });
 });
 $run_trampoline = (function ($x = NULL) {
     $i = $x();
-    while (($i->{0})) {
-        $i = ($i->{1})();
+    while ($i->array[0]) {
+        $i = $i->array[1]();
     }
-    return ($i->{1});
+    return $i->array[1];
 });
 $return_effect_systemName = $systemName_make($new_construction(
     $sub_symbol,
@@ -2791,7 +2805,12 @@ $run_monad_helper = (function (
                     (function ($val2 = NULL, $state2 = NULL) use (&$apply, &$next, &$op_handler, &$return_handler, &$run_monad_helper, &$trampoline_delay) {
                         return $trampoline_delay(
                             (function () use (&$apply, &$next, &$op_handler, &$return_handler, &$run_monad_helper, &$state2, &$val2) {
-                                return $run_monad_helper($return_handler, $op_handler, $apply($next, ((object)[$val2])), $state2);
+                                return $run_monad_helper(
+                                    $return_handler,
+                                    $op_handler,
+                                    $apply($next, ((object)["array" => [$val2]])),
+                                    $state2
+                                );
                             })
                         );
                     })
@@ -2817,67 +2836,67 @@ $run_monad_stackoverflow = (function ($return_handler = NULL, $op_handler = NULL
         }), $code, $state)
     );
 });
-$____exports = ((object)[]);
-$____exports->{"new_comment"} = $new_comment;
-$____exports->{"comment_p"} = $comment_p;
-$____exports->{"comment_comment"} = $comment_comment;
-$____exports->{"comment_x"} = $comment_x;
-$____exports->{"un_comment_all"} = $un_comment_all;
-$____exports->{"can_new_symbol_p"} = $can_new_symbol_p;
-$____exports->{"new_symbol"} = $new_symbol;
-$____exports->{"symbol_p"} = $symbol_p;
-$____exports->{"un_symbol"} = $un_symbol;
-$____exports->{"symbol_equal_p"} = $symbol_equal_p;
-$____exports->{"new_construction"} = $new_construction;
-$____exports->{"construction_p"} = $construction_p;
-$____exports->{"construction_head"} = $construction_head;
-$____exports->{"construction_tail"} = $construction_tail;
-$____exports->{"null_v"} = $null_v;
-$____exports->{"null_p"} = $null_p;
-$____exports->{"new_data"} = $new_data;
-$____exports->{"data_p"} = $data_p;
-$____exports->{"data_name"} = $data_name;
-$____exports->{"data_list"} = $data_list;
-$____exports->{"new_error"} = $new_error;
-$____exports->{"error_p"} = $error_p;
-$____exports->{"error_name"} = $error_name;
-$____exports->{"error_list"} = $error_list;
-$____exports->{"just_p"} = $just_p;
-$____exports->{"evaluate"} = $evaluate;
-$____exports->{"apply"} = $apply;
-$____exports->{"force_all_rec"} = $force_all_rec;
-$____exports->{"force_uncomment_all_rec"} = $force_uncomment_all_rec;
-$____exports->{"jsArray_to_list"} = $jsArray_to_list;
-$____exports->{"maybe_list_to_jsArray"} = $maybe_list_to_jsArray;
-$____exports->{"new_list"} = $new_list;
-$____exports->{"un_just_all"} = $un_just_all;
-$____exports->{"un_just_comment_all"} = $un_just_comment_all;
-$____exports->{"delay_p"} = $delay_p;
-$____exports->{"delay_just_p"} = $delay_just_p;
-$____exports->{"delay_env"} = $delay_env;
-$____exports->{"delay_x"} = $delay_x;
-$____exports->{"force_all"} = $force_all;
-$____exports->{"force1"} = $force1;
-$____exports->{"force_uncomment1"} = $force_uncomment1;
-$____exports->{"force_uncomment_all"} = $force_uncomment_all;
-$____exports->{"env_null_v"} = $env_null_v;
-$____exports->{"env_set"} = $env_set;
-$____exports->{"env_get"} = $env_get;
-$____exports->{"env2val"} = $env2val;
-$____exports->{"env_foreach"} = $env_foreach;
-$____exports->{"val2env"} = $val2env;
-$____exports->{"equal_p"} = $equal_p;
-$____exports->{"simple_print"} = $simple_print;
-$____exports->{"complex_parse"} = $complex_parse;
-$____exports->{"complex_print"} = $complex_print;
-$____exports->{"machinetext_parse"} = $machinetext_parse;
-$____exports->{"machinetext_print"} = $machinetext_print;
-$____exports->{"trampoline_return"} = $trampoline_return;
-$____exports->{"trampoline_delay"} = $trampoline_delay;
-$____exports->{"run_trampoline"} = $run_trampoline;
-$____exports->{"return_effect_systemName"} = $return_effect_systemName;
-$____exports->{"bind_effect_systemName"} = $bind_effect_systemName;
-$____exports->{"new_effect_bind"} = $new_effect_bind;
-$____exports->{"new_effect_return"} = $new_effect_return;
-$____exports->{"run_monad_trampoline"} = $run_monad_trampoline;
-$____exports->{"run_monad_stackoverflow"} = $run_monad_stackoverflow;
+$____exports = ((object)["array" => []]);
+$____exports->array["new_comment"] = $new_comment;
+$____exports->array["comment_p"] = $comment_p;
+$____exports->array["comment_comment"] = $comment_comment;
+$____exports->array["comment_x"] = $comment_x;
+$____exports->array["un_comment_all"] = $un_comment_all;
+$____exports->array["can_new_symbol_p"] = $can_new_symbol_p;
+$____exports->array["new_symbol"] = $new_symbol;
+$____exports->array["symbol_p"] = $symbol_p;
+$____exports->array["un_symbol"] = $un_symbol;
+$____exports->array["symbol_equal_p"] = $symbol_equal_p;
+$____exports->array["new_construction"] = $new_construction;
+$____exports->array["construction_p"] = $construction_p;
+$____exports->array["construction_head"] = $construction_head;
+$____exports->array["construction_tail"] = $construction_tail;
+$____exports->array["null_v"] = $null_v;
+$____exports->array["null_p"] = $null_p;
+$____exports->array["new_data"] = $new_data;
+$____exports->array["data_p"] = $data_p;
+$____exports->array["data_name"] = $data_name;
+$____exports->array["data_list"] = $data_list;
+$____exports->array["new_error"] = $new_error;
+$____exports->array["error_p"] = $error_p;
+$____exports->array["error_name"] = $error_name;
+$____exports->array["error_list"] = $error_list;
+$____exports->array["just_p"] = $just_p;
+$____exports->array["evaluate"] = $evaluate;
+$____exports->array["apply"] = $apply;
+$____exports->array["force_all_rec"] = $force_all_rec;
+$____exports->array["force_uncomment_all_rec"] = $force_uncomment_all_rec;
+$____exports->array["jsArray_to_list"] = $jsArray_to_list;
+$____exports->array["maybe_list_to_jsArray"] = $maybe_list_to_jsArray;
+$____exports->array["new_list"] = $new_list;
+$____exports->array["un_just_all"] = $un_just_all;
+$____exports->array["un_just_comment_all"] = $un_just_comment_all;
+$____exports->array["delay_p"] = $delay_p;
+$____exports->array["delay_just_p"] = $delay_just_p;
+$____exports->array["delay_env"] = $delay_env;
+$____exports->array["delay_x"] = $delay_x;
+$____exports->array["force_all"] = $force_all;
+$____exports->array["force1"] = $force1;
+$____exports->array["force_uncomment1"] = $force_uncomment1;
+$____exports->array["force_uncomment_all"] = $force_uncomment_all;
+$____exports->array["env_null_v"] = $env_null_v;
+$____exports->array["env_set"] = $env_set;
+$____exports->array["env_get"] = $env_get;
+$____exports->array["env2val"] = $env2val;
+$____exports->array["env_foreach"] = $env_foreach;
+$____exports->array["val2env"] = $val2env;
+$____exports->array["equal_p"] = $equal_p;
+$____exports->array["simple_print"] = $simple_print;
+$____exports->array["complex_parse"] = $complex_parse;
+$____exports->array["complex_print"] = $complex_print;
+$____exports->array["machinetext_parse"] = $machinetext_parse;
+$____exports->array["machinetext_print"] = $machinetext_print;
+$____exports->array["trampoline_return"] = $trampoline_return;
+$____exports->array["trampoline_delay"] = $trampoline_delay;
+$____exports->array["run_trampoline"] = $run_trampoline;
+$____exports->array["return_effect_systemName"] = $return_effect_systemName;
+$____exports->array["bind_effect_systemName"] = $bind_effect_systemName;
+$____exports->array["new_effect_bind"] = $new_effect_bind;
+$____exports->array["new_effect_return"] = $new_effect_return;
+$____exports->array["run_monad_trampoline"] = $run_monad_trampoline;
+$____exports->array["run_monad_stackoverflow"] = $run_monad_stackoverflow;
