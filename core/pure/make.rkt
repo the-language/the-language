@@ -117,7 +117,7 @@
             echo &>> lang.ts
         })
     })))))
-    (("all" ("ecmascript/lang.js"
+    (("all" ("ecmascript/lang.min.js"
              "lua/lang.lua"
              "lua/lang.min.lua"
              "ecmascript6/lang.js"
@@ -133,8 +133,8 @@
              "c/liblang.so"
              "c/liblang.a")
             (void))
-     ("ecmascript/exports.list" ("ecmascript/lang.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
-     ("ecmascript/lang.js" ("typescript/lang.ts") {
+     ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
+     ("ecmascript/lang.min.js" ("typescript/lang.ts") {
         in-dir "ecmascript" {
             npm install
             npx tsickle --typed
@@ -143,7 +143,7 @@
             |> id raw &>! langraw.js
             (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
-            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.js
+            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.js
             |> lines->string exports &>! exports.list
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
