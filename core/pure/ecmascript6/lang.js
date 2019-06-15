@@ -2057,43 +2057,37 @@ function machinetext_parse(rawstr) {
 }
 // 註疏系統WIP
 // 此print或許可以小幅度修改後用於equal,合理的print無限數據... （廣度優先）
-function machinetext_print_step2_do(x, ret_push_do, new_stack_push_do) {
-    x = un_just_all(x);
-    const conslike = function (xx, s, g1, g2) {
-        ret_push_do(s);
-        new_stack_push_do(g1(xx));
-        return new_stack_push_do(g2(xx));
-    };
-    if (symbol_p(x)) {
-        ret_push_do('^');
-        ret_push_do(un_symbol_unicodechar(x));
-        return ret_push_do('^');
-    }
-    else if (construction_p(x)) {
-        return conslike(x, '.', construction_head, construction_tail);
-    }
-    else if (null_p(x)) {
-        return ret_push_do('_');
-    }
-    else if (data_p(x)) {
-        return conslike(x, '#', data_name, data_list);
-    }
-    else if (error_p(x)) {
-        return conslike(x, '!', error_name, error_list);
-    }
-    else if (delay_p(x)) {
-        const y = delay2delay_evaluate(x);
-        return conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
-    }
-    else {
-        return LANG_ERROR();
-    }
-}
 function machinetext_print_step(stack) {
     const result = [];
     const new_stack = [];
     for (let x of stack) {
-        machinetext_print_step2_do(x, (v) => result.push(v), (v) => new_stack.push(v));
+        x = un_just_all(x);
+        const conslike = function (xx, s, g1, g2) {
+            result.push(s);
+            return new_stack.push(g1(xx), g2(xx));
+        };
+        if (symbol_p(x)) {
+            result.push('^', un_symbol_unicodechar(x), '^');
+        }
+        else if (construction_p(x)) {
+            conslike(x, '.', construction_head, construction_tail);
+        }
+        else if (null_p(x)) {
+            result.push('_');
+        }
+        else if (data_p(x)) {
+            conslike(x, '#', data_name, data_list);
+        }
+        else if (error_p(x)) {
+            conslike(x, '!', error_name, error_list);
+        }
+        else if (delay_p(x)) {
+            const y = delay2delay_evaluate(x);
+            conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x);
+        }
+        else {
+            return LANG_ERROR();
+        }
     }
     return [result, new_stack];
 }

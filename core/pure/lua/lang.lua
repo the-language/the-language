@@ -2244,37 +2244,31 @@ local function machinetext_parse(rawstr)
     end
     return result
 end
-local function machinetext_print_step2_do(x, ret_push_do, new_stack_push_do)
-    x = un_just_all(x)
-    local function conslike(xx, s, g1, g2)
-        ret_push_do(s)
-        new_stack_push_do(g1(xx))
-        return new_stack_push_do(g2(xx))
-    end
-    if symbol_p(x) then
-        ret_push_do("^")
-        ret_push_do(un_symbol_unicodechar(x))
-        return ret_push_do("^")
-    elseif construction_p(x) then
-        return conslike(x, ".", construction_head, construction_tail)
-    elseif null_p(x) then
-        return ret_push_do("_")
-    elseif data_p(x) then
-        return conslike(x, "#", data_name, data_list)
-    elseif error_p(x) then
-        return conslike(x, "!", error_name, error_list)
-    elseif delay_p(x) then
-        local y = delay2delay_evaluate(x)
-        return conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
-    else
-        return LANG_ERROR()
-    end
-end
 local function machinetext_print_step(stack)
     local result = {}
     local new_stack = {}
     for ____, x in ipairs(stack) do
-        machinetext_print_step2_do(x, function(v) return __TS__ArrayPush(result, v) end, function(v) return __TS__ArrayPush(new_stack, v) end)
+        x = un_just_all(x)
+        local function conslike(xx, s, g1, g2)
+            __TS__ArrayPush(result, s)
+            return __TS__ArrayPush(new_stack, g1(xx), g2(xx))
+        end
+        if symbol_p(x) then
+            __TS__ArrayPush(result, "^", un_symbol_unicodechar(x), "^")
+        elseif construction_p(x) then
+            conslike(x, ".", construction_head, construction_tail)
+        elseif null_p(x) then
+            __TS__ArrayPush(result, "_")
+        elseif data_p(x) then
+            conslike(x, "#", data_name, data_list)
+        elseif error_p(x) then
+            conslike(x, "!", error_name, error_list)
+        elseif delay_p(x) then
+            local y = delay2delay_evaluate(x)
+            conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
+        else
+            return LANG_ERROR()
+        end
     end
     return {
         result,

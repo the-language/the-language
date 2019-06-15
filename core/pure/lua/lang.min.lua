@@ -1,56 +1,56 @@
-local function d(e,...)
+local function t(e,...)
 local t=({...})
 for a,t in ipairs(t)do
 e[#e+1]=t
 end
 return#e
 end
-local q,S,u,qe,ye,Ie,Te,xe,me,Se,ee,he,b,F,Z,fe,I,ce,K,ze,y,we,le,L,s,a,o,i,v,h,E,m,T,A,D,g,M,C,G,rt,N,B,oe,ie,De,V,_e,Ee,je,j,J,re,de,Y,Q,pe,ve,P,X,l,O,W,dt,z,t,x,Re,ht,He,Ae,Ne,Oe,Le,Ge,Ke,We,Ye,Ve,Pe,te,ge,ke,ae,Be,at,U,ue,st,tt,_,e,H,se,p,n,k,r,Me,Ce,be,Fe,Xe,R,Ue,Je,Ze,w,et,it,nt,Qe,ne,ot,c,f
-function q()
+local g,S,u,fe,le,Z,b,W,Oe,Te,Ae,ke,pe,ee,he,ue,I,re,K,xe,v,ce,ye,D,s,a,o,n,y,r,_,m,E,A,R,q,C,M,V,rt,N,X,te,oe,Me,G,ve,ge,be,j,B,de,se,F,J,qe,je,P,Q,i,O,Y,Qe,z,d,x,Ke,ot,Ce,Le,Ue,We,Fe,Se,Ne,Ie,He,Re,De,ae,_e,Ee,ie,Pe,st,U,me,nt,it,T,e,H,ne,p,l,k,h,Ge,Ve,ze,Be,Ze,L,Ye,Je,Xe,w,at,tt,et,dt,we,ht,c,f
+function g()
 error("TheLanguage PANIC")
 end
 function S(e)
 if not e then
-return q()
+return g()
 end
 end
-function fe(t,e)
+function ue(e,t)
 return{
-F,
-t,
+ee,
 e,
+t,
 }
 end
 function I(e)
-return e[1]==F
+return e[1]==ee
 end
-function ce(e)
+function re(e)
 return e[2]
 end
 function K(e)
 return e[3]
 end
-function ze(e)
+function xe(e)
 while I(e)do
 e=K(e)
 end
 return e
 end
-function y(e)
-return e[1]==qe
+function v(e)
+return e[1]==fe
 end
-function we(e)
+function ce(e)
 return e[2]
 end
-function le(e)
-return u()[we(e)]
+function ye(e)
+return u()[ce(e)]
 end
-function L(e,t)
-if e==t then
+function D(t,e)
+if t==e then
 return true
 end
-if we(e)==we(t)then
-O(e,t)
+if ce(t)==ce(e)then
+O(t,e)
 return true
 else
 return false
@@ -58,131 +58,131 @@ end
 end
 function s(t,e)
 return{
-ye,
+le,
 t,
 e,
 }
 end
 function a(e)
-return e[1]==ye
+return e[1]==le
 end
 function o(e)
 return e[2]
 end
-function i(e)
+function n(e)
 return e[3]
 end
-function h(e)
-return e[1]==Ie
+function r(e)
+return e[1]==Z
 end
-function E(t,e)
+function _(e,t)
 return{
-Te,
-t,
+b,
 e,
+t,
 }
 end
 function m(e)
-return e[1]==Te
+return e[1]==b
 end
-function T(e)
+function E(e)
 return e[2]
 end
 function A(e)
 return e[3]
 end
-function D(e,t)
+function R(t,e)
 return{
-xe,
-e,
+W,
 t,
+e,
 }
 end
-function g(e)
-return e[1]==xe
-end
-function M(e)
-return e[2]
+function q(e)
+return e[1]==W
 end
 function C(e)
+return e[2]
+end
+function M(e)
 return e[3]
 end
-function G(e)
-return e[1]==me
+function V(e)
+return e[1]==Oe
 end
 function rt(e)
 return e[2]
 end
 function N(e,t)
 return{
-Se,
+Te,
 e,
 t,
 }
 end
-function B(e)
-return e[1]==Se
+function X(e)
+return e[1]==Te
+end
+function te(e)
+return e[2]
 end
 function oe(e)
-return e[2]
-end
-function ie(e)
 return e[3]
 end
-function De(e,t,a)
+function Me(a,t,e)
 return{
-he,
-e,
-t,
+ke,
 a,
+t,
+e,
 }
 end
-function V(e)
-return e[1]==he
+function G(e)
+return e[1]==ke
 end
-function _e(e)
+function ve(e)
 return e[2]
 end
-function Ee(e)
+function ge(e)
 return e[3]
 end
-function je(e)
+function be(e)
 return e[4]
 end
 function j(t,e)
 return{
-ee,
+Ae,
+t,
+e,
+}
+end
+function B(e)
+return e[1]==Ae
+end
+function de(e)
+return e[2]
+end
+function se(e)
+return e[3]
+end
+function F(t,e)
+return{
+pe,
 t,
 e,
 }
 end
 function J(e)
-return e[1]==ee
+return e[1]==pe
 end
-function re(e)
+function qe(e)
 return e[2]
 end
-function de(e)
-return e[3]
-end
-function Y(t,e)
-return{
-b,
-t,
-e,
-}
-end
-function Q(e)
-return e[1]==b
-end
-function pe(e)
-return e[2]
-end
-function ve(e)
+function je(e)
 return e[3]
 end
 function P(e)
-local e=r(e)
+local e=h(e)
 local function t(e)
 e[2]=P(e[2])
 e[3]=P(e[3])
@@ -190,7 +190,7 @@ return e
 end
 if m(e)then
 return t(e)
-elseif g(e)then
+elseif q(e)then
 return t(e)
 elseif a(e)then
 return t(e)
@@ -199,24 +199,24 @@ return t(e)
 end
 return e
 end
-function X()
-return{Z}
+function Q()
+return{he}
 end
-function l(e)
-return e[1]==Z
+function i(e)
+return e[1]==he
 end
 function O(e,t)
 if e==t then
 return
 end
-e[1]=me
+e[1]=Oe
 e[2]=t
 e[3]=false
 e[4]=false
 end
-function W(e,t)
-S(l(e))
-S(not l(t))
+function Y(e,t)
+S(i(e))
+S(not i(t))
 local e=e
 local t=t
 e[1]=t[1]
@@ -224,13 +224,13 @@ e[2]=t[2]
 e[3]=t[3]
 e[4]=t[4]
 end
-function dt(t)
-local e=X()
-W(e,t)
+function Qe(t)
+local e=Q()
+Y(e,t)
 return e
 end
-function _(a)
-local t=v
+function T(a)
+local t=y
 do
 local e=#a-1
 while e>=0 do
@@ -242,177 +242,177 @@ return t
 end
 function e(...)
 local e=({...})
-return _(e)
+return T(e)
 end
 function H(e)
-if not G(e)then
+if not V(e)then
 return e
 end
 local e=e
-local t={}
-while G(e)do
-d(t,e)
+local a={}
+while V(e)do
+t(a,e)
 e=rt(e)
 end
-for a,t in ipairs(t)do
+for a,t in ipairs(a)do
 O(t,e)
 end
 return e
 end
-function se(e)
-return B(e)or V(e)or J(e)or Q(e)
+function ne(e)
+return X(e)or G(e)or B(e)or J(e)
 end
 function p(e)
-return G(e)or se(e)
+return V(e)or ne(e)
 end
-function n(o,i,t,a)
-if i==nil then
-i={}
+function l(i,n,a,o)
+if n==nil then
+n={}
 end
-if t==nil then
-t={
+if a==nil then
+a={
 false,
 false,
 }
 end
-if a==nil then
-a={}
+if o==nil then
+o={}
 end
-local e,l,s
-function l(t)
+local e,h,s
+function h(t)
 O(e,t)
 do
 local e=0
-while e<#a do
-O(a[e+1],t)
+while e<#o do
+O(o[e+1],t)
 e=e+1
 end
 end
 return t
 end
-function s(t)
-l(t)
-if p(t)then
-d(a,e)
-return n(t,i,{
+function s(a)
+h(a)
+if p(a)then
+t(o,e)
+return l(a,n,{
 false,
 false,
-},a)
+},o)
 end
-return t
+return a
 end
 local r={}
-e=o
-local function o()
-t[2]=true
-return s(ht)
+e=i
+local function i()
+a[2]=true
+return s(ot)
 end
-local function u()
+local function d()
 local e={}
 for t in pairs(r)do
 e[t]=true
 end
-for t in pairs(i)do
+for t in pairs(n)do
 e[t]=true
 end
 return e
 end
 do
-local t=0
-while p(e)and t<32 do
-d(a,e)
+local a=0
+while p(e)and a<32 do
+t(o,e)
 e=k(e)
-t=t+1
+a=a+1
 end
 end
 while p(e)do
 local h=f(e)
-if i[h]==true then
-return o()
+if n[h]==true then
+return i()
 end
 if r[h]==true then
-t[1]=true
-if B(e)then
-return o()
-elseif J(e)then
-local a=re(e)
-local e=de(e)
-local h={
-He,
-Ae,
-Ne,
-Oe,
+a[1]=true
+if X(e)then
+return i()
+elseif B(e)then
+local t=de(e)
+local e=se(e)
+local n={
+Ce,
 Le,
-Ge,
-Ke,
+Ue,
 We,
-Ye,
-Ve,
-Pe,
+Fe,
+Se,
+Ne,
+Ie,
+He,
+Re,
+De,
 }
-local i=false
-for t,e in ipairs(h)do
-if c(e,a)then
-i=true
+local o=false
+for a,e in ipairs(n)do
+if c(e,t)then
+o=true
 break
 end
 end
-if i then
+if o then
 S(#e==1)
-S(t[2]==false)
-local e=n(e[1],u(),t)
-if t[2]then
-return s(j(a,{e}))
+S(a[2]==false)
+local e=l(e[1],d(),a)
+if a[2]then
+return s(j(t,{e}))
 else
-return q()
+return g()
 end
 end
-if c(a,te)then
-return o()
-elseif c(a,ge)then
-return o()
-elseif c(a,ke)then
-return o()
-elseif c(a,ae)then
+if c(t,ae)then
+return i()
+elseif c(t,_e)then
+return i()
+elseif c(t,Ee)then
+return i()
+elseif c(t,ie)then
 S(#e==3)
-S(t[2]==false)
-local a=n(e[1],u(),t)
-if t[2]then
-return s(j(ae,{
-a,
+S(a[2]==false)
+local t=l(e[1],d(),a)
+if a[2]then
+return s(j(ie,{
+t,
 e[2],
 e[3],
 }))
 else
-return q()
+return g()
 end
 end
-return q()
-elseif V(e)then
-return o()
-elseif Q(e)then
-return o()
+return g()
+elseif G(e)then
+return i()
+elseif J(e)then
+return i()
 end
-return q()
+return g()
 end
 r[h]=true
-d(a,e)
+t(o,e)
 e=k(e)
 end
-return l(e)
+return h(e)
 end
 function k(a)
 local e=H(a)
 local t
-S(not G(e))
-if B(e)then
-t=Ze(oe(e),ie(e),a)
-elseif V(e)then
-t=Qe(_e(e),Ee(e),je(e),a)
+S(not V(e))
+if X(e)then
+t=Xe(te(e),oe(e),a)
+elseif G(e)then
+t=dt(ve(e),ge(e),be(e),a)
+elseif B(e)then
+t=et(de(e),se(e),a)
 elseif J(e)then
-t=nt(re(e),de(e),a)
-elseif Q(e)then
-t=it(pe(e),ve(e),a)
+t=tt(qe(e),je(e),a)
 else
 t=e
 end
@@ -420,16 +420,16 @@ t=H(t)
 O(e,t)
 return t
 end
-function r(e)
-return n(e)
+function h(e)
+return l(e)
 end
-function Me(e)
+function Ge(e)
 while p(e)or I(e)do
-e=r(ze(e))
+e=h(xe(e))
 end
 return e
 end
-function be(a,o,i)
+function ze(a,o,i)
 local t={}
 do
 local e=0
@@ -457,7 +457,7 @@ t[(#a+0)+1]=o
 t[(#a+1)+1]=i
 return t
 end
-function Fe(t,a,o)
+function Be(t,a,o)
 do
 local e=0
 while e<#t do
@@ -469,7 +469,7 @@ end
 end
 return o
 end
-function Xe(t,a)
+function Ze(t,a)
 do
 local e=0
 while e<#t do
@@ -479,10 +479,10 @@ end
 e=e+2
 end
 end
-return q()
+return g()
 end
-function R(o)
-local a=v
+function L(o)
+local a=y
 do
 local t=0
 while t<#o do
@@ -490,9 +490,9 @@ a=s(e(o[(t+0)+1],o[(t+1)+1]),a)
 t=t+2
 end
 end
-return E(Re,e(a))
+return _(Ke,e(a))
 end
-function Ue(t,a)
+function Ye(t,a)
 do
 local e=0
 while e<#t do
@@ -501,197 +501,197 @@ e=e+2
 end
 end
 end
-function Je(e,l,u,r)
-local t={}
-local n={}
+function Je(e,u,l,d)
+local h={}
+local i={}
 local e=H(e)
 local s=true
 while true do
-if h(e)then
-return r(n,t)
+if r(e)then
+return d(i,h)
 elseif I(e)then
-d(n,ce(e))
+t(i,re(e))
 e=K(e)
 elseif a(e)then
-d(t,o(e))
-e=i(e)
+t(h,o(e))
+e=n(e)
 elseif p(e)then
 if s then
 s=false
 e=k(e)
 else
-return u()
-end
-else
 return l()
 end
+else
+return u()
 end
 end
-function Ze(s,t,l)
-local n=k(t)
-if p(n)then
+end
+function Xe(d,i,l)
+local s=k(i)
+if p(s)then
 return l
 end
-local function t()return D(z,e(U,e(ke,e(R(s),n))))end
-if a(n)then
-return Je(n,t,function()return l end,function(n,e)
-if#n~=0 then
+local function i()return R(z,e(U,e(Ee,e(L(d),s))))end
+if a(s)then
+return Je(s,i,function()return l end,function(s,e)
+if#s~=0 then
 error("WIP")
 end
-if c(e[1],ue)then
+if c(e[1],me)then
 if#e==1 then
-return t()
+return i()
 end
-local o=e[2]
-local a={}
+local i=e[2]
+local o={}
 do
-local t=2
-while t<#e do
-d(a,e[t+1])
-t=t+1
+local a=2
+while a<#e do
+t(o,e[a+1])
+a=a+1
 end
 end
-return De(s,o,a)
-elseif c(e[1],st)then
+return Me(d,i,o)
+elseif c(e[1],nt)then
 if#e==1 then
-return t()
+return i()
 end
-local n=r(N(s,e[2]))
-if not m(n)then
-return t()
+local h=h(N(d,e[2]))
+if not m(h)then
+return i()
 end
-local r=k(T(n))
-if p(r)then
+local s=k(E(h))
+if p(s)then
 return l
 end
-if not y(r)then
-return t()
+if not v(s)then
+return i()
 end
-if not L(r,x)then
-return t()
+if not D(s,x)then
+return i()
 end
-local n=k(A(n))
-if p(n)then
+local s=k(A(h))
+if p(s)then
 return l
 end
-if not a(n)then
-return t()
+if not a(s)then
+return i()
 end
-local o=o(n)
-local a=k(i(n))
+local h=o(s)
+local a=k(n(s))
 if p(a)then
 return l
 end
-if not h(a)then
-return t()
+if not r(a)then
+return i()
 end
-local a={R(s)}
+local o={L(d)}
 do
-local t=2
-while t<#e do
-d(a,e[t+1])
-t=t+1
+local a=2
+while a<#e do
+t(o,e[a+1])
+a=a+1
 end
 end
-return Y(o,a)
+return F(h,o)
 elseif c(e[1],U)then
 if#e==1 then
-return t()
+return i()
 end
-local o=e[2]
-local a={}
+local i=e[2]
+local o={}
 do
-local t=2
-while t<#e do
-d(a,N(s,e[t+1]))
-t=t+1
+local a=2
+while a<#e do
+t(o,N(d,e[a+1]))
+a=a+1
 end
 end
-return j(o,a)
+return j(i,o)
 else
-local o=N(s,e[1])
-local a={}
+local i=N(d,e[1])
+local o={}
 do
-local t=1
-while t<#e do
-d(a,N(s,e[t+1]))
-t=t+1
+local a=1
+while a<#e do
+t(o,N(d,e[a+1]))
+a=a+1
 end
 end
-return Y(o,a)
+return F(i,o)
 end
 end)
-elseif h(n)then
-return n
-elseif w(n)then
-return Fe(s,n,t())
-elseif g(n)then
-return t()
+elseif r(s)then
+return s
+elseif w(s)then
+return Be(d,s,i())
+elseif q(s)then
+return i()
 end
-return q()
+return g()
 end
 function w(e)
-return y(e)or m(e)
+return v(e)or m(e)
 end
-function it(d,l,u)
-local function n()return D(z,e(U,e(ge,e(d,_(l)))))end
-d=k(d)
-if p(d)then
+function tt(l,i,u)
+local function t()return R(z,e(U,e(_e,e(l,T(i)))))end
+l=k(l)
+if p(l)then
 return u
 end
-if not m(d)then
-return n()
+if not m(l)then
+return t()
 end
-local e=r(T(d))
-if not(y(e)and L(e,t))then
-return n()
+local e=h(E(l))
+if not(v(e)and D(e,d))then
+return t()
 end
-local t=r(A(d))
-if not a(t)then
-return n()
+local d=h(A(l))
+if not a(d)then
+return t()
 end
-local e=P(o(t))
-local t=r(i(t))
-if not(a(t)and h(r(i(t))))then
-return n()
+local e=P(o(d))
+local d=h(n(d))
+if not(a(d)and r(h(n(d))))then
+return t()
 end
-local d=o(t)
-local r=Ce
-local t=0
-while not h(e)do
+local l=o(d)
+local d=Ve
+local h=0
+while not r(e)do
 if w(e)then
-local a=v
+local t=y
 do
-local e=#l-1
-while e>=t do
-a=s(l[e+1],a)
+local e=#i-1
+while e>=h do
+t=s(i[e+1],t)
 e=e-1
 end
 end
-r=be(r,e,a)
-t=#l
-e=v
+d=ze(d,e,t)
+h=#i
+e=y
 elseif a(e)then
-if t<#l then
-local a=l[t+1]
-t=t+1
-r=be(r,o(e),a)
-e=i(e)
+if h<#i then
+local t=i[h+1]
+h=h+1
+d=ze(d,o(e),t)
+e=n(e)
 else
-return n()
+return t()
 end
 else
-return n()
+return t()
 end
 end
-if#l~=t then
-return n()
+if#i~=h then
+return t()
 end
-return N(r,d)
+return N(d,l)
 end
-function nt(i,t,o)
-local function a()return D(z,e(U,e(i,_(t))))end
-for n,e in ipairs(et)do
+function et(i,t,o)
+local function a()return R(z,e(U,e(i,T(t))))end
+for n,e in ipairs(at)do
 if c(i,e[1])then
 if#t~=e[2]then
 return a()
@@ -703,69 +703,69 @@ return e[3](t[1],t[2],a,o)
 elseif e[2]==3 then
 return e[3](t[1],t[2],t[3],a,o)
 end
-return q()
+return g()
 end
 end
 return a()
 end
-function Qe(i,o,t,a)
-local function a()return D(z,e(ue,e(R(i),o,_(t))))end
-if c(o,Be)then
+function dt(i,o,t,a)
+local function a()return R(z,e(me,e(L(i),o,T(t))))end
+if c(o,Pe)then
 if#t~=1 then
 return a()
 end
 return t[1]
-elseif c(o,at)then
+elseif c(o,st)then
 if#t~=2 then
 return a()
 end
-return ot(i,t[1],t[2],a)
-elseif c(o,tt)then
+return ht(i,t[1],t[2],a)
+elseif c(o,it)then
 if#t~=2 then
 return a()
 end
-return fe(t[1],N(i,t[2]))
+return ue(t[1],N(i,t[2]))
 end
 return a()
 end
-function ne(t)
-return e(ue,Be,t)
+function we(t)
+return e(me,Pe,t)
 end
-function ot(u,r,f,y)
-r=P(r)
+function ht(m,h,f,p)
+h=P(h)
 local l={}
-local m=false
-local n=r
-while not h(n)do
-if w(n)then
-d(l,n)
-m=true
-n=v
-elseif a(n)then
-d(l,o(n))
-n=i(n)
+local u=false
+local i=h
+while not r(i)do
+if w(i)then
+t(l,i)
+u=true
+i=y
+elseif a(i)then
+t(l,o(i))
+i=n(i)
 else
-return y()
+return p()
 end
 end
 local o
-if m then
-o=_(l)
+if u then
+o=T(l)
 else
-o=r
+o=h
 end
 local a={}
-Ue(u,function(t,e)
+Ye(m,function(o,e)
 do
 local e=0
 while e<#l do
-if c(l[e+1],t)then
+if c(l[e+1],o)then
 return
 end
 e=e+1
 end
 end
-d(a,t)
+t(a,o)
 end)
 local i=o
 do
@@ -775,26 +775,26 @@ i=s(a[e+1],i)
 e=e-1
 end
 end
-local o=o
+local t=o
 do
 local e=#a-1
 while e>=0 do
-o=s(ne(Xe(u,a[e+1])),o)
+t=s(we(Ze(m,a[e+1])),t)
 e=e-1
 end
 end
-return E(t,e(r,s(ne(E(t,e(i,f))),o)))
+return _(d,e(h,s(we(_(d,e(i,f))),t)))
 end
-function c(e,t)
-if e==t then
+function c(t,e)
+if t==e then
 return true
 end
-e=r(e)
-t=r(t)
-if e==t then
+t=h(t)
+e=h(e)
+if t==e then
 return true
 end
-local function n(t,e,o,a)
+local function i(t,e,o,a)
 if c(o(t),o(e))and c(a(t),a(e))then
 O(t,e)
 return true
@@ -802,76 +802,76 @@ else
 return false
 end
 end
-if h(e)then
-if not h(t)then
+if r(t)then
+if not r(e)then
 return false
 end
-O(e,v)
-O(t,v)
+O(t,y)
+O(e,y)
 return true
-elseif y(e)then
-if not y(t)then
+elseif v(t)then
+if not v(e)then
 return false
 end
-return L(e,t)
-elseif a(e)then
-if not a(t)then
+return D(t,e)
+elseif a(t)then
+if not a(e)then
 return false
 end
-return n(e,t,o,i)
-elseif g(e)then
-if not g(t)then
+return i(t,e,o,n)
+elseif q(t)then
+if not q(e)then
 return false
 end
-return n(e,t,M,C)
-elseif m(e)then
-if not m(t)then
+return i(t,e,C,M)
+elseif m(t)then
+if not m(e)then
 return false
 end
-return n(e,t,T,A)
+return i(t,e,E,A)
 end
-return q()
+return g()
 end
 function f(e)
 e=H(e)
 local t=""
-local n=""
-if h(e)then
+local i=""
+if r(e)then
 return"()"
 elseif a(e)then
 t="("
-n=""
+i=""
 while a(e)do
-t=tostring(t)..tostring(n)..tostring(f(o(e)))
-n=" "
-e=H(i(e))
+t=tostring(t)..tostring(i)..tostring(f(o(e)))
+i=" "
+e=H(n(e))
 end
-if h(e)then
+if r(e)then
 t=tostring(t)..")"
 else
 t=tostring(t).." . "..tostring(f(e))..")"
 end
 return t
 elseif m(e)then
-return"#"..tostring(f(s(T(e),A(e))))
-elseif g(e)then
-return"!"..tostring(f(s(M(e),C(e))))
-elseif y(e)then
-return le(e)
+return"#"..tostring(f(s(E(e),A(e))))
+elseif q(e)then
+return"!"..tostring(f(s(C(e),M(e))))
+elseif v(e)then
+return ye(e)
 elseif I(e)then
-return";("..tostring(f(ce(e))).." "..tostring(f(K(e)))..")"
+return";("..tostring(f(re(e))).." "..tostring(f(K(e)))..")"
+elseif X(e)then
+return"$("..tostring(f(L(te(e)))).." "..tostring(f(oe(e)))..")"
 elseif B(e)then
-return"$("..tostring(f(R(oe(e)))).." "..tostring(f(ie(e)))..")"
+return"%("..tostring(f(de(e))).." "..tostring(f(T(se(e))))..")"
+elseif G(e)then
+return"@("..tostring(f(L(ve(e)))).." "..tostring(f(ge(e))).." "..tostring(f(T(be(e))))..")"
 elseif J(e)then
-return"%("..tostring(f(re(e))).." "..tostring(f(_(de(e))))..")"
-elseif V(e)then
-return"@("..tostring(f(R(_e(e)))).." "..tostring(f(Ee(e))).." "..tostring(f(_(je(e))))..")"
-elseif Q(e)then
-return"^("..tostring(f(pe(e))).." "..tostring(f(_(ve(e))))..")"
+return"^("..tostring(f(qe(e))).." "..tostring(f(T(je(e))))..")"
 end
-return q()
+return g()
 end
-local function n()
+local function w()
 return{
 ["0"]="0",
 ["1"]="1",
@@ -974,7 +974,7 @@ z="z",
 ["首始"]="𩠐",
 }
 end
-local function w()
+local function i()
 return{
 ["0"]="0",
 ["1"]="1",
@@ -1078,54 +1078,54 @@ z="z",
 }
 end
 local function l()
-local e=n()
+local e=w()
 function l()return e end
 return e
 end
 function u()
-local e=w()
+local e=i()
 function u()return e end
 return e
 end
-qe=0
-ye=1
-Ie=2
-Te=3
-xe=4
-me=5
-Se=6
-ee=7
-he=8
-b=9
-F=11
-Z=10
-local function pt(e)
+fe=0
+le=1
+Z=2
+b=3
+W=4
+Oe=5
+Te=6
+Ae=7
+ke=8
+pe=9
+ee=11
+he=10
+local function dt(e)
 return u()[e]~=nil
 end
-local function it(e)
+local function Je(e)
 return{
-qe,
+fe,
 e,
 }
 end
-local function ot(e)
+local function Xe(e)
 return l()[e]~=nil
 end
-local function n(e)
-return it(l()[e])
+local function i(e)
+return Je(l()[e])
 end
-v={Ie}
-local function Ie(e)
-local t=Me(e)
+y={Z}
+local function Oe(e)
+local t=Ge(e)
 local function o(e)
 e[2]=P(e[2])
 e[3]=P(e[3])
 if I(e[2])or I(e[3])then
-local t=dt(e)
+local t=Qe(e)
 local a=e[2]
 local e=e[3]
-local a=Ie(a)
-local e=Ie(e)
+local a=Oe(a)
+local e=Oe(e)
 t[2]=a
 t[3]=e
 return t
@@ -1135,188 +1135,188 @@ end
 end
 if m(t)then
 return o(t)
-elseif g(t)then
+elseif q(t)then
 return o(t)
 elseif a(t)then
 return o(t)
 end
 return t
 end
-z=n("太始初核")
-local qe=n("符名")
-t=n("化滅")
-x=n("式形")
-local rt=n("等同")
-local ct=n("解算")
-local F=n("特定其物")
-local w=n("省略一物")
-Re=n("映表")
-local dt=n("如若")
-local u=n("一類何物")
-local ee=n("是非")
-local Te=n("其子")
-local nt=n("爻陽")
-local Ze=n("爻陰")
-local ft=n("引用")
-local wt=n("應用")
-local mt=n("間空")
-local he=n("連頸")
-local ye=n("構物")
-local me=n("謬誤")
-local lt=n("詞素")
-local xe=n("列序")
-local ut=n("首始")
-local yt=n("尾末")
-local Je=n("之物")
-local l=n("宇宙亡矣")
-local Qe=n("效應")
-local Xe=n("註疏")
-ht=D(z,e(l,w))
+z=i("太始初核")
+local pe=i("符名")
+d=i("化滅")
+x=i("式形")
+local yt=i("等同")
+local ft=i("解算")
+local W=i("特定其物")
+local w=i("省略一物")
+Ke=i("映表")
+local wt=i("如若")
+local u=i("一類何物")
+local ee=i("是非")
+local ke=i("其子")
+local ht=i("爻陽")
+local rt=i("爻陰")
+local mt=i("引用")
+local ct=i("應用")
+local ut=i("間空")
+local le=i("連頸")
+local he=i("構物")
+local fe=i("謬誤")
+local lt=i("詞素")
+local Ae=i("列序")
+local et=i("首始")
+local vt=i("尾末")
+local tt=i("之物")
+local l=i("宇宙亡矣")
+local Qe=i("效應")
+local Ze=i("註疏")
+ot=R(z,e(l,w))
 local function b(e)
-return E(qe,s(z,s(e,v)))
+return _(pe,s(z,s(e,y)))
 end
-local function Se(a)
-return b(e(u,e(t,w,a),F))
+local function Te(t)
+return b(e(u,e(d,w,t),W))
 end
-local function l(a,o)
-return b(e(u,e(t,e(a),w),o))
+local function l(t,a)
+return b(e(u,e(d,e(t),w),a))
 end
-local function Z(a)
-return b(e(u,t,e(ee,e(u,a,w))))
+local function Z(t)
+return b(e(u,d,e(ee,e(u,t,w))))
 end
-local gt=Se(ye)
-He=l(ye,qe)
-Ae=l(ye,xe)
-Ne=Z(ye)
-local bt=Se(me)
-Oe=l(me,qe)
-Le=l(me,xe)
-Ge=Z(me)
-local vt=Se(he)
-Ke=Z(he)
-We=l(he,ut)
-Ye=l(he,yt)
-Ve=Z(lt)
-Pe=Z(mt)
-te=b(e(u,t,e(ee,rt)))
-ge=b(e(u,e(t,s(t,w),w),wt))
-ke=b(e(u,t,ct))
-local ht=l(xe,e(u,Je,w))
-ae=b(e(u,t,dt))
-Be=b(e(u,x,ft))
-at=b(e(u,e(x,e(t,w,t)),F))
-U=b(e(x,e(z,t)))
-ue=b(e(x,e(z,x)))
-st=b(e(x,x))
-local Be=b(e(u,t,Xe))
-tt=b(e(u,x,Xe))
-local l=E(Ze,e())
-local me=E(nt,e())
-local function xe(e,n,s)
-local t={}
+local pt=Te(he)
+Ce=l(he,pe)
+Le=l(he,Ae)
+Ue=Z(he)
+local ot=Te(fe)
+We=l(fe,pe)
+Fe=l(fe,Ae)
+Se=Z(fe)
+local bt=Te(le)
+Ne=Z(le)
+Ie=l(le,et)
+He=l(le,vt)
+Re=Z(lt)
+De=Z(ut)
+ae=b(e(u,d,e(ee,yt)))
+_e=b(e(u,e(d,s(d,w),w),ct))
+Ee=b(e(u,d,ft))
+local et=l(Ae,e(u,tt,w))
+ie=b(e(u,d,wt))
+Pe=b(e(u,x,mt))
+st=b(e(u,e(x,e(d,w,d)),W))
+U=b(e(x,e(z,d)))
+me=b(e(x,e(z,x)))
+nt=b(e(x,x))
+local st=b(e(u,d,Ze))
+it=b(e(u,x,Ze))
+local l=_(rt,e())
+local he=_(ht,e())
+local function Te(e,h,s)
+local i={}
 while a(e)do
-d(t,o(e))
-e=i(e)
+t(i,o(e))
+e=n(e)
 end
-if h(e)then
-return n(t)
+if r(e)then
+return h(i)
 end
-return s(t,e)
+return s(i,e)
 end
 local function U(e)
-return xe(e,function(e)return e end,function(e,e)return false end)
+return Te(e,function(e)return e end,function(e,e)return false end)
 end
-local function at(e)
-while G(e)or I(e)do
-e=H(ze(e))
+local function nt(e)
+while V(e)or I(e)do
+e=H(xe(e))
 end
 return e
 end
-local function Se(e)
-if B(e)then
+local function Ae(e)
+if X(e)then
 return e
-elseif V(e)then
+elseif G(e)then
+error("WIP")
+elseif B(e)then
 error("WIP")
 elseif J(e)then
 error("WIP")
-elseif Q(e)then
-error("WIP")
 end
-return q()
+return g()
 end
-local function tt(e)
-return oe(Se(e))
+local function it(e)
+return te(Ae(e))
 end
-local function Xe(e)
-return ie(Se(e))
+local function Ze(e)
+return oe(Ae(e))
 end
-local function st(e)
+local function Pe(e)
 if I(e)then
 return K(e)
 else
 return k(e)
 end
 end
-Ce={}
-local function ye(t)
-t=r(t)
-if not m(t)then
+Ve={}
+local function fe(i)
+i=h(i)
+if not m(i)then
 return false
 end
-local e=r(T(t))
-if not y(e)then
+local e=h(E(i))
+if not v(e)then
 return false
 end
-if not L(e,Re)then
+if not D(e,Ke)then
 return false
 end
-e=r(A(t))
+e=h(A(i))
 if not a(e)then
 return false
 end
-if not h(r(i(e)))then
+if not r(h(n(e)))then
 return false
 end
-local t={}
-local n=r(o(e))
-while not h(n)do
-if not a(n)then
+local i={}
+local s=h(o(e))
+while not r(s)do
+if not a(s)then
 return false
 end
-local e=r(o(n))
-n=r(i(n))
+local e=h(o(s))
+s=h(n(s))
 if not a(e)then
 return false
 end
-local n=o(e)
-e=r(i(e))
+local s=o(e)
+e=h(n(e))
 if not a(e)then
 return false
 end
-local a=o(e)
-if not h(r(i(e)))then
+local o=o(e)
+if not r(h(n(e)))then
 return false
 end
-local o=true
+local a=true
 do
 local e=0
-while e<#t do
-if c(t[(e+0)+1],n)then
-t[(e+1)+1]=a
-o=false
+while e<#i do
+if c(i[(e+0)+1],s)then
+i[(e+1)+1]=o
+a=false
 break
 end
 e=e+2
 end
 end
-if o then
-d(t,n)
-d(t,a)
+if a then
+t(i,s)
+t(i,o)
 end
 end
-return t
+return i
 end
-local function ue(t,a)
+local function me(t,a)
 return{
 t,
 1,
@@ -1326,103 +1326,103 @@ if p(e)then
 return j(t,{e})
 end
 if a(e)then
-return me
+return he
 end
 return l
 end,
 }
 end
-local function Z(t,o,a)
+local function Z(t,a,i)
 return{
 t,
 1,
-function(e,i)
+function(e,o)
 e=k(e)
 if p(e)then
 return j(t,{e})
 end
-if o(e)then
-return a(e)
+if a(e)then
+return i(e)
 end
-return i()
+return o()
 end,
 }
 end
-et={
-ue(Ne,m),
+at={
+me(Ue,m),
 {
-gt,
+pt,
 2,
-E,
+_,
 },
-Z(He,m,T),
-Z(Ae,m,A),
-ue(Ge,g),
+Z(Ce,m,E),
+Z(Le,m,A),
+me(Se,q),
+{
+ot,
+2,
+R,
+},
+Z(We,q,C),
+Z(Fe,q,M),
+me(De,r),
 {
 bt,
 2,
-D,
-},
-Z(Oe,g,M),
-Z(Le,g,C),
-ue(Pe,h),
-{
-vt,
-2,
 s,
 },
-ue(Ke,a),
-Z(We,a,o),
-Z(Ye,a,i),
+me(Ne,a),
+Z(Ie,a,o),
+Z(He,a,n),
 {
-te,
+ae,
 2,
-function(e,t,n)
+function(e,t,i)
 if e==t then
-return me
+return he
 end
 e=k(e)
 t=k(t)
 if p(e)or p(t)then
-return j(te,{
+return j(ae,{
 e,
 t,
 })
 end
 if e==t then
-return me
+return he
 end
-local function n(e,t,a)
-return j(ae,{
-e,
+local function i(t,a,e)
+return j(ie,{
 t,
 a,
+e,
 })
 end
 local function s(t,e)
-return n(t,e,l)
+return i(t,e,l)
 end
 S(not p(e))
-local function n(a,t,e,o)
-return s(j(te,{
-e(a),
-e(t),
-}),j(te,{
-o(a),
+local function i(e,t,o,a)
+return s(j(ae,{
+o(e),
 o(t),
+}),j(ae,{
+a(e),
+a(t),
 }))
 end
-if h(e)then
-if not h(e)then
+if r(e)then
+if not r(e)then
 return l
 end
-return me
-elseif y(e)then
-if not y(t)then
+return he
+elseif v(e)then
+if not v(t)then
 return l
 end
-if L(e,t)then
-return me
+if D(e,t)then
+return he
 else
 return l
 end
@@ -1430,56 +1430,56 @@ elseif m(e)then
 if not m(t)then
 return l
 end
-return n(e,t,T,A)
+return i(e,t,E,A)
 elseif a(e)then
 if not a(t)then
 return l
 end
-return n(e,t,o,i)
-elseif g(e)then
-if not g(t)then
+return i(e,t,o,n)
+elseif q(e)then
+if not q(t)then
 return l
 end
-return n(e,t,M,C)
+return i(e,t,C,M)
 end
-return q()
+return g()
 end,
 },
 {
-ge,
+_e,
 2,
-function(s,e,n)
-local t={}
-local e=r(e)
+function(d,e,s)
+local i={}
+local e=h(e)
 while a(e)do
-d(t,o(e))
-e=r(i(e))
+t(i,o(e))
+e=h(n(e))
 end
-if not h(e)then
-return n()
+if not r(e)then
+return s()
 end
-return Y(s,t)
+return F(d,i)
 end,
 },
 {
-ke,
+Ee,
 2,
 function(e,a,t)
-local e=ye(e)
+local e=fe(e)
 if e==false then
 return t()
 end
 return N(e,a)
 end,
 },
-ue(Ve,y),
+me(Re,v),
 {
-ht,
+et,
 1,
 function(e,t)
 e=k(e)
 if p(e)then
-return j(ht,{e})
+return j(et,{e})
 end
 if not a(e)then
 return t()
@@ -1488,41 +1488,41 @@ return o(e)
 end,
 },
 {
-ae,
+ie,
 3,
-function(e,a,o,t)
+function(e,o,a,t)
 e=k(e)
 if p(e)then
-return j(ae,{
+return j(ie,{
 e,
-a,
 o,
+a,
 })
 end
 if not m(e)then
 return t()
 end
-local e=r(T(e))
-if not y(e)then
+local e=h(E(e))
+if not v(e)then
 return t()
 end
-if L(e,nt)then
-return a
-end
-if L(e,Ze)then
+if D(e,ht)then
 return o
+end
+if D(e,rt)then
+return a
 end
 return t()
 end,
 },
 {
-Be,
+st,
 2,
-fe,
+ue,
 },
 }
-local te
-te=c
+local Z
+Z=c
 local function l(e,t)
 if e==t then
 return true
@@ -1532,110 +1532,110 @@ t=H(t)
 if e==t then
 return true
 end
-local function n(t,e,a,o)
-if l(a(t),a(e))and l(o(t),o(e))then
-O(t,e)
+local function i(e,t,a,o)
+if l(a(e),a(t))and l(o(e),o(t))then
+O(e,t)
 return true
 else
 return false
 end
 end
-if h(e)then
-if not h(t)then
+if r(e)then
+if not r(t)then
 return false
 end
-O(e,v)
-O(t,v)
+O(e,y)
+O(t,y)
 return true
-elseif y(e)then
-if not y(t)then
+elseif v(e)then
+if not v(t)then
 return false
 end
-return L(e,t)
+return D(e,t)
 elseif a(e)then
 if not a(t)then
 return false
 end
-return n(e,t,o,i)
-elseif g(e)then
-if not g(t)then
+return i(e,t,o,n)
+elseif q(e)then
+if not q(t)then
 return false
 end
-return n(e,t,M,C)
+return i(e,t,C,M)
 elseif m(e)then
 if not m(t)then
 return false
 end
-return n(e,t,T,A)
-elseif se(e)then
+return i(e,t,E,A)
+elseif ne(e)then
 return false
 end
-return q()
+return g()
 end
-local function Z(Z)
-local B,p,c,l,m,r,q,T,Q,g,H,O,I,R,M,P,V,L,U,A,C,k,f,K,G,J
+local function ae(Z)
+local D,p,c,l,m,h,A,E,K,g,L,U,C,O,H,I,M,V,B,q,P,k,f,G,J,X
 function c()
-return#B==p
+return#D==p
 end
 function l()
 S(not c())
-local e=string.sub(B,p+1,p+1)
+local e=string.sub(D,p+1,p+1)
 p=p+1
 return e
 end
 function m(e)
-S(string.sub(B,p,p)==e)
+S(string.sub(D,p,p)==e)
 p=p-1
 end
-function r(e)
+function h(e)
 if e==nil then
 e=""
 end
 error("TheLanguage parse ERROR!"..tostring(e))
 end
-function q(e)
+function A(e)
 return e==" "or e=="\n"or e=="\t"or e=="\r"
 end
-function T()
+function E()
 if c()then
 return false
 end
 local e=l()
-if not q(e)then
+if not A(e)then
 m(e)
 return false
 end
-while q(e)and not c()do
+while A(e)and not c()do
 e=l()
 end
-if not q(e)then
+if not A(e)then
 m(e)
 end
 return true
 end
-function Q()
+function K()
 if c()then
 return false
 end
 local e=l()
 local t=""
-if not L(e)then
+if not V(e)then
 m(e)
 return false
 end
-while L(e)and not c()do
+while V(e)and not c()do
 t=tostring(t)..tostring(e)
 e=l()
 end
-if L(e)then
+if V(e)then
 t=tostring(t)..tostring(e)
 else
 m(e)
 end
-if ot(t)then
-return n(t)
+if Xe(t)then
+return i(t)
 else
-return r("Not Symbol"..tostring(t))
+return h("Not Symbol"..tostring(t))
 end
 end
 function g()
@@ -1647,43 +1647,43 @@ if e~="("then
 m(e)
 return false
 end
-local t=X()
+local t=Q()
 local a=t
 local function o(a)
-local e=X()
-W(t,s(a,e))
+local e=Q()
+Y(t,s(a,e))
 t=e
 end
 while true do
-T()
+E()
 if c()then
-return r()
+return h()
 end
 e=l()
 if e==")"then
-W(t,v)
+Y(t,y)
 return a
 end
 if e=="."then
-T()
-local o=U()
-W(t,o)
-T()
+E()
+local o=B()
+Y(t,o)
+E()
 if c()then
-return r()
+return h()
 end
 e=l()
 if e~=")"then
-return r()
+return h()
 end
 return a
 end
 m(e)
-local e=U()
+local e=B()
 o(e)
 end
 end
-function H()
+function L()
 if c()then
 return false
 end
@@ -1694,14 +1694,14 @@ return false
 end
 local e=g()
 if e==false then
-return r()
+return h()
 end
 if not a(e)then
-return r()
+return h()
 end
-return E(o(e),i(e))
+return _(o(e),n(e))
 end
-function O()
+function U()
 if c()then
 return false
 end
@@ -1712,15 +1712,15 @@ return false
 end
 local e=g()
 if e==false then
-return r()
+return h()
 end
 if not a(e)then
-return r()
+return h()
 end
-return D(o(e),i(e))
+return R(o(e),n(e))
 end
-function L(e)
-if q(e)then
+function V(e)
+if A(e)then
 return false
 end
 for a,t in ipairs({
@@ -1751,18 +1751,18 @@ end
 end
 return true
 end
-function U()
-T()
+function B()
+E()
 local e={
 g,
-J,
-H,
+X,
+L,
+U,
+C,
 O,
+H,
 I,
-R,
 M,
-P,
-V,
 }
 for t,e in ipairs(e)do
 local e=e()
@@ -1770,24 +1770,24 @@ if e~=false then
 return e
 end
 end
-return r()
+return h()
 end
-function A(e)
+function q(e)
 if e==false then
-return r()
+return h()
 end
 return e
 end
-function C()
+function P()
 return not c()
 end
 function k(e)
-A(C())
-A(l()==e)
+q(P())
+q(l()==e)
 end
-function f(e)
-if e==nil then
-e=false
+function f(t)
+if t==nil then
+t=false
 end
 local function a()
 k("[")
@@ -1795,64 +1795,64 @@ local e=f()
 k("]")
 return e
 end
-local t
-if e then
-t={
+local e
+if t then
+e={
 g,
-Q,
+K,
 a,
-H,
+L,
+U,
+C,
 O,
+H,
 I,
-R,
 M,
-P,
-V,
 }
 else
-t={
+e={
 g,
-G,
-H,
+J,
+L,
+U,
+C,
 O,
+H,
 I,
-R,
 M,
-P,
-V,
 }
 end
-for t,e in ipairs(t)do
+for t,e in ipairs(e)do
 local e=e()
 if e~=false then
 return e
 end
 end
-return r()
+return h()
 end
-function K(a)
+function G(a)
 if c()then
 return a
 end
 local o=l()
 if o=="."then
-local o=f()
-return e(u,e(t,e(a),w),o)
+local t=f()
+return e(u,e(d,e(a),w),t)
 elseif o==":"then
 local t=f()
 return e(u,t,a)
 elseif o=="~"then
 return e(ee,a)
 elseif o=="@"then
-local o=f()
-return e(u,e(t,s(a,w),w),o)
+local t=f()
+return e(u,e(d,s(a,w),w),t)
 elseif o=="?"then
-return e(u,t,e(ee,a))
+return e(u,d,e(ee,a))
 elseif o=="/"then
-local t={a}
+local a={a}
 while true do
 local e=f(true)
-d(t,e)
+t(a,e)
 if c()then
 break
 end
@@ -1862,19 +1862,19 @@ m(e)
 break
 end
 end
-return e(Te,_(t))
+return e(ke,T(a))
 else
 m(o)
 return a
 end
 end
-function G()
+function J()
 if c()then
 return false
 end
-local a=l()
-if a=="&"then
-A(C())
+local t=l()
+if t=="&"then
+q(P())
 local t=l()
 if t=="+"then
 local t=f()
@@ -1884,54 +1884,54 @@ m(t)
 end
 local t=f()
 return e(x,t)
-elseif a==":"then
-A(C())
-local a=l()
-if a=="&"then
+elseif t==":"then
+q(P())
+local t=l()
+if t=="&"then
 k(">")
-local a=f()
-return e(u,e(x,e(t,w,a)),F)
-elseif a==">"then
-local a=f()
-return e(u,e(t,w,a),F)
+local t=f()
+return e(u,e(x,e(d,w,t)),W)
+elseif t==">"then
+local t=f()
+return e(u,e(d,w,t),W)
 else
-m(a)
+m(t)
 end
 local t=f()
-return e(u,t,F)
-elseif a=="+"then
+return e(u,t,W)
+elseif t=="+"then
 local t=f()
 return e(z,t)
-elseif a=="["then
+elseif t=="["then
 local e=f()
 k("]")
-return K(e)
-elseif a=="_"then
+return G(e)
+elseif t=="_"then
 k(":")
 local t=f()
 return e(u,t,w)
 else
-m(a)
-local e=Q()
+m(t)
+local e=K()
 if e==false then
 return false
 end
-return K(e)
+return G(e)
 end
 end
-function J()
-local e=G()
+function X()
+local e=J()
 if e==false then
 return false
 end
-if y(e)then
+if v(e)then
 return e
 end
 return b(e)
 end
-B=Z
+D=Z
 p=0
-local function e(t,n)
+local function t(t,i)
 return function()
 if c()then
 return false
@@ -1943,16 +1943,16 @@ return false
 end
 local e=g()
 if e==false then
-return r()
+return h()
 end
 if not a(e)then
-return r()
+return h()
 end
-local t=i(e)
-if not(a(t)and h(i(t)))then
-return r()
+local t=n(e)
+if not(a(t)and r(n(t)))then
+return h()
 end
-return n(o(e),o(t))
+return i(o(e),o(t))
 end
 end
 local function s(t,s)
@@ -1967,313 +1967,307 @@ return false
 end
 local e=g()
 if e==false then
-return r()
+return h()
 end
 if not a(e)then
-return r()
+return h()
 end
-local n=i(e)
-if not a(n)then
-return r()
+local t=n(e)
+if not a(t)then
+return h()
 end
-local t=i(n)
-if not(a(t)and h(i(t)))then
-return r()
+local i=n(t)
+if not(a(i)and r(n(i)))then
+return h()
 end
-return s(o(e),o(n),o(t))
+return s(o(e),o(t),o(i))
 end
 end
-I=e("$",function(e,t)
-local e=ye(e)
+C=t("$",function(e,t)
+local e=fe(e)
 if e==false then
-return r()
+return h()
 end
 return N(e,t)
 end)
-R=e("%",function(t,e)
-local e=xe(e,function(e)return e end,function(e,e)return r()end)
+O=t("%",function(t,e)
+local e=Te(e,function(e)return e end,function(e,e)return h()end)
 return j(t,e)
 end)
-M=s("@",function(o,a,e)
-local t=xe(e,function(e)return e end,function(e,e)return r()end)
-local e=ye(o)
+H=s("@",function(a,t,e)
+local o=Te(e,function(e)return e end,function(e,e)return h()end)
+local e=fe(a)
 if e==false then
-return r()
+return h()
 end
-return De(e,a,t)
+return Me(e,t,o)
 end)
-P=e("^",function(t,e)
-local e=xe(e,function(e)return e end,function(e,e)return r()end)
-return Y(t,e)
+I=t("^",function(e,t)
+local t=Te(t,function(e)return e end,function(e,e)return h()end)
+return F(e,t)
 end)
-V=e(";",function(t,e)return fe(t,e)end)
-return U()
+M=t(";",function(e,t)return ue(e,t)end)
+return B()
 end
-local function j(c)
-local function n(r,d)
-if y(r)then
-return le(r)
+local function j(y)
+local function t(h,c)
+if v(h)then
+return ye(h)
 end
-local function h(e)
-if d then
+local function i(e)
+if c then
 return"["..tostring(e).."]"
 else
 return e
 end
 end
-local e=U(r)
+local e=U(h)
 if e~=false and#e==3 and l(e[1],u)then
 local s=U(e[2])
-if s~=false and#s==3 and l(s[1],t)then
-local t=s[2]
-local r=U(t)
+if s~=false and#s==3 and l(s[1],d)then
+local h=s[2]
+local r=U(h)
 if r~=false and#r==1 and l(s[3],w)then
-return h(tostring(n(r[1],true)).."."..tostring(n(e[3],true)))
-elseif a(t)and l(i(t),w)and l(s[3],w)then
-return h(tostring(n(o(t),true)).."@"..tostring(n(e[3],true)))
-elseif l(t,w)and l(e[3],F)then
-return h(":>"..tostring(n(s[3],true)))
+return i(tostring(t(r[1],true)).."."..tostring(t(e[3],true)))
+elseif a(h)and l(n(h),w)and l(s[3],w)then
+return i(tostring(t(o(h),true)).."@"..tostring(t(e[3],true)))
+elseif l(h,w)and l(e[3],W)then
+return i(":>"..tostring(t(s[3],true)))
 end
 end
 local a=U(e[3])
-if l(e[2],t)and a~=false and#a==2 and l(a[1],ee)then
-return h(tostring(n(a[2],true)).."?")
+if l(e[2],d)and a~=false and#a==2 and l(a[1],ee)then
+return i(tostring(t(a[2],true)).."?")
 end
-if s~=false and#s==2 and l(e[3],F)and l(s[1],x)then
+if s~=false and#s==2 and l(e[3],W)and l(s[1],x)then
 local e=U(s[2])
-if e~=false and#e==3 and l(e[1],t)and l(e[2],w)then
-return h(":&>"..tostring(n(e[3],true)))
+if e~=false and#e==3 and l(e[1],d)and l(e[2],w)then
+return i(":&>"..tostring(t(e[3],true)))
 end
 end
-local t
+local a
 if l(e[3],w)then
-t="_"
-elseif l(e[3],F)then
-t=""
+a="_"
+elseif l(e[3],W)then
+a=""
 else
-t=n(e[3],true)
+a=t(e[3],true)
 end
-return h(tostring(t)..":"..tostring(n(e[2],true)))
+return i(tostring(a)..":"..tostring(t(e[2],true)))
 elseif e~=false and#e==2 then
 if l(e[1],x)then
-local t=U(e[2])
-if t~=false and#t==2 and l(t[1],z)then
-return h("&+"..tostring(n(t[2],true)))
+local a=U(e[2])
+if a~=false and#a==2 and l(a[1],z)then
+return i("&+"..tostring(t(a[2],true)))
 end
-return h("&"..tostring(n(e[2],true)))
+return i("&"..tostring(t(e[2],true)))
 elseif l(e[1],ee)then
-return h(tostring(n(e[2],true)).."~")
+return i(tostring(t(e[2],true)).."~")
 elseif l(e[1],z)then
-return h("+"..tostring(n(e[2],true)))
-elseif l(e[1],Te)then
+return i("+"..tostring(t(e[2],true)))
+elseif l(e[1],ke)then
 local e=U(e[2])
 if e~=false and#e>1 then
-local a=n(e[1],true)
+local o=t(e[1],true)
 do
-local t=1
-while t<#e do
-a=tostring(a).."/"..tostring(n(e[t+1],true))
-t=t+1
+local a=1
+while a<#e do
+o=tostring(o).."/"..tostring(t(e[a+1],true))
+a=a+1
 end
 end
-return h(a)
+return i(o)
 end
 end
 end
-if d then
-return f(r)
+if c then
+return f(h)
 else
-return f(b(r))
+return f(b(h))
 end
 end
-local e=Z(f(c))
-local t=""
-local r=""
-if h(e)then
+local e=ae(f(y))
+local i=""
+local h=""
+if r(e)then
 return"()"
 elseif a(e)then
-t="("
-r=""
+i="("
+h=""
 while a(e)do
-t=tostring(t)..tostring(r)..tostring(j(o(e)))
-r=" "
-e=i(e)
+i=tostring(i)..tostring(h)..tostring(j(o(e)))
+h=" "
+e=n(e)
 end
-if h(e)then
-t=tostring(t)..")"
+if r(e)then
+i=tostring(i)..")"
 else
-t=tostring(t).." . "..tostring(j(e))..")"
+i=tostring(i).." . "..tostring(j(e))..")"
 end
-return t
+return i
 elseif m(e)then
-local a=T(e)
-local t=A(e)
-local e=U(t)
-if e~=false and#e==2 and l(a,qe)and l(e[1],z)then
-return n(e[2],false)
+local a=E(e)
+local o=A(e)
+local e=U(o)
+if e~=false and#e==2 and l(a,pe)and l(e[1],z)then
+return t(e[2],false)
 end
-return"#"..tostring(j(s(a,t)))
-elseif g(e)then
-return"!"..tostring(j(s(M(e),C(e))))
-elseif y(e)then
-return le(e)
+return"#"..tostring(j(s(a,o)))
+elseif q(e)then
+return"!"..tostring(j(s(C(e),M(e))))
+elseif v(e)then
+return ye(e)
 elseif I(e)then
-return";("..tostring(j(ce(e))).." "..tostring(j(K(e)))..")"
+return";("..tostring(j(re(e))).." "..tostring(j(K(e)))..")"
+elseif X(e)then
+return"$("..tostring(j(L(te(e)))).." "..tostring(j(oe(e)))..")"
 elseif B(e)then
-return"$("..tostring(j(R(oe(e)))).." "..tostring(j(ie(e)))..")"
+return"%("..tostring(j(de(e))).." "..tostring(j(T(se(e))))..")"
+elseif G(e)then
+return"@("..tostring(j(L(ve(e)))).." "..tostring(j(ge(e))).." "..tostring(j(T(be(e))))..")"
 elseif J(e)then
-return"%("..tostring(j(re(e))).." "..tostring(j(_(de(e))))..")"
-elseif V(e)then
-return"@("..tostring(j(R(_e(e)))).." "..tostring(j(Ee(e))).." "..tostring(j(_(je(e))))..")"
-elseif Q(e)then
-return"^("..tostring(j(pe(e))).." "..tostring(j(_(ve(e))))..")"
+return"^("..tostring(j(qe(e))).." "..tostring(j(T(je(e))))..")"
 end
-return q()
+return g()
 end
-local function S(h)
-local l=X()
-local r={function(e)return W(l,e)end}
-local t=0
-local function a(e)
+local function W(n)
+local d=Q()
+local h={function(e)return Y(d,e)end}
+local e=0
+local function i(e)
 if e==nil then
 e=""
 end
 error("MT parse ERROR "..tostring(e))
 end
-local function c(e)
+local function u(e)
 if not e then
-return a()
+return i()
 end
 end
-local function u()
-c(#h>t)
-local e=string.sub(h,t+1,t+1)
-t=t+1
-return e
+local function l()
+u(#n>e)
+local t=string.sub(n,e+1,e+1)
+e=e+1
+return t
 end
-local n={}
-while#r~=0 do
-local t={}
-for e,o in ipairs(r)do
-local e=u()
-local function i(i)
-local e=X()
-local a=X()
-d(t,function(t)return W(e,t)end)
-d(t,function(e)return W(a,e)end)
-o(i(e,a))
+local r={}
+while#h~=0 do
+local a={}
+for e,o in ipairs(h)do
+local e=l()
+local function n(n)
+local i=Q()
+local e=Q()
+t(a,function(e)return Y(i,e)end)
+t(a,function(t)return Y(e,t)end)
+o(n(i,e))
 end
 if e=="^"then
 local e=""
 while true do
-local t=u()
+local t=l()
 if t=="^"then
 break
 end
 e=tostring(e)..tostring(t)
 end
-if pt(e)then
-o(it(e))
+if dt(e)then
+o(Je(e))
 else
-return a("can_new_symbol_unicodechar_p(\""..tostring(e).."\") == false")
+return i("can_new_symbol_unicodechar_p(\""..tostring(e).."\") == false")
 end
 elseif e=="."then
-i(s)
+n(s)
 elseif e=="#"then
-i(E)
+n(_)
 elseif e=="!"then
-i(D)
+n(R)
 elseif e=="$"then
-local i=false
 local e=false
-d(t,function(e)
-i=e
-end)
-d(t,function(t)
+local n=false
+t(a,function(t)
 e=t
 end)
-d(n,function()
-if i==false or e==false then
-return q()
+t(a,function(e)
+n=e
+end)
+t(r,function()
+if e==false or n==false then
+return g()
 else
-local t=ye(i)
-if t==false then
-return a()
+local e=fe(e)
+if e==false then
+return i()
 else
-o(N(t,e))
+o(N(e,n))
 end
 end
 end)
 elseif e=="_"then
-o(v)
+o(y)
 else
-return a()
+return i()
 end
 end
-r=t
+h=a
 end
-c(t==#h)
+u(e==#n)
 do
-local e=#n-1
+local e=#r-1
 while e>=0 do
-n[e+1]()
+r[e+1]()
 e=e-1
 end
 end
-return l
+return d
 end
-local function l(e,t,s)
+local function l(e)
+local s={}
+local h={}
+for i,e in ipairs(e)do
 e=H(e)
-local function n(e,i,o,a)
-t(i)
-s(o(e))
-return s(a(e))
+local function i(e,i,o,a)
+t(s,i)
+return t(h,o(e),a(e))
 end
-if y(e)then
-t("^")
-t(we(e))
-return t("^")
+if v(e)then
+t(s,"^",ce(e),"^")
 elseif a(e)then
-return n(e,".",o,i)
-elseif h(e)then
-return t("_")
+i(e,".",o,n)
+elseif r(e)then
+t(s,"_")
 elseif m(e)then
-return n(e,"#",T,A)
-elseif g(e)then
-return n(e,"!",M,C)
-elseif se(e)then
-local e=Se(e)
-return n(e,"$",(function(e)return R(oe(e))end),ie)
+i(e,"#",E,A)
+elseif q(e)then
+i(e,"!",C,M)
+elseif ne(e)then
+local e=Ae(e)
+i(e,"$",(function(e)return L(te(e))end),oe)
 else
-return q()
+return g()
 end
-end
-local function q(a)
-local t={}
-local e={}
-for o,a in ipairs(a)do
-l(a,function(e)return d(t,e)end,function(t)return d(e,t)end)
 end
 return{
-t,
-e,
+s,
+h,
 }
 end
-local function F(e)
-local e={e}
-local t=""
-while#e~=0 do
-local a=q(e)
+local function Y(e)
+local t={e}
+local e=""
+while#t~=0 do
+local a=l(t)
 local i=a[1]
 local o=a[2]
 for o,a in ipairs(i)do
-t=tostring(t)..tostring(a)
+e=tostring(e)..tostring(a)
 end
-e=o
+t=o
 end
-return t
+return e
 end
-local function x(e)
+local function g(e)
 return function()return{
 false,
 e,
@@ -2285,166 +2279,166 @@ true,
 e(),
 }end
 end
-local function O(e)
+local function z(e)
 local e=e()
 while e[1]do
 e=e[2]()
 end
 return e[2]
 end
-local q=b(s(Te,s(s(Qe,s(s(u,s(Je,s(w,v))),v)),v)))
-local z=b(s(Te,s(s(Qe,s(he,v)),v)))
-local function V(a,t)
-return E(z,e(a,t))
+local x=b(s(ke,s(s(Qe,s(s(u,s(tt,s(w,y))),y)),y)))
+local b=b(s(ke,s(s(Qe,s(le,y)),y)))
+local function O(t,a)
+return _(b,e(t,a))
 end
-local function W(e)
-return E(q,e)
+local function S(e)
+return _(x,e)
 end
-local function b(y,f,u,w,d)
-if d==nil then
-d=false
+local function w(f,p,u,y,s)
+if s==nil then
+s=false
 end
-local function p(e,e)
+local function v(e,e)
 error("WIP")
 end
-u=r(u)
+u=h(u)
 if m(u)then
-local m=T(u)
-local s=A(u)
-if c(m,q)then
-s=r(s)
-if a(s)then
-local a=o(s)
-local e=r(i(s))
-if h(e)then
-if d==false then
-local a=a
-local t=w
-local function e()return y(a,t)end
-return l(e)
+local m=E(u)
+local t=A(u)
+if c(m,x)then
+t=h(t)
+if a(t)then
+local a=o(t)
+local e=h(n(t))
+if r(e)then
+if s==false then
+local e=a
+local t=y
+local function a()return f(e,t)end
+return l(a)
 else
 local t
-t=y
+t=f
 local e
-e=f
-local o=a
-local a=w
-local function i()return b(t,e,Y(d,o),a)end
+e=p
+local a=a
+local i=y
+local function o()return w(t,e,F(s,a),i)end
+return l(o)
+end
+end
+end
+elseif c(m,b)then
+t=h(t)
+if a(t)then
+local u=o(t)
+local t=h(n(t))
+if a(t)then
+local o=o(t)
+local t=h(n(t))
+if r(t)then
+if s==false then
+local t
+t=f
+local e
+e=p
+local n=u
+local i=o
+local o=y
+local function a()return w(t,e,n,o,i)end
+return l(a)
+else
+local t
+t=f
+local a
+a=p
+local n=u
+local h=o
+local r=y
+local s=s
+local o=i("序甲")
+local function i()return w(t,a,n,r,_(d,e(e(o),v(e(we(h),o),we(s)))))end
 return l(i)
 end
 end
 end
-elseif c(m,z)then
-s=r(s)
-if a(s)then
-local u=o(s)
-local s=r(i(s))
-if a(s)then
-local a=o(s)
-local o=r(i(s))
-if h(o)then
-if d==false then
-local t
-t=y
-local e
-e=f
-local n=u
-local o=a
-local i=w
-local function a()return b(t,e,n,i,o)end
-return l(a)
+end
+end
+end
+if s==false then
+return l(function()return p(u,y,f)end)
 else
-local i
-i=y
-local o
-o=f
-local r=u
-local h=a
-local s=w
-local d=d
-local a=n("序甲")
-local function n()return b(i,o,r,s,E(t,e(e(a),p(e(ne(h),a),ne(d)))))end
-return l(n)
+return l(function()return p(u,y,function(e,t)return l(function()return w(f,p,F(s,{e}),t)end)end)end)
 end
 end
+local function u(o,a,t,e)
+return w(o,a,t,e)
 end
-end
-end
-end
-if d==false then
-return l(function()return f(u,w,y)end)
-else
-return l(function()return f(u,w,function(e,t)return l(function()return b(y,f,Y(d,{e}),t)end)end)end)
-end
-end
-local function d(t,e,a,o)
-return b(t,e,a,o)
-end
-local function u(a,i,n,o)
-return O(b((function(t,e)return x(a(t,e))end),(function(e,t,a)return x(i(e,t,function(e,t)return O(a(e,t))end))end),n,o))
+local function d(e,o,a,i)
+return z(w((function(a,t)return g(e(a,t))end),(function(a,e,t)return g(o(a,e,function(e,a)return z(t(e,a))end))end),a,i))
 end
 local t={}
-t.new_comment=fe
+t.new_comment=ue
 t.comment_p=I
-t.comment_comment=ce
+t.comment_comment=re
 t.comment_x=K
-t.un_comment_all=ze
-t.can_new_symbol_p=ot
-t.new_symbol=n
-t.symbol_p=y
-t.un_symbol=le
-t.symbol_equal_p=L
+t.un_comment_all=xe
+t.can_new_symbol_p=Xe
+t.new_symbol=i
+t.symbol_p=v
+t.un_symbol=ye
+t.symbol_equal_p=D
 t.new_construction=s
 t.construction_p=a
 t.construction_head=o
-t.construction_tail=i
-t.null_v=v
-t.null_p=h
-t.new_data=E
+t.construction_tail=n
+t.null_v=y
+t.null_p=r
+t.new_data=_
 t.data_p=m
-t.data_name=T
+t.data_name=E
 t.data_list=A
-t.new_error=D
-t.error_p=g
-t.error_name=M
-t.error_list=C
-t.just_p=G
+t.new_error=R
+t.error_p=q
+t.error_name=C
+t.error_list=M
+t.just_p=V
 t.evaluate=N
-t.apply=Y
+t.apply=F
 t.force_all_rec=P
-t.force_uncomment_all_rec=Ie
-t.jsArray_to_list=_
+t.force_uncomment_all_rec=Oe
+t.jsArray_to_list=T
 t.maybe_list_to_jsArray=U
 t.new_list=e
 t.un_just_all=H
-t.un_just_comment_all=at
-t.delay_p=se
+t.un_just_comment_all=nt
+t.delay_p=ne
 t.delay_just_p=p
-t.delay_env=tt
-t.delay_x=Xe
-t.force_all=r
+t.delay_env=it
+t.delay_x=Ze
+t.force_all=h
 t.force1=k
-t.force_uncomment1=st
-t.force_uncomment_all=Me
-t.env_null_v=Ce
-t.env_set=be
-t.env_get=Fe
-t.env2val=R
-t.env_foreach=Ue
-t.val2env=ye
-t.equal_p=te
+t.force_uncomment1=Pe
+t.force_uncomment_all=Ge
+t.env_null_v=Ve
+t.env_set=ze
+t.env_get=Be
+t.env2val=L
+t.env_foreach=Ye
+t.val2env=fe
+t.equal_p=Z
 t.simple_print=f
-t.complex_parse=Z
+t.complex_parse=ae
 t.complex_print=j
-t.machinetext_parse=S
-t.machinetext_print=F
-t.trampoline_return=x
+t.machinetext_parse=W
+t.machinetext_print=Y
+t.trampoline_return=g
 t.trampoline_delay=l
-t.run_trampoline=O
-t.return_effect_systemName=q
-t.bind_effect_systemName=z
-t.new_effect_bind=V
-t.new_effect_return=W
-t.run_monad_trampoline=d
-t.run_monad_stackoverflow=u
+t.run_trampoline=z
+t.return_effect_systemName=x
+t.bind_effect_systemName=b
+t.new_effect_bind=O
+t.new_effect_return=S
+t.run_monad_trampoline=u
+t.run_monad_stackoverflow=d
 return t
