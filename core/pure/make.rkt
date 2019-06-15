@@ -99,25 +99,16 @@
     (define (pre-id) pre)
     (define (main-id cmd) (make ((name (depend ...) code) ...) cmd))))
 
-(define-syntax-rule (for/par h body) ;; [WIP]出錯時不會停止。
-    (begin
-        (define xs '())
-        (for h (set! xs (cons (thread (lambda () body)) xs)))
-        (for ([x xs]) (thread-wait x))))
-
 ;; (do-make (current-command-line-arguments))
 (provide write-Makefile pre-do-make do-make)
 (define (mk-ts-files d) (sort (filter (match-lambda [(regexp #rx".*\\.ts$") #t] [_ #f]) (map path->string (directory-list (string-append d "lang.ts.d") #:build? #t))) string<?))
 (define ts-files-root (mk-ts-files "typescript/"))
 (define-make++ "make.rkt" write-Makefile ("typescript/lang.ts" pre-do-make ts-files-root) do-make
     (make/proc `(("typescript/lang.ts" (,@ts-files-root) ,(lambda () (in-dir "typescript" {
-        npm install
         (define ts-files (mk-ts-files ""))
-        (for/par ([file ts-files]) {
+        (for ([file ts-files]) {
             (define tmpfile (path->string (make-temporary-file "rkttmp~a.ts")))
             |> lines->string (run-racket-code-generators->lines (string->lines #{cat (id file)})) &>! (id tmpfile)
-            npx tsfmt -r (id tmpfile)
-            dos2unix (id tmpfile)
             mv (id tmpfile) (id file)
         })
         |> id "" &>! lang.ts
