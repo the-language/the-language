@@ -469,6 +469,7 @@ function new_lambda(
     return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
 }
 
+// 註疏系統WIP
 // WIP delay未正確處理(影響較小)
 function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
@@ -510,31 +511,44 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
 const equal_p = jsbool_equal_p
 export { equal_p }
 
-// 不允許比較delay。
+// 註疏系統WIP
+// 不比較delay。相等的delay可以返回false。
 function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
-    if (x === y) { return true }
-    let stack1 = [x]
-    let stack2 = [y]
-    while (stack1.length !== 0) {
-        if (stack1.length !== stack2.length) { return false }
-        const ret1: Array<string> = []
-        const ret2: Array<string> = []
-        const new1: Array<LangVal> = []
-        const new2: Array<LangVal> = []
-        for (let i = 0; i < stack1.length; i++) {
-            if (stack1[i] === stack2[i]) {
-                //nothing
-            } else {
-                machinetext_print_step2_do(stack1[i], (v) => ret1.push(v), (v) => new1.push(v))
-                machinetext_print_step2_do(stack2[i], (v) => ret2.push(v), (v) => new2.push(v))
-            }
-        }
-        if (ret1.length !== ret2.length) { return false }
-        for (let i = 0; i < ret1.length; i++) {
-            if (ret1[i] !== ret2[i]) { return false }
-        }
-        stack1 = new1
-        stack2 = new2
+    if (x === y) {
+        return true
     }
-    return stack2.length === 0
+    x = un_just_all(x)
+    y = un_just_all(y)
+    if (x === y) {
+        return true
+    }
+    function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
+        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
+            lang_set_do(xx, yy)
+            return true
+        } else {
+            return false
+        }
+    }
+    if (null_p(x)) {
+        if (!null_p(y)) { return false }
+        lang_set_do(x, null_v)
+        lang_set_do(y, null_v)
+        return true
+    } else if (symbol_p(x)) {
+        if (!symbol_p(y)) { return false }
+        return symbol_equal_p(x, y)
+    } else if (construction_p(x)) {
+        if (!construction_p(y)) { return false }
+        return end_2(x, y, construction_head, construction_tail)
+    } else if (error_p(x)) {
+        if (!error_p(y)) { return false }
+        return end_2(x, y, error_name, error_list)
+    } else if (data_p(x)) {
+        if (!data_p(y)) { return false }
+        return end_2(x, y, data_name, data_list)
+    } else if (delay_p(x)) {
+        return false
+    }
+    return LANG_ERROR()
 }

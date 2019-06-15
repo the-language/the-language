@@ -4,7 +4,7 @@ public class Lang$luaj$52 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue u3;
-    org.luaj.vm2.LuaValue u4;
+    org.luaj.vm2.LuaValue[] u4;
     final static org.luaj.vm2.LuaValue k0;
     
     static {
@@ -34,7 +34,7 @@ public class Lang$luaj$52 extends org.luaj.vm2.lib.OneArgFunction {
             if (a4.isnil()) {
                 return a;
             }
-            this.u4.call(a6, a);
+            this.u4[0].call(a6, a);
         }
     }
 }

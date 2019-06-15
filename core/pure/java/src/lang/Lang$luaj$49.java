@@ -1,19 +1,14 @@
 package lang;
-public class Lang$luaj$49 extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$49 extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     
     public Lang$luaj$49() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        if (a.eq_b(a0)) {
-            return org.luaj.vm2.LuaValue.TRUE;
-        }
-        if (!this.u0.call(a).eq_b(this.u0.call(a0))) {
-            return org.luaj.vm2.LuaValue.FALSE;
-        }
-        this.u1.call(a, a0);
-        return org.luaj.vm2.LuaValue.TRUE;
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.LuaValue a0 = this.u0.call();
+        this.u1.call(a0, a);
+        return a0;
     }
 }

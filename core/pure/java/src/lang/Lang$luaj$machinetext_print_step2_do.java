@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$75 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$machinetext_print_step2_do extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
@@ -35,7 +35,7 @@ public class Lang$luaj$75 extends org.luaj.vm2.lib.VarArgFunction {
         k5 = org.luaj.vm2.LuaString.valueOf("$");
     }
     
-    public Lang$luaj$75() {
+    public Lang$luaj$machinetext_print_step2_do() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
@@ -44,7 +44,7 @@ public class Lang$luaj$75 extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue a2 = a.arg(3);
         a.subargs(4);
         org.luaj.vm2.LuaValue a3 = this.u0.call(a0);
-        Lang$luaj$75$conslike a4 = new Lang$luaj$75$conslike();
+        Lang$luaj$machinetext_print_step2_do$conslike a4 = new Lang$luaj$machinetext_print_step2_do$conslike();
         a4.u0 = a1;
         a4.u1 = a2;
         if (this.u1.call(a3).toboolean()) {
@@ -93,7 +93,7 @@ public class Lang$luaj$75 extends org.luaj.vm2.lib.VarArgFunction {
         }
         org.luaj.vm2.LuaValue a17 = this.u14.call(a3);
         org.luaj.vm2.LuaValue a18 = k5;
-        Lang$luaj$75$1 a19 = new Lang$luaj$75$1();
+        Lang$luaj$machinetext_print_step2_do$1 a19 = new Lang$luaj$machinetext_print_step2_do$1();
         a19.u0 = this.u15;
         a19.u1 = this.u16;
         org.luaj.vm2.LuaValue a20 = this.u17;

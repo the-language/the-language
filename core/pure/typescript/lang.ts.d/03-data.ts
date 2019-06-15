@@ -157,7 +157,18 @@ function new_symbol<X extends keyof Symbols_Set>(x: X): New_Symbol<X> {
 function un_symbol(x: LangValSymbol): keyof Symbols_Set {
     return symbols_set_neg()[un_symbol_unicodechar(x)]
 }
-export { can_new_symbol_p, New_Symbol, new_symbol, symbol_p, un_symbol }
+function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
+    if (x === y) {
+        return true
+    }
+    if (un_symbol_unicodechar(x) === un_symbol_unicodechar(y)) {
+        lang_set_do(x, y)
+        return true
+    } else {
+        return false
+    }
+}
+export { can_new_symbol_p, New_Symbol, new_symbol, symbol_p, un_symbol, symbol_equal_p }
 
 type New_Construction<X extends LangVal, Y extends LangVal> = LangValConsG<X, Y>
 function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Construction<X, Y> {

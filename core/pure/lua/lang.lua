@@ -27,7 +27,7 @@ local function __TS__ArrayPush(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, symbol_equal_p, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, delay2delay_evaluate, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print, machinetext_print_step2_do
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, symbol_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -66,6 +66,17 @@ function un_symbol_unicodechar(x)
 end
 function un_symbol(x)
     return symbols_set_neg()[un_symbol_unicodechar(x)]
+end
+function symbol_equal_p(x, y)
+    if x == y then
+        return true
+    end
+    if un_symbol_unicodechar(x) == un_symbol_unicodechar(y) then
+        lang_set_do(x, y)
+        return true
+    else
+        return false
+    end
 end
 function new_construction(x, y)
     return {
@@ -240,17 +251,6 @@ function lang_copy_do(x)
     hole_set_do(ret, x)
     return ret
 end
-function symbol_equal_p(x, y)
-    if x == y then
-        return true
-    end
-    if un_symbol_unicodechar(x) == un_symbol_unicodechar(y) then
-        lang_set_do(x, y)
-        return true
-    else
-        return false
-    end
-end
 function jsArray_to_list(xs)
     local ret = null_v
     do
@@ -286,18 +286,6 @@ function delay_p(x)
 end
 function delay_just_p(x)
     return just_p(x) or delay_p(x)
-end
-function delay2delay_evaluate(x)
-    if delay_evaluate_p(x) then
-        return x
-    elseif delay_builtin_form_p(x) then
-        error("WIP")
-    elseif delay_builtin_func_p(x) then
-        error("WIP")
-    elseif delay_apply_p(x) then
-        error("WIP")
-    end
-    return LANG_ERROR()
 end
 function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
     if parents_history == nil then
@@ -905,32 +893,6 @@ function simple_print(x)
     end
     return LANG_ERROR()
 end
-function machinetext_print_step2_do(x, ret_push_do, new_stack_push_do)
-    x = un_just_all(x)
-    local function conslike(xx, s, g1, g2)
-        ret_push_do(s)
-        new_stack_push_do(g1(xx))
-        return new_stack_push_do(g2(xx))
-    end
-    if symbol_p(x) then
-        ret_push_do("^")
-        ret_push_do(un_symbol_unicodechar(x))
-        return ret_push_do("^")
-    elseif construction_p(x) then
-        return conslike(x, ".", construction_head, construction_tail)
-    elseif null_p(x) then
-        return ret_push_do("_")
-    elseif data_p(x) then
-        return conslike(x, "#", data_name, data_list)
-    elseif error_p(x) then
-        return conslike(x, "!", error_name, error_list)
-    elseif delay_p(x) then
-        local y = delay2delay_evaluate(x)
-        return conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
-    else
-        return LANG_ERROR()
-    end
-end
 local function symbols_set_init()
     return {
         ["0"] = "0",
@@ -1292,6 +1254,18 @@ local function un_just_comment_all(x)
     end
     return x
 end
+local function delay2delay_evaluate(x)
+    if delay_evaluate_p(x) then
+        return x
+    elseif delay_builtin_form_p(x) then
+        error("WIP")
+    elseif delay_builtin_func_p(x) then
+        error("WIP")
+    elseif delay_apply_p(x) then
+        error("WIP")
+    end
+    return LANG_ERROR()
+end
 local function delay_env(x)
     return delay_evaluate_env(delay2delay_evaluate(x))
 end
@@ -1575,43 +1549,50 @@ local function jsbool_no_force_equal_p(x, y)
     if x == y then
         return true
     end
-    local stack1 = {x}
-    local stack2 = {y}
-    while #stack1 ~= 0 do
-        if #stack1 ~= #stack2 then
-            return false
-        end
-        local ret1 = {}
-        local ret2 = {}
-        local new1 = {}
-        local new2 = {}
-        do
-            local i = 0
-            while i < #stack1 do
-                if stack1[i + 1] == stack2[i + 1] then
-                else
-                    machinetext_print_step2_do(stack1[i + 1], function(v) return __TS__ArrayPush(ret1, v) end, function(v) return __TS__ArrayPush(new1, v) end)
-                    machinetext_print_step2_do(stack2[i + 1], function(v) return __TS__ArrayPush(ret2, v) end, function(v) return __TS__ArrayPush(new2, v) end)
-                end
-                i = i + 1
-            end
-        end
-        if #ret1 ~= #ret2 then
-            return false
-        end
-        do
-            local i = 0
-            while i < #ret1 do
-                if ret1[i + 1] ~= ret2[i + 1] then
-                    return false
-                end
-                i = i + 1
-            end
-        end
-        stack1 = new1
-        stack2 = new2
+    x = un_just_all(x)
+    y = un_just_all(y)
+    if x == y then
+        return true
     end
-    return #stack2 == 0
+    local function end_2(xx, yy, f1, f2)
+        if jsbool_no_force_equal_p(f1(xx), f1(yy)) and jsbool_no_force_equal_p(f2(xx), f2(yy)) then
+            lang_set_do(xx, yy)
+            return true
+        else
+            return false
+        end
+    end
+    if null_p(x) then
+        if not null_p(y) then
+            return false
+        end
+        lang_set_do(x, null_v)
+        lang_set_do(y, null_v)
+        return true
+    elseif symbol_p(x) then
+        if not symbol_p(y) then
+            return false
+        end
+        return symbol_equal_p(x, y)
+    elseif construction_p(x) then
+        if not construction_p(y) then
+            return false
+        end
+        return end_2(x, y, construction_head, construction_tail)
+    elseif error_p(x) then
+        if not error_p(y) then
+            return false
+        end
+        return end_2(x, y, error_name, error_list)
+    elseif data_p(x) then
+        if not data_p(y) then
+            return false
+        end
+        return end_2(x, y, data_name, data_list)
+    elseif delay_p(x) then
+        return false
+    end
+    return LANG_ERROR()
 end
 local function complex_parse(x)
     local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
@@ -2263,6 +2244,32 @@ local function machinetext_parse(rawstr)
     end
     return result
 end
+local function machinetext_print_step2_do(x, ret_push_do, new_stack_push_do)
+    x = un_just_all(x)
+    local function conslike(xx, s, g1, g2)
+        ret_push_do(s)
+        new_stack_push_do(g1(xx))
+        return new_stack_push_do(g2(xx))
+    end
+    if symbol_p(x) then
+        ret_push_do("^")
+        ret_push_do(un_symbol_unicodechar(x))
+        return ret_push_do("^")
+    elseif construction_p(x) then
+        return conslike(x, ".", construction_head, construction_tail)
+    elseif null_p(x) then
+        return ret_push_do("_")
+    elseif data_p(x) then
+        return conslike(x, "#", data_name, data_list)
+    elseif error_p(x) then
+        return conslike(x, "!", error_name, error_list)
+    elseif delay_p(x) then
+        local y = delay2delay_evaluate(x)
+        return conslike(y, "$", (function(vl) return env2val(delay_evaluate_env(vl)) end), delay_evaluate_x)
+    else
+        return LANG_ERROR()
+    end
+end
 local function machinetext_print_step(stack)
     local result = {}
     local new_stack = {}
@@ -2409,6 +2416,7 @@ ____exports.can_new_symbol_p = can_new_symbol_p
 ____exports.new_symbol = new_symbol
 ____exports.symbol_p = symbol_p
 ____exports.un_symbol = un_symbol
+____exports.symbol_equal_p = symbol_equal_p
 ____exports.new_construction = new_construction
 ____exports.construction_p = construction_p
 ____exports.construction_head = construction_head

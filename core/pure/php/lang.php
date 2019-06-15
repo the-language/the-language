@@ -53,6 +53,7 @@ $un_comment_all = NULL;
 $symbol_p = NULL;
 $un_symbol_unicodechar = NULL;
 $un_symbol = NULL;
+$symbol_equal_p = NULL;
 $new_construction = NULL;
 $construction_p = NULL;
 $construction_head = NULL;
@@ -118,13 +119,11 @@ $function_builtin_use_systemName = NULL;
 $form_builtin_use_systemName = NULL;
 $form_use_systemName = NULL;
 $comment_form_builtin_systemName = NULL;
-$symbol_equal_p = NULL;
 $jsArray_to_list = NULL;
 $new_list = NULL;
 $un_just_all = NULL;
 $delay_p = NULL;
 $delay_just_p = NULL;
-$delay2delay_evaluate = NULL;
 $force_all_inner = NULL;
 $force1 = NULL;
 $force_all = NULL;
@@ -146,7 +145,6 @@ $make_quote = NULL;
 $new_lambda = NULL;
 $jsbool_equal_p = NULL;
 $simple_print = NULL;
-$machinetext_print_step2_do = NULL;
 $LANG_ERROR = (function () {
     throw new Exception("TheLanguage PANIC");
 });
@@ -182,6 +180,18 @@ $un_symbol_unicodechar = (function ($x = NULL) {
 $un_symbol = (function ($x = NULL) use (&$symbols_set_neg, &$un_symbol_unicodechar) {
     $lUaTmP_4_LuAtMp = $un_symbol_unicodechar($x);
     return ($symbols_set_neg()->{(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)});
+});
+$symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symbol_unicodechar) {
+    if (($x == $y)) {
+        return true;
+    }
+    if (($un_symbol_unicodechar($x) == $un_symbol_unicodechar($y))) {
+        $lang_set_do($x, $y);
+        return true;
+    } else {
+        return false;
+    }
+
 });
 $new_construction = (function ($x = NULL, $y = NULL) use (&$construction_t) {
     return ((object)[$construction_t, $x, $y]);
@@ -327,18 +337,6 @@ $lang_copy_do = (function ($x = NULL) use (&$hole_set_do, &$new_hole_do) {
     $hole_set_do($ret, $x);
     return $ret;
 });
-$symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symbol_unicodechar) {
-    if (($x == $y)) {
-        return true;
-    }
-    if (($un_symbol_unicodechar($x) == $un_symbol_unicodechar($y))) {
-        $lang_set_do($x, $y);
-        return true;
-    } else {
-        return false;
-    }
-
-});
 $jsArray_to_list = (function ($xs = NULL) use (&$new_construction, &$null_v) {
     $ret = $null_v;
     
@@ -383,18 +381,6 @@ $delay_p = (function ($x = NULL) use (&$delay_apply_p, &$delay_builtin_form_p, &
 });
 $delay_just_p = (function ($x = NULL) use (&$delay_p, &$just_p) {
     return ($just_p($x) || $delay_p($x));
-});
-$delay2delay_evaluate = (function ($x = NULL) use (&$LANG_ERROR, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_evaluate_p) {
-    if ($delay_evaluate_p($x)) {
-        return $x;
-    } elseif ($delay_builtin_form_p($x)) {
-        throw new Exception("WIP");
-    } elseif ($delay_builtin_func_p($x)) {
-        throw new Exception("WIP");
-    } elseif ($delay_apply_p($x)) {
-        throw new Exception("WIP");
-    }
-    return $LANG_ERROR();
 });
 $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$symbol_p_function_builtin_systemName, &$the_world_stopped_v) {
     if (($parents_history == NULL)) {
@@ -1104,35 +1090,6 @@ $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$co
     }
     return $LANG_ERROR();
 });
-$machinetext_print_step2_do = (function ($x = NULL, $ret_push_do = NULL, $new_stack_push_do = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
-    $x = $un_just_all($x);
-    $conslike = (function ($xx = NULL, $s = NULL, $g1 = NULL, $g2 = NULL) use (&$new_stack_push_do, &$ret_push_do) {
-        $ret_push_do($s);
-        $new_stack_push_do($g1($xx));
-        return $new_stack_push_do($g2($xx));
-    });
-    if ($symbol_p($x)) {
-        $ret_push_do("^");
-        $ret_push_do($un_symbol_unicodechar($x));
-        return $ret_push_do("^");
-    } elseif ($construction_p($x)) {
-        return $conslike($x, ".", $construction_head, $construction_tail);
-    } elseif ($null_p($x)) {
-        return $ret_push_do("_");
-    } elseif ($data_p($x)) {
-        return $conslike($x, "#", $data_name, $data_list);
-    } elseif ($error_p($x)) {
-        return $conslike($x, "!", $error_name, $error_list);
-    } elseif ($delay_p($x)) {
-        $y = $delay2delay_evaluate($x);
-        return $conslike($y, "\$", (function ($vl = NULL) use (&$delay_evaluate_env, &$env2val) {
-            return $env2val($delay_evaluate_env($vl));
-        }), $delay_evaluate_x);
-    } else {
-        return $LANG_ERROR();
-    }
-
-});
 $symbols_set_init = (function () {
     return ((object)[
         "0" => "0",
@@ -1524,6 +1481,18 @@ $un_just_comment_all = (function ($x = NULL) use (&$comment_p, &$just_p, &$un_co
     }
     return $x;
 });
+$delay2delay_evaluate = (function ($x = NULL) use (&$LANG_ERROR, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_p, &$delay_evaluate_p) {
+    if ($delay_evaluate_p($x)) {
+        return $x;
+    } elseif ($delay_builtin_form_p($x)) {
+        throw new Exception("WIP");
+    } elseif ($delay_builtin_func_p($x)) {
+        throw new Exception("WIP");
+    } elseif ($delay_apply_p($x)) {
+        throw new Exception("WIP");
+    }
+    return $LANG_ERROR();
+});
 $delay_env = (function ($x = NULL) use (&$delay2delay_evaluate, &$delay_evaluate_env) {
     return $delay_evaluate_env($delay2delay_evaluate($x));
 });
@@ -1785,62 +1754,56 @@ $real_builtin_func_apply_s = ((object)[
 ]);
 $equal_p = NULL;
 $equal_p = $jsbool_equal_p;
-$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$__TS__ArrayPush, &$machinetext_print_step2_do) {
+$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_set_do, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$un_just_all) {
     if (($x == $y)) {
         return true;
     }
-    $stack1 = ((object)[$x]);
-    $stack2 = ((object)[$y]);
-    while (((is_string($stack1) ? strlen($stack1) : count((array)$stack1)) != 0)) {
-        if (((is_string($stack1) ? strlen($stack1) : count((array)$stack1)) !=
-            (is_string($stack2) ? strlen($stack2) : count((array)$stack2)))) {
-            return false;
-        }
-        $ret1 = ((object)[]);
-        $ret2 = ((object)[]);
-        $new1 = ((object)[]);
-        $new2 = ((object)[]);
-        
-        {
-            $i = 0;
-            while (($i < (is_string($stack1) ? strlen($stack1) : count((array)$stack1)))) {
-                if ((($stack1->{($i + 0)}) == ($stack2->{($i + 0)}))) {
-                } else {
-                    $machinetext_print_step2_do(($stack1->{($i + 0)}), (function ($v = NULL) use (&$__TS__ArrayPush, &$ret1) {
-                        return $__TS__ArrayPush($ret1, $v);
-                    }), (function ($v = NULL) use (&$__TS__ArrayPush, &$new1) {
-                        return $__TS__ArrayPush($new1, $v);
-                    }));
-                    $machinetext_print_step2_do(($stack2->{($i + 0)}), (function ($v = NULL) use (&$__TS__ArrayPush, &$ret2) {
-                        return $__TS__ArrayPush($ret2, $v);
-                    }), (function ($v = NULL) use (&$__TS__ArrayPush, &$new2) {
-                        return $__TS__ArrayPush($new2, $v);
-                    }));
-                }
-
-                $i = ($i + 1);
-            }
-        }
-
-        if (((is_string($ret1) ? strlen($ret1) : count((array)$ret1)) !=
-            (is_string($ret2) ? strlen($ret2) : count((array)$ret2)))) {
-            return false;
-        }
-        
-        {
-            $i_1 = 0;
-            while (($i_1 < (is_string($ret1) ? strlen($ret1) : count((array)$ret1)))) {
-                if ((($ret1->{($i_1 + 0)}) != ($ret2->{($i_1 + 0)}))) {
-                    return false;
-                }
-                $i_1 = ($i_1 + 1);
-            }
-        }
-
-        $stack1 = $new1;
-        $stack2 = $new2;
+    $x = $un_just_all($x);
+    $y = $un_just_all($y);
+    if (($x == $y)) {
+        return true;
     }
-    return ((is_string($stack2) ? strlen($stack2) : count((array)$stack2)) == 0);
+    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_no_force_equal_p, &$lang_set_do) {
+        if (($jsbool_no_force_equal_p($f1($xx), $f1($yy)) &&
+            $jsbool_no_force_equal_p($f2($xx), $f2($yy)))) {
+            $lang_set_do($xx, $yy);
+            return true;
+        } else {
+            return false;
+        }
+
+    });
+    if ($null_p($x)) {
+        if (!($null_p($y))) {
+            return false;
+        }
+        $lang_set_do($x, $null_v);
+        $lang_set_do($y, $null_v);
+        return true;
+    } elseif ($symbol_p($x)) {
+        if (!($symbol_p($y))) {
+            return false;
+        }
+        return $symbol_equal_p($x, $y);
+    } elseif ($construction_p($x)) {
+        if (!($construction_p($y))) {
+            return false;
+        }
+        return $end_2($x, $y, $construction_head, $construction_tail);
+    } elseif ($error_p($x)) {
+        if (!($error_p($y))) {
+            return false;
+        }
+        return $end_2($x, $y, $error_name, $error_list);
+    } elseif ($data_p($x)) {
+        if (!($data_p($y))) {
+            return false;
+        }
+        return $end_2($x, $y, $data_name, $data_list);
+    } elseif ($delay_p($x)) {
+        return false;
+    }
+    return $LANG_ERROR();
 });
 $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$can_new_symbol_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_symbol, &$function_symbol, &$hole_set_do, &$isOrNot_symbol, &$jsArray_to_list, &$list_to_jsArray, &$new_comment, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol, &$null_p, &$null_v, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$val2env) {
     $state_const = NULL;
@@ -2644,6 +2607,35 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$LANG_ERROR, &$__TS__Array
 
     return $result;
 });
+$machinetext_print_step2_do = (function ($x = NULL, $ret_push_do = NULL, $new_stack_push_do = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
+    $x = $un_just_all($x);
+    $conslike = (function ($xx = NULL, $s = NULL, $g1 = NULL, $g2 = NULL) use (&$new_stack_push_do, &$ret_push_do) {
+        $ret_push_do($s);
+        $new_stack_push_do($g1($xx));
+        return $new_stack_push_do($g2($xx));
+    });
+    if ($symbol_p($x)) {
+        $ret_push_do("^");
+        $ret_push_do($un_symbol_unicodechar($x));
+        return $ret_push_do("^");
+    } elseif ($construction_p($x)) {
+        return $conslike($x, ".", $construction_head, $construction_tail);
+    } elseif ($null_p($x)) {
+        return $ret_push_do("_");
+    } elseif ($data_p($x)) {
+        return $conslike($x, "#", $data_name, $data_list);
+    } elseif ($error_p($x)) {
+        return $conslike($x, "!", $error_name, $error_list);
+    } elseif ($delay_p($x)) {
+        $y = $delay2delay_evaluate($x);
+        return $conslike($y, "\$", (function ($vl = NULL) use (&$delay_evaluate_env, &$env2val) {
+            return $env2val($delay_evaluate_env($vl));
+        }), $delay_evaluate_x);
+    } else {
+        return $LANG_ERROR();
+    }
+
+});
 $machinetext_print_step = (function ($stack = NULL) use (&$__TS__ArrayPush, &$machinetext_print_step2_do) {
     $result = ((object)[]);
     $new_stack = ((object)[]);
@@ -2859,6 +2851,7 @@ $____exports->{"can_new_symbol_p"} = $can_new_symbol_p;
 $____exports->{"new_symbol"} = $new_symbol;
 $____exports->{"symbol_p"} = $symbol_p;
 $____exports->{"un_symbol"} = $un_symbol;
+$____exports->{"symbol_equal_p"} = $symbol_equal_p;
 $____exports->{"new_construction"} = $new_construction;
 $____exports->{"construction_p"} = $construction_p;
 $____exports->{"construction_head"} = $construction_head;

@@ -112,16 +112,4 @@ const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_
 
 const false_v: LangVal = new_data(false_symbol, new_list())
 const true_v: LangVal = new_data(true_symbol, new_list())
-function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
-    if (x === y) {
-        return true
-    }
-    if (un_symbol_unicodechar(x) === un_symbol_unicodechar(y)) {
-        lang_set_do(x, y)
-        return true
-    } else {
-        return false
-    }
-}
-
 // 相對獨立的部分。符號名稱 }}}

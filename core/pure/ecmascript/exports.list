@@ -7,6 +7,7 @@ symbol_p
 can_new_symbol_p
 new_symbol
 un_symbol
+symbol_equal_p
 new_construction
 construction_p
 construction_head

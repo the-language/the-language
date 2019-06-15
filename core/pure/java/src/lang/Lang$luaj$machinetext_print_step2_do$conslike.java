@@ -1,9 +1,9 @@
 package lang;
-public class Lang$luaj$75$conslike extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$machinetext_print_step2_do$conslike extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     
-    public Lang$luaj$75$conslike() {
+    public Lang$luaj$machinetext_print_step2_do$conslike() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

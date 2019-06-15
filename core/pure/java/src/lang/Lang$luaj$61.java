@@ -1,6 +1,7 @@
 package lang;
-public class Lang$luaj$61 extends org.luaj.vm2.lib.ThreeArgFunction {
+public class Lang$luaj$61 extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue[] u0;
+    org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
@@ -14,14 +15,18 @@ public class Lang$luaj$61 extends org.luaj.vm2.lib.ThreeArgFunction {
     public Lang$luaj$61() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0, org.luaj.vm2.LuaValue a1) {
+    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
+        org.luaj.vm2.LuaValue a0 = a.arg(1);
+        org.luaj.vm2.LuaValue a1 = a.arg(2);
+        a.subargs(3);
         org.luaj.vm2.LuaValue a2 = k0;
-        while(a2.lt_b(a.len())) {
-            if (this.u0[0].call(a.get(a2.add(k0).add(k1)), a0).toboolean()) {
-                return a.get(a2.add(k1).add(k1));
+        while(a2.lt_b(a0.len())) {
+            if (this.u0[0].call(a0.get(a2.add(k0).add(k1)), a1).toboolean()) {
+                org.luaj.vm2.Varargs a3 = a0.get(a2.add(k1).add(k1));
+                return a3;
             }
             a2 = a2.add(k2);
         }
-        return a1;
+        return org.luaj.vm2.LuaValue.tailcallOf(this.u1, (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.NONE);
     }
 }
