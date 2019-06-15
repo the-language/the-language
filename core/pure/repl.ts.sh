@@ -1,7 +1,7 @@
 #!/bin/sh
 oldpwd="$(pwd)"
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" ||exit
 bin="$(pwd)"
 make typescript/lang.ts ||exit
-cd "$oldpwd"
+cd "$oldpwd" ||exit
 "$bin"/typescript/node_modules/.bin/ts-node -T -r "$bin"/repl.ts.r.ts "$@"
