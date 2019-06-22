@@ -15,7 +15,7 @@ public class Lang$luaj$complex_parse$6 extends org.luaj.vm2.lib.VarArgFunction {
     static {
         k0 = org.luaj.vm2.LuaString.valueOf("");
         k1 = org.luaj.vm2.LuaString.valueOf("tostring");
-        k2 = org.luaj.vm2.LuaString.valueOf("Not Symbol");
+        k2 = org.luaj.vm2.LuaString.valueOf("Not Atom");
     }
     
     public Lang$luaj$complex_parse$6() {

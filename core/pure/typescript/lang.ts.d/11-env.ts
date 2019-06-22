@@ -66,7 +66,7 @@ function env2val(env: Env): LangVal {
     for (let i = 0; i < env.length; i = i + 2) {
         ret = new_construction(new_list(env[i + 0], env[i + 1]), ret)
     }
-    return new_data(mapping_symbol, new_list(ret))
+    return new_data(mapping_atom, new_list(ret))
 }
 
 function env_foreach(env: Env, f: (k: LangVal, v: LangVal) => void): void {
@@ -81,10 +81,10 @@ function val2env(x: LangVal): OrFalse<Env> {
         return false
     }
     let s: LangVal = force_all(data_name(x))
-    if (!symbol_p(s)) {
+    if (!atom_p(s)) {
         return false
     }
-    if (!symbol_equal_p(s, mapping_symbol)) {
+    if (!atom_equal_p(s, mapping_atom)) {
         return false
     }
     s = force_all(data_list(x))

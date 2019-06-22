@@ -38,7 +38,7 @@ let symbols_set_neg = () => {
     symbols_set_neg = () => r;
     return r;
 };
-const symbol_t = 0 /* symbol_t */;
+const atom_t = 0 /* atom_t */;
 const construction_t = 1 /* construction_t */;
 const null_t = 2 /* null_t */;
 const data_t = 3 /* data_t */;
@@ -77,32 +77,32 @@ function un_comment_all(x) {
     return x;
 }
 export { new_comment, comment_p, comment_comment, comment_x, un_comment_all };
-function can_new_symbol_unicodechar_p(x) {
+function can_new_atom_unicodechar_p(x) {
     return x in symbols_set_neg();
 }
-function new_symbol_unicodechar(x) {
-    return [symbol_t, x];
+function new_atom_unicodechar(x) {
+    return [atom_t, x];
 }
-function symbol_p(x) {
-    return x[0] === symbol_t;
+function atom_p(x) {
+    return x[0] === atom_t;
 }
-function un_symbol_unicodechar(x) {
+function un_atom_unicodechar(x) {
     return x[1];
 }
-function can_new_symbol_p(x) {
+function can_new_atom_p(x) {
     return x in symbols_set();
 }
-function new_symbol(x) {
-    return new_symbol_unicodechar(symbols_set()[x]);
+function new_atom(x) {
+    return new_atom_unicodechar(symbols_set()[x]);
 }
-function un_symbol(x) {
-    return symbols_set_neg()[un_symbol_unicodechar(x)];
+function un_atom(x) {
+    return symbols_set_neg()[un_atom_unicodechar(x)];
 }
-function symbol_equal_p(x, y) {
+function atom_equal_p(x, y) {
     if (x === y) {
         return true;
     }
-    if (un_symbol_unicodechar(x) === un_symbol_unicodechar(y)) {
+    if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
         lang_set_do(x, y);
         return true;
     }
@@ -110,7 +110,7 @@ function symbol_equal_p(x, y) {
         return false;
     }
 }
-export { can_new_symbol_p, new_symbol, symbol_p, un_symbol, symbol_equal_p };
+export { can_new_atom_p, new_atom, atom_p, un_atom, atom_equal_p };
 function new_construction(x, y) {
     return [construction_t, x, y];
 }
@@ -298,78 +298,78 @@ function lang_copy_do(x) {
     hole_set_do(ret, x);
     return ret; // type WIP
 }
-const system_symbol = new_symbol("太始初核");
-const name_symbol = new_symbol("符名");
-const function_symbol = new_symbol("化滅");
-const form_symbol = new_symbol("式形");
-const equal_symbol = new_symbol("等同");
-const evaluate_sym = new_symbol("解算");
-const theThing_symbol = new_symbol("特定其物");
-const something_symbol = new_symbol("省略一物");
-const mapping_symbol = new_symbol("映表");
-const if_symbol = new_symbol("如若");
-const typeAnnotation_symbol = new_symbol("一類何物");
-const isOrNot_symbol = new_symbol("是非");
-const sub_symbol = new_symbol("其子");
-const true_symbol = new_symbol("爻陽");
-const false_symbol = new_symbol("爻陰");
-const quote_symbol = new_symbol("引用");
-const apply_symbol = new_symbol("應用");
-const null_symbol = new_symbol("間空");
-const construction_symbol = new_symbol("連頸");
-const data_symbol = new_symbol("構物");
-const error_symbol = new_symbol("謬誤");
-const symbol_symbol = new_symbol("詞素");
-const list_symbol = new_symbol("列序");
-const head_symbol = new_symbol("首始");
-const tail_symbol = new_symbol("尾末");
-const thing_symbol = new_symbol("之物");
-const theWorldStopped_symbol = new_symbol("宇宙亡矣");
-const effect_symbol = new_symbol("效應");
-//unused//const sequentialWordFormation_symbol = new_symbol('為符名連')
-//unused//const inputOutput_symbol = new_symbol("出入改滅")
-const comment_symbol = new_symbol("註疏");
-const the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol));
+const system_atom = new_atom("太始初核");
+const name_atom = new_atom("符名");
+const function_atom = new_atom("化滅");
+const form_atom = new_atom("式形");
+const equal_atom = new_atom("等同");
+const evaluate_sym = new_atom("解算");
+const theThing_atom = new_atom("特定其物");
+const something_atom = new_atom("省略一物");
+const mapping_atom = new_atom("映表");
+const if_atom = new_atom("如若");
+const typeAnnotation_atom = new_atom("一類何物");
+const isOrNot_atom = new_atom("是非");
+const sub_atom = new_atom("其子");
+const true_atom = new_atom("爻陽");
+const false_atom = new_atom("爻陰");
+const quote_atom = new_atom("引用");
+const apply_atom = new_atom("應用");
+const null_atom = new_atom("間空");
+const construction_atom = new_atom("連頸");
+const data_atom = new_atom("構物");
+const error_atom = new_atom("謬誤");
+const atom_atom = new_atom("詞素");
+const list_atom = new_atom("列序");
+const head_atom = new_atom("首始");
+const tail_atom = new_atom("尾末");
+const thing_atom = new_atom("之物");
+const theWorldStopped_atom = new_atom("宇宙亡矣");
+const effect_atom = new_atom("效應");
+//unused//const sequentialWordFormation_atom = new_atom('為符名連')
+//unused//const inputOutput_atom = new_atom("出入改滅")
+const comment_atom = new_atom("註疏");
+const the_world_stopped_v = new_error(system_atom, new_list(theWorldStopped_atom, something_atom));
 function systemName_make(x) {
-    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)));
+    return new_data(name_atom, new_construction(system_atom, new_construction(x, null_v)));
 }
 function make_builtin_f_new_sym_f(x_sym) {
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol));
+    return systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, something_atom, x_sym), theThing_atom));
 }
 function make_builtin_f_get_sym_f(t_sym, x_sym) {
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym));
+    return systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, new_list(t_sym), something_atom), x_sym));
 }
 function make_builtin_f_p_sym_f(t_sym) {
-    return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))));
+    return systemName_make(new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, new_list(typeAnnotation_atom, t_sym, something_atom))));
 }
-const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol);
-const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol);
-const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol);
-const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol);
-const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol);
-const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol);
-const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol);
-const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol);
-const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol);
-const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol);
-const construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol);
-const construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol);
-const symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol);
-const null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol);
-const equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)));
-const apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(function_symbol, something_symbol), something_symbol), apply_symbol));
-const evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym));
-const list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol));
-const if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol));
-const quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol));
-const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol));
-const function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)));
-const form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)));
-const form_use_systemName = systemName_make(new_list(form_symbol, form_symbol));
-const comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol));
-const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol));
-const false_v = new_data(false_symbol, new_list());
-const true_v = new_data(true_symbol, new_list());
+const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_atom);
+const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, name_atom);
+const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, list_atom);
+const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_atom);
+const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_atom);
+const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, name_atom);
+const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, list_atom);
+const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_atom);
+const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_atom);
+const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_atom);
+const construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, head_atom);
+const construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, tail_atom);
+const atom_p_function_builtin_systemName = make_builtin_f_p_sym_f(atom_atom);
+const null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_atom);
+const equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, equal_atom)));
+const apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, new_construction(function_atom, something_atom), something_atom), apply_atom));
+const evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, evaluate_sym));
+const list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_atom, new_list(typeAnnotation_atom, thing_atom, something_atom));
+const if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, if_atom));
+const quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, form_atom, quote_atom));
+const lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, function_atom)), theThing_atom));
+const function_builtin_use_systemName = systemName_make(new_list(form_atom, new_list(system_atom, function_atom)));
+const form_builtin_use_systemName = systemName_make(new_list(form_atom, new_list(system_atom, form_atom)));
+const form_use_systemName = systemName_make(new_list(form_atom, form_atom));
+const comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, comment_atom));
+const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, form_atom, comment_atom));
+const false_v = new_data(false_atom, new_list());
+const true_v = new_data(true_atom, new_list());
 // 相對獨立的部分。符號名稱 }}}
 /*
     The Language
@@ -529,7 +529,7 @@ function force_all_inner(raw, parents_history = {}, ref_novalue_replace = [false
                     construction_p_function_builtin_systemName,
                     construction_head_function_builtin_systemName,
                     construction_tail_function_builtin_systemName,
-                    symbol_p_function_builtin_systemName,
+                    atom_p_function_builtin_systemName,
                     null_p_function_builtin_systemName];
                 let is_elim = false;
                 for (const elim_s_v of elim_s) {
@@ -670,7 +670,7 @@ function env2val(env) {
     for (let i = 0; i < env.length; i = i + 2) {
         ret = new_construction(new_list(env[i + 0], env[i + 1]), ret);
     }
-    return new_data(mapping_symbol, new_list(ret));
+    return new_data(mapping_atom, new_list(ret));
 }
 function env_foreach(env, f) {
     for (let i = 0; i < env.length; i = i + 2) {
@@ -683,10 +683,10 @@ function val2env(x) {
         return false;
     }
     let s = force_all(data_name(x));
-    if (!symbol_p(s)) {
+    if (!atom_p(s)) {
         return false;
     }
-    if (!symbol_equal_p(s, mapping_symbol)) {
+    if (!atom_equal_p(s, mapping_atom)) {
         return false;
     }
     s = force_all(data_list(x));
@@ -788,7 +788,7 @@ function real_evaluate(env, raw, selfvalraw) {
     if (delay_just_p(x)) {
         return selfvalraw;
     }
-    const error_v = () => new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))));
+    const error_v = () => new_error(system_atom, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x))));
     if (construction_p(x)) {
         return force_uncomment_list_1(x, error_v, () => selfvalraw, (comments, xs) => {
             if (comments.length !== 0) {
@@ -819,10 +819,10 @@ function real_evaluate(env, raw, selfvalraw) {
                 if (delay_just_p(f_type)) {
                     return selfvalraw;
                 }
-                if (!symbol_p(f_type)) {
+                if (!atom_p(f_type)) {
                     return error_v();
                 }
-                if (!symbol_equal_p(f_type, form_symbol)) {
+                if (!atom_equal_p(f_type, form_atom)) {
                     return error_v();
                 }
                 const f_list = force1(data_list(f));
@@ -879,7 +879,7 @@ function real_evaluate(env, raw, selfvalraw) {
     return LANG_ERROR();
 }
 function name_p(x) {
-    return symbol_p(x) || data_p(x);
+    return atom_p(x) || data_p(x);
 }
 function make_builtin_p_func(p_sym, p_jsfunc) {
     return [p_sym,
@@ -953,11 +953,11 @@ const real_builtin_func_apply_s = [
                 }
                 return true_v;
             }
-            else if (symbol_p(x)) {
-                if (!symbol_p(y)) {
+            else if (atom_p(x)) {
+                if (!atom_p(y)) {
                     return false_v;
                 }
-                if (symbol_equal_p(x, y)) {
+                if (atom_equal_p(x, y)) {
                     return true_v;
                 }
                 else {
@@ -1005,7 +1005,7 @@ const real_builtin_func_apply_s = [
             }
             return evaluate(maybeenv, x);
         }],
-    make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
+    make_builtin_p_func(atom_p_function_builtin_systemName, atom_p),
     [list_chooseOne_function_builtin_systemName, 1, (xs, error_v) => {
             // 一般返回第一个，可以因为优化返回其他的任意一个
             // xs可以無限長，不判斷是否真的是list
@@ -1028,13 +1028,13 @@ const real_builtin_func_apply_s = [
             }
             // WIP delay未正確處理(影響較小)
             const nam = force_all(data_name(b));
-            if (!symbol_p(nam)) {
+            if (!atom_p(nam)) {
                 return error_v();
             }
-            if (symbol_equal_p(nam, true_symbol)) {
+            if (atom_equal_p(nam, true_atom)) {
                 return x;
             }
-            if (symbol_equal_p(nam, false_symbol)) {
+            if (atom_equal_p(nam, false_atom)) {
                 return y;
             }
             return error_v();
@@ -1044,7 +1044,7 @@ const real_builtin_func_apply_s = [
 // 註疏系統WIP
 function real_apply(f, xs, selfvalraw) {
     // WIP delay未正確處理(影響較小)
-    const error_v = () => new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))));
+    const error_v = () => new_error(system_atom, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs)))));
     f = force1(f);
     if (delay_just_p(f)) {
         return selfvalraw;
@@ -1053,7 +1053,7 @@ function real_apply(f, xs, selfvalraw) {
         return error_v();
     }
     const f_type = force_all(data_name(f));
-    if (!(symbol_p(f_type) && symbol_equal_p(f_type, function_symbol))) {
+    if (!(atom_p(f_type) && atom_equal_p(f_type, function_atom))) {
         return error_v();
     }
     const f_list = force_all(data_list(f));
@@ -1100,7 +1100,7 @@ function real_apply(f, xs, selfvalraw) {
 }
 // 註疏系統WIP
 function real_builtin_func_apply(f, xs, selfvalraw) {
-    const error_v = () => new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
+    const error_v = () => new_error(system_atom, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs))));
     for (const xx of real_builtin_func_apply_s) {
         // WIP delay未正確處理(影響較小)
         if (jsbool_equal_p(f, xx[0])) {
@@ -1123,7 +1123,7 @@ function real_builtin_func_apply(f, xs, selfvalraw) {
 }
 // 註疏系統WIP
 function real_builtin_form_apply(env, f, xs, selfvalraw) {
-    const error_v = () => new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
+    const error_v = () => new_error(system_atom, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); // WIP delay未正確處理(影響較小)
     if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {
             return error_v();
@@ -1194,7 +1194,7 @@ function new_lambda(env, args_pat, body, error_v) {
     for (let i = env_vars.length - 1; i >= 0; i--) {
         new_args = new_construction(make_quote(must_env_get(env, env_vars[i])), new_args);
     }
-    return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)));
+    return new_data(function_atom, new_list(args_pat, new_construction(make_quote(new_data(function_atom, new_list(new_args_pat, body))), new_args)));
 }
 // 註疏系統WIP
 // WIP delay未正確處理(影響較小)
@@ -1224,11 +1224,11 @@ function jsbool_equal_p(x, y) {
         lang_set_do(y, null_v);
         return true;
     }
-    else if (symbol_p(x)) {
-        if (!symbol_p(y)) {
+    else if (atom_p(x)) {
+        if (!atom_p(y)) {
             return false;
         }
-        return symbol_equal_p(x, y);
+        return atom_equal_p(x, y);
     }
     else if (construction_p(x)) {
         if (!construction_p(y)) {
@@ -1280,11 +1280,11 @@ function jsbool_no_force_equal_p(x, y) {
         lang_set_do(y, null_v);
         return true;
     }
-    else if (symbol_p(x)) {
-        if (!symbol_p(y)) {
+    else if (atom_p(x)) {
+        if (!atom_p(y)) {
             return false;
         }
-        return symbol_equal_p(x, y);
+        return atom_equal_p(x, y);
     }
     else if (construction_p(x)) {
         if (!construction_p(y)) {
@@ -1358,8 +1358,8 @@ function simple_print(x) {
     else if (error_p(x)) {
         return "!" + simple_print(new_construction(error_name(x), error_list(x)));
     }
-    else if (symbol_p(x)) {
-        return un_symbol(x);
+    else if (atom_p(x)) {
+        return un_atom(x);
     }
     else if (comment_p(x)) {
         return ";(" + simple_print(comment_comment(x)) + " " + simple_print(comment_x(x)) + ")";
@@ -1424,31 +1424,31 @@ function complex_parse(x) {
         }
         return true;
     }
-    function symbol() {
+    function atom() {
         if (eof()) {
             return false;
         }
         let x = get();
         let ret = "";
-        if (!a_symbol_p(x)) {
+        if (!a_atom_p(x)) {
             put(x);
             return false;
         }
-        while (a_symbol_p(x) && !eof()) {
+        while (a_atom_p(x) && !eof()) {
             ret += x;
             x = get();
         }
-        if (a_symbol_p(x)) {
+        if (a_atom_p(x)) {
             ret += x;
         }
         else {
             put(x);
         }
-        if (can_new_symbol_p(ret)) {
-            return new_symbol(ret);
+        if (can_new_atom_p(ret)) {
+            return new_atom(ret);
         }
         else {
-            return parse_error("Not Symbol" + ret);
+            return parse_error("Not Atom" + ret);
         }
     }
     function readlist() {
@@ -1608,7 +1608,7 @@ function complex_parse(x) {
         return apply(f, jsxs);
     });
     const readcomment = make_read_two(";", (comment, x) => new_comment(comment, x));
-    function a_symbol_p(chr) {
+    function a_atom_p(chr) {
         if (a_space_p(chr)) {
             return false;
         }
@@ -1656,7 +1656,7 @@ function complex_parse(x) {
         // 重複自val()
         let fs;
         if (strict) {
-            fs = [readlist, symbol, readsysname_no_pack_bracket, data,
+            fs = [readlist, atom, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         }
         else {
@@ -1678,21 +1678,21 @@ function complex_parse(x) {
         const head = get();
         if (head === '.') {
             const y = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y);
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_list(vl), something_atom), y);
         }
         else if (head === ':') {
             const y = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, y, vl);
+            return new_list(typeAnnotation_atom, y, vl);
         }
         else if (head === '~') {
-            return new_list(isOrNot_symbol, vl);
+            return new_list(isOrNot_atom, vl);
         }
         else if (head === '@') {
             const y = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y);
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_construction(vl, something_atom), something_atom), y);
         }
         else if (head === '?') {
-            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl));
+            return new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, vl));
         }
         else if (head === '/') {
             let ys = [vl];
@@ -1708,7 +1708,7 @@ function complex_parse(x) {
                     break;
                 }
             }
-            return new_list(sub_symbol, jsArray_to_list(ys));
+            return new_list(sub_atom, jsArray_to_list(ys));
         }
         else {
             put(head);
@@ -1725,13 +1725,13 @@ function complex_parse(x) {
             const c0 = get();
             if (c0 === '+') {
                 const x = readsysname_no_pack_inner_must();
-                return new_list(form_symbol, new_list(system_symbol, x));
+                return new_list(form_atom, new_list(system_atom, x));
             }
             else {
                 put(c0);
             }
             const x = readsysname_no_pack_inner_must();
-            return new_list(form_symbol, x);
+            return new_list(form_atom, x);
         }
         else if (head === ':') {
             un_maybe(not_eof());
@@ -1739,21 +1739,21 @@ function complex_parse(x) {
             if (c0 === '&') {
                 assert_get('>');
                 const x = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x)), theThing_symbol);
+                return new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, x)), theThing_atom);
             }
             else if (c0 === '>') {
                 const x = readsysname_no_pack_inner_must();
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x), theThing_symbol);
+                return new_list(typeAnnotation_atom, new_list(function_atom, something_atom, x), theThing_atom);
             }
             else {
                 put(c0);
             }
             const x = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, x, theThing_symbol);
+            return new_list(typeAnnotation_atom, x, theThing_atom);
         }
         else if (head === '+') {
             const x = readsysname_no_pack_inner_must();
-            return new_list(system_symbol, x);
+            return new_list(system_atom, x);
         }
         else if (head === '[') {
             const x = readsysname_no_pack_inner_must();
@@ -1763,11 +1763,11 @@ function complex_parse(x) {
         else if (head === '_') {
             assert_get(':');
             const x = readsysname_no_pack_inner_must();
-            return new_list(typeAnnotation_symbol, x, something_symbol);
+            return new_list(typeAnnotation_atom, x, something_atom);
         }
         else {
             put(head);
-            const x = symbol();
+            const x = atom();
             if (x === false) {
                 return false;
             }
@@ -1779,7 +1779,7 @@ function complex_parse(x) {
         if (x === false) {
             return false;
         }
-        if (symbol_p(x)) {
+        if (atom_p(x)) {
             return x;
         }
         return systemName_make(x);
@@ -1789,8 +1789,8 @@ export { complex_parse };
 function complex_print(val) {
     function print_sys_name(x, is_inner_bool) {
         // 是 complex_print(systemName_make(x))
-        if (symbol_p(x)) {
-            return un_symbol(x);
+        if (atom_p(x)) {
+            return un_atom(x);
         }
         function inner_bracket(vl) {
             if (is_inner_bool) {
@@ -1801,44 +1801,44 @@ function complex_print(val) {
             }
         }
         const maybe_xs = maybe_list_to_jsArray(x);
-        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
-            // new_list(typeAnnotation_symbol, maybe_xs[1], maybe_xs[2])
+        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_atom)) {
+            // new_list(typeAnnotation_atom, maybe_xs[1], maybe_xs[2])
             const maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1]);
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_symbol)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_atom)) {
                 const var_2_1 = maybe_lst_2[1];
-                // new_list(typeAnnotation_symbol, new_list(function_symbol, var_2_1, maybe_lst_2[2]), maybe_xs[2])
+                // new_list(typeAnnotation_atom, new_list(function_atom, var_2_1, maybe_lst_2[2]), maybe_xs[2])
                 const maybe_lst_3 = maybe_list_to_jsArray(var_2_1);
-                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
+                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, new_list(maybe_lst_3[0]), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true));
                 }
-                else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(var_2_1), something_symbol), something_symbol), maybe_xs[2])
+                else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, new_construction(construction_head(var_2_1), something_atom), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true));
                 }
-                else if (jsbool_no_force_equal_p(var_2_1, something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
+                else if (jsbool_no_force_equal_p(var_2_1, something_atom) && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, something_atom, maybe_lst_2[2]), theThing_atom)
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], true));
                 }
             }
             const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2]);
-            if (jsbool_no_force_equal_p(maybe_xs[1], function_symbol) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_symbol)) {
-                // new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, maybe_lst_44[1]))
+            if (jsbool_no_force_equal_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_atom)) {
+                // new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, maybe_lst_44[1]))
                 return inner_bracket(print_sys_name(maybe_lst_44[1], true) + '?');
             }
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) && jsbool_no_force_equal_p(maybe_lst_2[0], form_symbol)) {
-                // new_list(typeAnnotation_symbol, new_list(form_symbol, var_2_1), theThing_symbol)
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom) && jsbool_no_force_equal_p(maybe_lst_2[0], form_atom)) {
+                // new_list(typeAnnotation_atom, new_list(form_atom, var_2_1), theThing_atom)
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1]);
-                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_symbol) && jsbool_no_force_equal_p(maybe_lst_88[1], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, maybe_lst_88[2])), theThing_symbol)
+                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_atom) && jsbool_no_force_equal_p(maybe_lst_88[1], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, maybe_lst_88[2])), theThing_atom)
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true));
                 }
             }
             let hd;
-            if (jsbool_no_force_equal_p(maybe_xs[2], something_symbol)) {
+            if (jsbool_no_force_equal_p(maybe_xs[2], something_atom)) {
                 hd = '_';
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
+            else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
                 hd = '';
             }
             else {
@@ -1847,25 +1847,25 @@ function complex_print(val) {
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true));
         }
         else if (maybe_xs !== false && maybe_xs.length === 2) {
-            if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {
-                // new_list(form_symbol, maybe_xs[1])
+            if (jsbool_no_force_equal_p(maybe_xs[0], form_atom)) {
+                // new_list(form_atom, maybe_xs[1])
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1]);
-                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_symbol)) {
-                    // new_list(form_symbol, new_list(system_symbol, maybe_lst_288[1]))
+                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_atom)) {
+                    // new_list(form_atom, new_list(system_atom, maybe_lst_288[1]))
                     return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], true));
                 }
                 return inner_bracket('&' + print_sys_name(maybe_xs[1], true));
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_symbol)) {
-                // new_list(isOrNot_symbol, maybe_xs[1])
+            else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_atom)) {
+                // new_list(isOrNot_atom, maybe_xs[1])
                 return inner_bracket(print_sys_name(maybe_xs[1], true) + '~');
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
-                // new_list(system_symbol, maybe_xs[1])
+            else if (jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+                // new_list(system_atom, maybe_xs[1])
                 return inner_bracket('+' + print_sys_name(maybe_xs[1], true));
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], sub_symbol)) {
-                // new_list(sub_symbol, maybe_xs[1])
+            else if (jsbool_no_force_equal_p(maybe_xs[0], sub_atom)) {
+                // new_list(sub_atom, maybe_xs[1])
                 const maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1]);
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
                     let tmp = print_sys_name(maybe_lst_8934[0], true);
@@ -1910,7 +1910,7 @@ function complex_print(val) {
         const name = data_name(x);
         const list = data_list(x);
         const maybe_xs = maybe_list_to_jsArray(list);
-        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
+        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_atom) && jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
             // systemName_make(maybe_xs[1])
             return print_sys_name(maybe_xs[1], false);
         }
@@ -1919,8 +1919,8 @@ function complex_print(val) {
     else if (error_p(x)) {
         return "!" + complex_print(new_construction(error_name(x), error_list(x)));
     }
-    else if (symbol_p(x)) {
-        return un_symbol(x);
+    else if (atom_p(x)) {
+        return un_atom(x);
     }
     else if (comment_p(x)) {
         return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")";
@@ -2008,11 +2008,11 @@ function machinetext_parse(rawstr) {
                 }
                 tmp = chr + tmp;
             }
-            if (can_new_symbol_unicodechar_p(tmp)) {
-                stack.unshift(new_symbol_unicodechar(tmp));
+            if (can_new_atom_unicodechar_p(tmp)) {
+                stack.unshift(new_atom_unicodechar(tmp));
             }
             else {
-                return parse_error('can_new_symbol_unicodechar_p("' + tmp + '") == false');
+                return parse_error('can_new_atom_unicodechar_p("' + tmp + '") == false');
             }
         }
         else if (chr === '.') {
@@ -2059,8 +2059,8 @@ function machinetext_print(x) {
                 result += (s);
                 return new_stack.push(g1(xx), g2(xx));
             };
-            if (symbol_p(x)) {
-                result += ('^' + un_symbol_unicodechar(x) + '^');
+            if (atom_p(x)) {
+                result += ('^' + un_atom_unicodechar(x) + '^');
             }
             else if (construction_p(x)) {
                 conslike(x, '.', construction_head, construction_tail);
@@ -2101,8 +2101,8 @@ function run_trampoline(x) {
     return i[1];
 }
 export { trampoline_return, trampoline_delay, run_trampoline };
-const return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)));
-const bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)));
+const return_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)));
+const bind_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(construction_atom, null_v)), null_v)));
 function new_effect_bind(monad, func) {
     return new_data(bind_effect_systemName, new_list(monad, func));
 }
@@ -2166,8 +2166,8 @@ function run_monad_helper(return_handler, op_handler, code, state, next = false)
                             const upval_b = list_d_a;
                             const upval_st = state;
                             const upval_nt = next;
-                            const x = new_symbol('序甲');
-                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))));
+                            const x = new_atom('序甲');
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_atom, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))));
                             return trampoline_delay(r);
                         }
                     }

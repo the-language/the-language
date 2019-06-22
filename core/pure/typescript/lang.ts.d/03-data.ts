@@ -19,7 +19,7 @@
 
 // {{{ 相對獨立的部分。內建數據結構
 const enum LangValType {
-    symbol_t,
+    atom_t,
     construction_t,
     null_t,
     data_t,
@@ -34,7 +34,7 @@ const enum LangValType {
 
     comment_t,
 }
-const symbol_t = LangValType.symbol_t
+const atom_t = LangValType.atom_t
 const construction_t = LangValType.construction_t
 const null_t = LangValType.null_t
 const data_t = LangValType.data_t
@@ -47,8 +47,8 @@ const delay_apply_t = LangValType.delay_apply_t
 
 // 以下爲對TypeScript類型系統的hack，因爲不支援遞回的`type`
 
-export type LangValSymbolUnicodecharG<a extends keyof Symbols_Set_Neg> = [LangValType.symbol_t, a]
-export type LangValSymbol = LangValSymbolUnicodecharG<keyof Symbols_Set_Neg>
+export type LangValAtomUnicodecharG<a extends keyof Symbols_Set_Neg> = [LangValType.atom_t, a]
+export type LangValAtom = LangValAtomUnicodecharG<keyof Symbols_Set_Neg>
 
 export type LangValConsG<a extends LangVal, b extends LangVal> = [LangValType.construction_t, a, b]
 interface LangValConsI extends LangValConsG<LangVal, LangVal> { }
@@ -90,7 +90,7 @@ export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValJustDelayG<a extends LangVal> = LangValJustDelay // 可能不可用類型描述
 export type LangValSysNameG<x extends LangVal> = SystemName_Make<x>
 export type LangValSysName = LangValSysNameG<LangVal>
-export type LangValName = LangValData | LangValSymbol
+export type LangValName = LangValData | LangValAtom
 
 const comment_t = LangValType.comment_t
 export type LangValCommentG<a extends LangVal, b extends LangVal> = [LangValType.comment_t, a, b]
@@ -99,7 +99,7 @@ export type LangValComment = LangValCommentI & LangValCommentG<HackRec_LangVal, 
 
 const hole_t = LangValType.hole_t
 type LangValHole = [LangValType.hole_t]
-export type LangVal = LangValSymbol | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValComment | LangValHole
+export type LangVal = LangValAtom | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValComment | LangValHole
 type HackRec_LangVal = any
 type HackRec_Env = any
 
@@ -134,41 +134,41 @@ function un_comment_all(x: LangVal): LangVal {
 }
 export { new_comment, comment_p, comment_comment, comment_x, un_comment_all }
 
-function can_new_symbol_unicodechar_p(x: string): x is keyof Symbols_Set_Neg {
+function can_new_atom_unicodechar_p(x: string): x is keyof Symbols_Set_Neg {
     return x in symbols_set_neg()
 }
-type New_Symbol_Unicodechar<X extends keyof Symbols_Set_Neg> = LangValSymbolUnicodecharG<X>
-function new_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: X): New_Symbol_Unicodechar<X> {
-    return [symbol_t, x]
+type New_Atom_Unicodechar<X extends keyof Symbols_Set_Neg> = LangValAtomUnicodecharG<X>
+function new_atom_unicodechar<X extends keyof Symbols_Set_Neg>(x: X): New_Atom_Unicodechar<X> {
+    return [atom_t, x]
 }
-function symbol_p(x: LangVal): x is LangValSymbol {
-    return x[0] === symbol_t
+function atom_p(x: LangVal): x is LangValAtom {
+    return x[0] === atom_t
 }
-function un_symbol_unicodechar<X extends keyof Symbols_Set_Neg>(x: LangValSymbolUnicodecharG<X>): X {
+function un_atom_unicodechar<X extends keyof Symbols_Set_Neg>(x: LangValAtomUnicodecharG<X>): X {
     return x[1]
 }
-function can_new_symbol_p(x: string): x is keyof Symbols_Set {
+function can_new_atom_p(x: string): x is keyof Symbols_Set {
     return x in symbols_set()
 }
-type New_Symbol<X extends keyof Symbols_Set> = New_Symbol_Unicodechar<Symbols_Set[X]>
-function new_symbol<X extends keyof Symbols_Set>(x: X): New_Symbol<X> {
-    return new_symbol_unicodechar(symbols_set()[x])
+type New_Atom<X extends keyof Symbols_Set> = New_Atom_Unicodechar<Symbols_Set[X]>
+function new_atom<X extends keyof Symbols_Set>(x: X): New_Atom<X> {
+    return new_atom_unicodechar(symbols_set()[x])
 }
-function un_symbol(x: LangValSymbol): keyof Symbols_Set {
-    return symbols_set_neg()[un_symbol_unicodechar(x)]
+function un_atom(x: LangValAtom): keyof Symbols_Set {
+    return symbols_set_neg()[un_atom_unicodechar(x)]
 }
-function symbol_equal_p(x: LangValSymbol, y: LangValSymbol): boolean {
+function atom_equal_p(x: LangValAtom, y: LangValAtom): boolean {
     if (x === y) {
         return true
     }
-    if (un_symbol_unicodechar(x) === un_symbol_unicodechar(y)) {
+    if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
         lang_set_do(x, y)
         return true
     } else {
         return false
     }
 }
-export { can_new_symbol_p, New_Symbol, new_symbol, symbol_p, un_symbol, symbol_equal_p }
+export { can_new_atom_p, New_Atom, new_atom, atom_p, un_atom, atom_equal_p }
 
 type New_Construction<X extends LangVal, Y extends LangVal> = LangValConsG<X, Y>
 function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Construction<X, Y> {

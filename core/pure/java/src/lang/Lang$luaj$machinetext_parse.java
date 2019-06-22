@@ -26,7 +26,7 @@ public class Lang$luaj$machinetext_parse extends org.luaj.vm2.lib.VarArgFunction
         k0 = org.luaj.vm2.LuaString.valueOf("^");
         k1 = org.luaj.vm2.LuaString.valueOf("");
         k2 = org.luaj.vm2.LuaString.valueOf("tostring");
-        k3 = org.luaj.vm2.LuaString.valueOf("can_new_symbol_unicodechar_p(\"");
+        k3 = org.luaj.vm2.LuaString.valueOf("can_new_atom_unicodechar_p(\"");
         k4 = org.luaj.vm2.LuaString.valueOf("\") == false");
         k5 = org.luaj.vm2.LuaString.valueOf(".");
         k6 = org.luaj.vm2.LuaString.valueOf("#");

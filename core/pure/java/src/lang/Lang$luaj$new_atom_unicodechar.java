@@ -1,8 +1,8 @@
 package lang;
-public class Lang$luaj$new_symbol_unicodechar extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$new_atom_unicodechar extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue[] u0;
     
-    public Lang$luaj$new_symbol_unicodechar() {
+    public Lang$luaj$new_atom_unicodechar() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

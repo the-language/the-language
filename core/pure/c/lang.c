@@ -11634,10 +11634,10 @@ static inline int lcf2_B(lua_State *L) {
   } else {
 
     /* else
-     * return r("Not Symbol"..tostring(t)) */
+     * return r("Not Atom"..tostring(t)) */
     const int lc811 = lua_gettop(L);
     lc_getupvalue(L, lua_upvalueindex(1), 0, 193);
-    lua_pushliteral(L, "Not Symbol");
+    lua_pushliteral(L, "Not Atom");
     lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
     lua_pushvalue(L, 2);
     lua_call(L, 1, 1);
@@ -14160,7 +14160,7 @@ static inline int lcf1_ee(lua_State *L) {
    * if Xe(t)then
    * return n(t)
    * else
-   * return r("Not Symbol"..tostring(t))
+   * return r("Not Atom"..tostring(t))
    * end
    * end */
   lua_pushvalue(L, lc783);
@@ -16622,11 +16622,11 @@ static inline int lcf2_H(lua_State *L) {
       } else {
 
         /* else
-         * return a("can_new_symbol_unicodechar_p(\""..tostring(t).."\") ==
+         * return a("can_new_atom_unicodechar_p(\""..tostring(t).."\") ==
          * false") */
         const int lc1244 = lua_gettop(L);
         lc_getupvalue(L, lc1225, 2, 211);
-        lua_pushliteral(L, "can_new_symbol_unicodechar_p(\"");
+        lua_pushliteral(L, "can_new_atom_unicodechar_p(\"");
         lua_getfield(L, LUA_ENVIRONINDEX, "tostring");
         lua_pushvalue(L, 10);
         lua_call(L, 1, 1);
@@ -21039,7 +21039,7 @@ static inline int lcf_main(lua_State *L) {
    * if Xe(t)then
    * return n(t)
    * else
-   * return r("Not Symbol"..tostring(t))
+   * return r("Not Atom"..tostring(t))
    * end
    * end
    * function g()
@@ -21599,7 +21599,7 @@ static inline int lcf_main(lua_State *L) {
    * if rt(t)then
    * Ne(e,Ze(t))
    * else
-   * return a("can_new_symbol_unicodechar_p(\""..tostring(t).."\") == false")
+   * return a("can_new_atom_unicodechar_p(\""..tostring(t).."\") == false")
    * end
    * elseif t=="."then
    * o(s)
@@ -21918,37 +21918,37 @@ static inline int lcf_main(lua_State *L) {
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.can_new_symbol_p=Xe */
+  /* t.can_new_atom_p=Xe */
   lc_getupvalue(L, (lc1317 + lc_nextra), 27, 145);
-  lua_pushliteral(L, "can_new_symbol_p");
+  lua_pushliteral(L, "can_new_atom_p");
   lua_insert(L, -2);
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.new_symbol=n */
+  /* t.new_atom=n */
   lc_getupvalue(L, (lc1317 + lc_nextra), 26, 146);
-  lua_pushliteral(L, "new_symbol");
+  lua_pushliteral(L, "new_atom");
   lua_insert(L, -2);
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.symbol_p=p */
+  /* t.atom_p=p */
   lc_getupvalue(L, (lc1317 + lc_nextra), 33, 97);
-  lua_pushliteral(L, "symbol_p");
+  lua_pushliteral(L, "atom_p");
   lua_insert(L, -2);
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.un_symbol=de */
+  /* t.un_atom=de */
   lc_getupvalue(L, (lc1317 + lc_nextra), 33, 95);
-  lua_pushliteral(L, "un_symbol");
+  lua_pushliteral(L, "un_atom");
   lua_insert(L, -2);
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);
 
-  /* t.symbol_equal_p=D */
+  /* t.atom_equal_p=D */
   lc_getupvalue(L, (lc1317 + lc_nextra), 33, 94);
-  lua_pushliteral(L, "symbol_equal_p");
+  lua_pushliteral(L, "atom_equal_p");
   lua_insert(L, -2);
   lua_settable(L, (74 + lc_nextra));
   assert(lua_gettop(L) - lc_nextra == 74);

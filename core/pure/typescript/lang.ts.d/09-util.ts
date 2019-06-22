@@ -166,7 +166,7 @@ function force_all_inner(
                     construction_p_function_builtin_systemName,
                     construction_head_function_builtin_systemName,
                     construction_tail_function_builtin_systemName,
-                    symbol_p_function_builtin_systemName,
+                    atom_p_function_builtin_systemName,
                     null_p_function_builtin_systemName]
                 let is_elim = false
                 for (const elim_s_v of elim_s) {

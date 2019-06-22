@@ -3,11 +3,11 @@ comment_p
 comment_comment
 comment_x
 un_comment_all
-symbol_p
-can_new_symbol_p
-new_symbol
-un_symbol
-symbol_equal_p
+atom_p
+can_new_atom_p
+new_atom
+un_atom
+atom_equal_p
 new_construction
 construction_p
 construction_head

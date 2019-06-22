@@ -64,5 +64,5 @@ python2/lang.py: ecmascript/lang.js ecmascript/exports.list
 go/src: lua/lang.lua
 	racket Makefile.domake.rkt go/src
 
-typescript/lang.ts: typescript/lang.ts.d/00-head.ts typescript/lang.ts.d/01-uuc.ts typescript/lang.ts.d/03-data.ts typescript/lang.ts.d/07-symbol.ts typescript/lang.ts.d/09-util.ts typescript/lang.ts.d/11-env.ts typescript/lang.ts.d/50-lang.ts typescript/lang.ts.d/53-syntax.ts typescript/lang.ts.d/57-machinetext.ts typescript/lang.ts.d/59-effect.ts
+typescript/lang.ts: typescript/lang.ts.d/00-head.ts typescript/lang.ts.d/01-uuc.ts typescript/lang.ts.d/03-data.ts typescript/lang.ts.d/07-name.ts typescript/lang.ts.d/09-util.ts typescript/lang.ts.d/11-env.ts typescript/lang.ts.d/50-lang.ts typescript/lang.ts.d/53-syntax.ts typescript/lang.ts.d/57-machinetext.ts typescript/lang.ts.d/59-effect.ts
 	racket Makefile.premake.rkt

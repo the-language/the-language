@@ -1,9 +1,9 @@
 package lang;
-public class Lang$luaj$new_symbol extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$new_atom extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     
-    public Lang$luaj$new_symbol() {
+    public Lang$luaj$new_atom() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {

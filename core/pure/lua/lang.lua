@@ -40,7 +40,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, symbol_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, symbol_p, un_symbol_unicodechar, un_symbol, symbol_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_symbol, function_symbol, form_symbol, mapping_symbol, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, symbol_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom_unicodechar, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -71,20 +71,20 @@ function un_comment_all(x)
     end
     return x
 end
-function symbol_p(x)
-    return x[1] == symbol_t
+function atom_p(x)
+    return x[1] == atom_t
 end
-function un_symbol_unicodechar(x)
+function un_atom_unicodechar(x)
     return x[2]
 end
-function un_symbol(x)
-    return symbols_set_neg()[un_symbol_unicodechar(x)]
+function un_atom(x)
+    return symbols_set_neg()[un_atom_unicodechar(x)]
 end
-function symbol_equal_p(x, y)
+function atom_equal_p(x, y)
     if x == y then
         return true
     end
-    if un_symbol_unicodechar(x) == un_symbol_unicodechar(y) then
+    if un_atom_unicodechar(x) == un_atom_unicodechar(y) then
         lang_set_do(x, y)
         return true
     else
@@ -382,7 +382,7 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
                     construction_p_function_builtin_systemName,
                     construction_head_function_builtin_systemName,
                     construction_tail_function_builtin_systemName,
-                    symbol_p_function_builtin_systemName,
+                    atom_p_function_builtin_systemName,
                     null_p_function_builtin_systemName,
                 }
                 local is_elim = false
@@ -525,7 +525,7 @@ function env2val(env)
             i = i + 2
         end
     end
-    return new_data(mapping_symbol, new_list(ret))
+    return new_data(mapping_atom, new_list(ret))
 end
 function env_foreach(env, f)
     do
@@ -567,7 +567,7 @@ function real_evaluate(env, raw, selfvalraw)
     if delay_just_p(x) then
         return selfvalraw
     end
-    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
+    local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
     if construction_p(x) then
         return force_uncomment_list_1(x, error_v, function() return selfvalraw end, function(comments, xs)
             if #comments ~= 0 then
@@ -599,10 +599,10 @@ function real_evaluate(env, raw, selfvalraw)
                 if delay_just_p(f_type) then
                     return selfvalraw
                 end
-                if not symbol_p(f_type) then
+                if not atom_p(f_type) then
                     return error_v()
                 end
-                if not symbol_equal_p(f_type, form_symbol) then
+                if not atom_equal_p(f_type, form_atom) then
                     return error_v()
                 end
                 local f_list = force1(data_list(f))
@@ -666,10 +666,10 @@ function real_evaluate(env, raw, selfvalraw)
     return LANG_ERROR()
 end
 function name_p(x)
-    return symbol_p(x) or data_p(x)
+    return atom_p(x) or data_p(x)
 end
 function real_apply(f, xs, selfvalraw)
-    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
+    local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
     f = force1(f)
     if delay_just_p(f) then
         return selfvalraw
@@ -678,7 +678,7 @@ function real_apply(f, xs, selfvalraw)
         return error_v()
     end
     local f_type = force_all(data_name(f))
-    if not (symbol_p(f_type) and symbol_equal_p(f_type, function_symbol)) then
+    if not (atom_p(f_type) and atom_equal_p(f_type, function_atom)) then
         return error_v()
     end
     local f_list = force_all(data_list(f))
@@ -725,7 +725,7 @@ function real_apply(f, xs, selfvalraw)
     return evaluate(env, f_code)
 end
 function real_builtin_func_apply(f, xs, selfvalraw)
-    local function error_v() return new_error(system_symbol, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
+    local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
     for ____, xx in ipairs(real_builtin_func_apply_s) do
         if jsbool_equal_p(f, xx[1]) then
             if #xs ~= xx[2] then
@@ -744,7 +744,7 @@ function real_builtin_func_apply(f, xs, selfvalraw)
     return error_v()
 end
 function real_builtin_form_apply(env, f, xs, selfvalraw)
-    local function error_v() return new_error(system_symbol, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
+    local function error_v() return new_error(system_atom, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
     if jsbool_equal_p(f, quote_form_builtin_systemName) then
         if #xs ~= 1 then
             return error_v()
@@ -818,7 +818,7 @@ function new_lambda(env, args_pat, body, error_v)
             i = i - 1
         end
     end
-    return new_data(function_symbol, new_list(args_pat, new_construction(make_quote(new_data(function_symbol, new_list(new_args_pat, body))), new_args)))
+    return new_data(function_atom, new_list(args_pat, new_construction(make_quote(new_data(function_atom, new_list(new_args_pat, body))), new_args)))
 end
 function jsbool_equal_p(x, y)
     if x == y then
@@ -844,11 +844,11 @@ function jsbool_equal_p(x, y)
         lang_set_do(x, null_v)
         lang_set_do(y, null_v)
         return true
-    elseif symbol_p(x) then
-        if not symbol_p(y) then
+    elseif atom_p(x) then
+        if not atom_p(y) then
             return false
         end
-        return symbol_equal_p(x, y)
+        return atom_equal_p(x, y)
     elseif construction_p(x) then
         if not construction_p(y) then
             return false
@@ -891,8 +891,8 @@ function simple_print(x)
         return "#" .. tostring(simple_print(new_construction(data_name(x), data_list(x))))
     elseif error_p(x) then
         return "!" .. tostring(simple_print(new_construction(error_name(x), error_list(x))))
-    elseif symbol_p(x) then
-        return un_symbol(x)
+    elseif atom_p(x) then
+        return un_atom(x)
     elseif comment_p(x) then
         return ";(" .. tostring(simple_print(comment_comment(x))) .. " " .. tostring(simple_print(comment_x(x))) .. ")"
     elseif delay_evaluate_p(x) then
@@ -1122,7 +1122,7 @@ function symbols_set_neg()
     function symbols_set_neg() return r end
     return r
 end
-symbol_t = 0
+atom_t = 0
 construction_t = 1
 null_t = 2
 data_t = 3
@@ -1134,20 +1134,20 @@ delay_builtin_form_t = 8
 delay_apply_t = 9
 comment_t = 11
 hole_t = 10
-local function can_new_symbol_unicodechar_p(x)
+local function can_new_atom_unicodechar_p(x)
     return symbols_set_neg()[x] ~= nil
 end
-local function new_symbol_unicodechar(x)
+local function new_atom_unicodechar(x)
     return {
-        symbol_t,
+        atom_t,
         x,
     }
 end
-local function can_new_symbol_p(x)
+local function can_new_atom_p(x)
     return symbols_set()[x] ~= nil
 end
-local function new_symbol(x)
-    return new_symbol_unicodechar(symbols_set()[x])
+local function new_atom(x)
+    return new_atom_unicodechar(symbols_set()[x])
 end
 null_v = {null_t}
 local function force_uncomment_all_rec(raw)
@@ -1177,76 +1177,76 @@ local function force_uncomment_all_rec(raw)
     end
     return x
 end
-system_symbol = new_symbol("太始初核")
-local name_symbol = new_symbol("符名")
-function_symbol = new_symbol("化滅")
-form_symbol = new_symbol("式形")
-local equal_symbol = new_symbol("等同")
-local evaluate_sym = new_symbol("解算")
-local theThing_symbol = new_symbol("特定其物")
-local something_symbol = new_symbol("省略一物")
-mapping_symbol = new_symbol("映表")
-local if_symbol = new_symbol("如若")
-local typeAnnotation_symbol = new_symbol("一類何物")
-local isOrNot_symbol = new_symbol("是非")
-local sub_symbol = new_symbol("其子")
-local true_symbol = new_symbol("爻陽")
-local false_symbol = new_symbol("爻陰")
-local quote_symbol = new_symbol("引用")
-local apply_symbol = new_symbol("應用")
-local null_symbol = new_symbol("間空")
-local construction_symbol = new_symbol("連頸")
-local data_symbol = new_symbol("構物")
-local error_symbol = new_symbol("謬誤")
-local symbol_symbol = new_symbol("詞素")
-local list_symbol = new_symbol("列序")
-local head_symbol = new_symbol("首始")
-local tail_symbol = new_symbol("尾末")
-local thing_symbol = new_symbol("之物")
-local theWorldStopped_symbol = new_symbol("宇宙亡矣")
-local effect_symbol = new_symbol("效應")
-local comment_symbol = new_symbol("註疏")
-the_world_stopped_v = new_error(system_symbol, new_list(theWorldStopped_symbol, something_symbol))
+system_atom = new_atom("太始初核")
+local name_atom = new_atom("符名")
+function_atom = new_atom("化滅")
+form_atom = new_atom("式形")
+local equal_atom = new_atom("等同")
+local evaluate_sym = new_atom("解算")
+local theThing_atom = new_atom("特定其物")
+local something_atom = new_atom("省略一物")
+mapping_atom = new_atom("映表")
+local if_atom = new_atom("如若")
+local typeAnnotation_atom = new_atom("一類何物")
+local isOrNot_atom = new_atom("是非")
+local sub_atom = new_atom("其子")
+local true_atom = new_atom("爻陽")
+local false_atom = new_atom("爻陰")
+local quote_atom = new_atom("引用")
+local apply_atom = new_atom("應用")
+local null_atom = new_atom("間空")
+local construction_atom = new_atom("連頸")
+local data_atom = new_atom("構物")
+local error_atom = new_atom("謬誤")
+local atom_atom = new_atom("詞素")
+local list_atom = new_atom("列序")
+local head_atom = new_atom("首始")
+local tail_atom = new_atom("尾末")
+local thing_atom = new_atom("之物")
+local theWorldStopped_atom = new_atom("宇宙亡矣")
+local effect_atom = new_atom("效應")
+local comment_atom = new_atom("註疏")
+the_world_stopped_v = new_error(system_atom, new_list(theWorldStopped_atom, something_atom))
 local function systemName_make(x)
-    return new_data(name_symbol, new_construction(system_symbol, new_construction(x, null_v)))
+    return new_data(name_atom, new_construction(system_atom, new_construction(x, null_v)))
 end
 local function make_builtin_f_new_sym_f(x_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x_sym), theThing_symbol))
+    return systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, something_atom, x_sym), theThing_atom))
 end
 local function make_builtin_f_get_sym_f(t_sym, x_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(t_sym), something_symbol), x_sym))
+    return systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, new_list(t_sym), something_atom), x_sym))
 end
 local function make_builtin_f_p_sym_f(t_sym)
-    return systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, new_list(typeAnnotation_symbol, t_sym, something_symbol))))
+    return systemName_make(new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, new_list(typeAnnotation_atom, t_sym, something_atom))))
 end
-local new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_symbol)
-data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, name_symbol)
-data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_symbol, list_symbol)
-data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_symbol)
-local new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_symbol)
-error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, name_symbol)
-error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_symbol, list_symbol)
-error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_symbol)
-local new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_symbol)
-construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_symbol)
-construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, head_symbol)
-construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_symbol, tail_symbol)
-symbol_p_function_builtin_systemName = make_builtin_f_p_sym_f(symbol_symbol)
-null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_symbol)
-equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, equal_symbol)))
-apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(function_symbol, something_symbol), something_symbol), apply_symbol))
-evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, evaluate_sym))
-local list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_symbol, new_list(typeAnnotation_symbol, thing_symbol, something_symbol))
-if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, if_symbol))
-quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, quote_symbol))
-lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, function_symbol)), theThing_symbol))
-function_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, function_symbol)))
-form_builtin_use_systemName = systemName_make(new_list(form_symbol, new_list(system_symbol, form_symbol)))
-form_use_systemName = systemName_make(new_list(form_symbol, form_symbol))
-local comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, function_symbol, comment_symbol))
-comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_symbol, form_symbol, comment_symbol))
-local false_v = new_data(false_symbol, new_list())
-local true_v = new_data(true_symbol, new_list())
+local new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_atom)
+data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, name_atom)
+data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, list_atom)
+data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_atom)
+local new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_atom)
+error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, name_atom)
+error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, list_atom)
+error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_atom)
+local new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_atom)
+construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_atom)
+construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, head_atom)
+construction_tail_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, tail_atom)
+atom_p_function_builtin_systemName = make_builtin_f_p_sym_f(atom_atom)
+null_p_function_builtin_systemName = make_builtin_f_p_sym_f(null_atom)
+equal_p_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, equal_atom)))
+apply_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, new_list(function_atom, new_construction(function_atom, something_atom), something_atom), apply_atom))
+evaluate_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, evaluate_sym))
+local list_chooseOne_function_builtin_systemName = make_builtin_f_get_sym_f(list_atom, new_list(typeAnnotation_atom, thing_atom, something_atom))
+if_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, if_atom))
+quote_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, form_atom, quote_atom))
+lambda_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, function_atom)), theThing_atom))
+function_builtin_use_systemName = systemName_make(new_list(form_atom, new_list(system_atom, function_atom)))
+form_builtin_use_systemName = systemName_make(new_list(form_atom, new_list(system_atom, form_atom)))
+form_use_systemName = systemName_make(new_list(form_atom, form_atom))
+local comment_function_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, function_atom, comment_atom))
+comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, form_atom, comment_atom))
+local false_v = new_data(false_atom, new_list())
+local true_v = new_data(true_atom, new_list())
 local function list_to_jsArray(xs, k_done, k_tail)
     local ret = {}
     while construction_p(xs) do
@@ -1299,10 +1299,10 @@ local function val2env(x)
         return false
     end
     local s = force_all(data_name(x))
-    if not symbol_p(s) then
+    if not atom_p(s) then
         return false
     end
-    if not symbol_equal_p(s, mapping_symbol) then
+    if not atom_equal_p(s, mapping_atom) then
         return false
     end
     s = force_all(data_list(x))
@@ -1452,11 +1452,11 @@ real_builtin_func_apply_s = {
                     return false_v
                 end
                 return true_v
-            elseif symbol_p(x) then
-                if not symbol_p(y) then
+            elseif atom_p(x) then
+                if not atom_p(y) then
                     return false_v
                 end
-                if symbol_equal_p(x, y) then
+                if atom_equal_p(x, y) then
                     return true_v
                 else
                     return false_v
@@ -1507,7 +1507,7 @@ real_builtin_func_apply_s = {
             return evaluate(maybeenv, x)
         end,
     },
-    make_builtin_p_func(symbol_p_function_builtin_systemName, symbol_p),
+    make_builtin_p_func(atom_p_function_builtin_systemName, atom_p),
     {
         list_chooseOne_function_builtin_systemName,
         1,
@@ -1538,13 +1538,13 @@ real_builtin_func_apply_s = {
                 return error_v()
             end
             local nam = force_all(data_name(b))
-            if not symbol_p(nam) then
+            if not atom_p(nam) then
                 return error_v()
             end
-            if symbol_equal_p(nam, true_symbol) then
+            if atom_equal_p(nam, true_atom) then
                 return x
             end
-            if symbol_equal_p(nam, false_symbol) then
+            if atom_equal_p(nam, false_atom) then
                 return y
             end
             return error_v()
@@ -1582,11 +1582,11 @@ local function jsbool_no_force_equal_p(x, y)
         lang_set_do(x, null_v)
         lang_set_do(y, null_v)
         return true
-    elseif symbol_p(x) then
-        if not symbol_p(y) then
+    elseif atom_p(x) then
+        if not atom_p(y) then
             return false
         end
-        return symbol_equal_p(x, y)
+        return atom_equal_p(x, y)
     elseif construction_p(x) then
         if not construction_p(y) then
             return false
@@ -1608,7 +1608,7 @@ local function jsbool_no_force_equal_p(x, y)
     return LANG_ERROR()
 end
 local function complex_parse(x)
-    local state_const, state, eof, get, put, parse_error, a_space_p, space, symbol, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_symbol_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, atom, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_atom_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
     function eof()
         return #state_const == state
     end
@@ -1648,29 +1648,29 @@ local function complex_parse(x)
         end
         return true
     end
-    function symbol()
+    function atom()
         if eof() then
             return false
         end
         local x = get()
         local ret = ""
-        if not a_symbol_p(x) then
+        if not a_atom_p(x) then
             put(x)
             return false
         end
-        while a_symbol_p(x) and not eof() do
+        while a_atom_p(x) and not eof() do
             ret = tostring(ret) .. tostring(x)
             x = get()
         end
-        if a_symbol_p(x) then
+        if a_atom_p(x) then
             ret = tostring(ret) .. tostring(x)
         else
             put(x)
         end
-        if can_new_symbol_p(ret) then
-            return new_symbol(ret)
+        if can_new_atom_p(ret) then
+            return new_atom(ret)
         else
-            return parse_error("Not Symbol" .. tostring(ret))
+            return parse_error("Not Atom" .. tostring(ret))
         end
     end
     function readlist()
@@ -1754,7 +1754,7 @@ local function complex_parse(x)
         end
         return new_error(construction_head(xs), construction_tail(xs))
     end
-    function a_symbol_p(chr)
+    function a_atom_p(chr)
         if a_space_p(chr) then
             return false
         end
@@ -1834,7 +1834,7 @@ local function complex_parse(x)
         if strict then
             fs = {
                 readlist,
-                symbol,
+                atom,
                 readsysname_no_pack_bracket,
                 data,
                 readerror,
@@ -1872,17 +1872,17 @@ local function complex_parse(x)
         local head = get()
         if head == "." then
             local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y)
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_list(vl), something_atom), y)
         elseif head == ":" then
             local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, y, vl)
+            return new_list(typeAnnotation_atom, y, vl)
         elseif head == "~" then
-            return new_list(isOrNot_symbol, vl)
+            return new_list(isOrNot_atom, vl)
         elseif head == "@" then
             local y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y)
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_construction(vl, something_atom), something_atom), y)
         elseif head == "?" then
-            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl))
+            return new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, vl))
         elseif head == "/" then
             local ys = {vl}
             while true do
@@ -1897,7 +1897,7 @@ local function complex_parse(x)
                     break
                 end
             end
-            return new_list(sub_symbol, jsArray_to_list(ys))
+            return new_list(sub_atom, jsArray_to_list(ys))
         else
             put(head)
             return vl
@@ -1913,30 +1913,30 @@ local function complex_parse(x)
             local c0 = get()
             if c0 == "+" then
                 local x = readsysname_no_pack_inner_must()
-                return new_list(form_symbol, new_list(system_symbol, x))
+                return new_list(form_atom, new_list(system_atom, x))
             else
                 put(c0)
             end
             local x = readsysname_no_pack_inner_must()
-            return new_list(form_symbol, x)
+            return new_list(form_atom, x)
         elseif head == ":" then
             un_maybe(not_eof())
             local c0 = get()
             if c0 == "&" then
                 assert_get(">")
                 local x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, x)), theThing_symbol)
+                return new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, x)), theThing_atom)
             elseif c0 == ">" then
                 local x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, x), theThing_symbol)
+                return new_list(typeAnnotation_atom, new_list(function_atom, something_atom, x), theThing_atom)
             else
                 put(c0)
             end
             local x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, theThing_symbol)
+            return new_list(typeAnnotation_atom, x, theThing_atom)
         elseif head == "+" then
             local x = readsysname_no_pack_inner_must()
-            return new_list(system_symbol, x)
+            return new_list(system_atom, x)
         elseif head == "[" then
             local x = readsysname_no_pack_inner_must()
             assert_get("]")
@@ -1944,10 +1944,10 @@ local function complex_parse(x)
         elseif head == "_" then
             assert_get(":")
             local x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, something_symbol)
+            return new_list(typeAnnotation_atom, x, something_atom)
         else
             put(head)
-            local x = symbol()
+            local x = atom()
             if x == false then
                 return false
             end
@@ -1959,7 +1959,7 @@ local function complex_parse(x)
         if x == false then
             return false
         end
-        if symbol_p(x) then
+        if atom_p(x) then
             return x
         end
         return systemName_make(x)
@@ -2046,8 +2046,8 @@ local function complex_parse(x)
 end
 local function complex_print(val)
     local function print_sys_name(x, is_inner_bool)
-        if symbol_p(x) then
-            return un_symbol(x)
+        if atom_p(x) then
+            return un_atom(x)
         end
         local function inner_bracket(vl)
             if is_inner_bool then
@@ -2057,50 +2057,50 @@ local function complex_print(val)
             end
         end
         local maybe_xs = maybe_list_to_jsArray(x)
-        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[1], typeAnnotation_symbol) then
+        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[1], typeAnnotation_atom) then
             local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[2])
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[1], function_symbol) then
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[1], function_atom) then
                 local var_2_1 = maybe_lst_2[2]
                 local maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[3], something_symbol) then
+                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[3], something_atom) then
                     return inner_bracket(tostring(print_sys_name(maybe_lst_3[1], true)) .. "." .. tostring(print_sys_name(maybe_xs[3], true)))
-                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) and jsbool_no_force_equal_p(maybe_lst_2[3], something_symbol) then
+                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) and jsbool_no_force_equal_p(maybe_lst_2[3], something_atom) then
                     return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[3], true)))
-                elseif jsbool_no_force_equal_p(var_2_1, something_symbol) and jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) then
+                elseif jsbool_no_force_equal_p(var_2_1, something_atom) and jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) then
                     return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[3], true)))
                 end
             end
             local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[3])
-            if jsbool_no_force_equal_p(maybe_xs[2], function_symbol) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[1], isOrNot_symbol) then
+            if jsbool_no_force_equal_p(maybe_xs[2], function_atom) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[1], isOrNot_atom) then
                 return inner_bracket(tostring(print_sys_name(maybe_lst_44[2], true)) .. "?")
             end
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) and jsbool_no_force_equal_p(maybe_lst_2[1], form_symbol) then
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) and jsbool_no_force_equal_p(maybe_lst_2[1], form_atom) then
                 local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[2])
-                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[1], function_symbol) and jsbool_no_force_equal_p(maybe_lst_88[2], something_symbol) then
+                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[1], function_atom) and jsbool_no_force_equal_p(maybe_lst_88[2], something_atom) then
                     return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[3], true)))
                 end
             end
             local hd
-            if jsbool_no_force_equal_p(maybe_xs[3], something_symbol) then
+            if jsbool_no_force_equal_p(maybe_xs[3], something_atom) then
                 hd = "_"
-            elseif jsbool_no_force_equal_p(maybe_xs[3], theThing_symbol) then
+            elseif jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) then
                 hd = ""
             else
                 hd = print_sys_name(maybe_xs[3], true)
             end
             return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[2], true)))
         elseif maybe_xs ~= false and #maybe_xs == 2 then
-            if jsbool_no_force_equal_p(maybe_xs[1], form_symbol) then
+            if jsbool_no_force_equal_p(maybe_xs[1], form_atom) then
                 local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[2])
-                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[1], system_symbol) then
+                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[1], system_atom) then
                     return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[2], true)))
                 end
                 return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[2], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[1], isOrNot_symbol) then
+            elseif jsbool_no_force_equal_p(maybe_xs[1], isOrNot_atom) then
                 return inner_bracket(tostring(print_sys_name(maybe_xs[2], true)) .. "~")
-            elseif jsbool_no_force_equal_p(maybe_xs[1], system_symbol) then
+            elseif jsbool_no_force_equal_p(maybe_xs[1], system_atom) then
                 return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[2], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[1], sub_symbol) then
+            elseif jsbool_no_force_equal_p(maybe_xs[1], sub_atom) then
                 local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[2])
                 if maybe_lst_8934 ~= false and #maybe_lst_8934 > 1 then
                     local tmp = print_sys_name(maybe_lst_8934[1], true)
@@ -2144,14 +2144,14 @@ local function complex_print(val)
         local name = data_name(x)
         local list = data_list(x)
         local maybe_xs = maybe_list_to_jsArray(list)
-        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_symbol) and jsbool_no_force_equal_p(maybe_xs[1], system_symbol) then
+        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_atom) and jsbool_no_force_equal_p(maybe_xs[1], system_atom) then
             return print_sys_name(maybe_xs[2], false)
         end
         return "#" .. tostring(complex_print(new_construction(name, list)))
     elseif error_p(x) then
         return "!" .. tostring(complex_print(new_construction(error_name(x), error_list(x))))
-    elseif symbol_p(x) then
-        return un_symbol(x)
+    elseif atom_p(x) then
+        return un_atom(x)
     elseif comment_p(x) then
         return ";(" .. tostring(complex_print(comment_comment(x))) .. " " .. tostring(complex_print(comment_x(x))) .. ")"
     elseif delay_evaluate_p(x) then
@@ -2211,10 +2211,10 @@ local function machinetext_parse(rawstr)
                 end
                 tmp = tostring(chr) .. tostring(tmp)
             end
-            if can_new_symbol_unicodechar_p(tmp) then
-                __TS__ArrayUnshift(stack, new_symbol_unicodechar(tmp))
+            if can_new_atom_unicodechar_p(tmp) then
+                __TS__ArrayUnshift(stack, new_atom_unicodechar(tmp))
             else
-                return parse_error("can_new_symbol_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
+                return parse_error("can_new_atom_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
             end
         elseif chr == "." then
             conslike(new_construction)
@@ -2252,8 +2252,8 @@ local function machinetext_print(x)
                 result = tostring(result) .. tostring(s)
                 return __TS__ArrayPush(new_stack, g1(xx), g2(xx))
             end
-            if symbol_p(x) then
-                result = tostring(result) .. tostring(("^" .. tostring(un_symbol_unicodechar(x)) .. "^"))
+            if atom_p(x) then
+                result = tostring(result) .. tostring(("^" .. tostring(un_atom_unicodechar(x)) .. "^"))
             elseif construction_p(x) then
                 conslike(x, ".", construction_head, construction_tail)
             elseif null_p(x) then
@@ -2292,8 +2292,8 @@ local function run_trampoline(x)
     end
     return i[2]
 end
-local return_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
-local bind_effect_systemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
+local return_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)))
+local bind_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(construction_atom, null_v)), null_v)))
 local function new_effect_bind(monad, func)
     return new_data(bind_effect_systemName, new_list(monad, func))
 end
@@ -2362,8 +2362,8 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                             local upval_b = list_d_a
                             local upval_st = state
                             local upval_nt = next
-                            local x = new_symbol("序甲")
-                            local function r() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt))))) end
+                            local x = new_atom("序甲")
+                            local function r() return run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_atom, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt))))) end
                             return trampoline_delay(r)
                         end
                     end
@@ -2390,11 +2390,11 @@ ____exports.comment_p = comment_p
 ____exports.comment_comment = comment_comment
 ____exports.comment_x = comment_x
 ____exports.un_comment_all = un_comment_all
-____exports.can_new_symbol_p = can_new_symbol_p
-____exports.new_symbol = new_symbol
-____exports.symbol_p = symbol_p
-____exports.un_symbol = un_symbol
-____exports.symbol_equal_p = symbol_equal_p
+____exports.can_new_atom_p = can_new_atom_p
+____exports.new_atom = new_atom
+____exports.atom_p = atom_p
+____exports.un_atom = un_atom
+____exports.atom_equal_p = atom_equal_p
 ____exports.new_construction = new_construction
 ____exports.construction_p = construction_p
 ____exports.construction_head = construction_head

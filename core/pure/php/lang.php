@@ -46,7 +46,7 @@ $__TS__ArrayUnshift = (function ($arr = NULL, ...$lUa_Vararg_LuA) {
 $LANG_ERROR = NULL;
 $LANG_ASSERT = NULL;
 $symbols_set_neg = NULL;
-$symbol_t = NULL;
+$atom_t = NULL;
 $construction_t = NULL;
 $null_t = NULL;
 $data_t = NULL;
@@ -63,10 +63,10 @@ $comment_p = NULL;
 $comment_comment = NULL;
 $comment_x = NULL;
 $un_comment_all = NULL;
-$symbol_p = NULL;
-$un_symbol_unicodechar = NULL;
-$un_symbol = NULL;
-$symbol_equal_p = NULL;
+$atom_p = NULL;
+$un_atom_unicodechar = NULL;
+$un_atom = NULL;
+$atom_equal_p = NULL;
 $new_construction = NULL;
 $construction_p = NULL;
 $construction_head = NULL;
@@ -106,10 +106,10 @@ $hole_p = NULL;
 $lang_set_do = NULL;
 $hole_set_do = NULL;
 $lang_copy_do = NULL;
-$system_symbol = NULL;
-$function_symbol = NULL;
-$form_symbol = NULL;
-$mapping_symbol = NULL;
+$system_atom = NULL;
+$function_atom = NULL;
+$form_atom = NULL;
+$mapping_atom = NULL;
 $the_world_stopped_v = NULL;
 $data_name_function_builtin_systemName = NULL;
 $data_list_function_builtin_systemName = NULL;
@@ -120,7 +120,7 @@ $error_p_function_builtin_systemName = NULL;
 $construction_p_function_builtin_systemName = NULL;
 $construction_head_function_builtin_systemName = NULL;
 $construction_tail_function_builtin_systemName = NULL;
-$symbol_p_function_builtin_systemName = NULL;
+$atom_p_function_builtin_systemName = NULL;
 $null_p_function_builtin_systemName = NULL;
 $equal_p_function_builtin_systemName = NULL;
 $apply_function_builtin_systemName = NULL;
@@ -184,21 +184,21 @@ $un_comment_all = (function ($x = NULL) use (&$comment_p, &$comment_x) {
     }
     return $x;
 });
-$symbol_p = (function ($x = NULL) use (&$symbol_t) {
-    return ($x->array[0] == $symbol_t);
+$atom_p = (function ($x = NULL) use (&$atom_t) {
+    return ($x->array[0] == $atom_t);
 });
-$un_symbol_unicodechar = (function ($x = NULL) {
+$un_atom_unicodechar = (function ($x = NULL) {
     return $x->array[1];
 });
-$un_symbol = (function ($x = NULL) use (&$symbols_set_neg, &$un_symbol_unicodechar) {
-    $lUaTmP_4_LuAtMp = $un_symbol_unicodechar($x);
+$un_atom = (function ($x = NULL) use (&$symbols_set_neg, &$un_atom_unicodechar) {
+    $lUaTmP_4_LuAtMp = $un_atom_unicodechar($x);
     return $symbols_set_neg()->array[(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)];
 });
-$symbol_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_symbol_unicodechar) {
+$atom_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_atom_unicodechar) {
     if (($x == $y)) {
         return true;
     }
-    if (($un_symbol_unicodechar($x) == $un_symbol_unicodechar($y))) {
+    if (($un_atom_unicodechar($x) == $un_atom_unicodechar($y))) {
         $lang_set_do($x, $y);
         return true;
     } else {
@@ -395,7 +395,7 @@ $delay_p = (function ($x = NULL) use (&$delay_apply_p, &$delay_builtin_form_p, &
 $delay_just_p = (function ($x = NULL) use (&$delay_p, &$just_p) {
     return ($just_p($x) || $delay_p($x));
 });
-$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$symbol_p_function_builtin_systemName, &$the_world_stopped_v) {
+$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$atom_p_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$the_world_stopped_v) {
     if (($parents_history == NULL)) {
         $parents_history = ((object)["array" => []]);
     }
@@ -480,7 +480,7 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
                         $construction_p_function_builtin_systemName,
                         $construction_head_function_builtin_systemName,
                         $construction_tail_function_builtin_systemName,
-                        $symbol_p_function_builtin_systemName,
+                        $atom_p_function_builtin_systemName,
                         $null_p_function_builtin_systemName
                     ]
                 ]);
@@ -636,7 +636,7 @@ $must_env_get = (function ($env = NULL, $key = NULL) use (&$LANG_ERROR, &$jsbool
 
     return $LANG_ERROR();
 });
-$env2val = (function ($env = NULL) use (&$mapping_symbol, &$new_construction, &$new_data, &$new_list, &$null_v) {
+$env2val = (function ($env = NULL) use (&$mapping_atom, &$new_construction, &$new_data, &$new_list, &$null_v) {
     $ret = $null_v;
     
     {
@@ -647,7 +647,7 @@ $env2val = (function ($env = NULL) use (&$mapping_symbol, &$new_construction, &$
         }
     }
 
-    return $new_data($mapping_symbol, $new_list($ret));
+    return $new_data($mapping_atom, $new_list($ret));
 });
 $env_foreach = (function ($env = NULL, $f = NULL) {
     
@@ -688,13 +688,13 @@ $force_uncomment_list_1 = (function ($list = NULL, $not_list_k = NULL, $delay_ju
 
     }
 });
-$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$force_uncomment_list_1, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
+$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$force_uncomment_list_1, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$system_atom) {
     $x = $force1($raw);
     if ($delay_just_p($x)) {
         return $selfvalraw;
     }
-    $error_v = (function () use (&$env, &$env2val, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$new_error, &$new_list, &$system_symbol, &$x) {
-        return $new_error($system_symbol, $new_list(
+    $error_v = (function () use (&$env, &$env2val, &$evaluate_function_builtin_systemName, &$function_builtin_use_systemName, &$new_error, &$new_list, &$system_atom, &$x) {
+        return $new_error($system_atom, $new_list(
             $function_builtin_use_systemName,
             $new_list($evaluate_function_builtin_systemName, $new_list($env2val($env), $x))
         ));
@@ -702,7 +702,7 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
     if ($construction_p($x)) {
         return $force_uncomment_list_1($x, $error_v, (function () use (&$selfvalraw) {
             return $selfvalraw;
-        }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env, &$env2val, &$error_v, &$evaluate, &$force1, &$force_all, &$form_builtin_use_systemName, &$form_symbol, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$null_p, &$selfvalraw, &$symbol_equal_p, &$symbol_p) {
+        }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env, &$env2val, &$error_v, &$evaluate, &$force1, &$force_all, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$null_p, &$selfvalraw) {
             if (((is_string($comments) ? strlen($comments) : count($comments->array)) != 0)) {
                 throw new Exception("WIP");
             }
@@ -734,10 +734,10 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
                 if ($delay_just_p($f_type)) {
                     return $selfvalraw;
                 }
-                if (!($symbol_p($f_type))) {
+                if (!($atom_p($f_type))) {
                     return $error_v();
                 }
-                if (!($symbol_equal_p($f_type, $form_symbol))) {
+                if (!($atom_equal_p($f_type, $form_atom))) {
                     return $error_v();
                 }
                 $f_list = $force1($data_list($f_1));
@@ -807,12 +807,12 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
     }
     return $LANG_ERROR();
 });
-$name_p = (function ($x = NULL) use (&$data_p, &$symbol_p) {
-    return ($symbol_p($x) || $data_p($x));
+$name_p = (function ($x = NULL) use (&$atom_p, &$data_p) {
+    return ($atom_p($x) || $data_p($x));
 });
-$real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply_function_builtin_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_builtin_use_systemName, &$function_symbol, &$jsArray_to_list, &$name_p, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$system_symbol) {
-    $error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
-        return $new_error($system_symbol, $new_list(
+$real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply_function_builtin_systemName, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_atom, &$function_builtin_use_systemName, &$jsArray_to_list, &$name_p, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$system_atom) {
+    $error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
+        return $new_error($system_atom, $new_list(
             $function_builtin_use_systemName,
             $new_list($apply_function_builtin_systemName, $new_list($f, $jsArray_to_list($xs)))
         ));
@@ -825,7 +825,7 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
         return $error_v();
     }
     $f_type = $force_all($data_name($f));
-    if (!(($symbol_p($f_type) && $symbol_equal_p($f_type, $function_symbol)))) {
+    if (!(($atom_p($f_type) && $atom_equal_p($f_type, $function_atom)))) {
         return $error_v();
     }
     $f_list = $force_all($data_list($f));
@@ -876,10 +876,10 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
     }
     return $evaluate($env, $f_code);
 });
-$real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$function_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$new_error, &$new_list, &$real_builtin_func_apply_s, &$system_symbol) {
-    $error_v = (function () use (&$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
+$real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$function_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$new_error, &$new_list, &$real_builtin_func_apply_s, &$system_atom) {
+    $error_v = (function () use (&$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
         return $new_error(
-            $system_symbol,
+            $system_atom,
             $new_list($function_builtin_use_systemName, $new_list($f, $jsArray_to_list($xs)))
         );
     });
@@ -905,9 +905,9 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
     }
     return $error_v();
 });
-$real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$comment_form_builtin_systemName, &$env2val, &$evaluate, &$form_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$lambda_form_builtin_systemName, &$new_comment, &$new_error, &$new_lambda, &$new_list, &$quote_form_builtin_systemName, &$system_symbol) {
-    $error_v = (function () use (&$env, &$env2val, &$f, &$form_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_symbol, &$xs) {
-        return $new_error($system_symbol, $new_list(
+$real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$comment_form_builtin_systemName, &$env2val, &$evaluate, &$form_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$lambda_form_builtin_systemName, &$new_comment, &$new_error, &$new_lambda, &$new_list, &$quote_form_builtin_systemName, &$system_atom) {
+    $error_v = (function () use (&$env, &$env2val, &$f, &$form_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
+        return $new_error($system_atom, $new_list(
             $form_builtin_use_systemName,
             $new_list($env2val($env), $f, $jsArray_to_list($xs))
         ));
@@ -933,7 +933,7 @@ $real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfv
 $make_quote = (function ($x = NULL) use (&$form_builtin_use_systemName, &$new_list, &$quote_form_builtin_systemName) {
     return $new_list($form_builtin_use_systemName, $quote_form_builtin_systemName, $x);
 });
-$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$force_all_rec, &$function_symbol, &$jsArray_to_list, &$jsbool_equal_p, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v) {
+$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$force_all_rec, &$function_atom, &$jsArray_to_list, &$jsbool_equal_p, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v) {
     $args_pat = $force_all_rec($args_pat);
     $args_pat_vars = ((object)["array" => []]);
     $args_pat_is_dot = false;
@@ -997,12 +997,12 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
         }
     }
 
-    return $new_data($function_symbol, $new_list($args_pat, $new_construction(
-        $make_quote($new_data($function_symbol, $new_list($new_args_pat, $body))),
+    return $new_data($function_atom, $new_list($args_pat, $new_construction(
+        $make_quote($new_data($function_atom, $new_list($new_args_pat, $body))),
         $new_args
     )));
 });
-$jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p, &$lang_set_do, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p) {
+$jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p, &$lang_set_do, &$null_p, &$null_v) {
     if (($x == $y)) {
         return true;
     }
@@ -1027,11 +1027,11 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construc
         $lang_set_do($x, $null_v);
         $lang_set_do($y, $null_v);
         return true;
-    } elseif ($symbol_p($x)) {
-        if (!($symbol_p($y))) {
+    } elseif ($atom_p($x)) {
+        if (!($atom_p($y))) {
             return false;
         }
-        return $symbol_equal_p($x, $y);
+        return $atom_equal_p($x, $y);
     } elseif ($construction_p($x)) {
         if (!($construction_p($y))) {
             return false;
@@ -1050,7 +1050,7 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construc
     }
     return $LANG_ERROR();
 });
-$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$symbol_p, &$un_just_all, &$un_symbol) {
+$simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$un_atom, &$un_just_all) {
     $x = $un_just_all($x);
     $temp = "";
     $prefix = "";
@@ -1077,8 +1077,8 @@ $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$comment_comment, &$co
     } elseif ($error_p($x)) {
         return ("!" .
             ((string)$simple_print($new_construction($error_name($x), $error_list($x)))));
-    } elseif ($symbol_p($x)) {
-        return $un_symbol($x);
+    } elseif ($atom_p($x)) {
+        return $un_atom($x);
     } elseif ($comment_p($x)) {
         return (";(" .
             (((string)$simple_print($comment_comment($x))) .
@@ -1330,7 +1330,7 @@ $symbols_set_neg = (function () use (&$symbols_set_neg, &$symbols_set_neg_init) 
     });
     return $r;
 });
-$symbol_t = 0;
+$atom_t = 0;
 $construction_t = 1;
 $null_t = 2;
 $data_t = 3;
@@ -1342,17 +1342,17 @@ $delay_builtin_form_t = 8;
 $delay_apply_t = 9;
 $comment_t = 11;
 $hole_t = 10;
-$can_new_symbol_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
+$can_new_atom_unicodechar_p = (function ($x = NULL) use (&$symbols_set_neg) {
     return ($symbols_set_neg()->array[(is_int($x) ? $x - 1 : $x)] != NULL);
 });
-$new_symbol_unicodechar = (function ($x = NULL) use (&$symbol_t) {
-    return ((object)["array" => [$symbol_t, $x]]);
+$new_atom_unicodechar = (function ($x = NULL) use (&$atom_t) {
+    return ((object)["array" => [$atom_t, $x]]);
 });
-$can_new_symbol_p = (function ($x = NULL) use (&$symbols_set) {
+$can_new_atom_p = (function ($x = NULL) use (&$symbols_set) {
     return ($symbols_set()->array[(is_int($x) ? $x - 1 : $x)] != NULL);
 });
-$new_symbol = (function ($x = NULL) use (&$new_symbol_unicodechar, &$symbols_set) {
-    return $new_symbol_unicodechar($symbols_set()->array[(is_int($x) ? $x - 1 : $x)]);
+$new_atom = (function ($x = NULL) use (&$new_atom_unicodechar, &$symbols_set) {
+    return $new_atom_unicodechar($symbols_set()->array[(is_int($x) ? $x - 1 : $x)]);
 });
 $null_v = ((object)["array" => [$null_t]]);
 $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construction_p, &$data_p, &$error_p, &$force_all_rec, &$force_uncomment_all, &$force_uncomment_all_rec, &$lang_copy_do) {
@@ -1383,100 +1383,98 @@ $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construct
     }
     return $x;
 });
-$system_symbol = $new_symbol("太始初核");
-$name_symbol = $new_symbol("符名");
-$function_symbol = $new_symbol("化滅");
-$form_symbol = $new_symbol("式形");
-$equal_symbol = $new_symbol("等同");
-$evaluate_sym = $new_symbol("解算");
-$theThing_symbol = $new_symbol("特定其物");
-$something_symbol = $new_symbol("省略一物");
-$mapping_symbol = $new_symbol("映表");
-$if_symbol = $new_symbol("如若");
-$typeAnnotation_symbol = $new_symbol("一類何物");
-$isOrNot_symbol = $new_symbol("是非");
-$sub_symbol = $new_symbol("其子");
-$true_symbol = $new_symbol("爻陽");
-$false_symbol = $new_symbol("爻陰");
-$quote_symbol = $new_symbol("引用");
-$apply_symbol = $new_symbol("應用");
-$null_symbol = $new_symbol("間空");
-$construction_symbol = $new_symbol("連頸");
-$data_symbol = $new_symbol("構物");
-$error_symbol = $new_symbol("謬誤");
-$symbol_symbol = $new_symbol("詞素");
-$list_symbol = $new_symbol("列序");
-$head_symbol = $new_symbol("首始");
-$tail_symbol = $new_symbol("尾末");
-$thing_symbol = $new_symbol("之物");
-$theWorldStopped_symbol = $new_symbol("宇宙亡矣");
-$effect_symbol = $new_symbol("效應");
-$comment_symbol = $new_symbol("註疏");
-$the_world_stopped_v = $new_error($system_symbol, $new_list($theWorldStopped_symbol, $something_symbol));
-$systemName_make = (function ($x = NULL) use (&$name_symbol, &$new_construction, &$new_data, &$null_v, &$system_symbol) {
-    return $new_data($name_symbol, $new_construction($system_symbol, $new_construction($x, $null_v)));
+$system_atom = $new_atom("太始初核");
+$name_atom = $new_atom("符名");
+$function_atom = $new_atom("化滅");
+$form_atom = $new_atom("式形");
+$equal_atom = $new_atom("等同");
+$evaluate_sym = $new_atom("解算");
+$theThing_atom = $new_atom("特定其物");
+$something_atom = $new_atom("省略一物");
+$mapping_atom = $new_atom("映表");
+$if_atom = $new_atom("如若");
+$typeAnnotation_atom = $new_atom("一類何物");
+$isOrNot_atom = $new_atom("是非");
+$sub_atom = $new_atom("其子");
+$true_atom = $new_atom("爻陽");
+$false_atom = $new_atom("爻陰");
+$quote_atom = $new_atom("引用");
+$apply_atom = $new_atom("應用");
+$null_atom = $new_atom("間空");
+$construction_atom = $new_atom("連頸");
+$data_atom = $new_atom("構物");
+$error_atom = $new_atom("謬誤");
+$atom_atom = $new_atom("詞素");
+$list_atom = $new_atom("列序");
+$head_atom = $new_atom("首始");
+$tail_atom = $new_atom("尾末");
+$thing_atom = $new_atom("之物");
+$theWorldStopped_atom = $new_atom("宇宙亡矣");
+$effect_atom = $new_atom("效應");
+$comment_atom = $new_atom("註疏");
+$the_world_stopped_v = $new_error($system_atom, $new_list($theWorldStopped_atom, $something_atom));
+$systemName_make = (function ($x = NULL) use (&$name_atom, &$new_construction, &$new_data, &$null_v, &$system_atom) {
+    return $new_data($name_atom, $new_construction($system_atom, $new_construction($x, $null_v)));
 });
-$make_builtin_f_new_sym_f = (function ($x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$theThing_symbol, &$typeAnnotation_symbol) {
+$make_builtin_f_new_sym_f = (function ($x_sym = NULL) use (&$function_atom, &$new_list, &$something_atom, &$systemName_make, &$theThing_atom, &$typeAnnotation_atom) {
     return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $new_list($function_symbol, $something_symbol, $x_sym),
-        $theThing_symbol
+        $typeAnnotation_atom,
+        $new_list($function_atom, $something_atom, $x_sym),
+        $theThing_atom
     ));
 });
-$make_builtin_f_get_sym_f = (function ($t_sym = NULL, $x_sym = NULL) use (&$function_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
+$make_builtin_f_get_sym_f = (function ($t_sym = NULL, $x_sym = NULL) use (&$function_atom, &$new_list, &$something_atom, &$systemName_make, &$typeAnnotation_atom) {
     return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $new_list($function_symbol, $new_list($t_sym), $something_symbol),
+        $typeAnnotation_atom,
+        $new_list($function_atom, $new_list($t_sym), $something_atom),
         $x_sym
     ));
 });
-$make_builtin_f_p_sym_f = (function ($t_sym = NULL) use (&$function_symbol, &$isOrNot_symbol, &$new_list, &$something_symbol, &$systemName_make, &$typeAnnotation_symbol) {
+$make_builtin_f_p_sym_f = (function ($t_sym = NULL) use (&$function_atom, &$isOrNot_atom, &$new_list, &$something_atom, &$systemName_make, &$typeAnnotation_atom) {
     return $systemName_make($new_list(
-        $typeAnnotation_symbol,
-        $function_symbol,
-        $new_list($isOrNot_symbol, $new_list($typeAnnotation_symbol, $t_sym, $something_symbol))
+        $typeAnnotation_atom,
+        $function_atom,
+        $new_list($isOrNot_atom, $new_list($typeAnnotation_atom, $t_sym, $something_atom))
     ));
 });
-$new_data_function_builtin_systemName = $make_builtin_f_new_sym_f($data_symbol);
-$data_name_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $name_symbol);
-$data_list_function_builtin_systemName = $make_builtin_f_get_sym_f($data_symbol, $list_symbol);
-$data_p_function_builtin_systemName = $make_builtin_f_p_sym_f($data_symbol);
-$new_error_function_builtin_systemName = $make_builtin_f_new_sym_f($error_symbol);
-$error_name_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $name_symbol);
-$error_list_function_builtin_systemName = $make_builtin_f_get_sym_f($error_symbol, $list_symbol);
-$error_p_function_builtin_systemName = $make_builtin_f_p_sym_f($error_symbol);
-$new_construction_function_builtin_systemName = $make_builtin_f_new_sym_f($construction_symbol);
-$construction_p_function_builtin_systemName = $make_builtin_f_p_sym_f($construction_symbol);
-$construction_head_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $head_symbol);
-$construction_tail_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_symbol, $tail_symbol);
-$symbol_p_function_builtin_systemName = $make_builtin_f_p_sym_f($symbol_symbol);
-$null_p_function_builtin_systemName = $make_builtin_f_p_sym_f($null_symbol);
-$equal_p_function_builtin_systemName = $systemName_make($new_list(
-    $typeAnnotation_symbol,
-    $function_symbol,
-    $new_list($isOrNot_symbol, $equal_symbol)
-));
-$apply_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $new_list(
-    $function_symbol,
-    $new_construction($function_symbol, $something_symbol),
-    $something_symbol
-), $apply_symbol));
-$evaluate_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $evaluate_sym));
-$list_chooseOne_function_builtin_systemName = $make_builtin_f_get_sym_f($list_symbol, $new_list($typeAnnotation_symbol, $thing_symbol, $something_symbol));
-$if_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $if_symbol));
-$quote_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $quote_symbol));
+$new_data_function_builtin_systemName = $make_builtin_f_new_sym_f($data_atom);
+$data_name_function_builtin_systemName = $make_builtin_f_get_sym_f($data_atom, $name_atom);
+$data_list_function_builtin_systemName = $make_builtin_f_get_sym_f($data_atom, $list_atom);
+$data_p_function_builtin_systemName = $make_builtin_f_p_sym_f($data_atom);
+$new_error_function_builtin_systemName = $make_builtin_f_new_sym_f($error_atom);
+$error_name_function_builtin_systemName = $make_builtin_f_get_sym_f($error_atom, $name_atom);
+$error_list_function_builtin_systemName = $make_builtin_f_get_sym_f($error_atom, $list_atom);
+$error_p_function_builtin_systemName = $make_builtin_f_p_sym_f($error_atom);
+$new_construction_function_builtin_systemName = $make_builtin_f_new_sym_f($construction_atom);
+$construction_p_function_builtin_systemName = $make_builtin_f_p_sym_f($construction_atom);
+$construction_head_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_atom, $head_atom);
+$construction_tail_function_builtin_systemName = $make_builtin_f_get_sym_f($construction_atom, $tail_atom);
+$atom_p_function_builtin_systemName = $make_builtin_f_p_sym_f($atom_atom);
+$null_p_function_builtin_systemName = $make_builtin_f_p_sym_f($null_atom);
+$equal_p_function_builtin_systemName = $systemName_make(
+    $new_list($typeAnnotation_atom, $function_atom, $new_list($isOrNot_atom, $equal_atom))
+);
+$apply_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $new_list(
+    $function_atom,
+    $new_construction($function_atom, $something_atom),
+    $something_atom
+), $apply_atom));
+$evaluate_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $function_atom, $evaluate_sym));
+$list_chooseOne_function_builtin_systemName = $make_builtin_f_get_sym_f($list_atom, $new_list($typeAnnotation_atom, $thing_atom, $something_atom));
+$if_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $function_atom, $if_atom));
+$quote_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $form_atom, $quote_atom));
 $lambda_form_builtin_systemName = $systemName_make($new_list(
-    $typeAnnotation_symbol,
-    $new_list($form_symbol, $new_list($function_symbol, $something_symbol, $function_symbol)),
-    $theThing_symbol
+    $typeAnnotation_atom,
+    $new_list($form_atom, $new_list($function_atom, $something_atom, $function_atom)),
+    $theThing_atom
 ));
-$function_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $function_symbol)));
-$form_builtin_use_systemName = $systemName_make($new_list($form_symbol, $new_list($system_symbol, $form_symbol)));
-$form_use_systemName = $systemName_make($new_list($form_symbol, $form_symbol));
-$comment_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $function_symbol, $comment_symbol));
-$comment_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_symbol, $form_symbol, $comment_symbol));
-$false_v = $new_data($false_symbol, $new_list());
-$true_v = $new_data($true_symbol, $new_list());
+$function_builtin_use_systemName = $systemName_make($new_list($form_atom, $new_list($system_atom, $function_atom)));
+$form_builtin_use_systemName = $systemName_make($new_list($form_atom, $new_list($system_atom, $form_atom)));
+$form_use_systemName = $systemName_make($new_list($form_atom, $form_atom));
+$comment_function_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $function_atom, $comment_atom));
+$comment_form_builtin_systemName = $systemName_make($new_list($typeAnnotation_atom, $form_atom, $comment_atom));
+$false_v = $new_data($false_atom, $new_list());
+$true_v = $new_data($true_atom, $new_list());
 $list_to_jsArray = (function ($xs = NULL, $k_done = NULL, $k_tail = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$null_p) {
     $ret = ((object)["array" => []]);
     while ($construction_p($xs)) {
@@ -1528,16 +1526,16 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
 
 });
 $env_null_v = ((object)["array" => []]);
-$val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_symbol, &$null_p, &$symbol_equal_p, &$symbol_p) {
+$val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_atom, &$null_p) {
     $x = $force_all($x);
     if (!($data_p($x))) {
         return false;
     }
     $s = $force_all($data_name($x));
-    if (!($symbol_p($s))) {
+    if (!($atom_p($s))) {
         return false;
     }
-    if (!($symbol_equal_p($s, $mapping_symbol))) {
+    if (!($atom_equal_p($s, $mapping_atom))) {
         return false;
     }
     $s = $force_all($data_list($x));
@@ -1651,7 +1649,7 @@ $real_builtin_func_apply_s = ((object)[
             "array" => [
                 $equal_p_function_builtin_systemName,
                 2,
-                (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$symbol_equal_p, &$symbol_p, &$true_v) {
+                (function ($x = NULL, $y = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$atom_equal_p, &$atom_p, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list, &$error_name, &$error_p, &$false_v, &$force1, &$if_function_builtin_systemName, &$null_p, &$true_v) {
                     if (($x == $y)) {
                         return $true_v;
                     }
@@ -1681,11 +1679,11 @@ $real_builtin_func_apply_s = ((object)[
                             return $false_v;
                         }
                         return $true_v;
-                    } elseif ($symbol_p($x)) {
-                        if (!($symbol_p($y))) {
+                    } elseif ($atom_p($x)) {
+                        if (!($atom_p($y))) {
                             return $false_v;
                         }
-                        if ($symbol_equal_p($x, $y)) {
+                        if ($atom_equal_p($x, $y)) {
                             return $true_v;
                         } else {
                             return $false_v;
@@ -1742,7 +1740,7 @@ $real_builtin_func_apply_s = ((object)[
                 })
             ]
         ]),
-        $make_builtin_p_func($symbol_p_function_builtin_systemName, $symbol_p),
+        $make_builtin_p_func($atom_p_function_builtin_systemName, $atom_p),
         ((object)[
             "array" => [
                 $list_chooseOne_function_builtin_systemName,
@@ -1763,7 +1761,7 @@ $real_builtin_func_apply_s = ((object)[
             "array" => [
                 $if_function_builtin_systemName,
                 3,
-                (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$builtin_func_apply, &$data_name, &$data_p, &$delay_just_p, &$false_symbol, &$force1, &$force_all, &$if_function_builtin_systemName, &$symbol_equal_p, &$symbol_p, &$true_symbol) {
+                (function ($b = NULL, $x = NULL, $y = NULL, $error_v = NULL) use (&$atom_equal_p, &$atom_p, &$builtin_func_apply, &$data_name, &$data_p, &$delay_just_p, &$false_atom, &$force1, &$force_all, &$if_function_builtin_systemName, &$true_atom) {
                     $b = $force1($b);
                     if ($delay_just_p($b)) {
                         return $builtin_func_apply($if_function_builtin_systemName, ((object)["array" => [$b, $x, $y]]));
@@ -1772,13 +1770,13 @@ $real_builtin_func_apply_s = ((object)[
                         return $error_v();
                     }
                     $nam = $force_all($data_name($b));
-                    if (!($symbol_p($nam))) {
+                    if (!($atom_p($nam))) {
                         return $error_v();
                     }
-                    if ($symbol_equal_p($nam, $true_symbol)) {
+                    if ($atom_equal_p($nam, $true_atom)) {
                         return $x;
                     }
-                    if ($symbol_equal_p($nam, $false_symbol)) {
+                    if ($atom_equal_p($nam, $false_atom)) {
                         return $y;
                     }
                     return $error_v();
@@ -1790,7 +1788,7 @@ $real_builtin_func_apply_s = ((object)[
 ]);
 $equal_p = NULL;
 $equal_p = $jsbool_equal_p;
-$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_set_do, &$null_p, &$null_v, &$symbol_equal_p, &$symbol_p, &$un_just_all) {
+$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_set_do, &$null_p, &$null_v, &$un_just_all) {
     if (($x == $y)) {
         return true;
     }
@@ -1816,11 +1814,11 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
         $lang_set_do($x, $null_v);
         $lang_set_do($y, $null_v);
         return true;
-    } elseif ($symbol_p($x)) {
-        if (!($symbol_p($y))) {
+    } elseif ($atom_p($x)) {
+        if (!($atom_p($y))) {
             return false;
         }
-        return $symbol_equal_p($x, $y);
+        return $atom_equal_p($x, $y);
     } elseif ($construction_p($x)) {
         if (!($construction_p($y))) {
             return false;
@@ -1841,7 +1839,7 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
     }
     return $LANG_ERROR();
 });
-$complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, &$builtin_form_apply, &$builtin_func_apply, &$can_new_symbol_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_symbol, &$function_symbol, &$hole_set_do, &$isOrNot_symbol, &$jsArray_to_list, &$list_to_jsArray, &$new_comment, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$new_symbol, &$null_p, &$null_v, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$val2env) {
+$complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$apply, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$can_new_atom_p, &$construction_head, &$construction_p, &$construction_tail, &$evaluate, &$form_atom, &$function_atom, &$hole_set_do, &$isOrNot_atom, &$jsArray_to_list, &$list_to_jsArray, &$new_atom, &$new_comment, &$new_construction, &$new_data, &$new_error, &$new_hole_do, &$new_list, &$null_p, &$null_v, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$val2env) {
     $state_const = NULL;
     $state = NULL;
     $eof = NULL;
@@ -1850,7 +1848,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     $parse_error = NULL;
     $a_space_p = NULL;
     $space = NULL;
-    $symbol = NULL;
+    $atom = NULL;
     $readlist = NULL;
     $data = NULL;
     $readerror = NULL;
@@ -1859,7 +1857,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     $readformbuiltin = NULL;
     $readapply = NULL;
     $readcomment = NULL;
-    $a_symbol_p = NULL;
+    $a_atom_p = NULL;
     $val = NULL;
     $un_maybe = NULL;
     $not_eof = NULL;
@@ -1910,30 +1908,30 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         }
         return true;
     });
-    $symbol = (function () use (&$a_symbol_p, &$can_new_symbol_p, &$eof, &$get, &$new_symbol, &$parse_error, &$put) {
+    $atom = (function () use (&$a_atom_p, &$can_new_atom_p, &$eof, &$get, &$new_atom, &$parse_error, &$put) {
         if ($eof()) {
             return false;
         }
         $x_1 = $get();
         $ret = "";
-        if (!($a_symbol_p($x_1))) {
+        if (!($a_atom_p($x_1))) {
             $put($x_1);
             return false;
         }
-        while (($a_symbol_p($x_1) && !($eof()))) {
+        while (($a_atom_p($x_1) && !($eof()))) {
             $ret = (((string)$ret) . ((string)$x_1));
             $x_1 = $get();
         }
-        if ($a_symbol_p($x_1)) {
+        if ($a_atom_p($x_1)) {
             $ret = (((string)$ret) . ((string)$x_1));
         } else {
             $put($x_1);
         }
 
-        if ($can_new_symbol_p($ret)) {
-            return $new_symbol($ret);
+        if ($can_new_atom_p($ret)) {
+            return $new_atom($ret);
         } else {
-            return $parse_error(("Not Symbol" . ((string)$ret)));
+            return $parse_error(("Not Atom" . ((string)$ret)));
         }
 
     });
@@ -2018,7 +2016,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         }
         return $new_error($construction_head($xs), $construction_tail($xs));
     });
-    $a_symbol_p = (function ($chr = NULL) use (&$a_space_p) {
+    $a_atom_p = (function ($chr = NULL) use (&$a_space_p) {
         if ($a_space_p($chr)) {
             return false;
         }
@@ -2077,7 +2075,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         $un_maybe($not_eof());
         $un_maybe(($get() == $c));
     });
-    $readsysname_no_pack_inner_must = (function ($strict = NULL) use (&$assert_get, &$data, &$parse_error, &$readapply, &$readcomment, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname_no_pack, &$readsysname_no_pack_inner_must, &$symbol) {
+    $readsysname_no_pack_inner_must = (function ($strict = NULL) use (&$assert_get, &$atom, &$data, &$parse_error, &$readapply, &$readcomment, &$readerror, &$readeval, &$readformbuiltin, &$readfuncapply, &$readlist, &$readsysname_no_pack, &$readsysname_no_pack_inner_must) {
         if (($strict == NULL)) {
             $strict = false;
         }
@@ -2092,7 +2090,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             $fs = ((object)[
                 "array" => [
                     $readlist,
-                    $symbol,
+                    $atom,
                     $readsysname_no_pack_bracket,
                     $data,
                     $readerror,
@@ -2132,7 +2130,7 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         }
         return $parse_error();
     });
-    $may_xfx_xf = (function ($vl = NULL) use (&$__TS__ArrayPush, &$eof, &$function_symbol, &$get, &$isOrNot_symbol, &$jsArray_to_list, &$new_construction, &$new_list, &$put, &$readsysname_no_pack_inner_must, &$something_symbol, &$sub_symbol, &$typeAnnotation_symbol) {
+    $may_xfx_xf = (function ($vl = NULL) use (&$__TS__ArrayPush, &$eof, &$function_atom, &$get, &$isOrNot_atom, &$jsArray_to_list, &$new_construction, &$new_list, &$put, &$readsysname_no_pack_inner_must, &$something_atom, &$sub_atom, &$typeAnnotation_atom) {
         if ($eof()) {
             return $vl;
         }
@@ -2140,24 +2138,24 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         if (($head == ".")) {
             $y = $readsysname_no_pack_inner_must();
             return $new_list(
-                $typeAnnotation_symbol,
-                $new_list($function_symbol, $new_list($vl), $something_symbol),
+                $typeAnnotation_atom,
+                $new_list($function_atom, $new_list($vl), $something_atom),
                 $y
             );
         } elseif (($head == ":")) {
             $y_1 = $readsysname_no_pack_inner_must();
-            return $new_list($typeAnnotation_symbol, $y_1, $vl);
+            return $new_list($typeAnnotation_atom, $y_1, $vl);
         } elseif (($head == "~")) {
-            return $new_list($isOrNot_symbol, $vl);
+            return $new_list($isOrNot_atom, $vl);
         } elseif (($head == "@")) {
             $y_2 = $readsysname_no_pack_inner_must();
             return $new_list(
-                $typeAnnotation_symbol,
-                $new_list($function_symbol, $new_construction($vl, $something_symbol), $something_symbol),
+                $typeAnnotation_atom,
+                $new_list($function_atom, $new_construction($vl, $something_atom), $something_atom),
                 $y_2
             );
         } elseif (($head == "?")) {
-            return $new_list($typeAnnotation_symbol, $function_symbol, $new_list($isOrNot_symbol, $vl));
+            return $new_list($typeAnnotation_atom, $function_atom, $new_list($isOrNot_atom, $vl));
         } elseif (($head == "/")) {
             $ys = ((object)["array" => [$vl]]);
             while (true) {
@@ -2172,14 +2170,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
                     break;
                 }
             }
-            return $new_list($sub_symbol, $jsArray_to_list($ys));
+            return $new_list($sub_atom, $jsArray_to_list($ys));
         } else {
             $put($head);
             return $vl;
         }
 
     });
-    $readsysname_no_pack = (function () use (&$assert_get, &$eof, &$form_symbol, &$function_symbol, &$get, &$may_xfx_xf, &$new_list, &$not_eof, &$put, &$readsysname_no_pack_inner_must, &$something_symbol, &$symbol, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_maybe) {
+    $readsysname_no_pack = (function () use (&$assert_get, &$atom, &$eof, &$form_atom, &$function_atom, &$get, &$may_xfx_xf, &$new_list, &$not_eof, &$put, &$readsysname_no_pack_inner_must, &$something_atom, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_maybe) {
         if ($eof()) {
             return false;
         }
@@ -2189,13 +2187,13 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             $c0 = $get();
             if (($c0 == "+")) {
                 $x_1 = $readsysname_no_pack_inner_must();
-                return $new_list($form_symbol, $new_list($system_symbol, $x_1));
+                return $new_list($form_atom, $new_list($system_atom, $x_1));
             } else {
                 $put($c0);
             }
 
             $x_2 = $readsysname_no_pack_inner_must();
-            return $new_list($form_symbol, $x_2);
+            return $new_list($form_atom, $x_2);
         } elseif (($head == ":")) {
             $un_maybe($not_eof());
             $c0_1 = $get();
@@ -2203,26 +2201,26 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
                 $assert_get(">");
                 $x_3 = $readsysname_no_pack_inner_must();
                 return $new_list(
-                    $typeAnnotation_symbol,
-                    $new_list($form_symbol, $new_list($function_symbol, $something_symbol, $x_3)),
-                    $theThing_symbol
+                    $typeAnnotation_atom,
+                    $new_list($form_atom, $new_list($function_atom, $something_atom, $x_3)),
+                    $theThing_atom
                 );
             } elseif (($c0_1 == ">")) {
                 $x_4 = $readsysname_no_pack_inner_must();
                 return $new_list(
-                    $typeAnnotation_symbol,
-                    $new_list($function_symbol, $something_symbol, $x_4),
-                    $theThing_symbol
+                    $typeAnnotation_atom,
+                    $new_list($function_atom, $something_atom, $x_4),
+                    $theThing_atom
                 );
             } else {
                 $put($c0_1);
             }
 
             $x_5 = $readsysname_no_pack_inner_must();
-            return $new_list($typeAnnotation_symbol, $x_5, $theThing_symbol);
+            return $new_list($typeAnnotation_atom, $x_5, $theThing_atom);
         } elseif (($head == "+")) {
             $x_6 = $readsysname_no_pack_inner_must();
-            return $new_list($system_symbol, $x_6);
+            return $new_list($system_atom, $x_6);
         } elseif (($head == "[")) {
             $x_7 = $readsysname_no_pack_inner_must();
             $assert_get("]");
@@ -2230,10 +2228,10 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         } elseif (($head == "_")) {
             $assert_get(":");
             $x_8 = $readsysname_no_pack_inner_must();
-            return $new_list($typeAnnotation_symbol, $x_8, $something_symbol);
+            return $new_list($typeAnnotation_atom, $x_8, $something_atom);
         } else {
             $put($head);
-            $x_9 = $symbol();
+            $x_9 = $atom();
             if (($x_9 == false)) {
                 return false;
             }
@@ -2241,12 +2239,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         }
 
     });
-    $readsysname = (function () use (&$readsysname_no_pack, &$symbol_p, &$systemName_make) {
+    $readsysname = (function () use (&$atom_p, &$readsysname_no_pack, &$systemName_make) {
         $x_1 = $readsysname_no_pack();
         if (($x_1 == false)) {
             return false;
         }
-        if ($symbol_p($x_1)) {
+        if ($atom_p($x_1)) {
             return $x_1;
         }
         return $systemName_make($x_1);
@@ -2357,10 +2355,10 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     }));
     return $val();
 });
-$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_symbol, &$new_construction, &$null_p, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
-    $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$construction_head, &$construction_p, &$construction_tail, &$form_symbol, &$function_symbol, &$isOrNot_symbol, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_symbol, &$sub_symbol, &$symbol_p, &$systemName_make, &$system_symbol, &$theThing_symbol, &$typeAnnotation_symbol, &$un_symbol) {
-        if ($symbol_p($x)) {
-            return $un_symbol($x);
+$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_atom, &$new_construction, &$null_p, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
+    $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
+        if ($atom_p($x)) {
+            return $un_atom($x);
         }
         $inner_bracket = (function ($vl = NULL) use (&$is_inner_bool) {
             if ($is_inner_bool) {
@@ -2373,56 +2371,56 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
         $maybe_xs = $maybe_list_to_jsArray($x);
         if (((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 3)) &&
-            $jsbool_no_force_equal_p($maybe_xs->array[0], $typeAnnotation_symbol))) {
+            $jsbool_no_force_equal_p($maybe_xs->array[0], $typeAnnotation_atom))) {
             $maybe_lst_2 = $maybe_list_to_jsArray($maybe_xs->array[1]);
             if (((($maybe_lst_2 != false) &&
                 ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 3)) &&
-                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $function_symbol))) {
+                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $function_atom))) {
                 $var_2_1 = $maybe_lst_2->array[1];
                 $maybe_lst_3 = $maybe_list_to_jsArray($var_2_1);
                 if (((($maybe_lst_3 != false) &&
                     ((is_string($maybe_lst_3) ? strlen($maybe_lst_3) : count($maybe_lst_3->array)) ==
                     1)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_symbol))) {
+                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_atom))) {
                     return $inner_bracket((((string)$print_sys_name($maybe_lst_3->array[0], true)) .
                         ("." . ((string)$print_sys_name($maybe_xs->array[2], true)))));
                 } elseif ((($construction_p($var_2_1) &&
-                    $jsbool_no_force_equal_p($construction_tail($var_2_1), $something_symbol)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_symbol))) {
+                    $jsbool_no_force_equal_p($construction_tail($var_2_1), $something_atom)) &&
+                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_atom))) {
                     return $inner_bracket((((string)$print_sys_name($construction_head($var_2_1), true)) .
                         ("@" . ((string)$print_sys_name($maybe_xs->array[2], true)))));
-                } elseif (($jsbool_no_force_equal_p($var_2_1, $something_symbol) &&
-                    $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol))) {
+                } elseif (($jsbool_no_force_equal_p($var_2_1, $something_atom) &&
+                    $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom))) {
                     return $inner_bracket((":>" . ((string)$print_sys_name($maybe_lst_2->array[2], true))));
                 }
             }
             $maybe_lst_44 = $maybe_list_to_jsArray($maybe_xs->array[2]);
-            if (((($jsbool_no_force_equal_p($maybe_xs->array[1], $function_symbol) &&
+            if (((($jsbool_no_force_equal_p($maybe_xs->array[1], $function_atom) &&
                 ($maybe_lst_44 != false)) &&
                 ((is_string($maybe_lst_44) ? strlen($maybe_lst_44) : count($maybe_lst_44->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p($maybe_lst_44->array[0], $isOrNot_symbol))) {
+                $jsbool_no_force_equal_p($maybe_lst_44->array[0], $isOrNot_atom))) {
                 return $inner_bracket((((string)$print_sys_name($maybe_lst_44->array[1], true)) . "?"));
             }
             if ((((($maybe_lst_2 != false) &&
                 ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol)) &&
-                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $form_symbol))) {
+                $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom)) &&
+                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $form_atom))) {
                 $maybe_lst_88 = $maybe_list_to_jsArray($maybe_lst_2->array[1]);
                 if ((((($maybe_lst_88 != false) &&
                     ((is_string($maybe_lst_88) ? strlen($maybe_lst_88) : count($maybe_lst_88->array)) ==
                     3)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_88->array[0], $function_symbol)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_88->array[1], $something_symbol))) {
+                    $jsbool_no_force_equal_p($maybe_lst_88->array[0], $function_atom)) &&
+                    $jsbool_no_force_equal_p($maybe_lst_88->array[1], $something_atom))) {
                     return $inner_bracket((":&>" . ((string)$print_sys_name($maybe_lst_88->array[2], true))));
                 }
             }
             $hd = NULL;
-            if ($jsbool_no_force_equal_p($maybe_xs->array[2], $something_symbol)) {
+            if ($jsbool_no_force_equal_p($maybe_xs->array[2], $something_atom)) {
                 $hd = "_";
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_symbol)) {
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom)) {
                 $hd = "";
             } else {
                 $hd = $print_sys_name($maybe_xs->array[2], true);
@@ -2431,20 +2429,20 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
             return $inner_bracket((((string)$hd) . (":" . ((string)$print_sys_name($maybe_xs->array[1], true)))));
         } elseif ((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2))) {
-            if ($jsbool_no_force_equal_p($maybe_xs->array[0], $form_symbol)) {
+            if ($jsbool_no_force_equal_p($maybe_xs->array[0], $form_atom)) {
                 $maybe_lst_288 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if (((($maybe_lst_288 != false) &&
                     ((is_string($maybe_lst_288) ? strlen($maybe_lst_288) : count($maybe_lst_288->array)) ==
                     2)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_288->array[0], $system_symbol))) {
+                    $jsbool_no_force_equal_p($maybe_lst_288->array[0], $system_atom))) {
                     return $inner_bracket(("&+" . ((string)$print_sys_name($maybe_lst_288->array[1], true))));
                 }
                 return $inner_bracket(("&" . ((string)$print_sys_name($maybe_xs->array[1], true))));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $isOrNot_symbol)) {
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $isOrNot_atom)) {
                 return $inner_bracket((((string)$print_sys_name($maybe_xs->array[1], true)) . "~"));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $system_symbol)) {
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $system_atom)) {
                 return $inner_bracket(("+" . ((string)$print_sys_name($maybe_xs->array[1], true))));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $sub_symbol)) {
+            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $sub_atom)) {
                 $maybe_lst_8934 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if ((($maybe_lst_8934 != false) &&
                     ((is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count($maybe_lst_8934->array)) >
@@ -2499,16 +2497,16 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
         $maybe_xs = $maybe_list_to_jsArray($list);
         if ((((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2)) &&
-            $jsbool_no_force_equal_p($name, $name_symbol)) &&
-            $jsbool_no_force_equal_p($maybe_xs->array[0], $system_symbol))) {
+            $jsbool_no_force_equal_p($name, $name_atom)) &&
+            $jsbool_no_force_equal_p($maybe_xs->array[0], $system_atom))) {
             return $print_sys_name($maybe_xs->array[1], false);
         }
         return ("#" . ((string)$complex_print($new_construction($name, $list))));
     } elseif ($error_p($x)) {
         return ("!" .
             ((string)$complex_print($new_construction($error_name($x), $error_list($x)))));
-    } elseif ($symbol_p($x)) {
-        return $un_symbol($x);
+    } elseif ($atom_p($x)) {
+        return $un_atom($x);
     } elseif ($comment_p($x)) {
         return (";(" .
             (((string)$complex_print($comment_comment($x))) .
@@ -2536,7 +2534,7 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$comment_comment, &
     }
     return $LANG_ERROR();
 });
-$machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$can_new_symbol_unicodechar_p, &$evaluate, &$new_construction, &$new_data, &$new_error, &$new_symbol_unicodechar, &$null_v, &$val2env) {
+$machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$can_new_atom_unicodechar_p, &$evaluate, &$new_atom_unicodechar, &$new_construction, &$new_data, &$new_error, &$null_v, &$val2env) {
     $state = NULL;
     $is_eof = NULL;
     $is_not_eof = NULL;
@@ -2586,10 +2584,10 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$can
                 }
                 $tmp = (((string)$chr_1) . ((string)$tmp));
             }
-            if ($can_new_symbol_unicodechar_p($tmp)) {
-                $__TS__ArrayUnshift($stack, $new_symbol_unicodechar($tmp));
+            if ($can_new_atom_unicodechar_p($tmp)) {
+                $__TS__ArrayUnshift($stack, $new_atom_unicodechar($tmp));
             } else {
-                return $parse_error(("can_new_symbol_unicodechar_p(\"" . (((string)$tmp) . "\") == false")));
+                return $parse_error(("can_new_atom_unicodechar_p(\"" . (((string)$tmp) . "\") == false")));
             }
 
         } elseif (($chr == ".")) {
@@ -2621,7 +2619,7 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$can
     $parse_assert(((is_string($stack) ? strlen($stack) : count($stack->array)) == 1));
     return $stack->array[0];
 });
-$machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$symbol_p, &$un_just_all, &$un_symbol_unicodechar) {
+$machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay2delay_evaluate, &$delay_evaluate_env, &$delay_evaluate_x, &$delay_p, &$env2val, &$error_list, &$error_name, &$error_p, &$null_p, &$un_atom_unicodechar, &$un_just_all) {
     $stack = ((object)["array" => [$x]]);
     $result = "";
     while (((is_string($stack) ? strlen($stack) : count($stack->array)) != 0)) {
@@ -2637,9 +2635,9 @@ $machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush,
                 $result = (((string)$result) . ((string)$s));
                 return $__TS__ArrayPush($new_stack, $g1($xx), $g2($xx));
             });
-            if ($symbol_p($x_1)) {
+            if ($atom_p($x_1)) {
                 $result = (((string)$result) .
-                    ((string)("^" . (((string)$un_symbol_unicodechar($x_1)) . "^"))));
+                    ((string)("^" . (((string)$un_atom_unicodechar($x_1)) . "^"))));
             } elseif ($construction_p($x_1)) {
                 $conslike($x_1, ".", $construction_head, $construction_tail);
             } elseif ($null_p($x_1)) {
@@ -2680,14 +2678,14 @@ $run_trampoline = (function ($x = NULL) {
     return $i->array[1];
 });
 $return_effect_systemName = $systemName_make($new_construction(
-    $sub_symbol,
-    $new_construction($new_construction($effect_symbol, $new_construction($new_construction(
-        $typeAnnotation_symbol,
-        $new_construction($thing_symbol, $new_construction($something_symbol, $null_v))
+    $sub_atom,
+    $new_construction($new_construction($effect_atom, $new_construction($new_construction(
+        $typeAnnotation_atom,
+        $new_construction($thing_atom, $new_construction($something_atom, $null_v))
     ), $null_v)), $null_v)
 ));
-$bind_effect_systemName = $systemName_make($new_construction($sub_symbol, $new_construction(
-    $new_construction($effect_symbol, $new_construction($construction_symbol, $null_v)),
+$bind_effect_systemName = $systemName_make($new_construction($sub_atom, $new_construction(
+    $new_construction($effect_atom, $new_construction($construction_atom, $null_v)),
     $null_v
 )));
 $new_effect_bind = (function ($monad = NULL, $func = NULL) use (&$bind_effect_systemName, &$new_data, &$new_list) {
@@ -2702,7 +2700,7 @@ $run_monad_helper = (function (
     $code = NULL,
     $state = NULL,
     $next = NULL
-) use (&$apply, &$bind_effect_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$function_symbol, &$jsbool_equal_p, &$make_quote, &$new_data, &$new_list, &$new_symbol, &$null_p, &$return_effect_systemName, &$run_monad_helper, &$trampoline_delay) {
+) use (&$apply, &$bind_effect_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$function_atom, &$jsbool_equal_p, &$make_quote, &$new_atom, &$new_data, &$new_list, &$null_p, &$return_effect_systemName, &$run_monad_helper, &$trampoline_delay) {
     if (($next == NULL)) {
         $next = false;
     }
@@ -2771,14 +2769,14 @@ $run_monad_helper = (function (
                             $upval_b_1 = $list_d_a;
                             $upval_st_3 = $state;
                             $upval_nt = $next;
-                            $x = $new_symbol("序甲");
-                            $r_3 = (function () use (&$function_symbol, &$make_bind, &$make_quote, &$new_data, &$new_list, &$run_monad_helper, &$upval_a_1, &$upval_b_1, &$upval_nt, &$upval_op_2, &$upval_rt_2, &$upval_st_3, &$x) {
+                            $x = $new_atom("序甲");
+                            $r_3 = (function () use (&$function_atom, &$make_bind, &$make_quote, &$new_data, &$new_list, &$run_monad_helper, &$upval_a_1, &$upval_b_1, &$upval_nt, &$upval_op_2, &$upval_rt_2, &$upval_st_3, &$x) {
                                 return $run_monad_helper(
                                     $upval_rt_2,
                                     $upval_op_2,
                                     $upval_a_1,
                                     $upval_st_3,
-                                    $new_data($function_symbol, $new_list(
+                                    $new_data($function_atom, $new_list(
                                         $new_list($x),
                                         $make_bind($new_list($make_quote($upval_b_1), $x), $make_quote($upval_nt))
                                     ))
@@ -2842,11 +2840,11 @@ $____exports->array["comment_p"] = $comment_p;
 $____exports->array["comment_comment"] = $comment_comment;
 $____exports->array["comment_x"] = $comment_x;
 $____exports->array["un_comment_all"] = $un_comment_all;
-$____exports->array["can_new_symbol_p"] = $can_new_symbol_p;
-$____exports->array["new_symbol"] = $new_symbol;
-$____exports->array["symbol_p"] = $symbol_p;
-$____exports->array["un_symbol"] = $un_symbol;
-$____exports->array["symbol_equal_p"] = $symbol_equal_p;
+$____exports->array["can_new_atom_p"] = $can_new_atom_p;
+$____exports->array["new_atom"] = $new_atom;
+$____exports->array["atom_p"] = $atom_p;
+$____exports->array["un_atom"] = $un_atom;
+$____exports->array["atom_equal_p"] = $atom_equal_p;
 $____exports->array["new_construction"] = $new_construction;
 $____exports->array["construction_p"] = $construction_p;
 $____exports->array["construction_head"] = $construction_head;

@@ -1646,7 +1646,7 @@ end
 if Xe(t)then
 return n(t)
 else
-return r("Not Symbol"..tostring(t))
+return r("Not Atom"..tostring(t))
 end
 end
 function g()
@@ -2190,7 +2190,7 @@ end
 if rt(t)then
 Ne(e,Ze(t))
 else
-return a("can_new_symbol_unicodechar_p(\""..tostring(t).."\") == false")
+return a("can_new_atom_unicodechar_p(\""..tostring(t).."\") == false")
 end
 elseif t=="."then
 o(s)
@@ -2365,11 +2365,11 @@ t.comment_p=I
 t.comment_comment=oe
 t.comment_x=K
 t.un_comment_all=qe
-t.can_new_symbol_p=Xe
-t.new_symbol=n
-t.symbol_p=p
-t.un_symbol=de
-t.symbol_equal_p=D
+t.can_new_atom_p=Xe
+t.new_atom=n
+t.atom_p=p
+t.un_atom=de
+t.atom_equal_p=D
 t.new_construction=s
 t.construction_p=a
 t.construction_head=o

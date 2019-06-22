@@ -37,10 +37,10 @@ export { trampoline_return, trampoline_delay, run_trampoline }
 // 相對獨立的部分。trampoline }}}
 
 // {{{ 相對獨立的部分。Effect
-type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<New_Construction<TypeAnnotation_Symbol, New_Construction<Thing_Symbol, New_Construction<Something_Symbol, Null_V>>>, Null_V>>, Null_V>>>
-const return_effect_systemName: Return_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(new_construction(typeAnnotation_symbol, new_construction(thing_symbol, new_construction(something_symbol, null_v))), null_v)), null_v)))
-type Bind_Effect_SystemName = SystemName_Make<New_Construction<Sub_Symbol, New_Construction<New_Construction<Effect_Symbol, New_Construction<Construction_Symbol, Null_V>>, Null_V>>>
-const bind_effect_systemName: Bind_Effect_SystemName = systemName_make(new_construction(sub_symbol, new_construction(new_construction(effect_symbol, new_construction(construction_symbol, null_v)), null_v)))
+type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Atom, New_Construction<New_Construction<Effect_Atom, New_Construction<New_Construction<TypeAnnotation_Atom, New_Construction<Thing_Atom, New_Construction<Something_Atom, Null_V>>>, Null_V>>, Null_V>>>
+const return_effect_systemName: Return_Effect_SystemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)))
+type Bind_Effect_SystemName = SystemName_Make<New_Construction<Sub_Atom, New_Construction<New_Construction<Effect_Atom, New_Construction<Construction_Atom, Null_V>>, Null_V>>>
+const bind_effect_systemName: Bind_Effect_SystemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(construction_atom, null_v)), null_v)))
 function new_effect_bind(monad: LangVal, func: LangVal): LangVal {
     return new_data(bind_effect_systemName, new_list(monad, func))
 }
@@ -108,8 +108,8 @@ function run_monad_helper<St, T>(
                             const upval_b = list_d_a
                             const upval_st = state
                             const upval_nt = next
-                            const x = new_symbol('序甲')
-                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_symbol, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))))
+                            const x = new_atom('序甲')
+                            const r = () => run_monad_helper(upval_rt, upval_op, upval_a, upval_st, new_data(function_atom, new_list(new_list(x), make_bind(new_list(make_quote(upval_b), x), make_quote(upval_nt)))))
                             return trampoline_delay(r)
                         }
                     }

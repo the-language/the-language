@@ -43,8 +43,8 @@ function simple_print(x: LangVal): string {
         return "#" + simple_print(new_construction(data_name(x), data_list(x)))
     } else if (error_p(x)) {
         return "!" + simple_print(new_construction(error_name(x), error_list(x)))
-    } else if (symbol_p(x)) {
-        return un_symbol(x)
+    } else if (atom_p(x)) {
+        return un_atom(x)
     } else if (comment_p(x)) {
         return ";(" + simple_print(comment_comment(x)) + " " + simple_print(comment_x(x)) + ")"
     } else if (delay_evaluate_p(x)) {
@@ -106,29 +106,29 @@ function complex_parse(x: string): LangVal {
         }
         return true
     }
-    function symbol() {
+    function atom() {
         if (eof()) {
             return false
         }
         let x = get()
         let ret: string = ""
-        if (!a_symbol_p(x)) {
+        if (!a_atom_p(x)) {
             put(x)
             return false
         }
-        while (a_symbol_p(x) && !eof()) {
+        while (a_atom_p(x) && !eof()) {
             ret += x
             x = get()
         }
-        if (a_symbol_p(x)) {
+        if (a_atom_p(x)) {
             ret += x
         } else {
             put(x)
         }
-        if (can_new_symbol_p(ret)) {
-            return new_symbol(ret)
+        if (can_new_atom_p(ret)) {
+            return new_atom(ret)
         } else {
-            return parse_error("Not Symbol" + ret)
+            return parse_error("Not Atom" + ret)
         }
     }
     function readlist() {
@@ -288,7 +288,7 @@ function complex_parse(x: string): LangVal {
         return apply(f, jsxs)
     })
     const readcomment = make_read_two(";", (comment, x) => new_comment(comment, x))
-    function a_symbol_p(chr: string): boolean {
+    function a_atom_p(chr: string): boolean {
         if (a_space_p(chr)) {
             return false
         }
@@ -336,7 +336,7 @@ function complex_parse(x: string): LangVal {
         // 重複自val()
         let fs: Array<() => OrFalse<LangVal>>
         if (strict) {
-            fs = [readlist, symbol, readsysname_no_pack_bracket, data,
+            fs = [readlist, atom, readsysname_no_pack_bracket, data,
                 readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         } else {
             fs = [readlist, readsysname_no_pack, data,
@@ -357,17 +357,17 @@ function complex_parse(x: string): LangVal {
         const head = get()
         if (head === '.') {
             const y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(vl), something_symbol), y)
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_list(vl), something_atom), y)
         } else if (head === ':') {
             const y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, y, vl)
+            return new_list(typeAnnotation_atom, y, vl)
         } else if (head === '~') {
-            return new_list(isOrNot_symbol, vl)
+            return new_list(isOrNot_atom, vl)
         } else if (head === '@') {
             const y = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(vl, something_symbol), something_symbol), y)
+            return new_list(typeAnnotation_atom, new_list(function_atom, new_construction(vl, something_atom), something_atom), y)
         } else if (head === '?') {
-            return new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, vl))
+            return new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, vl))
         } else if (head === '/') {
             let ys: Array<LangVal> = [vl]
             while (true) {
@@ -381,7 +381,7 @@ function complex_parse(x: string): LangVal {
                     break
                 }
             }
-            return new_list(sub_symbol, jsArray_to_list(ys))
+            return new_list(sub_atom, jsArray_to_list(ys))
         } else {
             put(head)
             return vl
@@ -397,35 +397,35 @@ function complex_parse(x: string): LangVal {
             const c0 = get()
             if (c0 === '+') {
                 const x = readsysname_no_pack_inner_must()
-                return new_list(form_symbol, new_list(system_symbol, x))
+                return new_list(form_atom, new_list(system_atom, x))
             } else {
                 put(c0)
             }
             const x = readsysname_no_pack_inner_must()
-            return new_list(form_symbol, x)
+            return new_list(form_atom, x)
         } else if (head === ':') {
             un_maybe(not_eof())
             const c0 = get()
             if (c0 === '&') {
                 assert_get('>')
                 const x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol,
-                    new_list(form_symbol,
-                        new_list(function_symbol, something_symbol, x)),
-                    theThing_symbol)
+                return new_list(typeAnnotation_atom,
+                    new_list(form_atom,
+                        new_list(function_atom, something_atom, x)),
+                    theThing_atom)
             } else if (c0 === '>') {
                 const x = readsysname_no_pack_inner_must()
-                return new_list(typeAnnotation_symbol,
-                    new_list(function_symbol, something_symbol, x),
-                    theThing_symbol)
+                return new_list(typeAnnotation_atom,
+                    new_list(function_atom, something_atom, x),
+                    theThing_atom)
             } else {
                 put(c0)
             }
             const x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, theThing_symbol)
+            return new_list(typeAnnotation_atom, x, theThing_atom)
         } else if (head === '+') {
             const x = readsysname_no_pack_inner_must()
-            return new_list(system_symbol, x)
+            return new_list(system_atom, x)
         } else if (head === '[') {
             const x = readsysname_no_pack_inner_must()
             assert_get(']')
@@ -433,10 +433,10 @@ function complex_parse(x: string): LangVal {
         } else if (head === '_') {
             assert_get(':')
             const x = readsysname_no_pack_inner_must()
-            return new_list(typeAnnotation_symbol, x, something_symbol)
+            return new_list(typeAnnotation_atom, x, something_atom)
         } else {
             put(head)
-            const x = symbol()
+            const x = atom()
             if (x === false) {
                 return false
             }
@@ -448,7 +448,7 @@ function complex_parse(x: string): LangVal {
         if (x === false) {
             return false
         }
-        if (symbol_p(x)) {
+        if (atom_p(x)) {
             return x
         }
         return systemName_make(x)
@@ -458,8 +458,8 @@ export { complex_parse }
 function complex_print(val: LangVal): string {
     function print_sys_name(x: LangVal, is_inner_bool: boolean): string {
         // 是 complex_print(systemName_make(x))
-        if (symbol_p(x)) {
-            return un_symbol(x)
+        if (atom_p(x)) {
+            return un_atom(x)
         }
         function inner_bracket(vl: string): string {
             if (is_inner_bool) {
@@ -469,62 +469,62 @@ function complex_print(val: LangVal): string {
             }
         }
         const maybe_xs = maybe_list_to_jsArray(x)
-        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_symbol)) {
-            // new_list(typeAnnotation_symbol, maybe_xs[1], maybe_xs[2])
+        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_atom)) {
+            // new_list(typeAnnotation_atom, maybe_xs[1], maybe_xs[2])
             const maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1])
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_symbol)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_atom)) {
                 const var_2_1 = maybe_lst_2[1]
-                // new_list(typeAnnotation_symbol, new_list(function_symbol, var_2_1, maybe_lst_2[2]), maybe_xs[2])
+                // new_list(typeAnnotation_atom, new_list(function_atom, var_2_1, maybe_lst_2[2]), maybe_xs[2])
                 const maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_list(maybe_lst_3[0]), something_symbol), maybe_xs[2])
+                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, new_list(maybe_lst_3[0]), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true))
-                } else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_symbol) && jsbool_no_force_equal_p(maybe_lst_2[2], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, new_construction(construction_head(var_2_1), something_symbol), something_symbol), maybe_xs[2])
+                } else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, new_construction(construction_head(var_2_1), something_atom), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true))
-                } else if (jsbool_no_force_equal_p(var_2_1, something_symbol) && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(function_symbol, something_symbol, maybe_lst_2[2]), theThing_symbol)
+                } else if (jsbool_no_force_equal_p(var_2_1, something_atom) && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(function_atom, something_atom, maybe_lst_2[2]), theThing_atom)
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], true))
                 }
             } const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2])
-            if (jsbool_no_force_equal_p(maybe_xs[1], function_symbol) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_symbol)) {
-                // new_list(typeAnnotation_symbol, function_symbol, new_list(isOrNot_symbol, maybe_lst_44[1]))
+            if (jsbool_no_force_equal_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_atom)) {
+                // new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, maybe_lst_44[1]))
                 return inner_bracket(print_sys_name(maybe_lst_44[1], true) + '?')
             }
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol) && jsbool_no_force_equal_p(maybe_lst_2[0], form_symbol)) {
-                // new_list(typeAnnotation_symbol, new_list(form_symbol, var_2_1), theThing_symbol)
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom) && jsbool_no_force_equal_p(maybe_lst_2[0], form_atom)) {
+                // new_list(typeAnnotation_atom, new_list(form_atom, var_2_1), theThing_atom)
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1])
-                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_symbol) && jsbool_no_force_equal_p(maybe_lst_88[1], something_symbol)) {
-                    // new_list(typeAnnotation_symbol, new_list(form_symbol, new_list(function_symbol, something_symbol, maybe_lst_88[2])), theThing_symbol)
+                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_atom) && jsbool_no_force_equal_p(maybe_lst_88[1], something_atom)) {
+                    // new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, maybe_lst_88[2])), theThing_atom)
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true))
                 }
             }
             let hd: string
-            if (jsbool_no_force_equal_p(maybe_xs[2], something_symbol)) {
+            if (jsbool_no_force_equal_p(maybe_xs[2], something_atom)) {
                 hd = '_'
-            } else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_symbol)) {
+            } else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
                 hd = ''
             } else {
                 hd = print_sys_name(maybe_xs[2], true)
             }
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true))
         } else if (maybe_xs !== false && maybe_xs.length === 2) {
-            if (jsbool_no_force_equal_p(maybe_xs[0], form_symbol)) {
-                // new_list(form_symbol, maybe_xs[1])
+            if (jsbool_no_force_equal_p(maybe_xs[0], form_atom)) {
+                // new_list(form_atom, maybe_xs[1])
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1])
-                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_symbol)) {
-                    // new_list(form_symbol, new_list(system_symbol, maybe_lst_288[1]))
+                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_atom)) {
+                    // new_list(form_atom, new_list(system_atom, maybe_lst_288[1]))
                     return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], true))
                 }
                 return inner_bracket('&' + print_sys_name(maybe_xs[1], true))
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_symbol)) {
-                // new_list(isOrNot_symbol, maybe_xs[1])
+            } else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_atom)) {
+                // new_list(isOrNot_atom, maybe_xs[1])
                 return inner_bracket(print_sys_name(maybe_xs[1], true) + '~')
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
-                // new_list(system_symbol, maybe_xs[1])
+            } else if (jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+                // new_list(system_atom, maybe_xs[1])
                 return inner_bracket('+' + print_sys_name(maybe_xs[1], true))
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], sub_symbol)) {
-                // new_list(sub_symbol, maybe_xs[1])
+            } else if (jsbool_no_force_equal_p(maybe_xs[0], sub_atom)) {
+                // new_list(sub_atom, maybe_xs[1])
                 const maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1])
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
                     let tmp = print_sys_name(maybe_lst_8934[0], true)
@@ -565,15 +565,15 @@ function complex_print(val: LangVal): string {
         const name = data_name(x)
         const list = data_list(x)
         const maybe_xs = maybe_list_to_jsArray(list)
-        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_symbol) && jsbool_no_force_equal_p(maybe_xs[0], system_symbol)) {
+        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_atom) && jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
             // systemName_make(maybe_xs[1])
             return print_sys_name(maybe_xs[1], false)
         }
         return "#" + complex_print(new_construction(name, list))
     } else if (error_p(x)) {
         return "!" + complex_print(new_construction(error_name(x), error_list(x)))
-    } else if (symbol_p(x)) {
-        return un_symbol(x)
+    } else if (atom_p(x)) {
+        return un_atom(x)
     } else if (comment_p(x)) {
         return ";(" + complex_print(comment_comment(x)) + " " + complex_print(comment_x(x)) + ")"
     } else if (delay_evaluate_p(x)) {
