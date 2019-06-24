@@ -1,2 +1,7 @@
 #!/bin/sh
-node -r "$(dirname "$0")"/repl.js.r.js "$@"
+oldpwd="$(pwd)"
+cd "$(dirname "$0")" ||exit
+bin="$(pwd)"
+make ecmascript/lang.js ||exit
+cd "$oldpwd" ||exit
+node -r "$bin"/repl.js.r.js "$@"

@@ -40,4 +40,4 @@ racket test.rkt
 
 ### 運行依賴
 
-* php | `apt install php` `pacman -S php` `scoop install php`
+* php | `apt install php` `pacman -S php` `scoop install php` `apk add php`

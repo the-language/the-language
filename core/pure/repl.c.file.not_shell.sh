@@ -1,6 +1,11 @@
 #!/bin/sh
+oldpwd="$(pwd)"
+cd "$(dirname "$0")" ||exit
+bin="$(pwd)"
+make c/lang.o ||exit
+cd "$oldpwd" ||exit
 f="$(mktemp)"
-clang "$(dirname "$0")"/c/lang.o -xc -I"$(dirname "$0")"/c -o "$f" "$@" || exit
+clang "$bin"/c/lang.o -xc -I"$bin"/c -o "$f" "$@" || exit
 "$f"
 s="$?"
 rm "$f"
