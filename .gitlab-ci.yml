@@ -19,5 +19,5 @@ all:
       - racket make.rkt
       - racket test.rkt
       - git add .
-      - git diff --cached
+      - git diff --cached | cat
     retry: 2
