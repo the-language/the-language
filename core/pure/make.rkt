@@ -148,6 +148,7 @@
             |> lines->string exports &>! exports.list
      }})
      ("ecmascript/lang.js" ("typescript/lang.ts") { in-dir "ecmascript" {
+         npm install
          npx tsc --removeComments --outDir lang.js.tmp
          mv lang.js.tmp/langraw.js lang.js
          rm -fr lang.js.tmp

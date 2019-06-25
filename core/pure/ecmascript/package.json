@@ -2,7 +2,7 @@
     "name": "the-language",
     "version": "0.0.12-a",
     "description": "The Language",
-    "main": "lang.js",
+    "main": "lang.min.js",
     "repository": {
         "url": "https://github.com/the-language/the-language",
         "type": "git"
@@ -15,6 +15,6 @@
         "typescript": "^3.5.1"
     },
     "files": [
-        "lang.js"
+        "lang.min.js"
     ]
 }
