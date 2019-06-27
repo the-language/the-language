@@ -17,25 +17,6 @@
 
 */
 
-// {{{ 相對獨立的部分。trampoline
-type TrampolineHelper<T> = () => ([false, T] | [true, Trampoline<T>])
-export interface Trampoline<T> extends TrampolineHelper<T> { }
-function trampoline_return<T>(x: T): Trampoline<T> {
-    return () => [false, x]
-}
-function trampoline_delay<T>(x: () => Trampoline<T>): Trampoline<T> {
-    return () => [true, x()]
-}
-function run_trampoline<T>(x: Trampoline<T>): T {
-    let i = x()
-    while (i[0]) {
-        i = i[1]()
-    }
-    return i[1]
-}
-export { trampoline_return, trampoline_delay, run_trampoline }
-// 相對獨立的部分。trampoline }}}
-
 // {{{ 相對獨立的部分。Effect
 type Return_Effect_SystemName = SystemName_Make<New_Construction<Sub_Atom, New_Construction<New_Construction<Effect_Atom, New_Construction<New_Construction<TypeAnnotation_Atom, New_Construction<Thing_Atom, New_Construction<Something_Atom, Null_V>>>, Null_V>>, Null_V>>>
 const return_effect_systemName: Return_Effect_SystemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)))
