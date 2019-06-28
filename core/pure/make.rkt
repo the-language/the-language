@@ -189,7 +189,7 @@
              rm lang.js
              npx tsc --build tsconfig.json
              (define raw #{cat lang.js})
-             |> ++ c-generatedby raw &>! lang.js
+             |> ++ c-generatedby c-copyright raw &>! lang.js
      }})
      ("java/src" ("lua/lang.lua" "java/real-src/lang/Lang.java" "java/real-src/lang/LangValue.java") {
          ;; TODO rewrite in rash
