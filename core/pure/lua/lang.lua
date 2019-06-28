@@ -18,7 +18,6 @@
 
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 -- Lua Library inline imports
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local function __TS__ArrayPush(arr, ...)
     local items = ({...})
     for ____, item in ipairs(items) do
@@ -27,7 +26,6 @@ local function __TS__ArrayPush(arr, ...)
     return #arr
 end
 
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local function __TS__ArrayUnshift(arr, ...)
     local items = ({...})
     do
