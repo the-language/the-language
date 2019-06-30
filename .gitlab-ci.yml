@@ -1,9 +1,5 @@
 image: archlinux/base
 
-variables:
-  # Please edit to your GitLab project
-  REPO_NAME: gitlab.com/namespace/project
-
 before_script:
   - pacman -Sy
   - pacman -S --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php
@@ -18,5 +14,7 @@ all:
     script:
       - racket make.rkt
       - racket test.rkt
-      - sh -c '[ "$(git add .&&git diff --cached)" = "" ]'
+      - git add .
+      - git diff --cached | cat
+      - sh -c '[ "$(git diff --cached)" = "" ]'
     retry: 2
