@@ -16,5 +16,5 @@ javac Main.java ||exit
 cd "$oldpwd" ||exit
 java Main ||exit
 s="$?"
-rm "$d"
+rm -fr "$d"
 exit "$s"
