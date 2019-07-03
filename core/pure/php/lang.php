@@ -326,9 +326,13 @@ $new_hole_do = (function () use (&$hole_t) {
 $hole_p = (function ($x = NULL) use (&$hole_t) {
     return ($x->array[0] == $hole_t);
 });
-$lang_assert_equal_set_do = (function ($x = NULL, $y = NULL) use (&$just_t) {
+$lang_assert_equal_set_do = (function ($x = NULL, $y = NULL) use (&$just_t, &$null_v) {
     if (($x == $y)) {
         return;
+    }
+    if (($x == $null_v)) {
+        $x = $y;
+        $y = $null_v;
     }
     $x->array[0] = $just_t;
     $x->array[1] = $y;

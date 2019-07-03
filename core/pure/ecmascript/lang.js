@@ -269,6 +269,10 @@ function lang_assert_equal_set_do(x, y) {
     if (x === y) {
         return;
     }
+    if (x === null_v) {
+        x = y;
+        y = null_v;
+    }
     x[0] = just_t;
     x[1] = y;
     x[2] = false;

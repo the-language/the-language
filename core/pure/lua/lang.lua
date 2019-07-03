@@ -242,6 +242,10 @@ function lang_assert_equal_set_do(x, y)
     if x == y then
         return
     end
+    if x == null_v then
+        x = y
+        y = null_v
+    end
     x[1] = just_t
     x[2] = y
     x[3] = false

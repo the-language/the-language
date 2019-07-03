@@ -1,6 +1,7 @@
 package lang;
 public class Lang$luaj$48 extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue[] u0;
+    org.luaj.vm2.LuaValue[] u1;
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     final static org.luaj.vm2.LuaValue k2;
@@ -20,8 +21,13 @@ public class Lang$luaj$48 extends org.luaj.vm2.lib.TwoArgFunction {
         if (a.eq_b(a0)) {
             return org.luaj.vm2.LuaValue.NONE;
         }
-        org.luaj.vm2.LuaValue a1 = this.u0[0];
-        a.set(k0, a1);
+        if (a.eq_b(this.u0[0])) {
+            org.luaj.vm2.LuaValue a1 = this.u0[0];
+            a = a0;
+            a0 = a1;
+        }
+        org.luaj.vm2.LuaValue a2 = this.u1[0];
+        a.set(k0, a2);
         a.set(k1, a0);
         a.set(k2, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE);
         a.set(k3, (org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE);
