@@ -94,7 +94,7 @@ function atom_equal_p(x, y) {
         return true;
     }
     if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
-        lang_set_do(x, y);
+        lang_assert_equal_set_do(x, y);
         return true;
     }
     else {
@@ -264,7 +264,7 @@ function new_hole_do() {
 function hole_p(x) {
     return x[0] === hole_t;
 }
-function lang_set_do(x, y) {
+function lang_assert_equal_set_do(x, y) {
     if (x === y) {
         return;
     }
@@ -394,7 +394,7 @@ function un_just_all(raw) {
         x = un_just(x);
     }
     for (const v of xs) {
-        lang_set_do(v, x);
+        lang_assert_equal_set_do(v, x);
     }
     return x;
 }
@@ -441,9 +441,9 @@ function force_all_inner(raw, parents_history = {}, ref_novalue_replace = [false
     let history = {};
     let x = raw;
     function do_rewrite(newval) {
-        lang_set_do(x, newval);
+        lang_assert_equal_set_do(x, newval);
         for (let i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], newval);
+            lang_assert_equal_set_do(xs[i], newval);
         }
         return newval;
     }
@@ -571,7 +571,7 @@ function force1(raw) {
         ret = x;
     }
     ret = un_just_all(ret);
-    lang_set_do(x, ret);
+    lang_assert_equal_set_do(x, ret);
     return ret;
 }
 function force_all(raw) {
@@ -1134,7 +1134,7 @@ function jsbool_equal_p(x, y) {
     }
     function end_2(xx, yy, f1, f2) {
         if (jsbool_equal_p(f1(xx), f1(yy)) && jsbool_equal_p(f2(xx), f2(yy))) {
-            lang_set_do(xx, yy);
+            lang_assert_equal_set_do(xx, yy);
             return true;
         }
         else {
@@ -1145,8 +1145,7 @@ function jsbool_equal_p(x, y) {
         if (!null_p(y)) {
             return false;
         }
-        lang_set_do(x, null_v);
-        lang_set_do(y, null_v);
+        lang_assert_equal_set_do(x, y);
         return true;
     }
     else if (atom_p(x)) {
@@ -1188,7 +1187,7 @@ function jsbool_no_force_equal_p(x, y) {
     }
     function end_2(xx, yy, f1, f2) {
         if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
-            lang_set_do(xx, yy);
+            lang_assert_equal_set_do(xx, yy);
             return true;
         }
         else {
@@ -1199,8 +1198,8 @@ function jsbool_no_force_equal_p(x, y) {
         if (!null_p(y)) {
             return false;
         }
-        lang_set_do(x, null_v);
-        lang_set_do(y, null_v);
+        lang_assert_equal_set_do(x, null_v);
+        lang_assert_equal_set_do(y, null_v);
         return true;
     }
     else if (atom_p(x)) {

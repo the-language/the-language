@@ -162,7 +162,7 @@ function atom_equal_p(x: LangValAtom, y: LangValAtom): boolean {
         return true
     }
     if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
-        lang_set_do(x, y)
+        lang_assert_equal_set_do(x, y)
         return true
     } else {
         return false
@@ -336,8 +336,8 @@ function new_hole_do(): LangValHole {
 function hole_p(x: LangVal): x is LangValHole {
     return x[0] === hole_t
 }
-function lang_set_do(x: LangVal, y: LangVal): void {
-    // 只用于x与y等价的情况
+function lang_assert_equal_set_do(x: LangVal, y: LangVal): void {
+    // 只用于x与y等价的情况，且一般情況下要求y比x簡單。
     if (x === y) {
         return
     }

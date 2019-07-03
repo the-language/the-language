@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom_unicodechar, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, symbols_set_neg, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom_unicodechar, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -83,7 +83,7 @@ function atom_equal_p(x, y)
         return true
     end
     if un_atom_unicodechar(x) == un_atom_unicodechar(y) then
-        lang_set_do(x, y)
+        lang_assert_equal_set_do(x, y)
         return true
     else
         return false
@@ -238,7 +238,7 @@ end
 function hole_p(x)
     return x[1] == hole_t
 end
-function lang_set_do(x, y)
+function lang_assert_equal_set_do(x, y)
     if x == y then
         return
     end
@@ -288,7 +288,7 @@ function un_just_all(raw)
         x = un_just(x)
     end
     for ____, v in ipairs(xs) do
-        lang_set_do(v, x)
+        lang_assert_equal_set_do(v, x)
     end
     return x
 end
@@ -313,11 +313,11 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
     end
     local x, do_rewrite, do_rewrite_force_all
     function do_rewrite(newval)
-        lang_set_do(x, newval)
+        lang_assert_equal_set_do(x, newval)
         do
             local i = 0
             while i < #xs do
-                lang_set_do(xs[i + 1], newval)
+                lang_assert_equal_set_do(xs[i + 1], newval)
                 i = i + 1
             end
         end
@@ -450,7 +450,7 @@ function force1(raw)
         ret = x
     end
     ret = un_just_all(ret)
-    lang_set_do(x, ret)
+    lang_assert_equal_set_do(x, ret)
     return ret
 end
 function force_all(raw)
@@ -829,7 +829,7 @@ function jsbool_equal_p(x, y)
     end
     local function end_2(xx, yy, f1, f2)
         if jsbool_equal_p(f1(xx), f1(yy)) and jsbool_equal_p(f2(xx), f2(yy)) then
-            lang_set_do(xx, yy)
+            lang_assert_equal_set_do(xx, yy)
             return true
         else
             return false
@@ -839,8 +839,7 @@ function jsbool_equal_p(x, y)
         if not null_p(y) then
             return false
         end
-        lang_set_do(x, null_v)
-        lang_set_do(y, null_v)
+        lang_assert_equal_set_do(x, y)
         return true
     elseif atom_p(x) then
         if not atom_p(y) then
@@ -1567,7 +1566,7 @@ local function jsbool_no_force_equal_p(x, y)
     end
     local function end_2(xx, yy, f1, f2)
         if jsbool_no_force_equal_p(f1(xx), f1(yy)) and jsbool_no_force_equal_p(f2(xx), f2(yy)) then
-            lang_set_do(xx, yy)
+            lang_assert_equal_set_do(xx, yy)
             return true
         else
             return false
@@ -1577,8 +1576,8 @@ local function jsbool_no_force_equal_p(x, y)
         if not null_p(y) then
             return false
         end
-        lang_set_do(x, null_v)
-        lang_set_do(y, null_v)
+        lang_assert_equal_set_do(x, null_v)
+        lang_assert_equal_set_do(y, null_v)
         return true
     elseif atom_p(x) then
         if not atom_p(y) then

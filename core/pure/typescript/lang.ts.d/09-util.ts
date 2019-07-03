@@ -59,7 +59,7 @@ function un_just_all(raw: LangVal): LangVal {
     }
 
     for (const v of xs) {
-        lang_set_do(v, x)
+        lang_assert_equal_set_do(v, x)
     }
 
     return x
@@ -112,9 +112,9 @@ function force_all_inner(
     let history: { [key: string]: true } = {}
     let x: LangVal = raw
     function do_rewrite(newval: LangVal): LangVal {
-        lang_set_do(x, newval)
+        lang_assert_equal_set_do(x, newval)
         for (let i = 0; i < xs.length; i++) {
-            lang_set_do(xs[i], newval)
+            lang_assert_equal_set_do(xs[i], newval)
         }
         return newval
     }
@@ -231,7 +231,7 @@ function force1(raw: LangVal): LangVal {
         ret = x
     }
     ret = un_just_all(ret)
-    lang_set_do(x, ret)
+    lang_assert_equal_set_do(x, ret)
     return ret
 }
 function force_all(raw: LangVal): LangVal {

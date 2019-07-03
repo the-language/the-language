@@ -103,7 +103,7 @@ $delay_apply_xs = NULL;
 $force_all_rec = NULL;
 $new_hole_do = NULL;
 $hole_p = NULL;
-$lang_set_do = NULL;
+$lang_assert_equal_set_do = NULL;
 $hole_set_do = NULL;
 $lang_copy_do = NULL;
 $system_atom = NULL;
@@ -194,12 +194,12 @@ $un_atom = (function ($x = NULL) use (&$symbols_set_neg, &$un_atom_unicodechar) 
     $lUaTmP_4_LuAtMp = $un_atom_unicodechar($x);
     return $symbols_set_neg()->array[(is_int($lUaTmP_4_LuAtMp) ? $lUaTmP_4_LuAtMp - 1 : $lUaTmP_4_LuAtMp)];
 });
-$atom_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_set_do, &$un_atom_unicodechar) {
+$atom_equal_p = (function ($x = NULL, $y = NULL) use (&$lang_assert_equal_set_do, &$un_atom_unicodechar) {
     if (($x == $y)) {
         return true;
     }
     if (($un_atom_unicodechar($x) == $un_atom_unicodechar($y))) {
-        $lang_set_do($x, $y);
+        $lang_assert_equal_set_do($x, $y);
         return true;
     } else {
         return false;
@@ -326,7 +326,7 @@ $new_hole_do = (function () use (&$hole_t) {
 $hole_p = (function ($x = NULL) use (&$hole_t) {
     return ($x->array[0] == $hole_t);
 });
-$lang_set_do = (function ($x = NULL, $y = NULL) use (&$just_t) {
+$lang_assert_equal_set_do = (function ($x = NULL, $y = NULL) use (&$just_t) {
     if (($x == $y)) {
         return;
     }
@@ -367,7 +367,7 @@ $new_list = (function (...$lUa_Vararg_LuA) use (&$jsArray_to_list) {
     $xs = ((object)["array" => $lUa_Vararg_LuA]);
     return $jsArray_to_list($xs);
 });
-$un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_set_do, &$un_just) {
+$un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_assert_equal_set_do, &$un_just) {
     if (!($just_p($raw))) {
         return $raw;
     }
@@ -383,7 +383,7 @@ $un_just_all = (function ($raw = NULL) use (&$__TS__ArrayPush, &$just_p, &$lang_
     for ($lUa_I_LuA = 1; $lUaTmP_7_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_6_LuAtMp : $lUa_I_LuA >= $lUaTmP_6_LuAtMp; $lUa_I_LuA += $lUaTmP_7_LuAtMp) {
         $____ = $lUa_I_LuA;
         $v = $lUaTmP_5_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
-        $lang_set_do($v, $x);
+        $lang_assert_equal_set_do($v, $x);
     }
     return $x;
 });
@@ -395,7 +395,7 @@ $delay_p = (function ($x = NULL) use (&$delay_apply_p, &$delay_builtin_form_p, &
 $delay_just_p = (function ($x = NULL) use (&$delay_p, &$just_p) {
     return ($just_p($x) || $delay_p($x));
 });
-$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$atom_p_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$the_world_stopped_v) {
+$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$atom_p_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_assert_equal_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$the_world_stopped_v) {
     if (($parents_history == NULL)) {
         $parents_history = ((object)["array" => []]);
     }
@@ -408,13 +408,13 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
     $x = NULL;
     $do_rewrite = NULL;
     $do_rewrite_force_all = NULL;
-    $do_rewrite = (function ($newval = NULL) use (&$lang_set_do, &$x, &$xs) {
-        $lang_set_do($x, $newval);
+    $do_rewrite = (function ($newval = NULL) use (&$lang_assert_equal_set_do, &$x, &$xs) {
+        $lang_assert_equal_set_do($x, $newval);
         
         {
             $i = 0;
             while (($i < (is_string($xs) ? strlen($xs) : count($xs->array)))) {
-                $lang_set_do($xs->array[($i + 0)], $newval);
+                $lang_assert_equal_set_do($xs->array[($i + 0)], $newval);
                 $i = ($i + 1);
             }
         }
@@ -541,7 +541,7 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
     }
     return $do_rewrite($x);
 });
-$force1 = (function ($raw = NULL) use (&$LANG_ASSERT, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$just_p, &$lang_set_do, &$real_apply, &$real_builtin_form_apply, &$real_builtin_func_apply, &$real_evaluate, &$un_just_all) {
+$force1 = (function ($raw = NULL) use (&$LANG_ASSERT, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$just_p, &$lang_assert_equal_set_do, &$real_apply, &$real_builtin_form_apply, &$real_builtin_func_apply, &$real_evaluate, &$un_just_all) {
     $x = $un_just_all($raw);
     $ret = NULL;
     $LANG_ASSERT(!($just_p($x)));
@@ -563,7 +563,7 @@ $force1 = (function ($raw = NULL) use (&$LANG_ASSERT, &$delay_apply_f, &$delay_a
     }
 
     $ret = $un_just_all($ret);
-    $lang_set_do($x, $ret);
+    $lang_assert_equal_set_do($x, $ret);
     return $ret;
 });
 $force_all = (function ($raw = NULL) use (&$force_all_inner) {
@@ -1002,7 +1002,7 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
         $new_args
     )));
 });
-$jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p, &$lang_set_do, &$null_p, &$null_v) {
+$jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p, &$lang_assert_equal_set_do, &$null_p) {
     if (($x == $y)) {
         return true;
     }
@@ -1011,9 +1011,9 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equ
     if (($x == $y)) {
         return true;
     }
-    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_equal_p, &$lang_set_do) {
+    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_equal_p, &$lang_assert_equal_set_do) {
         if (($jsbool_equal_p($f1($xx), $f1($yy)) && $jsbool_equal_p($f2($xx), $f2($yy)))) {
-            $lang_set_do($xx, $yy);
+            $lang_assert_equal_set_do($xx, $yy);
             return true;
         } else {
             return false;
@@ -1024,8 +1024,7 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equ
         if (!($null_p($y))) {
             return false;
         }
-        $lang_set_do($x, $null_v);
-        $lang_set_do($y, $null_v);
+        $lang_assert_equal_set_do($x, $y);
         return true;
     } elseif ($atom_p($x)) {
         if (!($atom_p($y))) {
@@ -1788,7 +1787,7 @@ $real_builtin_func_apply_s = ((object)[
 ]);
 $equal_p = NULL;
 $equal_p = $jsbool_equal_p;
-$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_set_do, &$null_p, &$null_v, &$un_just_all) {
+$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_assert_equal_set_do, &$null_p, &$null_v, &$un_just_all) {
     if (($x == $y)) {
         return true;
     }
@@ -1797,10 +1796,10 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
     if (($x == $y)) {
         return true;
     }
-    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_no_force_equal_p, &$lang_set_do) {
+    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_no_force_equal_p, &$lang_assert_equal_set_do) {
         if (($jsbool_no_force_equal_p($f1($xx), $f1($yy)) &&
             $jsbool_no_force_equal_p($f2($xx), $f2($yy)))) {
-            $lang_set_do($xx, $yy);
+            $lang_assert_equal_set_do($xx, $yy);
             return true;
         } else {
             return false;
@@ -1811,8 +1810,8 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
         if (!($null_p($y))) {
             return false;
         }
-        $lang_set_do($x, $null_v);
-        $lang_set_do($y, $null_v);
+        $lang_assert_equal_set_do($x, $null_v);
+        $lang_assert_equal_set_do($y, $null_v);
         return true;
     } elseif ($atom_p($x)) {
         if (!($atom_p($y))) {
