@@ -119,8 +119,9 @@
     })))))
     (("all" ("ecmascript/lang.min.js"
              "ecmascript/lang.js"
+             "ecmascript/lang.min.2.js"
              "lua/lang.lua"
-             "lua/lang.min.lua"
+             "lua/lang_min.lua"
              "ecmascript6/lang.js"
              ;;"python2/lang.py";;暫停。因爲性能太差。
              ;;"python3/lang.py";;暫停。因爲性能太差。
@@ -162,8 +163,8 @@
          rm -fr lang.js.tmp
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
-     ("lua/lang.min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
-         sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang.min.lua")
+     ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
+         sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang_min.lua")
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
