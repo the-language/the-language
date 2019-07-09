@@ -136,7 +136,10 @@
              "c/liblang.a")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
-     ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { yarn } }) ;; 避免竞争状态
+     ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
+         yarn
+         touch node_modules
+     }})
      ("ecmascript/lang.min.js" ("ecmascript/node_modules" "typescript/lang.ts") {
         in-dir "ecmascript" {
             npx tsickle --typed
@@ -164,7 +167,10 @@
      ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
          sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang_min.lua")
      }})
-     ("lua/node_modules" ("lua/yarn.lock") { in-dir "lua" { yarn } })
+     ("lua/node_modules" ("lua/yarn.lock") { in-dir "lua" { ;; 避免竞争状态
+         yarn
+         touch node_modules
+     }})
      ("lua/lang.lua" ("lua/node_modules" "typescript/lang.ts") {
          in-dir "lua" {
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
@@ -189,7 +195,10 @@
              cat lang.lua.1 &>> lang.lua
              rm lang.lua.1
      }})
-     ("ecmascript6/node_modules" ("ecmascript6/yarn.lock") { in-dir "ecmascript6" { yarn } })
+     ("ecmascript6/node_modules" ("ecmascript6/yarn.lock") { in-dir "ecmascript6" { ;; 避免竞争状态
+         yarn
+         touch node_modules
+     }})
      ("ecmascript6/lang.js" ("ecmascript6/node_modules" "typescript/lang.ts") {
          in-dir "ecmascript6" {
              touch lang.js
@@ -253,7 +262,10 @@
      ("c/testmain" ("c/liblang.a" "c/testmain.c") { in-dir "c" {
          clang -o testmain testmain.c -L. -I. -llang -Wl,-s
      }})
-     ("php/node_modules" ("php/yarn.lock") { in-dir "php" { yarn } })
+     ("php/node_modules" ("php/yarn.lock") { in-dir "php" { ;; 避免竞争状态
+         yarn
+         touch node_modules
+     }})
      ("php/lang.php" ("php/node_modules" "lua/lang.lua") {
          in-dir "php" {
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
