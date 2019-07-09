@@ -138,7 +138,7 @@
      ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
          yarn
-         touch node_modules
+         touch node_modules/
      }})
      ("ecmascript/lang.min.js" ("ecmascript/node_modules" "typescript/lang.ts") {
         in-dir "ecmascript" {
@@ -169,7 +169,7 @@
      }})
      ("lua/node_modules" ("lua/yarn.lock") { in-dir "lua" { ;; 避免竞争状态
          yarn
-         touch node_modules
+         touch node_modules/
      }})
      ("lua/lang.lua" ("lua/node_modules" "typescript/lang.ts") {
          in-dir "lua" {
@@ -197,7 +197,7 @@
      }})
      ("ecmascript6/node_modules" ("ecmascript6/yarn.lock") { in-dir "ecmascript6" { ;; 避免竞争状态
          yarn
-         touch node_modules
+         touch node_modules/
      }})
      ("ecmascript6/lang.js" ("ecmascript6/node_modules" "typescript/lang.ts") {
          in-dir "ecmascript6" {
@@ -215,13 +215,13 @@
      ("c/lua-5.1.5/src/lua" () {in-dir "c" {
          |> id "curl http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd .." | sh
      }})
-     ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") { touch c/lua-5.1.5 })
+     ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") { touch c/lua-5.1.5/ })
      ("c/lua2c" ("c/lua2c-lib-lua2c-ast2cast.lua") {
        in-dir "c" {
            |> id "[ -d lua2c ] || git clone --depth 1 https://github.com/davidm/lua2c.git" | sh ;; commit c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 [TODO] 改做下載https://github.com/davidm/lua2c/archive/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92.zip
            rm -fr ./lua2c/lib/lua2c/ast2cast.lua
            cp ./lua2c-lib-lua2c-ast2cast.lua ./lua2c/lib/lua2c/ast2cast.lua
-           touch lua2c
+           touch lua2c/
      }})
      ("c/lang.h" () (void))
      ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang_min.lua" "c/patch/lang.tail.c" "c/lang.h") {
@@ -264,7 +264,7 @@
      }})
      ("php/node_modules" ("php/yarn.lock") { in-dir "php" { ;; 避免竞争状态
          yarn
-         touch node_modules
+         touch node_modules/
      }})
      ("php/lang.php" ("php/node_modules" "lua/lang.lua") {
          in-dir "php" {
