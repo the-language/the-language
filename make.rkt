@@ -1,7 +1,7 @@
 #lang rash
 cd core/pure
 racket gen.Makefile.rkt
-make
+make -j8
 cd ../../ununicode
 racket tools-update.rkt
 cd ../core/bootstrap-library

@@ -136,9 +136,9 @@
              "c/liblang.a")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
-     ("ecmascript/lang.min.js" ("typescript/lang.ts") {
+     ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { yarn } }) ;; 避免竞争状态
+     ("ecmascript/lang.min.js" ("ecmascript/node_modules" "typescript/lang.ts") {
         in-dir "ecmascript" {
-            yarn
             npx tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
                           [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
@@ -148,16 +148,14 @@
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.js
             |> lines->string exports &>! exports.list
      }})
-     ("ecmascript/lang.min.2.js" ("ecmascript/lang.min.js") { in-dir "ecmascript" {
-         yarn
+     ("ecmascript/lang.min.2.js" ("ecmascript/node_modules" "ecmascript/lang.min.js") { in-dir "ecmascript" {
          |> ++ "var exports={};\n(function(){\n" #{cat lang.min.js} "\n})();" &>! lang.min.2.js.tmp
          (define raw (string->lines #{npx prepack --inlineExpressions lang.min.2.js.tmp}))
          |> lines->string (match raw [(list "var exports;" "(function () {" body1 ... "  var _$0 = this;" body2 ... "  _$0.exports = {" body3 ... "}).call(this);") (append body1 body2 '("module.exports = {") body3)]) &>! lang.min.2.js.tmp
          java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js lang.min.2.js.tmp &>! lang.min.2.js
          rm lang.min.2.js.tmp
      }})
-     ("ecmascript/lang.js" ("typescript/lang.ts") { in-dir "ecmascript" {
-         yarn
+     ("ecmascript/lang.js" ("ecmascript/node_modules" "typescript/lang.ts") { in-dir "ecmascript" {
          npx tsc --removeComments --outDir lang.js.tmp
          mv lang.js.tmp/langraw.js lang.js
          rm -fr lang.js.tmp
@@ -166,9 +164,9 @@
      ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
          sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang_min.lua")
      }})
-     ("lua/lang.lua" ("typescript/lang.ts") {
+     ("lua/node_modules" ("lua/yarn.lock") { in-dir "lua" { yarn } })
+     ("lua/lang.lua" ("lua/node_modules" "typescript/lang.ts") {
          in-dir "lua" {
-             yarn
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
              touch lang.lua
              rm lang.lua
@@ -191,9 +189,9 @@
              cat lang.lua.1 &>> lang.lua
              rm lang.lua.1
      }})
-     ("ecmascript6/lang.js" ("typescript/lang.ts") {
+     ("ecmascript6/node_modules" ("ecmascript6/yarn.lock") { in-dir "ecmascript6" { yarn } })
+     ("ecmascript6/lang.js" ("ecmascript6/node_modules" "typescript/lang.ts") {
          in-dir "ecmascript6" {
-             yarn
              touch lang.js
              rm lang.js
              npx tsc --build tsconfig.json
@@ -255,9 +253,9 @@
      ("c/testmain" ("c/liblang.a" "c/testmain.c") { in-dir "c" {
          clang -o testmain testmain.c -L. -I. -llang -Wl,-s
      }})
-     ("php/lang.php" ("lua/lang.lua") {
+     ("php/node_modules" ("php/yarn.lock") { in-dir "php" { yarn } })
+     ("php/lang.php" ("php/node_modules" "lua/lang.lua") {
          in-dir "php" {
-             yarn
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
              |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
      }})
