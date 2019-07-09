@@ -1,6 +1,6 @@
 #!/bin/sh
 cd typescript
-npm install
+yarn
 proc_ts(){
     local tmpfile="$(mktemp)"
     npx tsfmt "$1" | dos2unix > "$tmpfile" ||exit

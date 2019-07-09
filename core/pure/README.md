@@ -25,7 +25,7 @@ racket test.rkt
 * GNU coreutils, BASH, GNU tar, dos2unix, ... `apk add bash` `pacman -S dos2unix gawk` `apt install dos2unix` `scoop install busybox`
 * NodeJS NPM | `apt install nodejs npm` `scoop install nodejs` `pacman -S nodejs npm` `apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
-* [已不再依賴] yarn | `npm i -g yarn` `pacman -S yarn` `scoop install yarn`
+* yarn | `npm i -g yarn` `pacman -S yarn` `scoop install yarn`
 * racket | `apt install racket` `pacman -S racket` `scoop install racket` `apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip2,3 2to3 | `apt install python python3 python-pip python3-pip` `pacman -S python2 python python2-pip python-pip` `apk add python2 python3 py2-pip` `scoop install python27 python36`[需要先`scoop bucket add versions`]
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`

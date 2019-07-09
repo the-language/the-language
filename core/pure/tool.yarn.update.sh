@@ -1,11 +1,15 @@
 #!/bin/sh
+up(){
+  yarn
+  yarn upgrade
+}
 if [ -f package.json ]; then
-  npm update &
+  up &
 fi
 for d in */; do
   cd "$d" ||exit
   if [ -f package.json ]; then
-    npm update &
+    up &
   fi
   cd .. ||exit
 done

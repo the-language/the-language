@@ -137,7 +137,7 @@
      ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/lang.min.js" ("typescript/lang.ts") {
         in-dir "ecmascript" {
-            npm install
+            yarn
             npx tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
                           [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
@@ -148,7 +148,7 @@
             |> lines->string exports &>! exports.list
      }})
      ("ecmascript/lang.min.2.js" ("ecmascript/lang.min.js") { in-dir "ecmascript" {
-         npm install
+         yarn
          |> ++ "var exports={};\n(function(){\n" #{cat lang.min.js} "\n})();" &>! lang.min.2.js.tmp
          (define raw (string->lines #{npx prepack --inlineExpressions lang.min.2.js.tmp}))
          |> lines->string (match raw [(list "var exports;" "(function () {" body1 ... "  var _$0 = this;" body2 ... "  _$0.exports = {" body3 ... "}).call(this);") (append body1 body2 '("module.exports = {") body3)]) &>! lang.min.2.js.tmp
@@ -156,7 +156,7 @@
          rm lang.min.2.js.tmp
      }})
      ("ecmascript/lang.js" ("typescript/lang.ts") { in-dir "ecmascript" {
-         npm install
+         yarn
          npx tsc --removeComments --outDir lang.js.tmp
          mv lang.js.tmp/langraw.js lang.js
          rm -fr lang.js.tmp
@@ -167,7 +167,7 @@
      }})
      ("lua/lang.lua" ("typescript/lang.ts") {
          in-dir "lua" {
-             npm install
+             yarn
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
              touch lang.lua
              rm lang.lua
@@ -192,7 +192,7 @@
      }})
      ("ecmascript6/lang.js" ("typescript/lang.ts") {
          in-dir "ecmascript6" {
-             npm install
+             yarn
              touch lang.js
              rm lang.js
              npx tsc --build tsconfig.json
@@ -256,7 +256,7 @@
      }})
      ("php/lang.php" ("lua/lang.lua") {
          in-dir "php" {
-             npm install
+             yarn
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
              |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
      }})
