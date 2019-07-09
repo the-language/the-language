@@ -2,7 +2,7 @@
     "name": "the-language",
     "version": "0.0.12-a",
     "description": "The Language",
-    "main": "lang.min.js",
+    "main": "lang.min.2.js",
     "repository": {
         "url": "https://github.com/the-language/the-language",
         "type": "git"
