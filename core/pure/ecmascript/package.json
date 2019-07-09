@@ -11,10 +11,11 @@
     "license": "AGPL-3.0-or-later",
     "devDependencies": {
         "google-closure-compiler-java": "^20190513.0.0",
+        "prepack": "^0.2.54",
         "tsickle": "^0.35.0",
         "typescript": "^3.5.3"
     },
     "files": [
-        "lang.min.js"
+        "lang.min.2.js"
     ]
 }

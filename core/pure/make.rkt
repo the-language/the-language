@@ -147,6 +147,14 @@
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.js
             |> lines->string exports &>! exports.list
      }})
+     ("ecmascript/lang.min.2.js" ("ecmascript/lang.min.js") { in-dir "ecmascript" {
+         npm install
+         |> ++ "var exports={};\n(function(){\n" #{cat lang.min.js} "\n})();" &>! lang.min.2.js.tmp
+         (define raw (string->lines #{npx prepack --inlineExpressions lang.min.2.js.tmp}))
+         |> lines->string (match raw [(list "var exports;" "(function () {" body1 ... "  var _$0 = this;" body2 ... "  _$0.exports = {" body3 ... "}).call(this);") (append body1 body2 '("module.exports = {") body3)]) &>! lang.min.2.js.tmp
+         java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js lang.min.2.js.tmp &>! lang.min.2.js
+         rm lang.min.2.js.tmp
+     }})
      ("ecmascript/lang.js" ("typescript/lang.ts") { in-dir "ecmascript" {
          npm install
          npx tsc --removeComments --outDir lang.js.tmp

@@ -7,6 +7,9 @@ ecmascript/exports.list: ecmascript/lang.min.js
 ecmascript/lang.min.js: typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/lang.min.js
 
+ecmascript/lang.min.2.js: ecmascript/lang.min.js
+	racket Makefile.domake.rkt ecmascript/lang.min.2.js
+
 ecmascript/lang.js: typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/lang.js
 
