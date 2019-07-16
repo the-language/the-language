@@ -1,5 +1,9 @@
 #!/bin/sh
 set -e
+if [ "$(id -u)" = 0 ]; then
+    echo 'cannot run as root' >&2
+    exit 1
+fi
 img_name=the-language-builder
 docker build -t "$img_name" .
 exec docker run --rm -it -v "$(pwd):$(pwd)" "$img_name" /bin/sh -c "
