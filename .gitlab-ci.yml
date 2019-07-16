@@ -3,7 +3,7 @@ image: archlinux/base
 before_script:
   - pacman -Sy --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php
   - archlinux-java set java-11-openjdk
-  - raco pkg install --batch --user --auto rash
+  - raco pkg install --batch --installation --auto rash
 
 stages:
     - all
