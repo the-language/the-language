@@ -1,7 +1,7 @@
 #!/bin/sh
 up(){
   yarn
-  yarn upgrade
+  yarn upgrade $(node -e 'pkg=JSON.parse(fs.readFileSync("package.json","utf8"));console.log(Object.keys(pkg.devDependencies||{}).concat(Object.keys(pkg.dependencies||{})).reduce((x,y)=>`${x} ${y}`))')
 }
 if [ -f package.json ]; then
   up &
