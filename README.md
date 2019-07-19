@@ -29,7 +29,7 @@ TODO
 
 ### 編譯，運行，測試
 
-可以用`./run.docker.sh`以在Docker中编译。
+可以用`./builder-containers/docker/run.sh`以在Docker中编译。
 
 * 編譯 `racket make.rkt`
 * 測試 `racket test.rkt`
