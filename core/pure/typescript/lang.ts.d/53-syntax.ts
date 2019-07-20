@@ -125,11 +125,7 @@ function complex_parse(x: string): LangVal {
         } else {
             put(x)
         }
-        if (can_new_atom_p(ret)) {
-            return new_atom(ret)
-        } else {
-            return parse_error("Not Atom" + ret)
-        }
+        return new_atom(ret)
     }
     function readlist() {
         if (eof()) {

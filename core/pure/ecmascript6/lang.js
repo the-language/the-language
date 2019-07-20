@@ -25,18 +25,6 @@ function LANG_ASSERT(x) {
         return LANG_ERROR();
     }
 }
-function symbols_set_init() { return { "0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "A": "A", "B": "B", "C": "C", "D": "D", "E": "E", "F": "F", "G": "G", "H": "H", "I": "I", "J": "J", "K": "K", "L": "L", "M": "M", "N": "N", "O": "O", "P": "P", "Q": "Q", "R": "R", "S": "S", "T": "T", "U": "U", "V": "V", "W": "W", "X": "X", "Y": "Y", "Z": "Z", "a": "a", "b": "b", "c": "c", "d": "d", "e": "e", "f": "f", "g": "g", "h": "h", "i": "i", "j": "j", "k": "k", "l": "l", "m": "m", "n": "n", "o": "o", "p": "p", "q": "q", "r": "r", "s": "s", "t": "t", "u": "u", "v": "v", "w": "w", "x": "x", "y": "y", "z": "z", "一類何物": "㝉", "之物": "𫙦", "其子": "𦮪", "出入改滅": "𢒟", "列序": "𠜺", "化滅": "𠏁", "參形": "𠫰", "吾自": "𦣹", "太始初核": "𣝗", "如若": "𦱡", "宇宙亡矣": "𨹹", "尾末": "𡲵", "序丁": "𠆤", "序丙": "𠇮", "序乙": "㐈", "序甲": "𠇚", "式形": "佱", "引用": "㧈", "應用": "𤰆", "效應": "効", "映表": "𤅔", "是非": "欤", "構物": "𡒫", "為符名連": "‐", "爻陰": "侌", "爻陽": "𣆄", "特定其物": "亓", "省略一物": "畧", "符名": "謼", "等同": "弌", "解算": "筭", "註疏": "疎", "詞素": "𧥝", "謬誤": "䥘", "連頸": "丩", "間空": "𣣓", "首始": "𩠐" }; }
-function symbols_set_neg_init() { return { "0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "A": "A", "B": "B", "C": "C", "D": "D", "E": "E", "F": "F", "G": "G", "H": "H", "I": "I", "J": "J", "K": "K", "L": "L", "M": "M", "N": "N", "O": "O", "P": "P", "Q": "Q", "R": "R", "S": "S", "T": "T", "U": "U", "V": "V", "W": "W", "X": "X", "Y": "Y", "Z": "Z", "a": "a", "b": "b", "c": "c", "d": "d", "e": "e", "f": "f", "g": "g", "h": "h", "i": "i", "j": "j", "k": "k", "l": "l", "m": "m", "n": "n", "o": "o", "p": "p", "q": "q", "r": "r", "s": "s", "t": "t", "u": "u", "v": "v", "w": "w", "x": "x", "y": "y", "z": "z", "㝉": "一類何物", "𫙦": "之物", "𦮪": "其子", "𢒟": "出入改滅", "𠜺": "列序", "𠏁": "化滅", "𠫰": "參形", "𦣹": "吾自", "𣝗": "太始初核", "𦱡": "如若", "𨹹": "宇宙亡矣", "𡲵": "尾末", "𠆤": "序丁", "𠇮": "序丙", "㐈": "序乙", "𠇚": "序甲", "佱": "式形", "㧈": "引用", "𤰆": "應用", "効": "效應", "𤅔": "映表", "欤": "是非", "𡒫": "構物", "‐": "為符名連", "侌": "爻陰", "𣆄": "爻陽", "亓": "特定其物", "畧": "省略一物", "謼": "符名", "弌": "等同", "筭": "解算", "疎": "註疏", "𧥝": "詞素", "䥘": "謬誤", "丩": "連頸", "𣣓": "間空", "𩠐": "首始" }; }
-let symbols_set = () => {
-    const r = symbols_set_init();
-    symbols_set = () => r;
-    return r;
-};
-let symbols_set_neg = () => {
-    const r = symbols_set_neg_init();
-    symbols_set_neg = () => r;
-    return r;
-};
 const atom_t = 0;
 const construction_t = 1;
 const null_t = 2;
@@ -68,32 +56,20 @@ function un_comment_all(x) {
     return x;
 }
 export { new_comment, comment_p, comment_comment, comment_x, un_comment_all };
-function can_new_atom_unicodechar_p(x) {
-    return x in symbols_set_neg();
-}
-function new_atom_unicodechar(x) {
-    return [atom_t, x];
-}
 function atom_p(x) {
     return x[0] === atom_t;
 }
-function un_atom_unicodechar(x) {
-    return x[1];
-}
-function can_new_atom_p(x) {
-    return x in symbols_set();
-}
 function new_atom(x) {
-    return new_atom_unicodechar(symbols_set()[x]);
+    return [atom_t, x];
 }
 function un_atom(x) {
-    return symbols_set_neg()[un_atom_unicodechar(x)];
+    return x[1];
 }
 function atom_equal_p(x, y) {
     if (x === y) {
         return true;
     }
-    if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
+    if (un_atom(x) === un_atom(y)) {
         lang_assert_equal_set_do(x, y);
         return true;
     }
@@ -101,7 +77,7 @@ function atom_equal_p(x, y) {
         return false;
     }
 }
-export { can_new_atom_p, new_atom, atom_p, un_atom, atom_equal_p };
+export { new_atom, atom_p, un_atom, atom_equal_p };
 function new_construction(x, y) {
     return [construction_t, x, y];
 }
@@ -1348,12 +1324,7 @@ function complex_parse(x) {
         else {
             put(x);
         }
-        if (can_new_atom_p(ret)) {
-            return new_atom(ret);
-        }
-        else {
-            return parse_error("Not Atom" + ret);
-        }
+        return new_atom(ret);
     }
     function readlist() {
         if (eof()) {
@@ -1874,12 +1845,7 @@ function machinetext_parse(rawstr) {
                 }
                 tmp = chr + tmp;
             }
-            if (can_new_atom_unicodechar_p(tmp)) {
-                stack.unshift(new_atom_unicodechar(tmp));
-            }
-            else {
-                return parse_error('can_new_atom_unicodechar_p("' + tmp + '") == false');
-            }
+            stack.unshift(new_atom(tmp));
         }
         else if (chr === '.') {
             conslike(new_construction);
@@ -1924,7 +1890,7 @@ function machinetext_print(x) {
                 return new_stack.push(g1(xx), g2(xx));
             };
             if (atom_p(x)) {
-                result += ('^' + un_atom_unicodechar(x) + '^');
+                result += ('^' + un_atom(x) + '^');
             }
             else if (construction_p(x)) {
                 conslike(x, '.', construction_head, construction_tail);

@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, symbols_set_neg, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom_unicodechar, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -72,17 +72,14 @@ end
 function atom_p(x)
     return x[1] == atom_t
 end
-function un_atom_unicodechar(x)
-    return x[2]
-end
 function un_atom(x)
-    return symbols_set_neg()[un_atom_unicodechar(x)]
+    return x[2]
 end
 function atom_equal_p(x, y)
     if x == y then
         return true
     end
-    if un_atom_unicodechar(x) == un_atom_unicodechar(y) then
+    if un_atom(x) == un_atom(y) then
         lang_assert_equal_set_do(x, y)
         return true
     else
@@ -907,222 +904,6 @@ function simple_print(x)
     end
     return LANG_ERROR()
 end
-local function symbols_set_init()
-    return {
-        ["0"] = "0",
-        ["1"] = "1",
-        ["2"] = "2",
-        ["3"] = "3",
-        ["4"] = "4",
-        ["5"] = "5",
-        ["6"] = "6",
-        ["7"] = "7",
-        ["8"] = "8",
-        ["9"] = "9",
-        A = "A",
-        B = "B",
-        C = "C",
-        D = "D",
-        E = "E",
-        F = "F",
-        G = "G",
-        H = "H",
-        I = "I",
-        J = "J",
-        K = "K",
-        L = "L",
-        M = "M",
-        N = "N",
-        O = "O",
-        P = "P",
-        Q = "Q",
-        R = "R",
-        S = "S",
-        T = "T",
-        U = "U",
-        V = "V",
-        W = "W",
-        X = "X",
-        Y = "Y",
-        Z = "Z",
-        a = "a",
-        b = "b",
-        c = "c",
-        d = "d",
-        e = "e",
-        f = "f",
-        g = "g",
-        h = "h",
-        i = "i",
-        j = "j",
-        k = "k",
-        l = "l",
-        m = "m",
-        n = "n",
-        o = "o",
-        p = "p",
-        q = "q",
-        r = "r",
-        s = "s",
-        t = "t",
-        u = "u",
-        v = "v",
-        w = "w",
-        x = "x",
-        y = "y",
-        z = "z",
-        ["一類何物"] = "㝉",
-        ["之物"] = "𫙦",
-        ["其子"] = "𦮪",
-        ["出入改滅"] = "𢒟",
-        ["列序"] = "𠜺",
-        ["化滅"] = "𠏁",
-        ["參形"] = "𠫰",
-        ["吾自"] = "𦣹",
-        ["太始初核"] = "𣝗",
-        ["如若"] = "𦱡",
-        ["宇宙亡矣"] = "𨹹",
-        ["尾末"] = "𡲵",
-        ["序丁"] = "𠆤",
-        ["序丙"] = "𠇮",
-        ["序乙"] = "㐈",
-        ["序甲"] = "𠇚",
-        ["式形"] = "佱",
-        ["引用"] = "㧈",
-        ["應用"] = "𤰆",
-        ["效應"] = "効",
-        ["映表"] = "𤅔",
-        ["是非"] = "欤",
-        ["構物"] = "𡒫",
-        ["為符名連"] = "‐",
-        ["爻陰"] = "侌",
-        ["爻陽"] = "𣆄",
-        ["特定其物"] = "亓",
-        ["省略一物"] = "畧",
-        ["符名"] = "謼",
-        ["等同"] = "弌",
-        ["解算"] = "筭",
-        ["註疏"] = "疎",
-        ["詞素"] = "𧥝",
-        ["謬誤"] = "䥘",
-        ["連頸"] = "丩",
-        ["間空"] = "𣣓",
-        ["首始"] = "𩠐",
-    }
-end
-local function symbols_set_neg_init()
-    return {
-        ["0"] = "0",
-        ["1"] = "1",
-        ["2"] = "2",
-        ["3"] = "3",
-        ["4"] = "4",
-        ["5"] = "5",
-        ["6"] = "6",
-        ["7"] = "7",
-        ["8"] = "8",
-        ["9"] = "9",
-        A = "A",
-        B = "B",
-        C = "C",
-        D = "D",
-        E = "E",
-        F = "F",
-        G = "G",
-        H = "H",
-        I = "I",
-        J = "J",
-        K = "K",
-        L = "L",
-        M = "M",
-        N = "N",
-        O = "O",
-        P = "P",
-        Q = "Q",
-        R = "R",
-        S = "S",
-        T = "T",
-        U = "U",
-        V = "V",
-        W = "W",
-        X = "X",
-        Y = "Y",
-        Z = "Z",
-        a = "a",
-        b = "b",
-        c = "c",
-        d = "d",
-        e = "e",
-        f = "f",
-        g = "g",
-        h = "h",
-        i = "i",
-        j = "j",
-        k = "k",
-        l = "l",
-        m = "m",
-        n = "n",
-        o = "o",
-        p = "p",
-        q = "q",
-        r = "r",
-        s = "s",
-        t = "t",
-        u = "u",
-        v = "v",
-        w = "w",
-        x = "x",
-        y = "y",
-        z = "z",
-        ["㝉"] = "一類何物",
-        ["𫙦"] = "之物",
-        ["𦮪"] = "其子",
-        ["𢒟"] = "出入改滅",
-        ["𠜺"] = "列序",
-        ["𠏁"] = "化滅",
-        ["𠫰"] = "參形",
-        ["𦣹"] = "吾自",
-        ["𣝗"] = "太始初核",
-        ["𦱡"] = "如若",
-        ["𨹹"] = "宇宙亡矣",
-        ["𡲵"] = "尾末",
-        ["𠆤"] = "序丁",
-        ["𠇮"] = "序丙",
-        ["㐈"] = "序乙",
-        ["𠇚"] = "序甲",
-        ["佱"] = "式形",
-        ["㧈"] = "引用",
-        ["𤰆"] = "應用",
-        ["効"] = "效應",
-        ["𤅔"] = "映表",
-        ["欤"] = "是非",
-        ["𡒫"] = "構物",
-        ["‐"] = "為符名連",
-        ["侌"] = "爻陰",
-        ["𣆄"] = "爻陽",
-        ["亓"] = "特定其物",
-        ["畧"] = "省略一物",
-        ["謼"] = "符名",
-        ["弌"] = "等同",
-        ["筭"] = "解算",
-        ["疎"] = "註疏",
-        ["𧥝"] = "詞素",
-        ["䥘"] = "謬誤",
-        ["丩"] = "連頸",
-        ["𣣓"] = "間空",
-        ["𩠐"] = "首始",
-    }
-end
-local function symbols_set()
-    local r = symbols_set_init()
-    function symbols_set() return r end
-    return r
-end
-function symbols_set_neg()
-    local r = symbols_set_neg_init()
-    function symbols_set_neg() return r end
-    return r
-end
 atom_t = 0
 construction_t = 1
 null_t = 2
@@ -1135,20 +916,11 @@ delay_builtin_form_t = 8
 delay_apply_t = 9
 comment_t = 11
 hole_t = 10
-local function can_new_atom_unicodechar_p(x)
-    return symbols_set_neg()[x] ~= nil
-end
-local function new_atom_unicodechar(x)
+local function new_atom(x)
     return {
         atom_t,
         x,
     }
-end
-local function can_new_atom_p(x)
-    return symbols_set()[x] ~= nil
-end
-local function new_atom(x)
-    return new_atom_unicodechar(symbols_set()[x])
 end
 null_v = {null_t}
 local function force_uncomment_all_rec(raw)
@@ -1668,11 +1440,7 @@ local function complex_parse(x)
         else
             put(x)
         end
-        if can_new_atom_p(ret) then
-            return new_atom(ret)
-        else
-            return parse_error("Not Atom" .. tostring(ret))
-        end
+        return new_atom(ret)
     end
     function readlist()
         if eof() then
@@ -2212,11 +1980,7 @@ local function machinetext_parse(rawstr)
                 end
                 tmp = tostring(chr) .. tostring(tmp)
             end
-            if can_new_atom_unicodechar_p(tmp) then
-                __TS__ArrayUnshift(stack, new_atom_unicodechar(tmp))
-            else
-                return parse_error("can_new_atom_unicodechar_p(\"" .. tostring(tmp) .. "\") == false")
-            end
+            __TS__ArrayUnshift(stack, new_atom(tmp))
         elseif chr == "." then
             conslike(new_construction)
         elseif chr == "#" then
@@ -2254,7 +2018,7 @@ local function machinetext_print(x)
                 return __TS__ArrayPush(new_stack, g1(xx), g2(xx))
             end
             if atom_p(x) then
-                result = tostring(result) .. tostring(("^" .. tostring(un_atom_unicodechar(x)) .. "^"))
+                result = tostring(result) .. tostring(("^" .. tostring(un_atom(x)) .. "^"))
             elseif construction_p(x) then
                 conslike(x, ".", construction_head, construction_tail)
             elseif null_p(x) then
@@ -2391,7 +2155,6 @@ ____exports.comment_p = comment_p
 ____exports.comment_comment = comment_comment
 ____exports.comment_x = comment_x
 ____exports.un_comment_all = un_comment_all
-____exports.can_new_atom_p = can_new_atom_p
 ____exports.new_atom = new_atom
 ____exports.atom_p = atom_p
 ____exports.un_atom = un_atom

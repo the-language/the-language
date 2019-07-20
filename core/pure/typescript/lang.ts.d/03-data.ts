@@ -47,8 +47,8 @@ const delay_apply_t = LangValType.delay_apply_t
 
 // 以下爲對TypeScript類型系統的hack，因爲不支援遞回的`type`
 
-export type LangValAtomUnicodecharG<a extends keyof Symbols_Set_Neg> = [LangValType.atom_t, a]
-export type LangValAtom = LangValAtomUnicodecharG<keyof Symbols_Set_Neg>
+export type LangValAtomG<a extends string> = [LangValType.atom_t, a]
+export type LangValAtom=LangValAtomG<string>
 
 export type LangValConsG<a extends LangVal, b extends LangVal> = [LangValType.construction_t, a, b]
 interface LangValConsI extends LangValConsG<LangVal, LangVal> { }
@@ -134,41 +134,28 @@ function un_comment_all(x: LangVal): LangVal {
 }
 export { new_comment, comment_p, comment_comment, comment_x, un_comment_all }
 
-function can_new_atom_unicodechar_p(x: string): x is keyof Symbols_Set_Neg {
-    return x in symbols_set_neg()
-}
-type New_Atom_Unicodechar<X extends keyof Symbols_Set_Neg> = LangValAtomUnicodecharG<X>
-function new_atom_unicodechar<X extends keyof Symbols_Set_Neg>(x: X): New_Atom_Unicodechar<X> {
-    return [atom_t, x]
-}
 function atom_p(x: LangVal): x is LangValAtom {
     return x[0] === atom_t
 }
-function un_atom_unicodechar<X extends keyof Symbols_Set_Neg>(x: LangValAtomUnicodecharG<X>): X {
+type New_Atom<X extends string> = LangValAtomG<X>
+function new_atom<X extends string>(x: X): New_Atom<X> {
+    return [atom_t,x]
+}
+function un_atom<X extends string>(x: New_Atom<X>): X {
     return x[1]
-}
-function can_new_atom_p(x: string): x is keyof Symbols_Set {
-    return x in symbols_set()
-}
-type New_Atom<X extends keyof Symbols_Set> = New_Atom_Unicodechar<Symbols_Set[X]>
-function new_atom<X extends keyof Symbols_Set>(x: X): New_Atom<X> {
-    return new_atom_unicodechar(symbols_set()[x])
-}
-function un_atom(x: LangValAtom): keyof Symbols_Set {
-    return symbols_set_neg()[un_atom_unicodechar(x)]
 }
 function atom_equal_p(x: LangValAtom, y: LangValAtom): boolean {
     if (x === y) {
         return true
     }
-    if (un_atom_unicodechar(x) === un_atom_unicodechar(y)) {
+    if (un_atom(x) === un_atom(y)) {
         lang_assert_equal_set_do(x, y)
         return true
     } else {
         return false
     }
 }
-export { can_new_atom_p, New_Atom, new_atom, atom_p, un_atom, atom_equal_p }
+export { New_Atom, new_atom, atom_p, un_atom, atom_equal_p }
 
 type New_Construction<X extends LangVal, Y extends LangVal> = LangValConsG<X, Y>
 function new_construction<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Construction<X, Y> {

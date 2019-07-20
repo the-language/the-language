@@ -58,11 +58,7 @@ function machinetext_parse(rawstr: string): LangVal {
                 if (chr === '^') { break }
                 tmp = chr + tmp
             }
-            if (can_new_atom_unicodechar_p(tmp)) {
-                stack.unshift(new_atom_unicodechar(tmp))
-            } else {
-                return parse_error('can_new_atom_unicodechar_p("' + tmp + '") == false')
-            }
+            stack.unshift(new_atom(tmp))
         } else if (chr === '.') {
             conslike(new_construction)
         } else if (chr === '#') {
@@ -102,7 +98,7 @@ function machinetext_print(x: LangVal): string {
                 return new_stack.push(g1(xx), g2(xx))
             }
             if (atom_p(x)) {
-                result += ('^' + un_atom_unicodechar(x) + '^')
+                result += ('^' + un_atom(x) + '^')
             } else if (construction_p(x)) {
                 conslike(x, '.', construction_head, construction_tail)
             } else if (null_p(x)) {

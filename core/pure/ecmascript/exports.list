@@ -4,7 +4,6 @@ comment_comment
 comment_x
 un_comment_all
 atom_p
-can_new_atom_p
 new_atom
 un_atom
 atom_equal_p
