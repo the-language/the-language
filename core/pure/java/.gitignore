@@ -1,13 +1,4 @@
 *.class
-/Krakatau/
 /luaj-out/
-/maven/
-/ant/
-/rhino/
-/soot-3.3.0.jar
-/luaj-d4603365b6cb6e9e1bc718d33550f5a352c9b372/
 
-/JRTExtractor.class
-/rt.jar
-
-/cfr-0.144.jar
+/dep-*

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # pypy好像更慢
 py2(){
   #if type pypy > /dev/null ;then
@@ -9,25 +11,24 @@ py2(){
   #fi
 }
 
-LUAJ=luaj-d4603365b6cb6e9e1bc718d33550f5a352c9b372
-./get-$LUAJ.sh
-
-[ -d Krakatau ] || git clone --depth 1 https://github.com/Storyyeller/Krakatau.git ||exit
+make dep-luaj
+LUAJ=./dep-luaj
 
 mkdir -p luaj-out
 rm -fr luaj-out
 mkdir luaj-out
 cp ../lua/lang.lua 'Lang$luaj.lua'
-java -cp "$LUAJ/luaj-jse-3.0.2.jar:$LUAJ/lib/bcel-5.2.jar" luajc -s . -d luaj-out 'Lang$luaj.lua' ||exit
+java -cp "$LUAJ/luaj-jse-3.0.2.jar:$LUAJ/lib/bcel-5.2.jar" luajc -s . -d luaj-out 'Lang$luaj.lua'
 rm 'Lang$luaj.lua'
 
-cd luaj-out ||exit
+cd luaj-out
 jar cf lang.jar *
 cd -
 
 rm -fr src
-./get-rt-jar.sh
-py2 -OO ./Krakatau/decompile.py -nauto -path "./rt.jar;./$LUAJ/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
+make dep-rt.jar
+make dep-Krakatau
+py2 -OO ./dep-Krakatau/decompile.py -nauto -path "./dep-rt.jar;./$LUAJ/luaj-jse-3.0.2.jar" -out ./src/lang/ luaj-out/lang.jar
 for f in ./src/lang/*.java ;do
   cp "$f" "$f".1
   echo 'package lang;' > "$f"
@@ -38,10 +39,10 @@ for f in ./src/lang/*.java ;do
 
   rm "$f".1
 done
-cp -r ./$LUAJ/build/jse/src/* ./src/
+cp -r "./$LUAJ/build/jse/src/"* ./src/
 cp -r ./real-src/* ./src/
 
-cd src ||exit
+cd src
 javac ./lang/Lang.java
 javac testmain.java
 cd -
