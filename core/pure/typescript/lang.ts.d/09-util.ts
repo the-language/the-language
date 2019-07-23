@@ -106,6 +106,7 @@ function delay_x(x: LangValDelay): LangVal {
 }
 export { delay_env, delay_x }
 
+// 註疏系統WIP : equal_p
 function force_all_inner(
     raw: LangVal,
     parents_history: { [key: string]: true } = {},
@@ -173,7 +174,7 @@ function force_all_inner(
                     null_p_function_builtin_systemName]
                 let is_elim = false
                 for (const elim_s_v of elim_s) {
-                    if (jsbool_equal_p(elim_s_v, f)) {
+                    if (equal_p(elim_s_v, f)) {
                         is_elim = true
                         break
                     }
@@ -188,13 +189,13 @@ function force_all_inner(
                         return LANG_ERROR() //我覺得沒有這種情況
                     }
                 }
-                if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
+                if (equal_p(f, equal_p_function_builtin_systemName)) {
                     return replace_this_with_stopped() //WIP
-                } else if (jsbool_equal_p(f, apply_function_builtin_systemName)) {
+                } else if (equal_p(f, apply_function_builtin_systemName)) {
                     return replace_this_with_stopped() //WIP
-                } else if (jsbool_equal_p(f, evaluate_function_builtin_systemName)) {
+                } else if (equal_p(f, evaluate_function_builtin_systemName)) {
                     return replace_this_with_stopped() //WIP
-                } else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
+                } else if (equal_p(f, if_function_builtin_systemName)) {
                     LANG_ASSERT(xs.length === 3)
                     LANG_ASSERT(ref_novalue_replace[1] === false)
                     const tf = force_all_inner(xs[0], make_history(), ref_novalue_replace)

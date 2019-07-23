@@ -44,7 +44,7 @@ function run_monad_helper<St, T>(
     if (data_p(code)) {
         const name = data_name(code)
         let list = data_list(code)
-        if (jsbool_equal_p(name, return_effect_systemName)) {
+        if (equal_p(name, return_effect_systemName)) {
             list = force_all(list)
             if (construction_p(list)) {
                 const list_a = construction_head(list)
@@ -65,7 +65,7 @@ function run_monad_helper<St, T>(
                     }
                 }
             }
-        } else if (jsbool_equal_p(name, bind_effect_systemName)) {
+        } else if (equal_p(name, bind_effect_systemName)) {
             list = force_all(list)
             if (construction_p(list)) {
                 const list_a = construction_head(list)

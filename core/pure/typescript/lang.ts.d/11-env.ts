@@ -25,7 +25,7 @@ function env_set(env: Env, key: LangVal, val: LangVal): Env {
     let ret: Env = []
     for (let i = 0; i < env.length; i = i + 2) {
         // WIP delay未正確處理(影響較小)
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             ret[i + 0] = key
             ret[i + 1] = val
             for (i = i + 2; i < env.length; i = i + 2) {
@@ -45,7 +45,7 @@ function env_set(env: Env, key: LangVal, val: LangVal): Env {
 
 function env_get<T>(env: Env, key: LangVal, default_v: T): T | LangVal {
     for (let i = 0; i < env.length; i = i + 2) {
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             return env[i + 1]
         }
     }
@@ -54,7 +54,7 @@ function env_get<T>(env: Env, key: LangVal, default_v: T): T | LangVal {
 
 function must_env_get(env: Env, key: LangVal): LangVal {
     for (let i = 0; i < env.length; i = i + 2) {
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             return env[i + 1]
         }
     }
@@ -116,7 +116,7 @@ function val2env(x: LangVal): OrFalse<Env> {
         }
         let not_breaked: boolean = true
         for (let i = 0; i < ret.length; i = i + 2) {
-            if (jsbool_equal_p(ret[i + 0], k)) {
+            if (equal_p(ret[i + 0], k)) {
                 ret[i + 1] = v
                 not_breaked = false
                 break

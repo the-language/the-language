@@ -35,7 +35,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 throw 'WIP'
             }
             // WIP delay未正確處理(影響較小)
-            if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
+            if (equal_p(xs[0], form_builtin_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v()
                 }
@@ -45,7 +45,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                     args.push(xs[i])
                 }
                 return builtin_form_apply(env, f, args)
-            } else if (jsbool_equal_p(xs[0], form_use_systemName)) {
+            } else if (equal_p(xs[0], form_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v()
                 }
@@ -84,7 +84,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                     args.push(xs[i])
                 }
                 return apply(f_x, args)
-            } else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
+            } else if (equal_p(xs[0], function_builtin_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v()
                 }
@@ -348,7 +348,7 @@ function real_builtin_func_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: Lan
             new_list(f, jsArray_to_list(xs))))
     for (const xx of real_builtin_func_apply_s) {
         // WIP delay未正確處理(影響較小)
-        if (jsbool_equal_p(f, xx[0])) {
+        if (equal_p(f, xx[0])) {
             if (xs.length !== xx[1]) {
                 return error_v()
             }
@@ -371,17 +371,17 @@ function real_builtin_form_apply(env: Env, f: LangVal, xs: Array<LangVal>, selfv
         new_list(form_builtin_use_systemName,
             new_list(env2val(env), f, jsArray_to_list(xs)))) // WIP delay未正確處理(影響較小)
 
-    if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
+    if (equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {
             return error_v()
         }
         return xs[0]
-    } else if (jsbool_equal_p(f, lambda_form_builtin_systemName)) {
+    } else if (equal_p(f, lambda_form_builtin_systemName)) {
         if (xs.length !== 2) {
             return error_v()
         }
         return new_lambda(env, xs[0], xs[1], error_v)
-    } else if (jsbool_equal_p(f, comment_form_builtin_systemName)) {
+    } else if (equal_p(f, comment_form_builtin_systemName)) {
         if (xs.length !== 2) {
             return error_v()
         }
@@ -429,7 +429,7 @@ function new_lambda(
     const env_vars: Array<LangVal> = [] // : JSList LangVal/Name
     env_foreach(env, (k, v) => {
         for (let i = 0; i < args_pat_vars.length; i++) {
-            if (jsbool_equal_p(args_pat_vars[i], k)) {
+            if (equal_p(args_pat_vars[i], k)) {
                 // WIP delay未正確處理(影響較小)
                 return
             }
@@ -459,8 +459,8 @@ function jsbool_equal_p_inner(x: LangVal, y: LangVal): TrueFalseNull { // null�
         return true
     }
     function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): TrueFalseNull {
-	const r1=jsbool_equal_p(f1(xx), f1(yy))
-	const r2=jsbool_equal_p(f2(xx), f2(yy))
+	const r1=jsbool_equal_p_inner(f1(xx), f1(yy))
+	const r2=jsbool_equal_p_inner(f2(xx), f2(yy))
         if ( r1===true&&r2===true ) {
             lang_assert_equal_set_do(xx, yy)
             return true
