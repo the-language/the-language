@@ -81,10 +81,10 @@ function delay_p(x: LangVal): x is LangValDelay {
 function delay_just_p(x: LangVal): x is LangValJustDelay {
     return just_p(x) || delay_p(x)
 }
-function lazy_p(x:LangVal):x is LangValLazy{
-    return delay_just_p(x)||comment_p(x)
+function lazy_p(x: LangVal): x is LangValLazy {
+    return delay_just_p(x) || comment_p(x)
 }
-export { delay_p, delay_just_p,lazy_p }
+export { delay_p, delay_just_p, lazy_p }
 
 function delay2delay_evaluate(x: LangValDelay): LangValDelayEvaluate {
     if (delay_evaluate_p(x)) {
@@ -256,13 +256,13 @@ function force_uncomment1(raw: LangVal): LangVal {
 }
 
 // 註疏系統WIP
-function unlazy1(x:LangVal):LangVal{
-    while(comment_p(x)){x=comment_x(x)}
-    x=force1(x)
-    while(comment_p(x)){x=comment_x(x)}
+function unlazy1(x: LangVal): LangVal {
+    while (comment_p(x)) { x = comment_x(x) }
+    x = force1(x)
+    while (comment_p(x)) { x = comment_x(x) }
     return x
 }
-export { force_all, force1, force_uncomment1, force_uncomment_all,unlazy1 }
+export { force_all, force1, force_uncomment1, force_uncomment_all, unlazy1 }
 
 function unlazy_list_1_keepcomment<T>(list: LangVal, not_list_k: () => T, delay_just_k: () => T, k: (comments: Array<LangVal>, ret: Array<LangVal>) => T): T {
     let ret: Array<LangVal> = []
@@ -292,15 +292,15 @@ function unlazy_list_1_keepcomment<T>(list: LangVal, not_list_k: () => T, delay_
 }
 
 // 註疏系統WIP
-function name_unlazy1_p3(x:LangVal):TrueFalseNull{
-    if(lazy_p(x)){x=unlazy1(x)}
-    if(lazy_p(x)){return null}
-    if(atom_p(x)){return true}
-    if(!data_p(x)){return false}
-    const n=data_name(x)
-    if(lazy_p(n)){n=unlazy1(n)}
-    if(lazy_p(n)){return null}
-    if(!atom_p(n)){return false}
-    return atom_equal_p(n,name_atom)
+function name_unlazy1_p3(x: LangVal): TrueFalseNull {
+    if (lazy_p(x)) { x = unlazy1(x) }
+    if (lazy_p(x)) { return null }
+    if (atom_p(x)) { return true }
+    if (!data_p(x)) { return false }
+    let n = data_name(x)
+    if (lazy_p(n)) { n = unlazy1(n) }
+    if (lazy_p(n)) { return null }
+    if (!atom_p(n)) { return false }
+    return atom_equal_p(n, name_atom)
 }
 // 相對獨立的部分。對內建數據結構的簡單處理 }}}

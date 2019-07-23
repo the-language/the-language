@@ -107,11 +107,11 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
         return x
     } else if (error_p(x)) {
         return error_v()
-    }else{
-	const r=name_unlazy1_p3(x)
-	if(r===null){return selfvalraw}
-	if(r===true){return return env_get(env, x, error_v())}
-	return LANG_ERROR()
+    } else {
+        const r = name_unlazy1_p3(x)
+        if (r === null) { return selfvalraw }
+        if (r === true) { return env_get(env, x, error_v()) }
+        return LANG_ERROR()
     }
     return LANG_ERROR()
 }
@@ -312,9 +312,9 @@ function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVa
 
     let xs_i = 0
     while (!null_p(args_pat)) {
-	const r=name_unlazy1_p3(args_pat)
-	if(r===null){return selfvalraw}
-        if (r===true) {
+        const r = name_unlazy1_p3(args_pat)
+        if (r === null) { return selfvalraw }
+        if (r === true) {
             let x: LangVal = null_v
             for (let i = xs.length - 1; i >= xs_i; i--) {
                 x = new_construction(xs[i], x)
@@ -406,8 +406,8 @@ function new_lambda(
     let args_pat_is_dot: boolean = false
     let args_pat_iter: LangVal = args_pat
     while (!null_p(args_pat_iter)) {
-	const r=name_unlazy1_p3(args_pat_iter)
-	LANG_ASSERT(r!==null) // 前面已经unlazy
+        const r = name_unlazy1_p3(args_pat_iter)
+        LANG_ASSERT(r !== null) // 前面已经unlazy
         if (r) {
             args_pat_vars.push(args_pat_iter)
             args_pat_is_dot = true
@@ -459,28 +459,28 @@ function jsbool_equal_p_inner(x: LangVal, y: LangVal): TrueFalseNull { // null�
         return true
     }
     function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): TrueFalseNull {
-	const r1=jsbool_equal_p_inner(f1(xx), f1(yy))
-	const r2=jsbool_equal_p_inner(f2(xx), f2(yy))
-        if ( r1===true&&r2===true ) {
+        const r1 = jsbool_equal_p_inner(f1(xx), f1(yy))
+        const r2 = jsbool_equal_p_inner(f2(xx), f2(yy))
+        if (r1 === true && r2 === true) {
             lang_assert_equal_set_do(xx, yy)
             return true
-	}else if(r1!==false&&r2!==false){
-	    return null
+        } else if (r1 !== false && r2 !== false) {
+            return null
         } else {
             return false
         }
     }
-    if(comment_p(x)){
-	const x2=un_comment_all(x)
-	let ret=jsbool_equal_p_inner(x2,y)
-	if(ret===true){ret=null}
-	return ret
-    }else if(comment_p(y)){
-	const y2=un_comment_all(y)
-	let ret=jsbool_equal_p_inner(x,y2)
-	if(ret===true){ret=null}
-	return ret
-    }else if (null_p(x)) {
+    if (comment_p(x)) {
+        const x2 = un_comment_all(x)
+        let ret = jsbool_equal_p_inner(x2, y)
+        if (ret === true) { ret = null }
+        return ret
+    } else if (comment_p(y)) {
+        const y2 = un_comment_all(y)
+        let ret = jsbool_equal_p_inner(x, y2)
+        if (ret === true) { ret = null }
+        return ret
+    } else if (null_p(x)) {
         if (!null_p(y)) { return false }
         lang_assert_equal_set_do(x, y)
         return true
@@ -499,8 +499,8 @@ function jsbool_equal_p_inner(x: LangVal, y: LangVal): TrueFalseNull { // null�
     }
     return LANG_ERROR()
 }
-function equal_p(x:LangVal,y:LangVal){
-    return jsbool_equal_p_inner(x,y)!==false
+function equal_p(x: LangVal, y: LangVal) {
+    return jsbool_equal_p_inner(x, y) !== false
 }
 export { equal_p }
 

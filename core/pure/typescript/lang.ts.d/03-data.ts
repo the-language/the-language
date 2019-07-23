@@ -48,7 +48,7 @@ const delay_apply_t = LangValType.delay_apply_t
 // 以下爲對TypeScript類型系統的hack，因爲不支援遞回的`type`
 
 export type LangValAtomG<a extends string> = [LangValType.atom_t, a]
-export type LangValAtom=LangValAtomG<string>
+export type LangValAtom = LangValAtomG<string>
 
 export type LangValConsG<a extends LangVal, b extends LangVal> = [LangValType.construction_t, a, b]
 interface LangValConsI extends LangValConsG<LangVal, LangVal> { }
@@ -88,11 +88,11 @@ export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | Lang
 export type LangValDelayG<a extends LangVal> = LangValDelay // 可能不可用類型描述
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValJustDelayG<a extends LangVal> = LangValJustDelay // 可能不可用類型描述
-export type LangValLazy=LangValComment|LangValJustDelay
-export type LangValLazyG<a extends LangVal>=LangValLazy // 可能不可用類型描述
+export type LangValLazy = LangValComment | LangValJustDelay
+export type LangValLazyG<a extends LangVal> = LangValLazy // 可能不可用類型描述
 export type LangValSysNameG<x extends LangVal> = SystemName_Make<x>
 export type LangValSysName = LangValSysNameG<LangVal>
-export type LangValName = LangValDataG<LangValLazyG<Name_Atom>,LangVal> | LangValAtom
+export type LangValName = LangValDataG<LangValLazyG<Name_Atom>, LangVal> | LangValAtom
 
 const comment_t = LangValType.comment_t
 export type LangValCommentG<a extends LangVal, b extends LangVal> = [LangValType.comment_t, a, b]
@@ -141,7 +141,7 @@ function atom_p(x: LangVal): x is LangValAtom {
 }
 type New_Atom<X extends string> = LangValAtomG<X>
 function new_atom<X extends string>(x: X): New_Atom<X> {
-    return [atom_t,x]
+    return [atom_t, x]
 }
 function un_atom<X extends string>(x: New_Atom<X>): X {
     return x[1]
@@ -318,8 +318,8 @@ function force_uncomment_all_rec(raw: LangVal): LangVal {
     return x
 }
 // 註疏系統WIP
-const unlazy_all_rec=force_uncomment_all_rec
-export { force_all_rec, force_uncomment_all_rec,unlazy_all_rec }
+const unlazy_all_rec = force_uncomment_all_rec
+export { force_all_rec, force_uncomment_all_rec, unlazy_all_rec }
 
 function new_hole_do(): LangValHole {
     return [hole_t]
