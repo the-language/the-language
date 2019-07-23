@@ -18,32 +18,6 @@
 */
 
 // 註疏系統WIP
-function force_uncomment_list_1<T>(list: LangVal, not_list_k: () => T, delay_just_k: () => T, k: (comments: Array<LangVal>, ret: Array<LangVal>) => T): T {
-    let ret: Array<LangVal> = []
-    let comments: Array<LangVal> = []
-    let i: LangVal = un_just_all(list)
-    let not_forced: boolean = true
-    while (true) {
-        if (null_p(i)) {
-            return k(comments, ret)
-        } else if (comment_p(i)) {
-            comments.push(comment_comment(i))
-            i = comment_x(i)
-        } else if (construction_p(i)) {
-            ret.push(construction_head(i))
-            i = construction_tail(i)
-        } else if (delay_just_p(i)) {
-            if (not_forced) {
-                not_forced = false
-                i = force1(i)
-            } else {
-                return delay_just_k()
-            }
-        } else {
-            return not_list_k()
-        }
-    }
-}
 function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
     const x = force1(raw)
     if (delay_just_p(x)) {
@@ -56,7 +30,7 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
                 evaluate_function_builtin_systemName,
                 new_list(env2val(env), x))))
     if (construction_p(x)) {
-        return force_uncomment_list_1(x, error_v, () => selfvalraw, (comments, xs) => {
+        return unlazy_list_1_keepcomment(x, error_v, () => selfvalraw, (comments, xs) => {
             if (comments.length !== 0) {
                 throw 'WIP'
             }
@@ -131,17 +105,17 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
         })
     } else if (null_p(x)) {
         return x
-    } else if (name_p(x)) {
-        return env_get(env, x, error_v())
     } else if (error_p(x)) {
         return error_v()
+    }else{
+	const r=name_unlazy1_p3(x)
+	if(r===null){return selfvalraw}
+	if(r===true){return return env_get(env, x, error_v())}
+	return LANG_ERROR()
     }
     return LANG_ERROR()
 }
 
-function name_p(x: LangVal): x is LangValName {
-    return atom_p(x) || data_p(x)
-}
 function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean)
     : [LangValSysName, 1, (x: LangVal) => LangVal] {
     return [p_sym,
@@ -338,7 +312,9 @@ function real_apply(f: LangVal, xs: Array<LangVal>, selfvalraw: LangVal): LangVa
 
     let xs_i = 0
     while (!null_p(args_pat)) {
-        if (name_p(args_pat)) {
+	const r=name_unlazy1_p3(args_pat)
+	if(r===null){return selfvalraw}
+        if (r===true) {
             let x: LangVal = null_v
             for (let i = xs.length - 1; i >= xs_i; i--) {
                 x = new_construction(xs[i], x)
@@ -425,12 +401,14 @@ function new_lambda(
     body: LangVal,
     error_v: () => LangVal): LangVal {
     // 允許返回不同的物--允許實現進行對所有實現有效的優化[比如:消除無用環境中的變量] TODO 未實現
-    args_pat = force_all_rec(args_pat) // WIP delay未正確處理(影響較小)
+    args_pat = unlazy_all_rec(args_pat) // WIP delay未正確處理(影響較小)
     let args_pat_vars: Array<LangVal> = [] // : JSList LangVal/Name 順序有要求
     let args_pat_is_dot: boolean = false
     let args_pat_iter: LangVal = args_pat
     while (!null_p(args_pat_iter)) {
-        if (name_p(args_pat_iter)) {
+	const r=name_unlazy1_p3(args_pat_iter)
+	LANG_ASSERT(r!==null) // 前面已经unlazy
+        if (r) {
             args_pat_vars.push(args_pat_iter)
             args_pat_is_dot = true
             args_pat_iter = null_v
@@ -469,9 +447,9 @@ function new_lambda(
     return new_data(function_atom, new_list(args_pat, new_construction(make_quote(new_data(function_atom, new_list(new_args_pat, body))), new_args)))
 }
 
-// 註疏系統WIP
 // WIP delay未正確處理(影響較小)
-function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
+// 註疏系統WIP
+function jsbool_equal_p_inner(x: LangVal, y: LangVal): TrueFalseNull { // null表示相等，但不等价（因为有註疏。）
     if (x === y) {
         return true
     }
@@ -480,15 +458,29 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
-    function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
-        if (jsbool_equal_p(f1(xx), f1(yy)) && jsbool_equal_p(f2(xx), f2(yy))) {
+    function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): TrueFalseNull {
+	const r1=jsbool_equal_p(f1(xx), f1(yy))
+	const r2=jsbool_equal_p(f2(xx), f2(yy))
+        if ( r1===true&&r2===true ) {
             lang_assert_equal_set_do(xx, yy)
             return true
+	}else if(r1!==false&&r2!==false){
+	    return null
         } else {
             return false
         }
     }
-    if (null_p(x)) {
+    if(comment_p(x)){
+	const x2=un_comment_all(x)
+	let ret=jsbool_equal_p_inner(x2,y)
+	if(ret===true){ret=null}
+	return ret
+    }else if(comment_p(y)){
+	const y2=un_comment_all(y)
+	let ret=jsbool_equal_p_inner(x,y2)
+	if(ret===true){ret=null}
+	return ret
+    }else if (null_p(x)) {
         if (!null_p(y)) { return false }
         lang_assert_equal_set_do(x, y)
         return true
@@ -507,12 +499,14 @@ function jsbool_equal_p(x: LangVal, y: LangVal): boolean {
     }
     return LANG_ERROR()
 }
-const equal_p = jsbool_equal_p
+function equal_p(x:LangVal,y:LangVal){
+    return jsbool_equal_p_inner(x,y)!==false
+}
 export { equal_p }
 
-// 註疏系統WIP
 // 不比較delay。相等的delay可以返回false。
-function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
+// 比较comment。
+function jsbool_no_force_isomorphism_p(x: LangVal, y: LangVal): boolean {
     if (x === y) {
         return true
     }
@@ -522,7 +516,7 @@ function jsbool_no_force_equal_p(x: LangVal, y: LangVal): boolean {
         return true
     }
     function end_2<T extends LangVal>(xx: T, yy: T, f1: (x: T) => LangVal, f2: (x: T) => LangVal): boolean {
-        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
+        if (jsbool_no_force_isomorphism_p(f1(xx), f1(yy)) && jsbool_no_force_isomorphism_p(f2(xx), f2(yy))) {
             lang_assert_equal_set_do(xx, yy)
             return true
         } else {

@@ -88,9 +88,11 @@ export type LangValDelay = LangValDelayEvaluate | LangValDelayBuiltinFunc | Lang
 export type LangValDelayG<a extends LangVal> = LangValDelay // 可能不可用類型描述
 export type LangValJustDelay = LangValJust | LangValDelay
 export type LangValJustDelayG<a extends LangVal> = LangValJustDelay // 可能不可用類型描述
+export type LangValLazy=LangValComment|LangValJustDelay
+export type LangValLazyG<a extends LangVal>=LangValLazy // 可能不可用類型描述
 export type LangValSysNameG<x extends LangVal> = SystemName_Make<x>
 export type LangValSysName = LangValSysNameG<LangVal>
-export type LangValName = LangValData | LangValAtom
+export type LangValName = LangValDataG<LangValLazyG<Name_Atom>,LangVal> | LangValAtom
 
 const comment_t = LangValType.comment_t
 export type LangValCommentG<a extends LangVal, b extends LangVal> = [LangValType.comment_t, a, b]
@@ -315,7 +317,9 @@ function force_uncomment_all_rec(raw: LangVal): LangVal {
     }
     return x
 }
-export { force_all_rec, force_uncomment_all_rec }
+// 註疏系統WIP
+const unlazy_all_rec=force_uncomment_all_rec
+export { force_all_rec, force_uncomment_all_rec,unlazy_all_rec }
 
 function new_hole_do(): LangValHole {
     return [hole_t]

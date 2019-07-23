@@ -465,61 +465,61 @@ function complex_print(val: LangVal): string {
             }
         }
         const maybe_xs = maybe_list_to_jsArray(x)
-        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_atom)) {
+        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_isomorphism_p(maybe_xs[0], typeAnnotation_atom)) {
             // new_list(typeAnnotation_atom, maybe_xs[1], maybe_xs[2])
             const maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1])
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_atom)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_isomorphism_p(maybe_lst_2[0], function_atom)) {
                 const var_2_1 = maybe_lst_2[1]
                 // new_list(typeAnnotation_atom, new_list(function_atom, var_2_1, maybe_lst_2[2]), maybe_xs[2])
                 const maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_isomorphism_p(maybe_lst_2[2], something_atom)) {
                     // new_list(typeAnnotation_atom, new_list(function_atom, new_list(maybe_lst_3[0]), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true))
-                } else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                } else if (construction_p(var_2_1) && jsbool_no_force_isomorphism_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_isomorphism_p(maybe_lst_2[2], something_atom)) {
                     // new_list(typeAnnotation_atom, new_list(function_atom, new_construction(construction_head(var_2_1), something_atom), something_atom), maybe_xs[2])
                     return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true))
-                } else if (jsbool_no_force_equal_p(var_2_1, something_atom) && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+                } else if (jsbool_no_force_isomorphism_p(var_2_1, something_atom) && jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom)) {
                     // new_list(typeAnnotation_atom, new_list(function_atom, something_atom, maybe_lst_2[2]), theThing_atom)
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], true))
                 }
             } const maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2])
-            if (jsbool_no_force_equal_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_isomorphism_p(maybe_lst_44[0], isOrNot_atom)) {
                 // new_list(typeAnnotation_atom, function_atom, new_list(isOrNot_atom, maybe_lst_44[1]))
                 return inner_bracket(print_sys_name(maybe_lst_44[1], true) + '?')
             }
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom) && jsbool_no_force_equal_p(maybe_lst_2[0], form_atom)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom) && jsbool_no_force_isomorphism_p(maybe_lst_2[0], form_atom)) {
                 // new_list(typeAnnotation_atom, new_list(form_atom, var_2_1), theThing_atom)
                 const maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1])
-                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_atom) && jsbool_no_force_equal_p(maybe_lst_88[1], something_atom)) {
+                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_isomorphism_p(maybe_lst_88[0], function_atom) && jsbool_no_force_isomorphism_p(maybe_lst_88[1], something_atom)) {
                     // new_list(typeAnnotation_atom, new_list(form_atom, new_list(function_atom, something_atom, maybe_lst_88[2])), theThing_atom)
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true))
                 }
             }
             let hd: string
-            if (jsbool_no_force_equal_p(maybe_xs[2], something_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[2], something_atom)) {
                 hd = '_'
-            } else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+            } else if (jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom)) {
                 hd = ''
             } else {
                 hd = print_sys_name(maybe_xs[2], true)
             }
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true))
         } else if (maybe_xs !== false && maybe_xs.length === 2) {
-            if (jsbool_no_force_equal_p(maybe_xs[0], form_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[0], form_atom)) {
                 // new_list(form_atom, maybe_xs[1])
                 const maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1])
-                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_atom)) {
+                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_isomorphism_p(maybe_lst_288[0], system_atom)) {
                     // new_list(form_atom, new_list(system_atom, maybe_lst_288[1]))
                     return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], true))
                 }
                 return inner_bracket('&' + print_sys_name(maybe_xs[1], true))
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_atom)) {
+            } else if (jsbool_no_force_isomorphism_p(maybe_xs[0], isOrNot_atom)) {
                 // new_list(isOrNot_atom, maybe_xs[1])
                 return inner_bracket(print_sys_name(maybe_xs[1], true) + '~')
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+            } else if (jsbool_no_force_isomorphism_p(maybe_xs[0], system_atom)) {
                 // new_list(system_atom, maybe_xs[1])
                 return inner_bracket('+' + print_sys_name(maybe_xs[1], true))
-            } else if (jsbool_no_force_equal_p(maybe_xs[0], sub_atom)) {
+            } else if (jsbool_no_force_isomorphism_p(maybe_xs[0], sub_atom)) {
                 // new_list(sub_atom, maybe_xs[1])
                 const maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1])
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
@@ -561,7 +561,7 @@ function complex_print(val: LangVal): string {
         const name = data_name(x)
         const list = data_list(x)
         const maybe_xs = maybe_list_to_jsArray(list)
-        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name, name_atom) && jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_isomorphism_p(name, name_atom) && jsbool_no_force_isomorphism_p(maybe_xs[0], system_atom)) {
             // systemName_make(maybe_xs[1])
             return print_sys_name(maybe_xs[1], false)
         }
