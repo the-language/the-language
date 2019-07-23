@@ -234,6 +234,8 @@ function force_uncomment_all_rec(raw) {
     return x;
 }
 exports.force_uncomment_all_rec = force_uncomment_all_rec;
+var unlazy_all_rec = force_uncomment_all_rec;
+exports.unlazy_all_rec = unlazy_all_rec;
 function new_hole_do() {
     return [hole_t];
 }
@@ -404,6 +406,10 @@ function delay_just_p(x) {
     return just_p(x) || delay_p(x);
 }
 exports.delay_just_p = delay_just_p;
+function lazy_p(x) {
+    return delay_just_p(x) || comment_p(x);
+}
+exports.lazy_p = lazy_p;
 function delay2delay_evaluate(x) {
     if (delay_evaluate_p(x)) {
         return x;
@@ -493,7 +499,7 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs) {
                 var is_elim = false;
                 for (var _i = 0, elim_s_1 = elim_s; _i < elim_s_1.length; _i++) {
                     var elim_s_v = elim_s_1[_i];
-                    if (jsbool_equal_p(elim_s_v, f)) {
+                    if (equal_p(elim_s_v, f)) {
                         is_elim = true;
                         break;
                     }
@@ -509,16 +515,16 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs) {
                         return LANG_ERROR();
                     }
                 }
-                if (jsbool_equal_p(f, equal_p_function_builtin_systemName)) {
+                if (equal_p(f, equal_p_function_builtin_systemName)) {
                     return replace_this_with_stopped();
                 }
-                else if (jsbool_equal_p(f, apply_function_builtin_systemName)) {
+                else if (equal_p(f, apply_function_builtin_systemName)) {
                     return replace_this_with_stopped();
                 }
-                else if (jsbool_equal_p(f, evaluate_function_builtin_systemName)) {
+                else if (equal_p(f, evaluate_function_builtin_systemName)) {
                     return replace_this_with_stopped();
                 }
-                else if (jsbool_equal_p(f, if_function_builtin_systemName)) {
+                else if (equal_p(f, if_function_builtin_systemName)) {
                     LANG_ASSERT(xs_2.length === 3);
                     LANG_ASSERT(ref_novalue_replace[1] === false);
                     var tf = force_all_inner(xs_2[0], make_history(), ref_novalue_replace);
@@ -589,12 +595,79 @@ function force_uncomment1(raw) {
     }
 }
 exports.force_uncomment1 = force_uncomment1;
+function unlazy1(x) {
+    while (comment_p(x)) {
+        x = comment_x(x);
+    }
+    x = force1(x);
+    while (comment_p(x)) {
+        x = comment_x(x);
+    }
+    return x;
+}
+exports.unlazy1 = unlazy1;
+function unlazy_list_1_keepcomment(list, not_list_k, delay_just_k, k) {
+    var ret = [];
+    var comments = [];
+    var i = un_just_all(list);
+    var not_forced = true;
+    while (true) {
+        if (null_p(i)) {
+            return k(comments, ret);
+        }
+        else if (comment_p(i)) {
+            comments.push(comment_comment(i));
+            i = comment_x(i);
+        }
+        else if (construction_p(i)) {
+            ret.push(construction_head(i));
+            i = construction_tail(i);
+        }
+        else if (delay_just_p(i)) {
+            if (not_forced) {
+                not_forced = false;
+                i = force1(i);
+            }
+            else {
+                return delay_just_k();
+            }
+        }
+        else {
+            return not_list_k();
+        }
+    }
+}
+function name_unlazy1_p3(x) {
+    if (lazy_p(x)) {
+        x = unlazy1(x);
+    }
+    if (lazy_p(x)) {
+        return null;
+    }
+    if (atom_p(x)) {
+        return true;
+    }
+    if (!data_p(x)) {
+        return false;
+    }
+    var n = data_name(x);
+    if (lazy_p(n)) {
+        n = unlazy1(n);
+    }
+    if (lazy_p(n)) {
+        return null;
+    }
+    if (!atom_p(n)) {
+        return false;
+    }
+    return atom_equal_p(n, name_atom);
+}
 var env_null_v = [];
 exports.env_null_v = env_null_v;
 function env_set(env, key, val) {
     var ret = [];
     for (var i = 0; i < env.length; i = i + 2) {
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             ret[i + 0] = key;
             ret[i + 1] = val;
             for (i = i + 2; i < env.length; i = i + 2) {
@@ -615,7 +688,7 @@ function env_set(env, key, val) {
 exports.env_set = env_set;
 function env_get(env, key, default_v) {
     for (var i = 0; i < env.length; i = i + 2) {
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             return env[i + 1];
         }
     }
@@ -624,7 +697,7 @@ function env_get(env, key, default_v) {
 exports.env_get = env_get;
 function must_env_get(env, key) {
     for (var i = 0; i < env.length; i = i + 2) {
-        if (jsbool_equal_p(env[i + 0], key)) {
+        if (equal_p(env[i + 0], key)) {
             return env[i + 1];
         }
     }
@@ -685,7 +758,7 @@ function val2env(x) {
         }
         var not_breaked = true;
         for (var i = 0; i < ret.length; i = i + 2) {
-            if (jsbool_equal_p(ret[i + 0], k)) {
+            if (equal_p(ret[i + 0], k)) {
                 ret[i + 1] = v;
                 not_breaked = false;
                 break;
@@ -699,37 +772,6 @@ function val2env(x) {
     return ret;
 }
 exports.val2env = val2env;
-function force_uncomment_list_1(list, not_list_k, delay_just_k, k) {
-    var ret = [];
-    var comments = [];
-    var i = un_just_all(list);
-    var not_forced = true;
-    while (true) {
-        if (null_p(i)) {
-            return k(comments, ret);
-        }
-        else if (comment_p(i)) {
-            comments.push(comment_comment(i));
-            i = comment_x(i);
-        }
-        else if (construction_p(i)) {
-            ret.push(construction_head(i));
-            i = construction_tail(i);
-        }
-        else if (delay_just_p(i)) {
-            if (not_forced) {
-                not_forced = false;
-                i = force1(i);
-            }
-            else {
-                return delay_just_k();
-            }
-        }
-        else {
-            return not_list_k();
-        }
-    }
-}
 function real_evaluate(env, raw, selfvalraw) {
     var x = force1(raw);
     if (delay_just_p(x)) {
@@ -737,11 +779,11 @@ function real_evaluate(env, raw, selfvalraw) {
     }
     var error_v = function () { return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))); };
     if (construction_p(x)) {
-        return force_uncomment_list_1(x, error_v, function () { return selfvalraw; }, function (comments, xs) {
+        return unlazy_list_1_keepcomment(x, error_v, function () { return selfvalraw; }, function (comments, xs) {
             if (comments.length !== 0) {
                 throw 'WIP';
             }
-            if (jsbool_equal_p(xs[0], form_builtin_use_systemName)) {
+            if (equal_p(xs[0], form_builtin_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v();
                 }
@@ -752,7 +794,7 @@ function real_evaluate(env, raw, selfvalraw) {
                 }
                 return builtin_form_apply(env, f, args);
             }
-            else if (jsbool_equal_p(xs[0], form_use_systemName)) {
+            else if (equal_p(xs[0], form_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v();
                 }
@@ -791,7 +833,7 @@ function real_evaluate(env, raw, selfvalraw) {
                 }
                 return apply(f_x, args);
             }
-            else if (jsbool_equal_p(xs[0], function_builtin_use_systemName)) {
+            else if (equal_p(xs[0], function_builtin_use_systemName)) {
                 if (xs.length === 1) {
                     return error_v();
                 }
@@ -815,16 +857,20 @@ function real_evaluate(env, raw, selfvalraw) {
     else if (null_p(x)) {
         return x;
     }
-    else if (name_p(x)) {
-        return env_get(env, x, error_v());
-    }
     else if (error_p(x)) {
         return error_v();
     }
+    else {
+        var r = name_unlazy1_p3(x);
+        if (r === null) {
+            return selfvalraw;
+        }
+        if (r === true) {
+            return env_get(env, x, error_v());
+        }
+        return LANG_ERROR();
+    }
     return LANG_ERROR();
-}
-function name_p(x) {
-    return atom_p(x) || data_p(x);
 }
 function make_builtin_p_func(p_sym, p_jsfunc) {
     return [p_sym,
@@ -1005,7 +1051,11 @@ function real_apply(f, xs, selfvalraw) {
     var env = env_null_v;
     var xs_i = 0;
     while (!null_p(args_pat)) {
-        if (name_p(args_pat)) {
+        var r = name_unlazy1_p3(args_pat);
+        if (r === null) {
+            return selfvalraw;
+        }
+        if (r === true) {
             var x = null_v;
             for (var i = xs.length - 1; i >= xs_i; i--) {
                 x = new_construction(xs[i], x);
@@ -1038,7 +1088,7 @@ function real_builtin_func_apply(f, xs, selfvalraw) {
     var error_v = function () { return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))); };
     for (var _i = 0, real_builtin_func_apply_s_1 = real_builtin_func_apply_s; _i < real_builtin_func_apply_s_1.length; _i++) {
         var xx = real_builtin_func_apply_s_1[_i];
-        if (jsbool_equal_p(f, xx[0])) {
+        if (equal_p(f, xx[0])) {
             if (xs.length !== xx[1]) {
                 return error_v();
             }
@@ -1058,19 +1108,19 @@ function real_builtin_func_apply(f, xs, selfvalraw) {
 }
 function real_builtin_form_apply(env, f, xs, selfvalraw) {
     var error_v = function () { return new_error(system_atom, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))); };
-    if (jsbool_equal_p(f, quote_form_builtin_systemName)) {
+    if (equal_p(f, quote_form_builtin_systemName)) {
         if (xs.length !== 1) {
             return error_v();
         }
         return xs[0];
     }
-    else if (jsbool_equal_p(f, lambda_form_builtin_systemName)) {
+    else if (equal_p(f, lambda_form_builtin_systemName)) {
         if (xs.length !== 2) {
             return error_v();
         }
         return new_lambda(env, xs[0], xs[1], error_v);
     }
-    else if (jsbool_equal_p(f, comment_form_builtin_systemName)) {
+    else if (equal_p(f, comment_form_builtin_systemName)) {
         if (xs.length !== 2) {
             return error_v();
         }
@@ -1082,12 +1132,14 @@ function make_quote(x) {
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x);
 }
 function new_lambda(env, args_pat, body, error_v) {
-    args_pat = force_all_rec(args_pat);
+    args_pat = unlazy_all_rec(args_pat);
     var args_pat_vars = [];
     var args_pat_is_dot = false;
     var args_pat_iter = args_pat;
     while (!null_p(args_pat_iter)) {
-        if (name_p(args_pat_iter)) {
+        var r = name_unlazy1_p3(args_pat_iter);
+        LANG_ASSERT(r !== null);
+        if (r) {
             args_pat_vars.push(args_pat_iter);
             args_pat_is_dot = true;
             args_pat_iter = null_v;
@@ -1110,7 +1162,7 @@ function new_lambda(env, args_pat, body, error_v) {
     var env_vars = [];
     env_foreach(env, function (k, v) {
         for (var i = 0; i < args_pat_vars.length; i++) {
-            if (jsbool_equal_p(args_pat_vars[i], k)) {
+            if (equal_p(args_pat_vars[i], k)) {
                 return;
             }
         }
@@ -1126,7 +1178,7 @@ function new_lambda(env, args_pat, body, error_v) {
     }
     return new_data(function_atom, new_list(args_pat, new_construction(make_quote(new_data(function_atom, new_list(new_args_pat, body))), new_args)));
 }
-function jsbool_equal_p(x, y) {
+function jsbool_equal_p_inner(x, y) {
     if (x === y) {
         return true;
     }
@@ -1136,15 +1188,36 @@ function jsbool_equal_p(x, y) {
         return true;
     }
     function end_2(xx, yy, f1, f2) {
-        if (jsbool_equal_p(f1(xx), f1(yy)) && jsbool_equal_p(f2(xx), f2(yy))) {
+        var r1 = jsbool_equal_p_inner(f1(xx), f1(yy));
+        var r2 = jsbool_equal_p_inner(f2(xx), f2(yy));
+        if (r1 === true && r2 === true) {
             lang_assert_equal_set_do(xx, yy);
             return true;
+        }
+        else if (r1 !== false && r2 !== false) {
+            return null;
         }
         else {
             return false;
         }
     }
-    if (null_p(x)) {
+    if (comment_p(x)) {
+        var x2 = un_comment_all(x);
+        var ret = jsbool_equal_p_inner(x2, y);
+        if (ret === true) {
+            ret = null;
+        }
+        return ret;
+    }
+    else if (comment_p(y)) {
+        var y2 = un_comment_all(y);
+        var ret = jsbool_equal_p_inner(x, y2);
+        if (ret === true) {
+            ret = null;
+        }
+        return ret;
+    }
+    else if (null_p(x)) {
         if (!null_p(y)) {
             return false;
         }
@@ -1177,9 +1250,11 @@ function jsbool_equal_p(x, y) {
     }
     return LANG_ERROR();
 }
-var equal_p = jsbool_equal_p;
+function equal_p(x, y) {
+    return jsbool_equal_p_inner(x, y) !== false;
+}
 exports.equal_p = equal_p;
-function jsbool_no_force_equal_p(x, y) {
+function jsbool_no_force_isomorphism_p(x, y) {
     if (x === y) {
         return true;
     }
@@ -1189,7 +1264,7 @@ function jsbool_no_force_equal_p(x, y) {
         return true;
     }
     function end_2(xx, yy, f1, f2) {
-        if (jsbool_no_force_equal_p(f1(xx), f1(yy)) && jsbool_no_force_equal_p(f2(xx), f2(yy))) {
+        if (jsbool_no_force_isomorphism_p(f1(xx), f1(yy)) && jsbool_no_force_isomorphism_p(f2(xx), f2(yy))) {
             lang_assert_equal_set_do(xx, yy);
             return true;
         }
@@ -1702,36 +1777,36 @@ function complex_print(val) {
             }
         }
         var maybe_xs = maybe_list_to_jsArray(x);
-        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_equal_p(maybe_xs[0], typeAnnotation_atom)) {
+        if (maybe_xs !== false && maybe_xs.length === 3 && jsbool_no_force_isomorphism_p(maybe_xs[0], typeAnnotation_atom)) {
             var maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[1]);
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_equal_p(maybe_lst_2[0], function_atom)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 3 && jsbool_no_force_isomorphism_p(maybe_lst_2[0], function_atom)) {
                 var var_2_1 = maybe_lst_2[1];
                 var maybe_lst_3 = maybe_list_to_jsArray(var_2_1);
-                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                if (maybe_lst_3 !== false && maybe_lst_3.length === 1 && jsbool_no_force_isomorphism_p(maybe_lst_2[2], something_atom)) {
                     return inner_bracket(print_sys_name(maybe_lst_3[0], true) + '.' + print_sys_name(maybe_xs[2], true));
                 }
-                else if (construction_p(var_2_1) && jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_equal_p(maybe_lst_2[2], something_atom)) {
+                else if (construction_p(var_2_1) && jsbool_no_force_isomorphism_p(construction_tail(var_2_1), something_atom) && jsbool_no_force_isomorphism_p(maybe_lst_2[2], something_atom)) {
                     return inner_bracket(print_sys_name(construction_head(var_2_1), true) + '@' + print_sys_name(maybe_xs[2], true));
                 }
-                else if (jsbool_no_force_equal_p(var_2_1, something_atom) && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+                else if (jsbool_no_force_isomorphism_p(var_2_1, something_atom) && jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom)) {
                     return inner_bracket(':>' + print_sys_name(maybe_lst_2[2], true));
                 }
             }
             var maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[2]);
-            if (jsbool_no_force_equal_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_equal_p(maybe_lst_44[0], isOrNot_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[1], function_atom) && maybe_lst_44 !== false && maybe_lst_44.length === 2 && jsbool_no_force_isomorphism_p(maybe_lst_44[0], isOrNot_atom)) {
                 return inner_bracket(print_sys_name(maybe_lst_44[1], true) + '?');
             }
-            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_equal_p(maybe_xs[2], theThing_atom) && jsbool_no_force_equal_p(maybe_lst_2[0], form_atom)) {
+            if (maybe_lst_2 !== false && maybe_lst_2.length === 2 && jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom) && jsbool_no_force_isomorphism_p(maybe_lst_2[0], form_atom)) {
                 var maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[1]);
-                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_equal_p(maybe_lst_88[0], function_atom) && jsbool_no_force_equal_p(maybe_lst_88[1], something_atom)) {
+                if (maybe_lst_88 !== false && maybe_lst_88.length === 3 && jsbool_no_force_isomorphism_p(maybe_lst_88[0], function_atom) && jsbool_no_force_isomorphism_p(maybe_lst_88[1], something_atom)) {
                     return inner_bracket(':&>' + print_sys_name(maybe_lst_88[2], true));
                 }
             }
             var hd = void 0;
-            if (jsbool_no_force_equal_p(maybe_xs[2], something_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[2], something_atom)) {
                 hd = '_';
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[2], theThing_atom)) {
+            else if (jsbool_no_force_isomorphism_p(maybe_xs[2], theThing_atom)) {
                 hd = '';
             }
             else {
@@ -1740,20 +1815,20 @@ function complex_print(val) {
             return inner_bracket(hd + ':' + print_sys_name(maybe_xs[1], true));
         }
         else if (maybe_xs !== false && maybe_xs.length === 2) {
-            if (jsbool_no_force_equal_p(maybe_xs[0], form_atom)) {
+            if (jsbool_no_force_isomorphism_p(maybe_xs[0], form_atom)) {
                 var maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[1]);
-                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_equal_p(maybe_lst_288[0], system_atom)) {
+                if (maybe_lst_288 !== false && maybe_lst_288.length === 2 && jsbool_no_force_isomorphism_p(maybe_lst_288[0], system_atom)) {
                     return inner_bracket('&+' + print_sys_name(maybe_lst_288[1], true));
                 }
                 return inner_bracket('&' + print_sys_name(maybe_xs[1], true));
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], isOrNot_atom)) {
+            else if (jsbool_no_force_isomorphism_p(maybe_xs[0], isOrNot_atom)) {
                 return inner_bracket(print_sys_name(maybe_xs[1], true) + '~');
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+            else if (jsbool_no_force_isomorphism_p(maybe_xs[0], system_atom)) {
                 return inner_bracket('+' + print_sys_name(maybe_xs[1], true));
             }
-            else if (jsbool_no_force_equal_p(maybe_xs[0], sub_atom)) {
+            else if (jsbool_no_force_isomorphism_p(maybe_xs[0], sub_atom)) {
                 var maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[1]);
                 if (maybe_lst_8934 !== false && maybe_lst_8934.length > 1) {
                     var tmp = print_sys_name(maybe_lst_8934[0], true);
@@ -1797,7 +1872,7 @@ function complex_print(val) {
         var name_1 = data_name(x);
         var list = data_list(x);
         var maybe_xs = maybe_list_to_jsArray(list);
-        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_equal_p(name_1, name_atom) && jsbool_no_force_equal_p(maybe_xs[0], system_atom)) {
+        if (maybe_xs !== false && maybe_xs.length === 2 && jsbool_no_force_isomorphism_p(name_1, name_atom) && jsbool_no_force_isomorphism_p(maybe_xs[0], system_atom)) {
             return print_sys_name(maybe_xs[1], false);
         }
         return "#" + complex_print(new_construction(name_1, list));
@@ -1990,7 +2065,7 @@ function run_monad_helper(return_handler, op_handler, code, state, next) {
     if (data_p(code)) {
         var name_2 = data_name(code);
         var list = data_list(code);
-        if (jsbool_equal_p(name_2, return_effect_systemName)) {
+        if (equal_p(name_2, return_effect_systemName)) {
             list = force_all(list);
             if (construction_p(list)) {
                 var list_a = construction_head(list);
@@ -2013,7 +2088,7 @@ function run_monad_helper(return_handler, op_handler, code, state, next) {
                 }
             }
         }
-        else if (jsbool_equal_p(name_2, bind_effect_systemName)) {
+        else if (equal_p(name_2, bind_effect_systemName)) {
             list = force_all(list);
             if (construction_p(list)) {
                 var list_a = construction_head(list);

@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$jsbool_no_force_isomorphism_p extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue[] u2;
@@ -19,7 +19,7 @@ public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.VarArgFu
     org.luaj.vm2.LuaValue u16;
     org.luaj.vm2.LuaValue u17;
     
-    public Lang$luaj$jsbool_no_force_equal_p() {
+    public Lang$luaj$jsbool_no_force_isomorphism_p() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
@@ -36,7 +36,7 @@ public class Lang$luaj$jsbool_no_force_equal_p extends org.luaj.vm2.lib.VarArgFu
             org.luaj.vm2.Varargs a5 = org.luaj.vm2.LuaValue.TRUE;
             return a5;
         }
-        Lang$luaj$jsbool_no_force_equal_p$end_2 a6 = new Lang$luaj$jsbool_no_force_equal_p$end_2();
+        Lang$luaj$jsbool_no_force_isomorphism_p$end_2 a6 = new Lang$luaj$jsbool_no_force_isomorphism_p$end_2();
         a6.u0 = this.u1;
         a6.u1 = this.u2;
         if (this.u3.call(a3).toboolean()) {

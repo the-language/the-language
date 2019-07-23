@@ -24,7 +24,7 @@ public class Lang$luaj$complex_print extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u21;
     org.luaj.vm2.LuaValue u22;
     org.luaj.vm2.LuaValue u23;
-    org.luaj.vm2.LuaValue u24;
+    org.luaj.vm2.LuaValue[] u24;
     org.luaj.vm2.LuaValue u25;
     org.luaj.vm2.LuaValue u26;
     org.luaj.vm2.LuaValue u27;
@@ -132,7 +132,7 @@ public class Lang$luaj$complex_print extends org.luaj.vm2.lib.VarArgFunction {
             org.luaj.vm2.LuaValue a7 = this.u22.call(a2);
             org.luaj.vm2.LuaValue a8 = this.u23.call(a2);
             org.luaj.vm2.LuaValue a9 = this.u3.call(a8);
-            if (!a9.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a9.len().eq_b(k7) && this.u4.call(a7, this.u24).toboolean() && this.u4.call(a9.get(k8), this.u14[0]).toboolean()) {
+            if (!a9.eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE) && a9.len().eq_b(k7) && this.u4.call(a7, this.u24[0]).toboolean() && this.u4.call(a9.get(k8), this.u14[0]).toboolean()) {
                 return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a1, org.luaj.vm2.LuaValue.varargsOf(a9.get(k7), (org.luaj.vm2.Varargs)org.luaj.vm2.LuaValue.FALSE));
             }
             org.luaj.vm2.Varargs a10 = k9.concat(this.u2.get(k3).invoke(this.u20.invoke(this.u25.invoke(a7, (org.luaj.vm2.Varargs)a8).subargs(1)).subargs(1)).arg1());

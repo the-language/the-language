@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, force_all_inner, force1, force_all, force_uncomment_all, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, force_uncomment_list_1, real_evaluate, name_p, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -299,6 +299,9 @@ end
 function delay_just_p(x)
     return just_p(x) or delay_p(x)
 end
+function lazy_p(x)
+    return delay_just_p(x) or comment_p(x)
+end
 function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
     if parents_history == nil then
         parents_history = {}
@@ -386,7 +389,7 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
                 }
                 local is_elim = false
                 for ____, elim_s_v in ipairs(elim_s) do
-                    if jsbool_equal_p(elim_s_v, f) then
+                    if equal_p(elim_s_v, f) then
                         is_elim = true
                         break
                     end
@@ -401,13 +404,13 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
                         return LANG_ERROR()
                     end
                 end
-                if jsbool_equal_p(f, equal_p_function_builtin_systemName) then
+                if equal_p(f, equal_p_function_builtin_systemName) then
                     return replace_this_with_stopped()
-                elseif jsbool_equal_p(f, apply_function_builtin_systemName) then
+                elseif equal_p(f, apply_function_builtin_systemName) then
                     return replace_this_with_stopped()
-                elseif jsbool_equal_p(f, evaluate_function_builtin_systemName) then
+                elseif equal_p(f, evaluate_function_builtin_systemName) then
                     return replace_this_with_stopped()
-                elseif jsbool_equal_p(f, if_function_builtin_systemName) then
+                elseif equal_p(f, if_function_builtin_systemName) then
                     LANG_ASSERT(#xs == 3)
                     LANG_ASSERT(ref_novalue_replace[2] == false)
                     local tf = force_all_inner(xs[1], make_history(), ref_novalue_replace)
@@ -463,12 +466,73 @@ function force_uncomment_all(x)
     end
     return x
 end
+function unlazy1(x)
+    while comment_p(x) do
+        x = comment_x(x)
+    end
+    x = force1(x)
+    while comment_p(x) do
+        x = comment_x(x)
+    end
+    return x
+end
+function unlazy_list_1_keepcomment(list, not_list_k, delay_just_k, k)
+    local ret = {}
+    local comments = {}
+    local i = un_just_all(list)
+    local not_forced = true
+    while true do
+        if null_p(i) then
+            return k(comments, ret)
+        elseif comment_p(i) then
+            __TS__ArrayPush(comments, comment_comment(i))
+            i = comment_x(i)
+        elseif construction_p(i) then
+            __TS__ArrayPush(ret, construction_head(i))
+            i = construction_tail(i)
+        elseif delay_just_p(i) then
+            if not_forced then
+                not_forced = false
+                i = force1(i)
+            else
+                return delay_just_k()
+            end
+        else
+            return not_list_k()
+        end
+    end
+end
+function name_unlazy1_p3(x)
+    if lazy_p(x) then
+        x = unlazy1(x)
+    end
+    if lazy_p(x) then
+        return nil
+    end
+    if atom_p(x) then
+        return true
+    end
+    if not data_p(x) then
+        return false
+    end
+    local n = data_name(x)
+    if lazy_p(n) then
+        n = unlazy1(n)
+    end
+    if lazy_p(n) then
+        return nil
+    end
+    if not atom_p(n) then
+        return false
+    end
+    return atom_equal_p(n, name_atom)
+end
 function env_set(env, key, val)
     local ret = {}
     do
         local i = 0
         while i < #env do
-            if jsbool_equal_p(env[(i + 0) + 1], key) then
+            if equal_p(env[(i + 0) + 1], key) then
                 ret[(i + 0) + 1] = key
                 ret[(i + 1) + 1] = val
                 do
@@ -495,7 +559,7 @@ function env_get(env, key, default_v)
     do
         local i = 0
         while i < #env do
-            if jsbool_equal_p(env[(i + 0) + 1], key) then
+            if equal_p(env[(i + 0) + 1], key) then
                 return env[(i + 1) + 1]
             end
             i = i + 2
@@ -507,7 +571,7 @@ function must_env_get(env, key)
     do
         local i = 0
         while i < #env do
-            if jsbool_equal_p(env[(i + 0) + 1], key) then
+            if equal_p(env[(i + 0) + 1], key) then
                 return env[(i + 1) + 1]
             end
             i = i + 2
@@ -535,32 +599,6 @@ function env_foreach(env, f)
         end
     end
 end
-function force_uncomment_list_1(list, not_list_k, delay_just_k, k)
-    local ret = {}
-    local comments = {}
-    local i = un_just_all(list)
-    local not_forced = true
-    while true do
-        if null_p(i) then
-            return k(comments, ret)
-        elseif comment_p(i) then
-            __TS__ArrayPush(comments, comment_comment(i))
-            i = comment_x(i)
-        elseif construction_p(i) then
-            __TS__ArrayPush(ret, construction_head(i))
-            i = construction_tail(i)
-        elseif delay_just_p(i) then
-            if not_forced then
-                not_forced = false
-                i = force1(i)
-            else
-                return delay_just_k()
-            end
-        else
-            return not_list_k()
-        end
-    end
-end
 function real_evaluate(env, raw, selfvalraw)
     local x = force1(raw)
     if delay_just_p(x) then
@@ -568,11 +606,11 @@ function real_evaluate(env, raw, selfvalraw)
     end
     local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(evaluate_function_builtin_systemName, new_list(env2val(env), x)))) end
     if construction_p(x) then
-        return force_uncomment_list_1(x, error_v, function() return selfvalraw end, function(comments, xs)
+        return unlazy_list_1_keepcomment(x, error_v, function() return selfvalraw end, function(comments, xs)
             if #comments ~= 0 then
                 error("WIP")
             end
-            if jsbool_equal_p(xs[1], form_builtin_use_systemName) then
+            if equal_p(xs[1], form_builtin_use_systemName) then
                 if #xs == 1 then
                     return error_v()
                 end
@@ -586,7 +624,7 @@ function real_evaluate(env, raw, selfvalraw)
                     end
                 end
                 return builtin_form_apply(env, f, args)
-            elseif jsbool_equal_p(xs[1], form_use_systemName) then
+            elseif equal_p(xs[1], form_use_systemName) then
                 if #xs == 1 then
                     return error_v()
                 end
@@ -628,7 +666,7 @@ function real_evaluate(env, raw, selfvalraw)
                     end
                 end
                 return apply(f_x, args)
-            elseif jsbool_equal_p(xs[1], function_builtin_use_systemName) then
+            elseif equal_p(xs[1], function_builtin_use_systemName) then
                 if #xs == 1 then
                     return error_v()
                 end
@@ -657,15 +695,19 @@ function real_evaluate(env, raw, selfvalraw)
         end)
     elseif null_p(x) then
         return x
-    elseif name_p(x) then
-        return env_get(env, x, error_v())
     elseif error_p(x) then
         return error_v()
+    else
+        local r = name_unlazy1_p3(x)
+        if r == nil then
+            return selfvalraw
+        end
+        if r == true then
+            return env_get(env, x, error_v())
+        end
+        return LANG_ERROR()
     end
     return LANG_ERROR()
-end
-function name_p(x)
-    return atom_p(x) or data_p(x)
 end
 function real_apply(f, xs, selfvalraw)
     local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(apply_function_builtin_systemName, new_list(f, jsArray_to_list(xs))))) end
@@ -693,7 +735,11 @@ function real_apply(f, xs, selfvalraw)
     local env = env_null_v
     local xs_i = 0
     while not null_p(args_pat) do
-        if name_p(args_pat) then
+        local r = name_unlazy1_p3(args_pat)
+        if r == nil then
+            return selfvalraw
+        end
+        if r == true then
             local x = null_v
             do
                 local i = #xs - 1
@@ -726,7 +772,7 @@ end
 function real_builtin_func_apply(f, xs, selfvalraw)
     local function error_v() return new_error(system_atom, new_list(function_builtin_use_systemName, new_list(f, jsArray_to_list(xs)))) end
     for ____, xx in ipairs(real_builtin_func_apply_s) do
-        if jsbool_equal_p(f, xx[1]) then
+        if equal_p(f, xx[1]) then
             if #xs ~= xx[2] then
                 return error_v()
             end
@@ -744,17 +790,17 @@ function real_builtin_func_apply(f, xs, selfvalraw)
 end
 function real_builtin_form_apply(env, f, xs, selfvalraw)
     local function error_v() return new_error(system_atom, new_list(form_builtin_use_systemName, new_list(env2val(env), f, jsArray_to_list(xs)))) end
-    if jsbool_equal_p(f, quote_form_builtin_systemName) then
+    if equal_p(f, quote_form_builtin_systemName) then
         if #xs ~= 1 then
             return error_v()
         end
         return xs[1]
-    elseif jsbool_equal_p(f, lambda_form_builtin_systemName) then
+    elseif equal_p(f, lambda_form_builtin_systemName) then
         if #xs ~= 2 then
             return error_v()
         end
         return new_lambda(env, xs[1], xs[2], error_v)
-    elseif jsbool_equal_p(f, comment_form_builtin_systemName) then
+    elseif equal_p(f, comment_form_builtin_systemName) then
         if #xs ~= 2 then
             return error_v()
         end
@@ -766,12 +812,14 @@ function make_quote(x)
     return new_list(form_builtin_use_systemName, quote_form_builtin_systemName, x)
 end
 function new_lambda(env, args_pat, body, error_v)
-    args_pat = force_all_rec(args_pat)
+    args_pat = unlazy_all_rec(args_pat)
     local args_pat_vars = {}
     local args_pat_is_dot = false
     local args_pat_iter = args_pat
     while not null_p(args_pat_iter) do
-        if name_p(args_pat_iter) then
+        local r = name_unlazy1_p3(args_pat_iter)
+        LANG_ASSERT(r ~= nil)
+        if r then
             __TS__ArrayPush(args_pat_vars, args_pat_iter)
             args_pat_is_dot = true
             args_pat_iter = null_v
@@ -793,7 +841,7 @@ function new_lambda(env, args_pat, body, error_v)
         do
             local i = 0
             while i < #args_pat_vars do
-                if jsbool_equal_p(args_pat_vars[i + 1], k) then
+                if equal_p(args_pat_vars[i + 1], k) then
                     return
                 end
                 i = i + 1
@@ -819,7 +867,7 @@ function new_lambda(env, args_pat, body, error_v)
     end
     return new_data(function_atom, new_list(args_pat, new_construction(make_quote(new_data(function_atom, new_list(new_args_pat, body))), new_args)))
 end
-function jsbool_equal_p(x, y)
+function jsbool_equal_p_inner(x, y)
     if x == y then
         return true
     end
@@ -829,14 +877,32 @@ function jsbool_equal_p(x, y)
         return true
     end
     local function end_2(xx, yy, f1, f2)
-        if jsbool_equal_p(f1(xx), f1(yy)) and jsbool_equal_p(f2(xx), f2(yy)) then
+        local r1 = jsbool_equal_p_inner(f1(xx), f1(yy))
+        local r2 = jsbool_equal_p_inner(f2(xx), f2(yy))
+        if r1 == true and r2 == true then
             lang_assert_equal_set_do(xx, yy)
             return true
+        elseif r1 ~= false and r2 ~= false then
+            return nil
         else
             return false
         end
     end
-    if null_p(x) then
+    if comment_p(x) then
+        local x2 = un_comment_all(x)
+        local ret = jsbool_equal_p_inner(x2, y)
+        if ret == true then
+            ret = nil
+        end
+        return ret
+    elseif comment_p(y) then
+        local y2 = un_comment_all(y)
+        local ret = jsbool_equal_p_inner(x, y2)
+        if ret == true then
+            ret = nil
+        end
+        return ret
+    elseif null_p(x) then
         if not null_p(y) then
             return false
         end
@@ -864,6 +930,9 @@ function jsbool_equal_p(x, y)
         return end_2(x, y, data_name, data_list)
     end
     return LANG_ERROR()
+end
+function equal_p(x, y)
+    return jsbool_equal_p_inner(x, y) ~= false
 end
 function simple_print(x)
     x = un_just_all(x)
@@ -950,8 +1019,9 @@ local function force_uncomment_all_rec(raw)
     end
     return x
 end
+unlazy_all_rec = force_uncomment_all_rec
 system_atom = new_atom("太始初核")
-local name_atom = new_atom("符名")
+name_atom = new_atom("符名")
 function_atom = new_atom("化滅")
 form_atom = new_atom("式形")
 local equal_atom = new_atom("等同")
@@ -1109,7 +1179,7 @@ local function val2env(x)
         do
             local i = 0
             while i < #ret do
-                if jsbool_equal_p(ret[(i + 0) + 1], k) then
+                if equal_p(ret[(i + 0) + 1], k) then
                     ret[(i + 1) + 1] = v
                     not_breaked = false
                     break
@@ -1329,9 +1399,7 @@ real_builtin_func_apply_s = {
         new_comment,
     },
 }
-local equal_p
-equal_p = jsbool_equal_p
-local function jsbool_no_force_equal_p(x, y)
+local function jsbool_no_force_isomorphism_p(x, y)
     if x == y then
         return true
     end
@@ -1341,7 +1409,7 @@ local function jsbool_no_force_equal_p(x, y)
         return true
     end
     local function end_2(xx, yy, f1, f2)
-        if jsbool_no_force_equal_p(f1(xx), f1(yy)) and jsbool_no_force_equal_p(f2(xx), f2(yy)) then
+        if jsbool_no_force_isomorphism_p(f1(xx), f1(yy)) and jsbool_no_force_isomorphism_p(f2(xx), f2(yy)) then
             lang_assert_equal_set_do(xx, yy)
             return true
         else
@@ -1826,50 +1894,50 @@ local function complex_print(val)
             end
         end
         local maybe_xs = maybe_list_to_jsArray(x)
-        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_equal_p(maybe_xs[1], typeAnnotation_atom) then
+        if maybe_xs ~= false and #maybe_xs == 3 and jsbool_no_force_isomorphism_p(maybe_xs[1], typeAnnotation_atom) then
             local maybe_lst_2 = maybe_list_to_jsArray(maybe_xs[2])
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_equal_p(maybe_lst_2[1], function_atom) then
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 3 and jsbool_no_force_isomorphism_p(maybe_lst_2[1], function_atom) then
                 local var_2_1 = maybe_lst_2[2]
                 local maybe_lst_3 = maybe_list_to_jsArray(var_2_1)
-                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_equal_p(maybe_lst_2[3], something_atom) then
+                if maybe_lst_3 ~= false and #maybe_lst_3 == 1 and jsbool_no_force_isomorphism_p(maybe_lst_2[3], something_atom) then
                     return inner_bracket(tostring(print_sys_name(maybe_lst_3[1], true)) .. "." .. tostring(print_sys_name(maybe_xs[3], true)))
-                elseif construction_p(var_2_1) and jsbool_no_force_equal_p(construction_tail(var_2_1), something_atom) and jsbool_no_force_equal_p(maybe_lst_2[3], something_atom) then
+                elseif construction_p(var_2_1) and jsbool_no_force_isomorphism_p(construction_tail(var_2_1), something_atom) and jsbool_no_force_isomorphism_p(maybe_lst_2[3], something_atom) then
                     return inner_bracket(tostring(print_sys_name(construction_head(var_2_1), true)) .. "@" .. tostring(print_sys_name(maybe_xs[3], true)))
-                elseif jsbool_no_force_equal_p(var_2_1, something_atom) and jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) then
+                elseif jsbool_no_force_isomorphism_p(var_2_1, something_atom) and jsbool_no_force_isomorphism_p(maybe_xs[3], theThing_atom) then
                     return inner_bracket(":>" .. tostring(print_sys_name(maybe_lst_2[3], true)))
                 end
             end
             local maybe_lst_44 = maybe_list_to_jsArray(maybe_xs[3])
-            if jsbool_no_force_equal_p(maybe_xs[2], function_atom) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_equal_p(maybe_lst_44[1], isOrNot_atom) then
+            if jsbool_no_force_isomorphism_p(maybe_xs[2], function_atom) and maybe_lst_44 ~= false and #maybe_lst_44 == 2 and jsbool_no_force_isomorphism_p(maybe_lst_44[1], isOrNot_atom) then
                 return inner_bracket(tostring(print_sys_name(maybe_lst_44[2], true)) .. "?")
             end
-            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) and jsbool_no_force_equal_p(maybe_lst_2[1], form_atom) then
+            if maybe_lst_2 ~= false and #maybe_lst_2 == 2 and jsbool_no_force_isomorphism_p(maybe_xs[3], theThing_atom) and jsbool_no_force_isomorphism_p(maybe_lst_2[1], form_atom) then
                 local maybe_lst_88 = maybe_list_to_jsArray(maybe_lst_2[2])
-                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_equal_p(maybe_lst_88[1], function_atom) and jsbool_no_force_equal_p(maybe_lst_88[2], something_atom) then
+                if maybe_lst_88 ~= false and #maybe_lst_88 == 3 and jsbool_no_force_isomorphism_p(maybe_lst_88[1], function_atom) and jsbool_no_force_isomorphism_p(maybe_lst_88[2], something_atom) then
                     return inner_bracket(":&>" .. tostring(print_sys_name(maybe_lst_88[3], true)))
                 end
             end
             local hd
-            if jsbool_no_force_equal_p(maybe_xs[3], something_atom) then
+            if jsbool_no_force_isomorphism_p(maybe_xs[3], something_atom) then
                 hd = "_"
-            elseif jsbool_no_force_equal_p(maybe_xs[3], theThing_atom) then
+            elseif jsbool_no_force_isomorphism_p(maybe_xs[3], theThing_atom) then
                 hd = ""
             else
                 hd = print_sys_name(maybe_xs[3], true)
             end
             return inner_bracket(tostring(hd) .. ":" .. tostring(print_sys_name(maybe_xs[2], true)))
         elseif maybe_xs ~= false and #maybe_xs == 2 then
-            if jsbool_no_force_equal_p(maybe_xs[1], form_atom) then
+            if jsbool_no_force_isomorphism_p(maybe_xs[1], form_atom) then
                 local maybe_lst_288 = maybe_list_to_jsArray(maybe_xs[2])
-                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_equal_p(maybe_lst_288[1], system_atom) then
+                if maybe_lst_288 ~= false and #maybe_lst_288 == 2 and jsbool_no_force_isomorphism_p(maybe_lst_288[1], system_atom) then
                     return inner_bracket("&+" .. tostring(print_sys_name(maybe_lst_288[2], true)))
                 end
                 return inner_bracket("&" .. tostring(print_sys_name(maybe_xs[2], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[1], isOrNot_atom) then
+            elseif jsbool_no_force_isomorphism_p(maybe_xs[1], isOrNot_atom) then
                 return inner_bracket(tostring(print_sys_name(maybe_xs[2], true)) .. "~")
-            elseif jsbool_no_force_equal_p(maybe_xs[1], system_atom) then
+            elseif jsbool_no_force_isomorphism_p(maybe_xs[1], system_atom) then
                 return inner_bracket("+" .. tostring(print_sys_name(maybe_xs[2], true)))
-            elseif jsbool_no_force_equal_p(maybe_xs[1], sub_atom) then
+            elseif jsbool_no_force_isomorphism_p(maybe_xs[1], sub_atom) then
                 local maybe_lst_8934 = maybe_list_to_jsArray(maybe_xs[2])
                 if maybe_lst_8934 ~= false and #maybe_lst_8934 > 1 then
                     local tmp = print_sys_name(maybe_lst_8934[1], true)
@@ -1913,7 +1981,7 @@ local function complex_print(val)
         local name = data_name(x)
         local list = data_list(x)
         local maybe_xs = maybe_list_to_jsArray(list)
-        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_equal_p(name, name_atom) and jsbool_no_force_equal_p(maybe_xs[1], system_atom) then
+        if maybe_xs ~= false and #maybe_xs == 2 and jsbool_no_force_isomorphism_p(name, name_atom) and jsbool_no_force_isomorphism_p(maybe_xs[1], system_atom) then
             return print_sys_name(maybe_xs[2], false)
         end
         return "#" .. tostring(complex_print(new_construction(name, list)))
@@ -2076,7 +2144,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
     if data_p(code) then
         local name = data_name(code)
         local list = data_list(code)
-        if jsbool_equal_p(name, return_effect_systemName) then
+        if equal_p(name, return_effect_systemName) then
             list = force_all(list)
             if construction_p(list) then
                 local list_a = construction_head(list)
@@ -2099,7 +2167,7 @@ local function run_monad_helper(return_handler, op_handler, code, state, next)
                     end
                 end
             end
-        elseif jsbool_equal_p(name, bind_effect_systemName) then
+        elseif equal_p(name, bind_effect_systemName) then
             list = force_all(list)
             if construction_p(list) then
                 local list_a = construction_head(list)
@@ -2178,6 +2246,7 @@ ____exports.evaluate = evaluate
 ____exports.apply = apply
 ____exports.force_all_rec = force_all_rec
 ____exports.force_uncomment_all_rec = force_uncomment_all_rec
+____exports.unlazy_all_rec = unlazy_all_rec
 ____exports.jsArray_to_list = jsArray_to_list
 ____exports.maybe_list_to_jsArray = maybe_list_to_jsArray
 ____exports.new_list = new_list
@@ -2185,12 +2254,14 @@ ____exports.un_just_all = un_just_all
 ____exports.un_just_comment_all = un_just_comment_all
 ____exports.delay_p = delay_p
 ____exports.delay_just_p = delay_just_p
+____exports.lazy_p = lazy_p
 ____exports.delay_env = delay_env
 ____exports.delay_x = delay_x
 ____exports.force_all = force_all
 ____exports.force1 = force1
 ____exports.force_uncomment1 = force_uncomment1
 ____exports.force_uncomment_all = force_uncomment_all
+____exports.unlazy1 = unlazy1
 ____exports.env_null_v = env_null_v
 ____exports.env_set = env_set
 ____exports.env_get = env_get

@@ -99,12 +99,14 @@ $delay_apply_p = NULL;
 $delay_apply_f = NULL;
 $delay_apply_xs = NULL;
 $force_all_rec = NULL;
+$unlazy_all_rec = NULL;
 $new_hole_do = NULL;
 $hole_p = NULL;
 $lang_assert_equal_set_do = NULL;
 $hole_set_do = NULL;
 $lang_copy_do = NULL;
 $system_atom = NULL;
+$name_atom = NULL;
 $function_atom = NULL;
 $form_atom = NULL;
 $mapping_atom = NULL;
@@ -135,26 +137,29 @@ $new_list = NULL;
 $un_just_all = NULL;
 $delay_p = NULL;
 $delay_just_p = NULL;
+$lazy_p = NULL;
 $force_all_inner = NULL;
 $force1 = NULL;
 $force_all = NULL;
 $force_uncomment_all = NULL;
+$unlazy1 = NULL;
+$unlazy_list_1_keepcomment = NULL;
+$name_unlazy1_p3 = NULL;
 $env_null_v = NULL;
 $env_set = NULL;
 $env_get = NULL;
 $must_env_get = NULL;
 $env2val = NULL;
 $env_foreach = NULL;
-$force_uncomment_list_1 = NULL;
 $real_evaluate = NULL;
-$name_p = NULL;
 $real_builtin_func_apply_s = NULL;
 $real_apply = NULL;
 $real_builtin_func_apply = NULL;
 $real_builtin_form_apply = NULL;
 $make_quote = NULL;
 $new_lambda = NULL;
-$jsbool_equal_p = NULL;
+$jsbool_equal_p_inner = NULL;
+$equal_p = NULL;
 $simple_print = NULL;
 $LANG_ERROR = (function () {
     throw new Exception("TheLanguage PANIC");
@@ -393,7 +398,10 @@ $delay_p = (function ($x = NULL) use (&$delay_apply_p, &$delay_builtin_form_p, &
 $delay_just_p = (function ($x = NULL) use (&$delay_p, &$just_p) {
     return ($just_p($x) || $delay_p($x));
 });
-$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$atom_p_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$jsbool_equal_p, &$lang_assert_equal_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$the_world_stopped_v) {
+$lazy_p = (function ($x = NULL) use (&$comment_p, &$delay_just_p) {
+    return ($delay_just_p($x) || $comment_p($x));
+});
+$force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue_replace = NULL, $xs = NULL) use (&$LANG_ASSERT, &$LANG_ERROR, &$__TS__ArrayPush, &$apply_function_builtin_systemName, &$atom_p_function_builtin_systemName, &$builtin_func_apply, &$construction_head_function_builtin_systemName, &$construction_p_function_builtin_systemName, &$construction_tail_function_builtin_systemName, &$data_list_function_builtin_systemName, &$data_name_function_builtin_systemName, &$data_p_function_builtin_systemName, &$delay_apply_p, &$delay_builtin_form_p, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_p, &$delay_just_p, &$equal_p, &$equal_p_function_builtin_systemName, &$error_list_function_builtin_systemName, &$error_name_function_builtin_systemName, &$error_p_function_builtin_systemName, &$evaluate_function_builtin_systemName, &$force1, &$force_all_inner, &$if_function_builtin_systemName, &$lang_assert_equal_set_do, &$null_p_function_builtin_systemName, &$simple_print, &$the_world_stopped_v) {
     if (($parents_history == NULL)) {
         $parents_history = ((object)["array" => []]);
     }
@@ -489,7 +497,7 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
                 for ($lUa_I_LuA = 1; $lUaTmP_9_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_8_LuAtMp : $lUa_I_LuA >= $lUaTmP_8_LuAtMp; $lUa_I_LuA += $lUaTmP_9_LuAtMp) {
                     $____ = $lUa_I_LuA;
                     $elim_s_v = $lUaTmP_7_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
-                    if ($jsbool_equal_p($elim_s_v, $f)) {
+                    if ($equal_p($elim_s_v, $f)) {
                         $is_elim = true;
                         break;
                     }
@@ -505,13 +513,13 @@ $force_all_inner = (function ($raw = NULL, $parents_history = NULL, $ref_novalue
                     }
 
                 }
-                if ($jsbool_equal_p($f, $equal_p_function_builtin_systemName)) {
+                if ($equal_p($f, $equal_p_function_builtin_systemName)) {
                     return $replace_this_with_stopped();
-                } elseif ($jsbool_equal_p($f, $apply_function_builtin_systemName)) {
+                } elseif ($equal_p($f, $apply_function_builtin_systemName)) {
                     return $replace_this_with_stopped();
-                } elseif ($jsbool_equal_p($f, $evaluate_function_builtin_systemName)) {
+                } elseif ($equal_p($f, $evaluate_function_builtin_systemName)) {
                     return $replace_this_with_stopped();
-                } elseif ($jsbool_equal_p($f, $if_function_builtin_systemName)) {
+                } elseif ($equal_p($f, $if_function_builtin_systemName)) {
                     $LANG_ASSERT(((is_string($xs_1) ? strlen($xs_1) : count($xs_1->array)) == 3));
                     $LANG_ASSERT(($ref_novalue_replace->array[1] == false));
                     $tf = $force_all_inner($xs_1->array[0], $make_history(), $ref_novalue_replace);
@@ -573,13 +581,76 @@ $force_uncomment_all = (function ($x = NULL) use (&$comment_p, &$delay_just_p, &
     }
     return $x;
 });
-$env_set = (function ($env = NULL, $key = NULL, $val = NULL) use (&$jsbool_equal_p) {
+$unlazy1 = (function ($x = NULL) use (&$comment_p, &$comment_x, &$force1) {
+    while ($comment_p($x)) {
+        $x = $comment_x($x);
+    }
+    $x = $force1($x);
+    while ($comment_p($x)) {
+        $x = $comment_x($x);
+    }
+    return $x;
+});
+$unlazy_list_1_keepcomment = (function ($list = NULL, $not_list_k = NULL, $delay_just_k = NULL, $k = NULL) use (&$__TS__ArrayPush, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$delay_just_p, &$force1, &$null_p, &$un_just_all) {
+    $ret = ((object)["array" => []]);
+    $comments = ((object)["array" => []]);
+    $i = $un_just_all($list);
+    $not_forced = true;
+    while (true) {
+        if ($null_p($i)) {
+            return $k($comments, $ret);
+        } elseif ($comment_p($i)) {
+            $__TS__ArrayPush($comments, $comment_comment($i));
+            $i = $comment_x($i);
+        } elseif ($construction_p($i)) {
+            $__TS__ArrayPush($ret, $construction_head($i));
+            $i = $construction_tail($i);
+        } elseif ($delay_just_p($i)) {
+            if ($not_forced) {
+                $not_forced = false;
+                $i = $force1($i);
+            } else {
+                return $delay_just_k();
+            }
+
+        } else {
+            return $not_list_k();
+        }
+
+    }
+});
+$name_unlazy1_p3 = (function ($x = NULL) use (&$atom_equal_p, &$atom_p, &$data_name, &$data_p, &$lazy_p, &$name_atom, &$unlazy1) {
+    if ($lazy_p($x)) {
+        $x = $unlazy1($x);
+    }
+    if ($lazy_p($x)) {
+        return NULL;
+    }
+    if ($atom_p($x)) {
+        return true;
+    }
+    if (!($data_p($x))) {
+        return false;
+    }
+    $n = $data_name($x);
+    if ($lazy_p($n)) {
+        $n = $unlazy1($n);
+    }
+    if ($lazy_p($n)) {
+        return NULL;
+    }
+    if (!($atom_p($n))) {
+        return false;
+    }
+    return $atom_equal_p($n, $name_atom);
+});
+$env_set = (function ($env = NULL, $key = NULL, $val = NULL) use (&$equal_p) {
     $ret = ((object)["array" => []]);
     
     {
         $i = 0;
         while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
-            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+            if ($equal_p($env->array[(($i + 0) + 0)], $key)) {
                 $ret->array[(($i + 0) + 0)] = $key;
                 $ret->array[(($i + 1) + 0)] = $val;
                 
@@ -606,12 +677,12 @@ $env_set = (function ($env = NULL, $key = NULL, $val = NULL) use (&$jsbool_equal
     $ret->array[(((is_string($env) ? strlen($env) : count($env->array)) + 1) + 0)] = $val;
     return $ret;
 });
-$env_get = (function ($env = NULL, $key = NULL, $default_v = NULL) use (&$jsbool_equal_p) {
+$env_get = (function ($env = NULL, $key = NULL, $default_v = NULL) use (&$equal_p) {
     
     {
         $i = 0;
         while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
-            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+            if ($equal_p($env->array[(($i + 0) + 0)], $key)) {
                 return $env->array[(($i + 1) + 0)];
             }
             $i = ($i + 2);
@@ -620,12 +691,12 @@ $env_get = (function ($env = NULL, $key = NULL, $default_v = NULL) use (&$jsbool
 
     return $default_v;
 });
-$must_env_get = (function ($env = NULL, $key = NULL) use (&$LANG_ERROR, &$jsbool_equal_p) {
+$must_env_get = (function ($env = NULL, $key = NULL) use (&$LANG_ERROR, &$equal_p) {
     
     {
         $i = 0;
         while (($i < (is_string($env) ? strlen($env) : count($env->array)))) {
-            if ($jsbool_equal_p($env->array[(($i + 0) + 0)], $key)) {
+            if ($equal_p($env->array[(($i + 0) + 0)], $key)) {
                 return $env->array[(($i + 1) + 0)];
             }
             $i = ($i + 2);
@@ -658,35 +729,7 @@ $env_foreach = (function ($env = NULL, $f = NULL) {
     }
 
 });
-$force_uncomment_list_1 = (function ($list = NULL, $not_list_k = NULL, $delay_just_k = NULL, $k = NULL) use (&$__TS__ArrayPush, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$delay_just_p, &$force1, &$null_p, &$un_just_all) {
-    $ret = ((object)["array" => []]);
-    $comments = ((object)["array" => []]);
-    $i = $un_just_all($list);
-    $not_forced = true;
-    while (true) {
-        if ($null_p($i)) {
-            return $k($comments, $ret);
-        } elseif ($comment_p($i)) {
-            $__TS__ArrayPush($comments, $comment_comment($i));
-            $i = $comment_x($i);
-        } elseif ($construction_p($i)) {
-            $__TS__ArrayPush($ret, $construction_head($i));
-            $i = $construction_tail($i);
-        } elseif ($delay_just_p($i)) {
-            if ($not_forced) {
-                $not_forced = false;
-                $i = $force1($i);
-            } else {
-                return $delay_just_k();
-            }
-
-        } else {
-            return $not_list_k();
-        }
-
-    }
-});
-$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env2val, &$env_get, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$force_uncomment_list_1, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$name_p, &$new_error, &$new_list, &$null_p, &$system_atom) {
+$real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env2val, &$env_get, &$equal_p, &$error_p, &$evaluate, &$evaluate_function_builtin_systemName, &$force1, &$force_all, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$name_unlazy1_p3, &$new_error, &$new_list, &$null_p, &$system_atom, &$unlazy_list_1_keepcomment) {
     $x = $force1($raw);
     if ($delay_just_p($x)) {
         return $selfvalraw;
@@ -698,13 +741,13 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
         ));
     });
     if ($construction_p($x)) {
-        return $force_uncomment_list_1($x, $error_v, (function () use (&$selfvalraw) {
+        return $unlazy_list_1_keepcomment($x, $error_v, (function () use (&$selfvalraw) {
             return $selfvalraw;
-        }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env, &$env2val, &$error_v, &$evaluate, &$force1, &$force_all, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$jsbool_equal_p, &$null_p, &$selfvalraw) {
+        }), (function ($comments = NULL, $xs = NULL) use (&$__TS__ArrayPush, &$apply, &$atom_equal_p, &$atom_p, &$builtin_form_apply, &$builtin_func_apply, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env, &$env2val, &$equal_p, &$error_v, &$evaluate, &$force1, &$force_all, &$form_atom, &$form_builtin_use_systemName, &$form_use_systemName, &$function_builtin_use_systemName, &$null_p, &$selfvalraw) {
             if (((is_string($comments) ? strlen($comments) : count($comments->array)) != 0)) {
                 throw new Exception("WIP");
             }
-            if ($jsbool_equal_p($xs->array[0], $form_builtin_use_systemName)) {
+            if ($equal_p($xs->array[0], $form_builtin_use_systemName)) {
                 if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
@@ -720,7 +763,7 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
                 }
 
                 return $builtin_form_apply($env, $f, $args);
-            } elseif ($jsbool_equal_p($xs->array[0], $form_use_systemName)) {
+            } elseif ($equal_p($xs->array[0], $form_use_systemName)) {
                 if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
@@ -764,7 +807,7 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
                 }
 
                 return $apply($f_x, $args_1);
-            } elseif ($jsbool_equal_p($xs->array[0], $function_builtin_use_systemName)) {
+            } elseif ($equal_p($xs->array[0], $function_builtin_use_systemName)) {
                 if (((is_string($xs) ? strlen($xs) : count($xs->array)) == 1)) {
                     return $error_v();
                 }
@@ -798,17 +841,22 @@ $real_evaluate = (function ($env = NULL, $raw = NULL, $selfvalraw = NULL) use (&
         }));
     } elseif ($null_p($x)) {
         return $x;
-    } elseif ($name_p($x)) {
-        return $env_get($env, $x, $error_v());
     } elseif ($error_p($x)) {
         return $error_v();
+    } else {
+        $r = $name_unlazy1_p3($x);
+        if (($r == NULL)) {
+            return $selfvalraw;
+        }
+        if (($r == true)) {
+            return $env_get($env, $x, $error_v());
+        }
+        return $LANG_ERROR();
     }
+
     return $LANG_ERROR();
 });
-$name_p = (function ($x = NULL) use (&$atom_p, &$data_p) {
-    return ($atom_p($x) || $data_p($x));
-});
-$real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply_function_builtin_systemName, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_atom, &$function_builtin_use_systemName, &$jsArray_to_list, &$name_p, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$system_atom) {
+$real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply_function_builtin_systemName, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_just_p, &$env_null_v, &$env_set, &$evaluate, &$force1, &$force_all, &$force_all_rec, &$function_atom, &$function_builtin_use_systemName, &$jsArray_to_list, &$name_unlazy1_p3, &$new_construction, &$new_error, &$new_list, &$null_p, &$null_v, &$system_atom) {
     $error_v = (function () use (&$apply_function_builtin_systemName, &$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
         return $new_error($system_atom, $new_list(
             $function_builtin_use_systemName,
@@ -840,7 +888,11 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
     $env = $env_null_v;
     $xs_i = 0;
     while (!($null_p($args_pat))) {
-        if ($name_p($args_pat)) {
+        $r = $name_unlazy1_p3($args_pat);
+        if (($r == NULL)) {
+            return $selfvalraw;
+        }
+        if (($r == true)) {
             $x = $null_v;
             
             {
@@ -874,7 +926,7 @@ $real_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$apply
     }
     return $evaluate($env, $f_code);
 });
-$real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$function_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$new_error, &$new_list, &$real_builtin_func_apply_s, &$system_atom) {
+$real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$LANG_ERROR, &$equal_p, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$real_builtin_func_apply_s, &$system_atom) {
     $error_v = (function () use (&$f, &$function_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
         return $new_error(
             $system_atom,
@@ -887,7 +939,7 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
     for ($lUa_I_LuA = 1; $lUaTmP_12_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_11_LuAtMp : $lUa_I_LuA >= $lUaTmP_11_LuAtMp; $lUa_I_LuA += $lUaTmP_12_LuAtMp) {
         $____ = $lUa_I_LuA;
         $xx = $lUaTmP_10_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
-        if ($jsbool_equal_p($f, $xx->array[0])) {
+        if ($equal_p($f, $xx->array[0])) {
             if (((is_string($xs) ? strlen($xs) : count($xs->array)) != $xx->array[1])) {
                 return $error_v();
             }
@@ -903,24 +955,24 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
     }
     return $error_v();
 });
-$real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$comment_form_builtin_systemName, &$env2val, &$evaluate, &$form_builtin_use_systemName, &$jsArray_to_list, &$jsbool_equal_p, &$lambda_form_builtin_systemName, &$new_comment, &$new_error, &$new_lambda, &$new_list, &$quote_form_builtin_systemName, &$system_atom) {
+$real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfvalraw = NULL) use (&$comment_form_builtin_systemName, &$env2val, &$equal_p, &$evaluate, &$form_builtin_use_systemName, &$jsArray_to_list, &$lambda_form_builtin_systemName, &$new_comment, &$new_error, &$new_lambda, &$new_list, &$quote_form_builtin_systemName, &$system_atom) {
     $error_v = (function () use (&$env, &$env2val, &$f, &$form_builtin_use_systemName, &$jsArray_to_list, &$new_error, &$new_list, &$system_atom, &$xs) {
         return $new_error($system_atom, $new_list(
             $form_builtin_use_systemName,
             $new_list($env2val($env), $f, $jsArray_to_list($xs))
         ));
     });
-    if ($jsbool_equal_p($f, $quote_form_builtin_systemName)) {
+    if ($equal_p($f, $quote_form_builtin_systemName)) {
         if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 1)) {
             return $error_v();
         }
         return $xs->array[0];
-    } elseif ($jsbool_equal_p($f, $lambda_form_builtin_systemName)) {
+    } elseif ($equal_p($f, $lambda_form_builtin_systemName)) {
         if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 2)) {
             return $error_v();
         }
         return $new_lambda($env, $xs->array[0], $xs->array[1], $error_v);
-    } elseif ($jsbool_equal_p($f, $comment_form_builtin_systemName)) {
+    } elseif ($equal_p($f, $comment_form_builtin_systemName)) {
         if (((is_string($xs) ? strlen($xs) : count($xs->array)) != 2)) {
             return $error_v();
         }
@@ -931,13 +983,15 @@ $real_builtin_form_apply = (function ($env = NULL, $f = NULL, $xs = NULL, $selfv
 $make_quote = (function ($x = NULL) use (&$form_builtin_use_systemName, &$new_list, &$quote_form_builtin_systemName) {
     return $new_list($form_builtin_use_systemName, $quote_form_builtin_systemName, $x);
 });
-$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$force_all_rec, &$function_atom, &$jsArray_to_list, &$jsbool_equal_p, &$make_quote, &$must_env_get, &$name_p, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v) {
-    $args_pat = $force_all_rec($args_pat);
+$new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$construction_head, &$construction_p, &$construction_tail, &$env_foreach, &$equal_p, &$function_atom, &$jsArray_to_list, &$make_quote, &$must_env_get, &$name_unlazy1_p3, &$new_construction, &$new_data, &$new_list, &$null_p, &$null_v, &$unlazy_all_rec) {
+    $args_pat = $unlazy_all_rec($args_pat);
     $args_pat_vars = ((object)["array" => []]);
     $args_pat_is_dot = false;
     $args_pat_iter = $args_pat;
     while (!($null_p($args_pat_iter))) {
-        if ($name_p($args_pat_iter)) {
+        $r = $name_unlazy1_p3($args_pat_iter);
+        $LANG_ASSERT(($r != NULL));
+        if ($r) {
             $__TS__ArrayPush($args_pat_vars, $args_pat_iter);
             $args_pat_is_dot = true;
             $args_pat_iter = $null_v;
@@ -959,13 +1013,13 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
     $env_vars = ((object)["array" => []]);
     $env_foreach(
         $env,
-        (function ($k = NULL, $v = NULL) use (&$__TS__ArrayPush, &$args_pat_vars, &$env_vars, &$jsbool_equal_p) {
+        (function ($k = NULL, $v = NULL) use (&$__TS__ArrayPush, &$args_pat_vars, &$env_vars, &$equal_p) {
             
             {
                 $i = 0;
                 while (($i <
                     (is_string($args_pat_vars) ? strlen($args_pat_vars) : count($args_pat_vars->array)))) {
-                    if ($jsbool_equal_p($args_pat_vars->array[($i + 0)], $k)) {
+                    if ($equal_p($args_pat_vars->array[($i + 0)], $k)) {
                         return;
                     }
                     $i = ($i + 1);
@@ -1000,7 +1054,7 @@ $new_lambda = (function ($env = NULL, $args_pat = NULL, $body = NULL, $error_v =
         $new_args
     )));
 });
-$jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p, &$lang_assert_equal_set_do, &$null_p) {
+$jsbool_equal_p_inner = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$comment_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$error_list, &$error_name, &$error_p, &$force_all, &$jsbool_equal_p_inner, &$lang_assert_equal_set_do, &$null_p, &$un_comment_all) {
     if (($x == $y)) {
         return true;
     }
@@ -1009,16 +1063,34 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equ
     if (($x == $y)) {
         return true;
     }
-    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_equal_p, &$lang_assert_equal_set_do) {
-        if (($jsbool_equal_p($f1($xx), $f1($yy)) && $jsbool_equal_p($f2($xx), $f2($yy)))) {
+    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_equal_p_inner, &$lang_assert_equal_set_do) {
+        $r1 = $jsbool_equal_p_inner($f1($xx), $f1($yy));
+        $r2 = $jsbool_equal_p_inner($f2($xx), $f2($yy));
+        if ((($r1 == true) && ($r2 == true))) {
             $lang_assert_equal_set_do($xx, $yy);
             return true;
+        } elseif ((($r1 != false) && ($r2 != false))) {
+            return NULL;
         } else {
             return false;
         }
 
     });
-    if ($null_p($x)) {
+    if ($comment_p($x)) {
+        $x2 = $un_comment_all($x);
+        $ret = $jsbool_equal_p_inner($x2, $y);
+        if (($ret == true)) {
+            $ret = NULL;
+        }
+        return $ret;
+    } elseif ($comment_p($y)) {
+        $y2 = $un_comment_all($y);
+        $ret_1 = $jsbool_equal_p_inner($x, $y2);
+        if (($ret_1 == true)) {
+            $ret_1 = NULL;
+        }
+        return $ret_1;
+    } elseif ($null_p($x)) {
         if (!($null_p($y))) {
             return false;
         }
@@ -1046,6 +1118,9 @@ $jsbool_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equ
         return $end_2($x, $y, $data_name, $data_list);
     }
     return $LANG_ERROR();
+});
+$equal_p = (function ($x = NULL, $y = NULL) use (&$jsbool_equal_p_inner) {
+    return ($jsbool_equal_p_inner($x, $y) != false);
 });
 $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_comment, &$comment_p, &$comment_x, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$jsArray_to_list, &$new_construction, &$null_p, &$simple_print, &$un_atom, &$un_just_all) {
     $x = $un_just_all($x);
@@ -1147,6 +1222,7 @@ $force_uncomment_all_rec = (function ($raw = NULL) use (&$comment_p, &$construct
     }
     return $x;
 });
+$unlazy_all_rec = $force_uncomment_all_rec;
 $system_atom = $new_atom("太始初核");
 $name_atom = $new_atom("符名");
 $function_atom = $new_atom("化滅");
@@ -1290,7 +1366,7 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
 
 });
 $env_null_v = ((object)["array" => []]);
-$val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$jsbool_equal_p, &$mapping_atom, &$null_p) {
+$val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$equal_p, &$force_all, &$mapping_atom, &$null_p) {
     $x = $force_all($x);
     if (!($data_p($x))) {
         return false;
@@ -1334,7 +1410,7 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$atom_equal_p, &$atom_
         {
             $i = 0;
             while (($i < (is_string($ret) ? strlen($ret) : count($ret->array)))) {
-                if ($jsbool_equal_p($ret->array[(($i + 0) + 0)], $k)) {
+                if ($equal_p($ret->array[(($i + 0) + 0)], $k)) {
                     $ret->array[(($i + 1) + 0)] = $v;
                     $not_breaked = false;
                     break;
@@ -1550,9 +1626,7 @@ $real_builtin_func_apply_s = ((object)[
         ((object)["array" => [$comment_function_builtin_systemName, 2, $new_comment]])
     ]
 ]);
-$equal_p = NULL;
-$equal_p = $jsbool_equal_p;
-$jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_equal_p, &$lang_assert_equal_set_do, &$null_p, &$null_v, &$un_just_all) {
+$jsbool_no_force_isomorphism_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &$atom_equal_p, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_p, &$error_list, &$error_name, &$error_p, &$jsbool_no_force_isomorphism_p, &$lang_assert_equal_set_do, &$null_p, &$null_v, &$un_just_all) {
     if (($x == $y)) {
         return true;
     }
@@ -1561,9 +1635,9 @@ $jsbool_no_force_equal_p = (function ($x = NULL, $y = NULL) use (&$LANG_ERROR, &
     if (($x == $y)) {
         return true;
     }
-    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_no_force_equal_p, &$lang_assert_equal_set_do) {
-        if (($jsbool_no_force_equal_p($f1($xx), $f1($yy)) &&
-            $jsbool_no_force_equal_p($f2($xx), $f2($yy)))) {
+    $end_2 = (function ($xx = NULL, $yy = NULL, $f1 = NULL, $f2 = NULL) use (&$jsbool_no_force_isomorphism_p, &$lang_assert_equal_set_do) {
+        if (($jsbool_no_force_isomorphism_p($f1($xx), $f1($yy)) &&
+            $jsbool_no_force_isomorphism_p($f2($xx), $f2($yy)))) {
             $lang_assert_equal_set_do($xx, $yy);
             return true;
         } else {
@@ -2114,8 +2188,8 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     }));
     return $val();
 });
-$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsArray_to_list, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$name_atom, &$new_construction, &$null_p, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
-    $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsbool_no_force_equal_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
+$complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_comment, &$comment_p, &$comment_x, &$complex_parse, &$complex_print, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$delay_apply_f, &$delay_apply_p, &$delay_apply_xs, &$delay_builtin_form_env, &$delay_builtin_form_f, &$delay_builtin_form_p, &$delay_builtin_form_xs, &$delay_builtin_func_f, &$delay_builtin_func_p, &$delay_builtin_func_xs, &$delay_evaluate_env, &$delay_evaluate_p, &$delay_evaluate_x, &$env2val, &$error_list, &$error_name, &$error_p, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsArray_to_list, &$jsbool_no_force_isomorphism_p, &$maybe_list_to_jsArray, &$name_atom, &$new_construction, &$null_p, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
+    $print_sys_name = (function ($x = NULL, $is_inner_bool = NULL) use (&$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$form_atom, &$function_atom, &$isOrNot_atom, &$jsbool_no_force_isomorphism_p, &$maybe_list_to_jsArray, &$print_sys_name, &$simple_print, &$something_atom, &$sub_atom, &$systemName_make, &$system_atom, &$theThing_atom, &$typeAnnotation_atom, &$un_atom) {
         if ($atom_p($x)) {
             return $un_atom($x);
         }
@@ -2130,56 +2204,56 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_
         $maybe_xs = $maybe_list_to_jsArray($x);
         if (((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 3)) &&
-            $jsbool_no_force_equal_p($maybe_xs->array[0], $typeAnnotation_atom))) {
+            $jsbool_no_force_isomorphism_p($maybe_xs->array[0], $typeAnnotation_atom))) {
             $maybe_lst_2 = $maybe_list_to_jsArray($maybe_xs->array[1]);
             if (((($maybe_lst_2 != false) &&
                 ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 3)) &&
-                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $function_atom))) {
+                $jsbool_no_force_isomorphism_p($maybe_lst_2->array[0], $function_atom))) {
                 $var_2_1 = $maybe_lst_2->array[1];
                 $maybe_lst_3 = $maybe_list_to_jsArray($var_2_1);
                 if (((($maybe_lst_3 != false) &&
                     ((is_string($maybe_lst_3) ? strlen($maybe_lst_3) : count($maybe_lst_3->array)) ==
                     1)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_atom))) {
+                    $jsbool_no_force_isomorphism_p($maybe_lst_2->array[2], $something_atom))) {
                     return $inner_bracket((((string)$print_sys_name($maybe_lst_3->array[0], true)) .
                         ("." . ((string)$print_sys_name($maybe_xs->array[2], true)))));
                 } elseif ((($construction_p($var_2_1) &&
-                    $jsbool_no_force_equal_p($construction_tail($var_2_1), $something_atom)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_2->array[2], $something_atom))) {
+                    $jsbool_no_force_isomorphism_p($construction_tail($var_2_1), $something_atom)) &&
+                    $jsbool_no_force_isomorphism_p($maybe_lst_2->array[2], $something_atom))) {
                     return $inner_bracket((((string)$print_sys_name($construction_head($var_2_1), true)) .
                         ("@" . ((string)$print_sys_name($maybe_xs->array[2], true)))));
-                } elseif (($jsbool_no_force_equal_p($var_2_1, $something_atom) &&
-                    $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom))) {
+                } elseif (($jsbool_no_force_isomorphism_p($var_2_1, $something_atom) &&
+                    $jsbool_no_force_isomorphism_p($maybe_xs->array[2], $theThing_atom))) {
                     return $inner_bracket((":>" . ((string)$print_sys_name($maybe_lst_2->array[2], true))));
                 }
             }
             $maybe_lst_44 = $maybe_list_to_jsArray($maybe_xs->array[2]);
-            if (((($jsbool_no_force_equal_p($maybe_xs->array[1], $function_atom) &&
+            if (((($jsbool_no_force_isomorphism_p($maybe_xs->array[1], $function_atom) &&
                 ($maybe_lst_44 != false)) &&
                 ((is_string($maybe_lst_44) ? strlen($maybe_lst_44) : count($maybe_lst_44->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p($maybe_lst_44->array[0], $isOrNot_atom))) {
+                $jsbool_no_force_isomorphism_p($maybe_lst_44->array[0], $isOrNot_atom))) {
                 return $inner_bracket((((string)$print_sys_name($maybe_lst_44->array[1], true)) . "?"));
             }
             if ((((($maybe_lst_2 != false) &&
                 ((is_string($maybe_lst_2) ? strlen($maybe_lst_2) : count($maybe_lst_2->array)) ==
                 2)) &&
-                $jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom)) &&
-                $jsbool_no_force_equal_p($maybe_lst_2->array[0], $form_atom))) {
+                $jsbool_no_force_isomorphism_p($maybe_xs->array[2], $theThing_atom)) &&
+                $jsbool_no_force_isomorphism_p($maybe_lst_2->array[0], $form_atom))) {
                 $maybe_lst_88 = $maybe_list_to_jsArray($maybe_lst_2->array[1]);
                 if ((((($maybe_lst_88 != false) &&
                     ((is_string($maybe_lst_88) ? strlen($maybe_lst_88) : count($maybe_lst_88->array)) ==
                     3)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_88->array[0], $function_atom)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_88->array[1], $something_atom))) {
+                    $jsbool_no_force_isomorphism_p($maybe_lst_88->array[0], $function_atom)) &&
+                    $jsbool_no_force_isomorphism_p($maybe_lst_88->array[1], $something_atom))) {
                     return $inner_bracket((":&>" . ((string)$print_sys_name($maybe_lst_88->array[2], true))));
                 }
             }
             $hd = NULL;
-            if ($jsbool_no_force_equal_p($maybe_xs->array[2], $something_atom)) {
+            if ($jsbool_no_force_isomorphism_p($maybe_xs->array[2], $something_atom)) {
                 $hd = "_";
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[2], $theThing_atom)) {
+            } elseif ($jsbool_no_force_isomorphism_p($maybe_xs->array[2], $theThing_atom)) {
                 $hd = "";
             } else {
                 $hd = $print_sys_name($maybe_xs->array[2], true);
@@ -2188,20 +2262,20 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_
             return $inner_bracket((((string)$hd) . (":" . ((string)$print_sys_name($maybe_xs->array[1], true)))));
         } elseif ((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2))) {
-            if ($jsbool_no_force_equal_p($maybe_xs->array[0], $form_atom)) {
+            if ($jsbool_no_force_isomorphism_p($maybe_xs->array[0], $form_atom)) {
                 $maybe_lst_288 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if (((($maybe_lst_288 != false) &&
                     ((is_string($maybe_lst_288) ? strlen($maybe_lst_288) : count($maybe_lst_288->array)) ==
                     2)) &&
-                    $jsbool_no_force_equal_p($maybe_lst_288->array[0], $system_atom))) {
+                    $jsbool_no_force_isomorphism_p($maybe_lst_288->array[0], $system_atom))) {
                     return $inner_bracket(("&+" . ((string)$print_sys_name($maybe_lst_288->array[1], true))));
                 }
                 return $inner_bracket(("&" . ((string)$print_sys_name($maybe_xs->array[1], true))));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $isOrNot_atom)) {
+            } elseif ($jsbool_no_force_isomorphism_p($maybe_xs->array[0], $isOrNot_atom)) {
                 return $inner_bracket((((string)$print_sys_name($maybe_xs->array[1], true)) . "~"));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $system_atom)) {
+            } elseif ($jsbool_no_force_isomorphism_p($maybe_xs->array[0], $system_atom)) {
                 return $inner_bracket(("+" . ((string)$print_sys_name($maybe_xs->array[1], true))));
-            } elseif ($jsbool_no_force_equal_p($maybe_xs->array[0], $sub_atom)) {
+            } elseif ($jsbool_no_force_isomorphism_p($maybe_xs->array[0], $sub_atom)) {
                 $maybe_lst_8934 = $maybe_list_to_jsArray($maybe_xs->array[1]);
                 if ((($maybe_lst_8934 != false) &&
                     ((is_string($maybe_lst_8934) ? strlen($maybe_lst_8934) : count($maybe_lst_8934->array)) >
@@ -2256,8 +2330,8 @@ $complex_print = (function ($val = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_
         $maybe_xs = $maybe_list_to_jsArray($list);
         if ((((($maybe_xs != false) &&
             ((is_string($maybe_xs) ? strlen($maybe_xs) : count($maybe_xs->array)) == 2)) &&
-            $jsbool_no_force_equal_p($name, $name_atom)) &&
-            $jsbool_no_force_equal_p($maybe_xs->array[0], $system_atom))) {
+            $jsbool_no_force_isomorphism_p($name, $name_atom)) &&
+            $jsbool_no_force_isomorphism_p($maybe_xs->array[0], $system_atom))) {
             return $print_sys_name($maybe_xs->array[1], false);
         }
         return ("#" . ((string)$complex_print($new_construction($name, $list))));
@@ -2453,7 +2527,7 @@ $run_monad_helper = (function (
     $code = NULL,
     $state = NULL,
     $next = NULL
-) use (&$apply, &$bind_effect_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_all, &$function_atom, &$jsbool_equal_p, &$make_quote, &$new_atom, &$new_data, &$new_list, &$null_p, &$return_effect_systemName, &$run_monad_helper, &$trampoline_delay) {
+) use (&$apply, &$bind_effect_systemName, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$equal_p, &$force_all, &$function_atom, &$make_quote, &$new_atom, &$new_data, &$new_list, &$null_p, &$return_effect_systemName, &$run_monad_helper, &$trampoline_delay) {
     if (($next == NULL)) {
         $next = false;
     }
@@ -2464,7 +2538,7 @@ $run_monad_helper = (function (
     if ($data_p($code)) {
         $name = $data_name($code);
         $list = $data_list($code);
-        if ($jsbool_equal_p($name, $return_effect_systemName)) {
+        if ($equal_p($name, $return_effect_systemName)) {
             $list = $force_all($list);
             if ($construction_p($list)) {
                 $list_a = $construction_head($list);
@@ -2492,7 +2566,7 @@ $run_monad_helper = (function (
 
                 }
             }
-        } elseif ($jsbool_equal_p($name, $bind_effect_systemName)) {
+        } elseif ($equal_p($name, $bind_effect_systemName)) {
             $list = $force_all($list);
             if ($construction_p($list)) {
                 $list_a_1 = $construction_head($list);
@@ -2616,6 +2690,7 @@ $____exports->array["evaluate"] = $evaluate;
 $____exports->array["apply"] = $apply;
 $____exports->array["force_all_rec"] = $force_all_rec;
 $____exports->array["force_uncomment_all_rec"] = $force_uncomment_all_rec;
+$____exports->array["unlazy_all_rec"] = $unlazy_all_rec;
 $____exports->array["jsArray_to_list"] = $jsArray_to_list;
 $____exports->array["maybe_list_to_jsArray"] = $maybe_list_to_jsArray;
 $____exports->array["new_list"] = $new_list;
@@ -2623,12 +2698,14 @@ $____exports->array["un_just_all"] = $un_just_all;
 $____exports->array["un_just_comment_all"] = $un_just_comment_all;
 $____exports->array["delay_p"] = $delay_p;
 $____exports->array["delay_just_p"] = $delay_just_p;
+$____exports->array["lazy_p"] = $lazy_p;
 $____exports->array["delay_env"] = $delay_env;
 $____exports->array["delay_x"] = $delay_x;
 $____exports->array["force_all"] = $force_all;
 $____exports->array["force1"] = $force1;
 $____exports->array["force_uncomment1"] = $force_uncomment1;
 $____exports->array["force_uncomment_all"] = $force_uncomment_all;
+$____exports->array["unlazy1"] = $unlazy1;
 $____exports->array["env_null_v"] = $env_null_v;
 $____exports->array["env_set"] = $env_set;
 $____exports->array["env_get"] = $env_get;
