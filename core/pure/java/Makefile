@@ -28,3 +28,8 @@ dep-rt.jar: JRTExtractor.class
 	rm -f dep-rt.jar rt.jar
 	java -ea JRTExtractor
 	mv rt.jar dep-rt.jar
+
+dep-maven: # FIXME:Makefile或maven更新时未处理。
+	rm -fr dep-maven apache-maven-*
+	curl $(shell sh -c "curl http://maven.apache.org/download.cgi | grep 'bin.tar.gz\"' | sed 's|^.*\"\(http.*\)\".*|\1|'") | tar -xzv
+	mv apache-maven-*/ dep-maven
