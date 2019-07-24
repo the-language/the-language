@@ -18,6 +18,17 @@
 */
 
 // {{{ 相對獨立的部分。變量之環境
+
+export type Enviroment = EnviromentNode|EnviromentTree
+type EnviromentNodeG<a extends LangVal,b extends LangVal>=[false,a,b]
+interface EnviromentNodeI extends EnviromentNodeG<LangVal,LangVal> {}
+type EnviromentNode=EnviromentNodeI&[false,any,any]
+
+type EnviromentTreeG<a extends {[key:string]:Enviroment}>=[true,a]
+interface EnviromentTreeI extends EnviromentTreeG<{[key:string]:Enviroment}> {}
+type EnviromentTree=EnviromentTreeI&[true,any]
+
+// 以下为OLD
 export type Env = Array<LangVal> // WIP
 
 const env_null_v: Env = []
