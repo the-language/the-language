@@ -1,9 +1,10 @@
 #!/bin/sh
+set -e
 cd typescript
 yarn
 proc_ts(){
     local tmpfile="$(mktemp)"
-    npx tsfmt "$1" | dos2unix > "$tmpfile" ||exit
+    npx tsfmt "$1" | dos2unix > "$tmpfile"
     mv "$tmpfile" "$1"
 }
 for f in lang.ts.d/*.ts; do

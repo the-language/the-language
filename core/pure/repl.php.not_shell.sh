@@ -1,9 +1,10 @@
 #!/bin/sh
+set -e
 oldpwd="$(pwd)"
-cd "$(dirname "$0")" ||exit
+cd "$(dirname "$0")"
 bin="$(pwd)"
-make php/lang.php ||exit
-cd "$oldpwd" ||exit
+make php/lang.php
+cd "$oldpwd"
 pi="$(mktemp)"
 echo '[PHP]' > "$pi"
 echo "include_path=.:$bin:" >> "$pi"

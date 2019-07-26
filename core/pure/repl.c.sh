@@ -1,8 +1,9 @@
 #!/bin/sh
+set -e
 oldpwd="$(pwd)"
-cd "$(dirname "$0")" ||exit
+cd "$(dirname "$0")"
 bin="$(pwd)"
-make c/liblang.so ||exit
-yarn ||exit
-cd "$oldpwd" ||exit
+make c/liblang.so
+yarn
+cd "$oldpwd"
 LD_LIBRARY_PATH="$bin"/c "$bin"/node_modules/.bin/ya-igcc -Pc -I"$bin"/c -Pc -L"$bin"/c -Pc -llang -e ':include lang.h' -e ':include assert.h' -e ':include string.h' -e ':include stdlib.h' -e 'lang_state *L = lang_state_new_orNULL();' -i true "$@"

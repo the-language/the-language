@@ -1,10 +1,11 @@
 #!/bin/sh
+set -e
 
 cd java/src
-java testmain ||exit
+java testmain
 cd ../..
 
-./c/testmain ||exit
+./c/testmain
 
 # 已經暫停
 #cd go
