@@ -478,10 +478,10 @@ globals@^11.1.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.12.0.tgz#ab8795338868a0babd8525758018c2a7eb95c42e"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
-google-closure-compiler-java@^20190513.0.0:
-  version "20190513.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20190513.0.0.tgz#e78e0878899cfa2ac06b7c586ccdec3c41aa367d"
-  integrity sha512-0dFZwAREck9W780tVW4AW1c4ztrigLXGJ+dLCXFCwVJZS0pmhmZx3YEByl/aFSU9etIjLwYkYo73xjPyZ/AbtA==
+google-closure-compiler-java@^20190709.0.0:
+  version "20190709.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20190709.0.0.tgz#090a1280146fed6d0ba4ed1c5b23880b9f8c5d7b"
+  integrity sha512-9dtvYFL76kjJl9X1EmtLcR505uYUJHtNgZtBPhNPg0e5K8/syJurCIRy34hv0yB3uS63oSapVs3e7wZB7fkO/A==
 
 has-flag@^3.0.0:
   version "3.0.0"
@@ -1137,10 +1137,10 @@ trim-right@^1.0.1:
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
   integrity sha1-yy4SAwZ+DI3h9hQJS5/kVwTqYAM=
 
-tsickle@^0.35.0:
-  version "0.35.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.35.0.tgz#59235df45937c0ec5d072c616c26d2d97fba54b9"
-  integrity sha512-irsZLX4293YUl9TuwNC5Fy020eLSc4bC3LfKnxnx1oq5wmZD9zSP8qvNNTiwRmf2/rxH+58JINcTARDjuvn+oQ==
+tsickle@^0.36.0:
+  version "0.36.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.36.0.tgz#d6f47cdd14d009f3fea4e8516cd46c1393f3aa02"
+  integrity sha512-lrEMU5e+efx5DXtrRSGsxgkCOVRw4WeVaOkQ2pMIxCZDY5rISagVyP4yi7t6M396POFSbMHgQMT/vz0HmfxWVA==
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
