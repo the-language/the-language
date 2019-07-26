@@ -18,7 +18,5 @@
      (apply ++ (map php-test-compile xs))]))
 (define php-run (make-js-run "./repl.php.not_shell.sh"))
 
-echo "[WIP][WARNING] PHP錯誤時不會自動發現及終止。"
-
 |> assert-true-run-test "php" (delay (php-run (string-append "<?php\n" (php-test-compile test-main))))
 
