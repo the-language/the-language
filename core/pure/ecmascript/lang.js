@@ -662,6 +662,23 @@ function name_unlazy1_p3(x) {
     }
     return atom_equal_p(n, name_atom);
 }
+var enviroment_null_v = [null];
+function enviroment_helper_print0(x, ref) {
+    throw 'WIP';
+}
+function enviroment_helper_print(xs) {
+    var rs = [];
+    var ss = [];
+    for (var _i = 0, xs_3 = xs; _i < xs_3.length; _i++) {
+        var x = xs_3[_i];
+        var s = enviroment_helper_print0(x, rs);
+        ss.push(s);
+    }
+    return [ss, rs];
+}
+function enviroment_set(env, key, val) {
+    throw 'WIP';
+}
 var env_null_v = [];
 exports.env_null_v = env_null_v;
 function env_set(env, key, val) {

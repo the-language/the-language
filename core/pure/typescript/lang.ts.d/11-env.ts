@@ -19,14 +19,30 @@
 
 // {{{ 相對獨立的部分。變量之環境
 
-export type Enviroment = EnviromentNode|EnviromentTree
-type EnviromentNodeG<a extends LangVal,b extends LangVal>=[false,a,b]
-interface EnviromentNodeI extends EnviromentNodeG<LangVal,LangVal> {}
-type EnviromentNode=EnviromentNodeI&[false,any,any]
-
-type EnviromentTreeG<a extends {[key:string]:Enviroment}>=[true,a]
-interface EnviromentTreeI extends EnviromentTreeG<{[key:string]:Enviroment}> {}
-type EnviromentTree=EnviromentTreeI&[true,any]
+export type Enviroment = (EnviromentNode | EnviromentTree | EnviromentNull) & Array<any>
+type EnviromentNodeG<resta extends Array<LangVal>, a extends LangVal, b extends LangVal> = [false, resta, a, b]
+interface EnviromentNodeI extends EnviromentNodeG<Array<LangVal>, LangVal, LangVal> { }
+type EnviromentNode = EnviromentNodeI & [false, Array<any>, any, any]
+type EnviromentNull = [null]
+type EnviromentTreeG<a extends { [key: string]: Enviroment }> = [true, a]
+interface EnviromentTreeI extends EnviromentTreeG<{ [key: string]: Enviroment }> { }
+type EnviromentTree = EnviromentTreeI & [true, any]
+const enviroment_null_v: EnviromentNull = [null]
+function enviroment_helper_print0(x: LangVal, ref: Array<LangVal>): string {
+    throw 'WIP'
+}
+function enviroment_helper_print(xs: Array<LangVal>): [Array<string>, Array<LangVal>] {
+    const rs: Array<LangVal> = []
+    const ss: Array<string> = []
+    for (const x of xs) {
+        const s = enviroment_helper_print0(x, rs)
+        ss.push(s)
+    }
+    return [ss, rs]
+}
+function enviroment_set(env: Enviroment, key: LangVal, val: LangVal): Enviroment {
+    throw 'WIP'
+}
 
 // 以下为OLD
 export type Env = Array<LangVal> // WIP

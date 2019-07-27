@@ -1423,6 +1423,22 @@ local function force_uncomment1(raw)
         return force1(raw)
     end
 end
+local enviroment_null_v = {nil}
+local function enviroment_helper_print0(x, ref)
+    error("WIP")
+end
+local function enviroment_helper_print(xs)
+    local rs = {}
+    local ss = {}
+    for ____, x in ipairs(xs) do
+        local s = enviroment_helper_print0(x, rs)
+        __TS__ArrayPush(ss, s)
+    end
+    return {ss, rs}
+end
+local function enviroment_set(env, key, val)
+    error("WIP")
+end
 env_null_v = {}
 local function val2env(x)
     x = force_all(x)

@@ -642,6 +642,22 @@ function name_unlazy1_p3(x) {
     }
     return atom_equal_p(n, name_atom);
 }
+const enviroment_null_v = [null];
+function enviroment_helper_print0(x, ref) {
+    throw 'WIP';
+}
+function enviroment_helper_print(xs) {
+    const rs = [];
+    const ss = [];
+    for (const x of xs) {
+        const s = enviroment_helper_print0(x, rs);
+        ss.push(s);
+    }
+    return [ss, rs];
+}
+function enviroment_set(env, key, val) {
+    throw 'WIP';
+}
 const env_null_v = [];
 function env_set(env, key, val) {
     let ret = [];
