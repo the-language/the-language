@@ -1,20 +1,23 @@
 #!/bin/bash
-set -e
-oldpwd="$(pwd)"
-cd "$(dirname "$0")"
-bin="$(pwd)"
-make java/src
 d="$(mktemp -d)"
+err(){
+  rm -fr "$d"
+  exit 1
+}
+oldpwd="$(pwd)"
+cd "$(dirname "$0")" || err
+bin="$(pwd)"
+make java/src || err
 f="$d/Main.java"
-echo 'import lang.*;' > "$f"
-echo 'public class Main {' >> "$f"
-echo 'public static void main(String[] args) throws Exception {' >> "$f"
-cat "$1" >> "$f"
-echo '}}' >> "$f"
-cd "$d"
+echo 'import lang.*;' > "$f" || err
+echo 'public class Main {' >> "$f" || err
+echo 'public static void main(String[] args) throws Exception {' >> "$f" || err
+cat "$1" >> "$f" || err
+echo '}}' >> "$f" || err
+cd "$d" || err
 export CLASSPATH="$bin/java/src:$d"
-javac Main.java
-cd "$oldpwd"
+javac Main.java || err
+cd "$oldpwd" || err
 java Main
 s="$?"
 rm -fr "$d"

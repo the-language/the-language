@@ -1,12 +1,15 @@
 #!/bin/sh
-set -e
-oldpwd="$(pwd)"
-cd "$(dirname "$0")"
-bin="$(pwd)"
-make c/lang.o
-cd "$oldpwd"
 f="$(mktemp)"
-clang "$bin"/c/lang.o -xc -I"$bin"/c -o "$f" "$@"
+err(){
+  rm -f "$f"
+  exit 1
+}
+oldpwd="$(pwd)"
+cd "$(dirname "$0")" || err
+bin="$(pwd)"
+make c/lang.o || err
+cd "$oldpwd" || err
+clang "$bin"/c/lang.o -xc -I"$bin"/c -o "$f" "$@" || err
 "$f"
 s="$?"
 rm "$f"
