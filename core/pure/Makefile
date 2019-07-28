@@ -1,4 +1,4 @@
-all: ecmascript/lang.min.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c c/testmain c/lang.o c/liblang.so c/liblang.a
+all: ecmascript/lang.min.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src c/lang.h c/lang.c c/lang.o c/liblang.so c/liblang.a
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.min.js
@@ -60,9 +60,6 @@ c/liblang.so: c/lang.o
 
 c/liblang.a: c/lang.o
 	racket Makefile.domake.rkt c/liblang.a
-
-c/testmain: c/liblang.a c/testmain.c
-	racket Makefile.domake.rkt c/testmain
 
 php/node_modules: php/yarn.lock
 	racket Makefile.domake.rkt php/node_modules

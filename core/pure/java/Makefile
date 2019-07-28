@@ -25,9 +25,7 @@ JRTExtractor.class: JRTExtractor.java
 	javac JRTExtractor.java
 
 dep-rt.jar: JRTExtractor.class
-	rm -f dep-rt.jar rt.jar
-	java -ea JRTExtractor
-	mv rt.jar dep-rt.jar
+	./gen.dep-rt.jar.sh
 
 dep-maven: # FIXME:Makefile或maven更新时未处理。
 	rm -fr dep-maven apache-maven-*

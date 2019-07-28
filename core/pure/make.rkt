@@ -130,7 +130,6 @@
              "java/src"
              "c/lang.h"
              "c/lang.c"
-             "c/testmain"
              "c/lang.o"
              "c/liblang.so"
              "c/liblang.a")
@@ -184,7 +183,7 @@
                  raw))
              |> id out &>! lang.lua
              sed -i (id "s|^function __TS__|local function __TS__|g") lang.lua
-             
+
              sed -i (id "s|^\\( *\\)\\([^=]*\\) = function(|\\1function \\2(|g") lang.lua
              (define (u x) (match x [(list (regexp #rx"^( *)local ([^,=\n ]*)$" (list l1 v1 n1)) (regexp #rx"^( *)function ([^,=\n( ]*)(.*)$" (list l2 v2 n2 t)) tail ...) (if (equal? n1 n2) (string-append v1 "local function " n1 t "\n" (u tail)) (string-append l1 "\n" l2 "\n" (u tail)))] [(cons a d) (string-append a "\n" (u d))] ['() "\n"]))
              (define t (u (string->lines #{cat lang.lua})))
@@ -258,9 +257,6 @@
      }})
      ("c/liblang.a" ("c/lang.o") { in-dir "c" {
          ar -r liblang.a lang.o
-     }})
-     ("c/testmain" ("c/liblang.a" "c/testmain.c") { in-dir "c" {
-         clang -o testmain testmain.c -L. -I. -llang -Wl,-s
      }})
      ("php/node_modules" ("php/yarn.lock") { in-dir "php" { ;; 避免竞争状态
          yarn

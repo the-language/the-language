@@ -44,7 +44,6 @@ cp -r ./real-src/* ./src/
 
 cd src
 javac --release 6 ./lang/Lang.java
-javac --release 6 testmain.java
 cd -
 
 for f in $(find src -name '*.java') ;do
