@@ -5,6 +5,11 @@ proguard_VERSION=6.1.1
 clean:
 	rm -fr dep-*
 
+dep-jd-cli.jar: # FIXME:Makefile更新时未处理。
+	rm -fr dep-jd-cli.jar jd-cli.jar
+	curl -L https://github.com/kwart/jd-cmd/releases/download/jd-cmd-0.9.2.Final/jd-cli-0.9.2-dist.tar.gz | tar -xzv jd-cli.jar
+	mv jd-cli.jar dep-jd-cli.jar
+
 dep-luaj: luaj.tgz # 版本： d4603365b6cb6e9e1bc718d33550f5a352c9b372
 	rm -fr dep-luaj/
 	mkdir dep-luaj
