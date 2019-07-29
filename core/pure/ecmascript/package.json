@@ -4,7 +4,7 @@
     "description": "The Language",
     "main": "lang.min.2.js",
     "repository": {
-        "url": "https://github.com/the-language/the-language",
+        "url": "https://gitlab.com/the-language/the-language",
         "type": "git"
     },
     "author": "Zaoqi",
