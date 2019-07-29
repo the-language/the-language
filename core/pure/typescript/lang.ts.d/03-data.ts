@@ -23,7 +23,6 @@ const enum LangValType {
     construction_t,
     null_t,
     data_t,
-    error_t,
     just_t,
     delay_evaluate_t,
     delay_builtin_func_t,
@@ -38,7 +37,6 @@ const atom_t = LangValType.atom_t
 const construction_t = LangValType.construction_t
 const null_t = LangValType.null_t
 const data_t = LangValType.data_t
-const error_t = LangValType.error_t
 const just_t = LangValType.just_t
 const delay_evaluate_t = LangValType.delay_evaluate_t
 const delay_builtin_func_t = LangValType.delay_builtin_func_t
@@ -59,10 +57,6 @@ export type LangValNull = [LangValType.null_t]
 export type LangValDataG<a extends LangVal, b extends LangVal> = [LangValType.data_t, a, b]
 interface LangValDataI extends LangValDataG<LangVal, LangVal> { }
 export type LangValData = LangValDataI & [LangValType.data_t, HackRec_LangVal, HackRec_LangVal]
-
-export type LangValErrorG<a extends LangVal, b extends LangVal> = [LangValType.error_t, a, b]
-interface LangValErrorI extends LangValErrorG<LangVal, LangVal> { }
-export type LangValError = LangValErrorI & [LangValType.error_t, HackRec_LangVal, HackRec_LangVal]
 
 export type LangValJustG<a extends LangVal> = [LangValType.just_t, a, false, false]
 interface LangValJustI extends LangValJustG<LangVal> { }
@@ -101,7 +95,7 @@ export type LangValComment = LangValCommentI & LangValCommentG<HackRec_LangVal, 
 
 const hole_t = LangValType.hole_t
 type LangValHole = [LangValType.hole_t]
-export type LangVal = LangValAtom | LangValCons | LangValNull | LangValData | LangValError | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValComment | LangValHole
+export type LangVal = LangValAtom | LangValCons | LangValNull | LangValData | LangValJust | LangValDelayEvaluate | LangValDelayBuiltinFunc | LangValDelayBuiltinForm | LangValDelayApply | LangValComment | LangValHole
 type HackRec_LangVal = any
 type HackRec_Env = any
 
@@ -196,21 +190,6 @@ function data_list<X extends LangVal, Y extends LangVal>(x: LangValDataG<X, Y>):
 }
 export { New_Data, new_data, data_p, data_name, data_list }
 
-type New_Error<X extends LangVal, Y extends LangVal> = LangValErrorG<X, Y>
-function new_error<X extends LangVal, Y extends LangVal>(x: X, y: Y): New_Error<X, Y> {
-    return [error_t, x, y]
-}
-function error_p(x: LangVal): x is LangValError {
-    return x[0] === error_t
-}
-function error_name<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>): X {
-    return x[1]
-}
-function error_list<X extends LangVal, Y extends LangVal>(x: LangValErrorG<X, Y>): Y {
-    return x[2]
-}
-export { New_Error, new_error, error_p, error_name, error_list }
-
 function just_p(x: LangVal): x is LangValJust {
     return x[0] === just_t
 }
@@ -281,8 +260,6 @@ function force_all_rec(raw: LangVal): LangVal {
     }
     if (data_p(x)) {
         return conslike(x)
-    } else if (error_p(x)) {
-        return conslike(x)
     } else if (construction_p(x)) {
         return conslike(x)
     } else if (comment_p(x)) {
@@ -309,8 +286,6 @@ function force_uncomment_all_rec(raw: LangVal): LangVal {
         }
     }
     if (data_p(x)) {
-        return conslike(x)
-    } else if (error_p(x)) {
         return conslike(x)
     } else if (construction_p(x)) {
         return conslike(x)

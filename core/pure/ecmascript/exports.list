@@ -17,10 +17,6 @@ new_data
 data_p
 data_name
 data_list
-new_error
-error_p
-error_name
-error_list
 just_p
 evaluate
 apply

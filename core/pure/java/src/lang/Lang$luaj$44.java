@@ -1,34 +1,33 @@
 package lang;
-public class Lang$luaj$44 extends org.luaj.vm2.lib.VarArgFunction {
-    org.luaj.vm2.LuaValue[] u0;
-    org.luaj.vm2.LuaValue[] u1;
-    org.luaj.vm2.LuaValue u2;
-    org.luaj.vm2.LuaValue u3;
-    org.luaj.vm2.LuaValue u4;
-    org.luaj.vm2.LuaValue u5;
+public class Lang$luaj$44 extends org.luaj.vm2.lib.TwoArgFunction {
+    org.luaj.vm2.LuaValue u0;
+    org.luaj.vm2.LuaValue u1;
+    final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
+    final static org.luaj.vm2.LuaValue k2;
+    final static org.luaj.vm2.LuaValue k3;
+    
+    static {
+        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+        k1 = org.luaj.vm2.LuaValue.valueOf(2);
+        k2 = org.luaj.vm2.LuaValue.valueOf(3);
+        k3 = org.luaj.vm2.LuaValue.valueOf(4);
+    }
     
     public Lang$luaj$44() {
     }
     
-    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        org.luaj.vm2.LuaValue a0 = a.arg(1);
-        a.subargs(2);
-        org.luaj.vm2.LuaValue a1 = this.u0[0].call(a0);
-        Lang$luaj$44$conslike a2 = new Lang$luaj$44$conslike();
-        a2.u0 = this.u1;
-        if (this.u2.call(a1).toboolean()) {
-            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
-        }
-        if (this.u3.call(a1).toboolean()) {
-            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
-        }
-        if (this.u4.call(a1).toboolean()) {
-            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
-        }
-        if (!this.u5.call(a1).toboolean()) {
-            org.luaj.vm2.Varargs a3 = a1;
-            return a3;
-        }
-        return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
+        this.u0.invoke(this.u1.invoke((org.luaj.vm2.Varargs)a).subargs(1));
+        this.u0.call(this.u1.call(a0).not());
+        org.luaj.vm2.LuaValue a1 = a0.get(k0);
+        a.set(k0, a1);
+        org.luaj.vm2.LuaValue a2 = a0.get(k1);
+        a.set(k1, a2);
+        org.luaj.vm2.LuaValue a3 = a0.get(k2);
+        a.set(k2, a3);
+        org.luaj.vm2.LuaValue a4 = a0.get(k3);
+        a.set(k3, a4);
+        return org.luaj.vm2.LuaValue.NONE;
     }
 }

@@ -18,6 +18,9 @@
 */
 
 // {{{ 相對獨立的部分。對內建數據結構的簡單處理
+function new_error<N extends LangVal, L extends LangVal>(name: N, list: L): New_Data<Error_Atom, New_Construction<N, New_Construction<L, Null_V>>> {
+    return new_data(error_atom, new_construction(name, new_construction(list, null_v)))
+}
 function jsArray_to_list(xs: Array<LangVal>): LangVal {
     let ret: LangVal = null_v
     for (let i = xs.length - 1; i >= 0; i--) {
@@ -164,9 +167,6 @@ function force_all_inner(
                 const elim_s = [data_name_function_builtin_systemName,
                     data_list_function_builtin_systemName,
                     data_p_function_builtin_systemName,
-                    error_name_function_builtin_systemName,
-                    error_list_function_builtin_systemName,
-                    error_p_function_builtin_systemName,
                     construction_p_function_builtin_systemName,
                     construction_head_function_builtin_systemName,
                     construction_tail_function_builtin_systemName,

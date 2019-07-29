@@ -41,8 +41,6 @@ function simple_print(x: LangVal): string {
         return temp
     } else if (data_p(x)) {
         return "#" + simple_print(new_construction(data_name(x), data_list(x)))
-    } else if (error_p(x)) {
-        return "!" + simple_print(new_construction(error_name(x), error_list(x)))
     } else if (atom_p(x)) {
         return un_atom(x)
     } else if (comment_p(x)) {
@@ -190,24 +188,6 @@ function complex_parse(x: string): LangVal {
         }
         return new_data(construction_head(xs), construction_tail(xs))
     }
-    function readerror() {
-        if (eof()) {
-            return false
-        }
-        const x = get()
-        if (x !== "!") {
-            put(x)
-            return false
-        }
-        const xs = readlist()
-        if (xs === false) {
-            return parse_error()
-        }
-        if (!construction_p(xs)) {
-            return parse_error()
-        }
-        return new_error(construction_head(xs), construction_tail(xs))
-    }
     function make_read_two(prefix: string, k: (x: LangVal, y: LangVal) => LangVal): () => OrFalse<LangVal> {
         return () => {
             if (eof()) {
@@ -299,7 +279,7 @@ function complex_parse(x: string): LangVal {
     }
     function val(): LangVal {
         space()
-        const fs: Array<() => OrFalse<LangVal>> = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
+        const fs: Array<() => OrFalse<LangVal>> = [readlist, readsysname, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         for (const f of fs) {
             const x: OrFalse<LangVal> = f()
             if (x !== false) {
@@ -333,10 +313,10 @@ function complex_parse(x: string): LangVal {
         let fs: Array<() => OrFalse<LangVal>>
         if (strict) {
             fs = [readlist, atom, readsysname_no_pack_bracket, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
+                readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         } else {
             fs = [readlist, readsysname_no_pack, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment]
+                readeval, readfuncapply, readformbuiltin, readapply, readcomment]
         }
         for (const f of fs) {
             const x: OrFalse<LangVal> = f()
@@ -566,8 +546,6 @@ function complex_print(val: LangVal): string {
             return print_sys_name(maybe_xs[1], false)
         }
         return "#" + complex_print(new_construction(name, list))
-    } else if (error_p(x)) {
-        return "!" + complex_print(new_construction(error_name(x), error_list(x)))
     } else if (atom_p(x)) {
         return un_atom(x)
     } else if (comment_p(x)) {

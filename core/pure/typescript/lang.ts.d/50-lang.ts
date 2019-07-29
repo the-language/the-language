@@ -105,15 +105,11 @@ function real_evaluate(env: Env, raw: LangVal, selfvalraw: LangVal): LangVal {
         })
     } else if (null_p(x)) {
         return x
-    } else if (error_p(x)) {
-        return error_v()
-    } else {
-        const r = name_unlazy1_p3(x)
-        if (r === null) { return selfvalraw }
-        if (r === true) { return env_get(env, x, error_v()) }
-        return LANG_ERROR()
     }
-    return LANG_ERROR()
+    const r = name_unlazy1_p3(x)
+    if (r === null) { return selfvalraw }
+    if (r === true) { return env_get(env, x, error_v()) }
+    return error_v()
 }
 
 function make_builtin_p_func(p_sym: LangValSysName, p_jsfunc: (x: LangVal) => boolean)
@@ -158,11 +154,6 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
     [new_data_function_builtin_systemName, 2, new_data],
     make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
     make_builtin_get_func(data_list_function_builtin_systemName, data_p, data_list),
-
-    make_builtin_p_func(error_p_function_builtin_systemName, error_p),
-    [new_error_function_builtin_systemName, 2, new_error],
-    make_builtin_get_func(error_name_function_builtin_systemName, error_p, error_name),
-    make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
 
     make_builtin_p_func(null_p_function_builtin_systemName, null_p),
     [new_construction_function_builtin_systemName, 2, new_construction],
@@ -211,9 +202,6 @@ const real_builtin_func_apply_s: Array<real_builtin_func_apply_T> = [
         } else if (construction_p(x)) {
             if (!construction_p(y)) { return false_v }
             return end_2(x, y, construction_head, construction_tail)
-        } else if (error_p(x)) {
-            if (!error_p(y)) { return false_v }
-            return end_2(x, y, error_name, error_list)
         }
         return LANG_ERROR()
     }],
@@ -490,9 +478,6 @@ function jsbool_equal_p_inner(x: LangVal, y: LangVal): TrueFalseNull { // nullè¡
     } else if (construction_p(x)) {
         if (!construction_p(y)) { return false }
         return end_2(x, y, construction_head, construction_tail)
-    } else if (error_p(x)) {
-        if (!error_p(y)) { return false }
-        return end_2(x, y, error_name, error_list)
     } else if (data_p(x)) {
         if (!data_p(y)) { return false }
         return end_2(x, y, data_name, data_list)
@@ -534,9 +519,6 @@ function jsbool_no_force_isomorphism_p(x: LangVal, y: LangVal): boolean {
     } else if (construction_p(x)) {
         if (!construction_p(y)) { return false }
         return end_2(x, y, construction_head, construction_tail)
-    } else if (error_p(x)) {
-        if (!error_p(y)) { return false }
-        return end_2(x, y, error_name, error_list)
     } else if (data_p(x)) {
         if (!data_p(y)) { return false }
         return end_2(x, y, data_name, data_list)

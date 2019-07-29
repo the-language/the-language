@@ -7,7 +7,6 @@ public class Lang$luaj$force_uncomment_all_rec extends org.luaj.vm2.lib.VarArgFu
     org.luaj.vm2.LuaValue u4;
     org.luaj.vm2.LuaValue u5;
     org.luaj.vm2.LuaValue u6;
-    org.luaj.vm2.LuaValue u7;
     
     public Lang$luaj$force_uncomment_all_rec() {
     }
@@ -24,10 +23,7 @@ public class Lang$luaj$force_uncomment_all_rec extends org.luaj.vm2.lib.VarArgFu
         if (this.u5.call(a1).toboolean()) {
             return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
         }
-        if (this.u6.call(a1).toboolean()) {
-            return org.luaj.vm2.LuaValue.tailcallOf((org.luaj.vm2.LuaValue)a2, (org.luaj.vm2.Varargs)a1);
-        }
-        if (!this.u7.call(a1).toboolean()) {
+        if (!this.u6.call(a1).toboolean()) {
             org.luaj.vm2.Varargs a3 = a1;
             return a3;
         }

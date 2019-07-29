@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, atom_t, construction_t, null_t, data_t, error_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, new_error, error_p, error_name, error_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, atom_t, construction_t, null_t, data_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, error_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, new_error, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -109,18 +109,6 @@ end
 function data_list(x)
     return x[3]
 end
-function new_error(x, y)
-    return {error_t, x, y}
-end
-function error_p(x)
-    return x[1] == error_t
-end
-function error_name(x)
-    return x[2]
-end
-function error_list(x)
-    return x[3]
-end
 function just_p(x)
     return x[1] == just_t
 end
@@ -187,8 +175,6 @@ function force_all_rec(raw)
     end
     if data_p(x) then
         return conslike(x)
-    elseif error_p(x) then
-        return conslike(x)
     elseif construction_p(x) then
         return conslike(x)
     elseif comment_p(x) then
@@ -233,6 +219,15 @@ function lang_copy_do(x)
     local ret = new_hole_do()
     hole_set_do(ret, x)
     return ret
+end
+function new_error(name, list)
+    return new_data(
+        error_atom,
+        new_construction(
+            name,
+            new_construction(list, null_v)
+        )
+    )
 end
 function jsArray_to_list(xs)
     local ret = null_v
@@ -339,7 +334,7 @@ function force_all_inner(raw, parents_history, ref_novalue_replace, xs)
             elseif delay_builtin_func_p(x) then
                 local f = delay_builtin_func_f(x)
                 local xs = delay_builtin_func_xs(x)
-                local elim_s = {data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, error_name_function_builtin_systemName, error_list_function_builtin_systemName, error_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName}
+                local elim_s = {data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName}
                 local is_elim = false
                 for ____, elim_s_v in ipairs(elim_s) do
                     if equal_p(elim_s_v, f) then
@@ -722,23 +717,19 @@ function real_evaluate(env, raw, selfvalraw)
         )
     elseif null_p(x) then
         return x
-    elseif error_p(x) then
-        return error_v()
-    else
-        local r = name_unlazy1_p3(x)
-        if r == nil then
-            return selfvalraw
-        end
-        if r == true then
-            return env_get(
-                env,
-                x,
-                error_v()
-            )
-        end
-        return LANG_ERROR()
     end
-    return LANG_ERROR()
+    local r = name_unlazy1_p3(x)
+    if r == nil then
+        return selfvalraw
+    end
+    if r == true then
+        return env_get(
+            env,
+            x,
+            error_v()
+        )
+    end
+    return error_v()
 end
 function real_apply(f, xs, selfvalraw)
     local function error_v() return new_error(
@@ -1030,11 +1021,6 @@ function jsbool_equal_p_inner(x, y)
             return false
         end
         return end_2(x, y, construction_head, construction_tail)
-    elseif error_p(x) then
-        if not error_p(y) then
-            return false
-        end
-        return end_2(x, y, error_name, error_list)
     elseif data_p(x) then
         if not data_p(y) then
             return false
@@ -1080,15 +1066,6 @@ function simple_print(x)
                 new_construction(
                     data_name(x),
                     data_list(x)
-                )
-            )
-        )
-    elseif error_p(x) then
-        return "!" .. tostring(
-            simple_print(
-                new_construction(
-                    error_name(x),
-                    error_list(x)
                 )
             )
         )
@@ -1165,14 +1142,13 @@ atom_t = 0
 construction_t = 1
 null_t = 2
 data_t = 3
-error_t = 4
-just_t = 5
-delay_evaluate_t = 6
-delay_builtin_func_t = 7
-delay_builtin_form_t = 8
-delay_apply_t = 9
-comment_t = 11
-hole_t = 10
+just_t = 4
+delay_evaluate_t = 5
+delay_builtin_func_t = 6
+delay_builtin_form_t = 7
+delay_apply_t = 8
+comment_t = 10
+hole_t = 9
 local function new_atom(x)
     return {atom_t, x}
 end
@@ -1196,8 +1172,6 @@ local function force_uncomment_all_rec(raw)
         end
     end
     if data_p(x) then
-        return conslike(x)
-    elseif error_p(x) then
         return conslike(x)
     elseif construction_p(x) then
         return conslike(x)
@@ -1225,7 +1199,7 @@ local apply_atom = new_atom("應用")
 local null_atom = new_atom("間空")
 local construction_atom = new_atom("連頸")
 local data_atom = new_atom("構物")
-local error_atom = new_atom("謬誤")
+error_atom = new_atom("謬誤")
 local atom_atom = new_atom("詞素")
 local list_atom = new_atom("列序")
 local head_atom = new_atom("首始")
@@ -1285,10 +1259,6 @@ local new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_atom)
 data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, name_atom)
 data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, list_atom)
 data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_atom)
-local new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_atom)
-error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, name_atom)
-error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, list_atom)
-error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_atom)
 local new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_atom)
 construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_atom)
 construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, head_atom)
@@ -1555,10 +1525,6 @@ real_builtin_func_apply_s = {
     {new_data_function_builtin_systemName, 2, new_data},
     make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
     make_builtin_get_func(data_list_function_builtin_systemName, data_p, data_list),
-    make_builtin_p_func(error_p_function_builtin_systemName, error_p),
-    {new_error_function_builtin_systemName, 2, new_error},
-    make_builtin_get_func(error_name_function_builtin_systemName, error_p, error_name),
-    make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
     make_builtin_p_func(null_p_function_builtin_systemName, null_p),
     {new_construction_function_builtin_systemName, 2, new_construction},
     make_builtin_p_func(construction_p_function_builtin_systemName, construction_p),
@@ -1630,11 +1596,6 @@ real_builtin_func_apply_s = {
                     return false_v
                 end
                 return end_2(x, y, construction_head, construction_tail)
-            elseif error_p(x) then
-                if not error_p(y) then
-                    return false_v
-                end
-                return end_2(x, y, error_name, error_list)
             end
             return LANG_ERROR()
         end
@@ -1754,11 +1715,6 @@ local function jsbool_no_force_isomorphism_p(x, y)
             return false
         end
         return end_2(x, y, construction_head, construction_tail)
-    elseif error_p(x) then
-        if not error_p(y) then
-            return false
-        end
-        return end_2(x, y, error_name, error_list)
     elseif data_p(x) then
         if not data_p(y) then
             return false
@@ -1770,7 +1726,7 @@ local function jsbool_no_force_isomorphism_p(x, y)
     return LANG_ERROR()
 end
 local function complex_parse(x)
-    local state_const, state, eof, get, put, parse_error, a_space_p, space, atom, readlist, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_atom_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
+    local state_const, state, eof, get, put, parse_error, a_space_p, space, atom, readlist, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment, a_atom_p, val, un_maybe, not_eof, assert_get, readsysname_no_pack_inner_must, may_xfx_xf, readsysname_no_pack, readsysname
     function eof()
         return #state_const == state
     end
@@ -1906,27 +1862,6 @@ local function complex_parse(x)
             construction_tail(xs)
         )
     end
-    function readerror()
-        if eof() then
-            return false
-        end
-        local x = get()
-        if x ~= "!" then
-            put(x)
-            return false
-        end
-        local xs = readlist()
-        if xs == false then
-            return parse_error()
-        end
-        if not construction_p(xs) then
-            return parse_error()
-        end
-        return new_error(
-            construction_head(xs),
-            construction_tail(xs)
-        )
-    end
     function a_atom_p(chr)
         if a_space_p(chr) then
             return false
@@ -1940,7 +1875,7 @@ local function complex_parse(x)
     end
     function val()
         space()
-        local fs = {readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
+        local fs = {readlist, readsysname, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
         for ____, f in ipairs(fs) do
             local x = f()
             if x ~= false then
@@ -1978,9 +1913,9 @@ local function complex_parse(x)
         end
         local fs
         if strict then
-            fs = {readlist, atom, readsysname_no_pack_bracket, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
+            fs = {readlist, atom, readsysname_no_pack_bracket, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
         else
-            fs = {readlist, readsysname_no_pack, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
+            fs = {readlist, readsysname_no_pack, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment}
         end
         for ____, f in ipairs(fs) do
             local x = f()
@@ -2418,15 +2353,6 @@ local function complex_print(val)
                 new_construction(name, list)
             )
         )
-    elseif error_p(x) then
-        return "!" .. tostring(
-            complex_print(
-                new_construction(
-                    error_name(x),
-                    error_list(x)
-                )
-            )
-        )
     elseif atom_p(x) then
         return un_atom(x)
     elseif comment_p(x) then
@@ -2557,8 +2483,6 @@ local function machinetext_parse(rawstr)
             conslike(new_construction)
         elseif chr == "#" then
             conslike(new_data)
-        elseif chr == "!" then
-            conslike(new_error)
         elseif chr == "$" then
             conslike(
                 function(env, val)
@@ -2609,8 +2533,6 @@ local function machinetext_print(x)
                 result = tostring(result) .. tostring(("_"))
             elseif data_p(x) then
                 conslike(x, "#", data_name, data_list)
-            elseif error_p(x) then
-                conslike(x, "!", error_name, error_list)
             elseif delay_p(x) then
                 local y = delay2delay_evaluate(x)
                 conslike(
@@ -2852,10 +2774,6 @@ ____exports.new_data = new_data
 ____exports.data_p = data_p
 ____exports.data_name = data_name
 ____exports.data_list = data_list
-____exports.new_error = new_error
-____exports.error_p = error_p
-____exports.error_name = error_name
-____exports.error_list = error_list
 ____exports.just_p = just_p
 ____exports.evaluate = evaluate
 ____exports.apply = apply

@@ -63,8 +63,6 @@ function machinetext_parse(rawstr: string): LangVal {
             conslike(new_construction)
         } else if (chr === '#') {
             conslike(new_data)
-        } else if (chr === '!') {
-            conslike(new_error)
         } else if (chr === '$') {
             conslike((env, val) => {
                 const r_env = val2env(env)
@@ -105,8 +103,6 @@ function machinetext_print(x: LangVal): string {
                 result += ('_')
             } else if (data_p(x)) {
                 conslike(x, '#', data_name, data_list)
-            } else if (error_p(x)) {
-                conslike(x, '!', error_name, error_list)
             } else if (delay_p(x)) {
                 const y = delay2delay_evaluate(x)
                 conslike(y, '$', ((vl) => env2val(delay_evaluate_env(vl))), delay_evaluate_x)

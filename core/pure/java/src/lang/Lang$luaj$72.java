@@ -1,15 +1,11 @@
 package lang;
-public class Lang$luaj$72 extends org.luaj.vm2.lib.VarArgFunction {
-    org.luaj.vm2.LuaValue u0;
-    org.luaj.vm2.LuaValue[] u1;
-    org.luaj.vm2.LuaValue[] u2;
+public class Lang$luaj$72 extends org.luaj.vm2.lib.TwoArgFunction {
+    org.luaj.vm2.LuaValue[] u0;
     
     public Lang$luaj$72() {
     }
     
-    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        org.luaj.vm2.LuaValue a0 = a.arg(1);
-        a.subargs(2);
-        return org.luaj.vm2.LuaValue.tailcallOf(this.u0, org.luaj.vm2.LuaValue.varargsOf(this.u1[0], this.u2[0], (org.luaj.vm2.Varargs)a0));
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
+        return (this.u0[0].call(a, a0).eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) ? org.luaj.vm2.LuaValue.FALSE : org.luaj.vm2.LuaValue.TRUE;
     }
 }

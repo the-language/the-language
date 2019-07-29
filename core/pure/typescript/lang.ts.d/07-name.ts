@@ -45,7 +45,8 @@ const null_atom = new_atom("間空")
 type Construction_Atom = New_Atom<"連頸">
 const construction_atom: Construction_Atom = new_atom("連頸")
 const data_atom = new_atom("構物")
-const error_atom = new_atom("謬誤")
+type Error_Atom = New_Atom<"謬誤">
+const error_atom: Error_Atom = new_atom("謬誤")
 const atom_atom = new_atom("詞素")
 const list_atom = new_atom("列序")
 const head_atom = new_atom("首始")
@@ -79,11 +80,6 @@ const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_atom)
 const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, name_atom)
 const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, list_atom)
 const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_atom)
-
-const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_atom)
-const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, name_atom)
-const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, list_atom)
-const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_atom)
 
 const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_atom)
 const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_atom)

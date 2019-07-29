@@ -29,14 +29,13 @@ const atom_t = 0;
 const construction_t = 1;
 const null_t = 2;
 const data_t = 3;
-const error_t = 4;
-const just_t = 5;
-const delay_evaluate_t = 6;
-const delay_builtin_func_t = 7;
-const delay_builtin_form_t = 8;
-const delay_apply_t = 9;
-const comment_t = 11;
-const hole_t = 10;
+const just_t = 4;
+const delay_evaluate_t = 5;
+const delay_builtin_func_t = 6;
+const delay_builtin_form_t = 7;
+const delay_apply_t = 8;
+const comment_t = 10;
+const hole_t = 9;
 function new_comment(comment, x) {
     return [comment_t, comment, x];
 }
@@ -109,19 +108,6 @@ function data_list(x) {
     return x[2];
 }
 export { new_data, data_p, data_name, data_list };
-function new_error(x, y) {
-    return [error_t, x, y];
-}
-function error_p(x) {
-    return x[0] === error_t;
-}
-function error_name(x) {
-    return x[1];
-}
-function error_list(x) {
-    return x[2];
-}
-export { new_error, error_p, error_name, error_list };
 function just_p(x) {
     return x[0] === just_t;
 }
@@ -192,9 +178,6 @@ function force_all_rec(raw) {
     if (data_p(x)) {
         return conslike(x);
     }
-    else if (error_p(x)) {
-        return conslike(x);
-    }
     else if (construction_p(x)) {
         return conslike(x);
     }
@@ -223,9 +206,6 @@ function force_uncomment_all_rec(raw) {
         }
     }
     if (data_p(x)) {
-        return conslike(x);
-    }
-    else if (error_p(x)) {
         return conslike(x);
     }
     else if (construction_p(x)) {
@@ -315,10 +295,6 @@ const new_data_function_builtin_systemName = make_builtin_f_new_sym_f(data_atom)
 const data_name_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, name_atom);
 const data_list_function_builtin_systemName = make_builtin_f_get_sym_f(data_atom, list_atom);
 const data_p_function_builtin_systemName = make_builtin_f_p_sym_f(data_atom);
-const new_error_function_builtin_systemName = make_builtin_f_new_sym_f(error_atom);
-const error_name_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, name_atom);
-const error_list_function_builtin_systemName = make_builtin_f_get_sym_f(error_atom, list_atom);
-const error_p_function_builtin_systemName = make_builtin_f_p_sym_f(error_atom);
 const new_construction_function_builtin_systemName = make_builtin_f_new_sym_f(construction_atom);
 const construction_p_function_builtin_systemName = make_builtin_f_p_sym_f(construction_atom);
 const construction_head_function_builtin_systemName = make_builtin_f_get_sym_f(construction_atom, head_atom);
@@ -339,6 +315,9 @@ const comment_function_builtin_systemName = systemName_make(new_list(typeAnnotat
 const comment_form_builtin_systemName = systemName_make(new_list(typeAnnotation_atom, form_atom, comment_atom));
 const false_v = new_data(false_atom, new_list());
 const true_v = new_data(true_atom, new_list());
+function new_error(name, list) {
+    return new_data(error_atom, new_construction(name, new_construction(list, null_v)));
+}
 function jsArray_to_list(xs) {
     let ret = null_v;
     for (let i = xs.length - 1; i >= 0; i--) {
@@ -473,9 +452,6 @@ function force_all_inner(raw, parents_history = {}, ref_novalue_replace = [false
                 const elim_s = [data_name_function_builtin_systemName,
                     data_list_function_builtin_systemName,
                     data_p_function_builtin_systemName,
-                    error_name_function_builtin_systemName,
-                    error_list_function_builtin_systemName,
-                    error_p_function_builtin_systemName,
                     construction_p_function_builtin_systemName,
                     construction_head_function_builtin_systemName,
                     construction_tail_function_builtin_systemName,
@@ -848,20 +824,14 @@ function real_evaluate(env, raw, selfvalraw) {
     else if (null_p(x)) {
         return x;
     }
-    else if (error_p(x)) {
-        return error_v();
+    const r = name_unlazy1_p3(x);
+    if (r === null) {
+        return selfvalraw;
     }
-    else {
-        const r = name_unlazy1_p3(x);
-        if (r === null) {
-            return selfvalraw;
-        }
-        if (r === true) {
-            return env_get(env, x, error_v());
-        }
-        return LANG_ERROR();
+    if (r === true) {
+        return env_get(env, x, error_v());
     }
-    return LANG_ERROR();
+    return error_v();
 }
 function make_builtin_p_func(p_sym, p_jsfunc) {
     return [p_sym,
@@ -896,10 +866,6 @@ const real_builtin_func_apply_s = [
     [new_data_function_builtin_systemName, 2, new_data],
     make_builtin_get_func(data_name_function_builtin_systemName, data_p, data_name),
     make_builtin_get_func(data_list_function_builtin_systemName, data_p, data_list),
-    make_builtin_p_func(error_p_function_builtin_systemName, error_p),
-    [new_error_function_builtin_systemName, 2, new_error],
-    make_builtin_get_func(error_name_function_builtin_systemName, error_p, error_name),
-    make_builtin_get_func(error_list_function_builtin_systemName, error_p, error_list),
     make_builtin_p_func(null_p_function_builtin_systemName, null_p),
     [new_construction_function_builtin_systemName, 2, new_construction],
     make_builtin_p_func(construction_p_function_builtin_systemName, construction_p),
@@ -955,12 +921,6 @@ const real_builtin_func_apply_s = [
                     return false_v;
                 }
                 return end_2(x, y, construction_head, construction_tail);
-            }
-            else if (error_p(x)) {
-                if (!error_p(y)) {
-                    return false_v;
-                }
-                return end_2(x, y, error_name, error_list);
             }
             return LANG_ERROR();
         }],
@@ -1226,12 +1186,6 @@ function jsbool_equal_p_inner(x, y) {
         }
         return end_2(x, y, construction_head, construction_tail);
     }
-    else if (error_p(x)) {
-        if (!error_p(y)) {
-            return false;
-        }
-        return end_2(x, y, error_name, error_list);
-    }
     else if (data_p(x)) {
         if (!data_p(y)) {
             return false;
@@ -1282,12 +1236,6 @@ function jsbool_no_force_isomorphism_p(x, y) {
         }
         return end_2(x, y, construction_head, construction_tail);
     }
-    else if (error_p(x)) {
-        if (!error_p(y)) {
-            return false;
-        }
-        return end_2(x, y, error_name, error_list);
-    }
     else if (data_p(x)) {
         if (!data_p(y)) {
             return false;
@@ -1324,9 +1272,6 @@ function simple_print(x) {
     }
     else if (data_p(x)) {
         return "#" + simple_print(new_construction(data_name(x), data_list(x)));
-    }
-    else if (error_p(x)) {
-        return "!" + simple_print(new_construction(error_name(x), error_list(x)));
     }
     else if (atom_p(x)) {
         return un_atom(x);
@@ -1477,24 +1422,6 @@ function complex_parse(x) {
         }
         return new_data(construction_head(xs), construction_tail(xs));
     }
-    function readerror() {
-        if (eof()) {
-            return false;
-        }
-        const x = get();
-        if (x !== "!") {
-            put(x);
-            return false;
-        }
-        const xs = readlist();
-        if (xs === false) {
-            return parse_error();
-        }
-        if (!construction_p(xs)) {
-            return parse_error();
-        }
-        return new_error(construction_head(xs), construction_tail(xs));
-    }
     function make_read_two(prefix, k) {
         return () => {
             if (eof()) {
@@ -1586,7 +1513,7 @@ function complex_parse(x) {
     }
     function val() {
         space();
-        const fs = [readlist, readsysname, data, readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
+        const fs = [readlist, readsysname, data, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         for (const f of fs) {
             const x = f();
             if (x !== false) {
@@ -1619,11 +1546,11 @@ function complex_parse(x) {
         let fs;
         if (strict) {
             fs = [readlist, atom, readsysname_no_pack_bracket, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
+                readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         }
         else {
             fs = [readlist, readsysname_no_pack, data,
-                readerror, readeval, readfuncapply, readformbuiltin, readapply, readcomment];
+                readeval, readfuncapply, readformbuiltin, readapply, readcomment];
         }
         for (const f of fs) {
             const x = f();
@@ -1862,9 +1789,6 @@ function complex_print(val) {
         }
         return "#" + complex_print(new_construction(name, list));
     }
-    else if (error_p(x)) {
-        return "!" + complex_print(new_construction(error_name(x), error_list(x)));
-    }
     else if (atom_p(x)) {
         return un_atom(x);
     }
@@ -1941,9 +1865,6 @@ function machinetext_parse(rawstr) {
         else if (chr === '#') {
             conslike(new_data);
         }
-        else if (chr === '!') {
-            conslike(new_error);
-        }
         else if (chr === '$') {
             conslike((env, val) => {
                 const r_env = val2env(env);
@@ -1988,9 +1909,6 @@ function machinetext_print(x) {
             }
             else if (data_p(x)) {
                 conslike(x, '#', data_name, data_list);
-            }
-            else if (error_p(x)) {
-                conslike(x, '!', error_name, error_list);
             }
             else if (delay_p(x)) {
                 const y = delay2delay_evaluate(x);
