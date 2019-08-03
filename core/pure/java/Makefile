@@ -1,4 +1,4 @@
-Krakatau_VERSION=e533a7870d876a0632ae54d5efefea3c84426dcc
+Krakatau_VERSION=900d030e2c7232d135eb05a4e3ecd1f8d0b51ac8
 proguard_VER=6.1
 proguard_VERSION=6.1.1
 
