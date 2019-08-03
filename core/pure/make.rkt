@@ -217,7 +217,7 @@
      ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") { touch c/lua-5.1.5/ })
      ("c/lua2c" ("c/lua2c-lib-lua2c-ast2cast.lua") {
        in-dir "c" {
-           |> id "[ -d lua2c ] || (curl https://codeload.github.com/davidm/lua2c/tar.gz/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 | tar -xzv && mv lua2c-c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 lua2c)" | sh
+           |> id "[ -d lua2c ] || (curl https://gitlab.com/the-language/lua2c/-/archive/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92/lua2c-c5b239dd5a9fad5718ffaa16e6a30cca8053ba92.tar.gz | tar -xzv && mv lua2c-c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 lua2c)" | sh
            rm -fr ./lua2c/lib/lua2c/ast2cast.lua
            cp ./lua2c-lib-lua2c-ast2cast.lua ./lua2c/lib/lua2c/ast2cast.lua
            touch lua2c/

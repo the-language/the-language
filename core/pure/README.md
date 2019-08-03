@@ -29,7 +29,7 @@ racket test.rkt
 * racket | `apt install racket` `pacman -S racket` `scoop install racket` `apk add racket` https://github.com/tonyg/racket-alpine https://www.racket-lang.org/
 * python2,3 pip2,3 2to3 | `apt install python python3 python-pip python3-pip` `pacman -S python2 python python2-pip python-pip` `apk add python2 python3 py2-pip` `scoop install python27 python36`[需要先`scoop bucket add versions`]
 * [已不再依賴] js2py | `pip3 install js2py --user&&pip2 install js2py --user`
-* racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/77363527621054ca4e64eda4f542a5c45f7b4861
+* racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/3a7282a89dbf02528464ac9f17f4ff6b60700e10
 * racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
 * git | `apt install git` `pacman -S git` `apk add git` `scoop install git-with-openssh`
 * jdk9+ 或 graal | `pacman -S jdk11-openjdk` `apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
