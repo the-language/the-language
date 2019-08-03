@@ -14,6 +14,7 @@ dep-luaj: luaj.tgz # 版本： d4603365b6cb6e9e1bc718d33550f5a352c9b372
 	rm -fr dep-luaj/
 	mkdir dep-luaj
 	tar -xzvf luaj.tgz -C dep-luaj
+	touch dep-luaj/
 
 dep-Krakatau: # FIXME:Makefile更新时未处理。
 	rm -fr dep-Krakatau/ Krakatau-$(Krakatau_VERSION)/
