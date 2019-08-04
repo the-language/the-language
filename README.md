@@ -1,5 +1,7 @@
 # The Language
 
+[![pipeline status](https://gitlab.com/the-language/the-language/badges/master/pipeline.svg)](https://gitlab.com/the-language/the-language/commits/master)
+
 位於 https://gitlab.com/the-language/the-language
 
 ## 實驗性特性
