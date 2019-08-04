@@ -1,9 +1,7 @@
 image: archlinux/base
 
 before_script:
-  - pacman -Syu --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php base
-  - archlinux-java set java-11-openjdk
-  - raco pkg install --batch --installation --auto rash
+  - echo before_script
 
 stages:
   - all
@@ -12,6 +10,9 @@ stages:
 all:
   stage: all
   script:
+    - pacman -Syu --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php base
+    - archlinux-java set java-11-openjdk
+    - raco pkg install --batch --installation --auto rash
     - ./make.sh
     - ./test.sh
     - git add .
