@@ -5,7 +5,7 @@ before_script:
 
 stages:
   - all
-  - test # Dependency-Scanning.gitlab-ci.yml
+#  - test # Dependency-Scanning.gitlab-ci.yml
 
 all:
   stage: all
@@ -20,5 +20,5 @@ all:
     - sh -c '[ "$(git diff --cached)" = "" ]'
   retry: 2
 
-include:
-  template: Dependency-Scanning.gitlab-ci.yml
+#include:
+#  template: Dependency-Scanning.gitlab-ci.yml
