@@ -31,8 +31,8 @@ TODO
 
 可以用`./builder-containers/docker/run.sh`以在Docker中编译。
 
-* 編譯 `racket make.rkt`
-* 測試 `racket test.rkt`
+* 編譯 `./make.sh`
+* 測試 `./test.sh`
 
 #### 依賴
 

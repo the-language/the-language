@@ -11,8 +11,8 @@ stages:
 all:
     stage: all
     script:
-      - racket make.rkt
-      - racket test.rkt
+      - ./make.sh
+      - ./test.sh
       - git add .
       - git diff --cached | cat
       - sh -c '[ "$(git diff --cached)" = "" ]'
