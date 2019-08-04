@@ -370,10 +370,10 @@ isarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
 
-js2py@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/js2py/-/js2py-1.0.3.tgz#6ebf0635fd35ed622635e1079de221113dbcbccd"
-  integrity sha512-xCYFdZFhEvAbmvvo30wwkydmkXQdAlgGuAEMWgYK4PbsrKoY7EsHgcuxeVQUAV/Jt9iipU4HzWZU0Mw77rgFQA==
+js2py@^1.0.3-3:
+  version "1.0.3-3"
+  resolved "https://registry.yarnpkg.com/js2py/-/js2py-1.0.3-3.tgz#69c9e0e9263a2975786393e6bb0fa114ffcf99c2"
+  integrity sha512-WHkwKMkNGZeD0hNGO0XXJlqnUr5NKT6xikg1i4E7tits9NoORZBXJPEWGp80okLr+KYbqu7OqlHmUWys9XKRuA==
   dependencies:
     espree "^4.1.0"
 

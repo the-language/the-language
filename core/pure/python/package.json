@@ -1,6 +1,6 @@
 {
   "devDependencies": {
     "@zaoqi/dumbjs": "^1.5.0-3",
-    "js2py": "^1.0.3"
+    "js2py": "^1.0.3-3"
   }
 }
