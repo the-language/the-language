@@ -6,9 +6,6 @@ up(){
   yarn add --dev $(node -e 'dep=JSON.parse(fs.readFileSync("package.json","utf8")).devDependencies;if(dep){console.log(Object.keys(dep).reduce((x,y)=>`${x} ${y}`))}')
   touch node_modules/
 }
-if [ -f package.json ]; then
-  up &
-fi
 for d in */; do
   cd "$d"
   if [ -f package.json ]; then
