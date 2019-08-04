@@ -1,5 +1,8 @@
 image: archlinux/base
 
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
+
 before_script:
   - pacman -Syu --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php base
   - archlinux-java set java-11-openjdk
