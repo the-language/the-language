@@ -6,14 +6,18 @@ before_script:
   - raco pkg install --batch --installation --auto rash
 
 stages:
-    - all
+  - all
+  - test # Dependency-Scanning.gitlab-ci.yml
 
 all:
-    stage: all
-    script:
-      - ./make.sh
-      - ./test.sh
-      - git add .
-      - git diff --cached | cat
-      - sh -c '[ "$(git diff --cached)" = "" ]'
-    retry: 2
+  stage: all
+  script:
+    - ./make.sh
+    - ./test.sh
+    - git add .
+    - git diff --cached | cat
+    - sh -c '[ "$(git diff --cached)" = "" ]'
+  retry: 2
+
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
