@@ -17,6 +17,7 @@ all:
 
 pages:
   image: python:alpine
+  stage: pages
   before_script:
   - pip install mkdocs
   # Add your custom theme if not inside a theme_dir
