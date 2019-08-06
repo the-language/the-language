@@ -1,7 +1,7 @@
 image: archlinux/base
 
 pages:
-  image: python:alpine
+  image: python:3-alpine
   stage: test
   before_script:
   - pip install mkdocs
