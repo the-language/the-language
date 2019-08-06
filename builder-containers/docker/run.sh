@@ -9,7 +9,7 @@ bin="$(pwd)"
 cd ../../
 src="$(pwd)"
 cd "$bin"
-img_name=the-language-builder
+img_name=zaoqi/the-language-builder
 docker build -t "$img_name" .
 mkdir -p ../containers_cache/.cache
 cd ../containers_cache
