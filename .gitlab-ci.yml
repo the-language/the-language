@@ -1,5 +1,10 @@
 image: archlinux/base
 
+
+stages:
+  - test
+  - pages
+
 test:
   image: zaoqi/the-language-builder
   script:
