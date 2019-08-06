@@ -1,17 +1,32 @@
-image: zaoqi/the-language-builder
-
-before_script:
-  - echo before_script
+image: archlinux/base
 
 stages:
   - all
+  - pages
 
 all:
+  image: zaoqi/the-language-builder
   stage: all
   script:
-    - ./make.sh
-    - ./test.sh
-    - git add .
-    - git diff --cached | cat
-    - sh -c '[ "$(git diff --cached)" = "" ]'
+  - ./make.sh
+  - ./test.sh
+  - git add .
+  - git diff --cached | cat
+  - sh -c '[ "$(git diff --cached)" = "" ]'
   retry: 2
+
+pages:
+  image: python:alpine
+  before_script:
+  - pip install mkdocs
+  # Add your custom theme if not inside a theme_dir
+  # (https://github.com/mkdocs/mkdocs/wiki/MkDocs-Themes)
+  # - pip install mkdocs-material
+  script:
+  - mkdocs build
+  - mv site public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
