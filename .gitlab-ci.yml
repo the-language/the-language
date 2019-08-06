@@ -1,29 +1,14 @@
-image: archlinux/base
+image: zaoqi/the-language-builder
 
 before_script:
   - echo before_script
 
 stages:
-  - docker
   - all
-
-docker:
-  image: docker:stable
-  services:
-    - docker:dind
-  stage: docker
-  script:
-    - docker login -u zaoqi -p "$DOCKER_PWD"
-    - docker build --pull -t zaoqi/the-language-builder builder-containers/docker
-    - docker push zaoqi/the-language-builder
-  retry: 2
 
 all:
   stage: all
   script:
-    - pacman -Syu --noconfirm yarn nodejs npm dos2unix racket jdk11-openjdk clang make curl git python2 gawk php base
-    - archlinux-java set java-11-openjdk
-    - raco pkg install --batch --installation --auto rash
     - ./make.sh
     - ./test.sh
     - git add .
