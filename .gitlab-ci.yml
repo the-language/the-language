@@ -8,11 +8,13 @@ stages:
   - all
 
 docker:
+  image: docker:stable
+  services:
+    - docker:dind
   stage: docker
   script:
-    - pacman -Syu docker
-    - docker build -t zaoqi/the-language-builder builder-containers/docker
     - docker login -u zaoqi -p "$DOCKER_PWD"
+    - docker build --pull -t zaoqi/the-language-builder builder-containers/docker
     - docker push zaoqi/the-language-builder
   retry: 2
 
