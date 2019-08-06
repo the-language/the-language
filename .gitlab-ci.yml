@@ -1,23 +1,8 @@
 image: archlinux/base
 
-
-stages:
-  - test
-  - pages
-
-test:
-  image: zaoqi/the-language-builder
-  script:
-  - ./make.sh
-  - ./test.sh
-  - git add .
-  - git diff --cached | cat
-  - sh -c '[ "$(git diff --cached)" = "" ]'
-  retry: 2
-
 pages:
   image: python:alpine
-  stage: pages
+  stage: test
   before_script:
   - pip install mkdocs
   # Add your custom theme if not inside a theme_dir
@@ -31,4 +16,15 @@ pages:
     - public
   only:
   - master
+  retry: 2
+
+test:
+  image: zaoqi/the-language-builder
+  stage: test
+  script:
+  - ./make.sh
+  - ./test.sh
+  - git add .
+  - git diff --cached | cat
+  - sh -c '[ "$(git diff --cached)" = "" ]'
   retry: 2
