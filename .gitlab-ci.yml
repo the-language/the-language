@@ -7,7 +7,7 @@ pages:
   - pip install mkdocs
   # Add your custom theme if not inside a theme_dir
   # (https://github.com/mkdocs/mkdocs/wiki/MkDocs-Themes)
-  # - pip install mkdocs-material
+  - pip install mkdocs-material
   script:
   - mkdocs build
   - mv site public
@@ -18,7 +18,7 @@ pages:
   - master
   retry: 2
 
-test:
+all:
   image: zaoqi/the-language-builder
   stage: test
   script:
