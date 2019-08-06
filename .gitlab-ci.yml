@@ -1,12 +1,7 @@
 image: archlinux/base
 
-stages:
-  - all
-  - pages
-
-all:
+test:
   image: zaoqi/the-language-builder
-  stage: all
   script:
   - ./make.sh
   - ./test.sh
@@ -31,3 +26,4 @@ pages:
     - public
   only:
   - master
+  retry: 2
