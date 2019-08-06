@@ -7,7 +7,7 @@ pages:
   - pip install mkdocs
   # Add your custom theme if not inside a theme_dir
   # (https://github.com/mkdocs/mkdocs/wiki/MkDocs-Themes)
-  - pip install mkdocs-material
+  - pip install mkdocs-rtd-dropdown
   script:
   - mkdocs build
   - mv site public
