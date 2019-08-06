@@ -4,8 +4,17 @@ before_script:
   - echo before_script
 
 stages:
+  - docker
   - all
-#  - test # Dependency-Scanning.gitlab-ci.yml
+
+docker:
+  stage: docker
+  script:
+    - pacman -Syu docker
+    - docker build -t zaoqi/the-language-builder builder-containers/docker/Dockerfile
+    - docker login -u zaoqi -p "$DOCKER_PWD"
+    - docker push zaoqi/the-language-builder
+  retry: 2
 
 all:
   stage: all
@@ -19,6 +28,3 @@ all:
     - git diff --cached | cat
     - sh -c '[ "$(git diff --cached)" = "" ]'
   retry: 2
-
-#include:
-#  template: Dependency-Scanning.gitlab-ci.yml
