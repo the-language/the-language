@@ -10,7 +10,7 @@
     "author": "Zaoqi",
     "license": "AGPL-3.0-or-later",
     "devDependencies": {
-        "google-closure-compiler-java": "^20190709.0.0",
+        "google-closure-compiler-java": "^20190729.0.0",
         "prepack": "^0.2.54",
         "tsickle": "^0.36.0",
         "typescript": "^3.5.3"
