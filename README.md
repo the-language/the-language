@@ -25,9 +25,7 @@
 
 ## 文檔
 
-```
-TODO
-```
+https://the-language.gitlab.io/the-language/
 
 ### 編譯，運行，測試
 
