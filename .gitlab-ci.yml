@@ -1,16 +1,10 @@
-image: archlinux/base
 
 pages:
-  image: python:3-alpine
+  image: zaoqi/the-language-builder
   stage: test
-  before_script:
-  - pip install mkdocs
-  # Add your custom theme if not inside a theme_dir
-  # (https://github.com/mkdocs/mkdocs/wiki/MkDocs-Themes)
-  - pip install mkdocs-rtd-dropdown
   script:
-  - mkdocs build
-  - mv site public
+  - cd docs && ./build.sh && cd ..
+  - mv docs public
   artifacts:
     paths:
     - public

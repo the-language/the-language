@@ -1,4 +1,0 @@
-site_name: The Language文档
-site_url: https://the-language.gitlab.io/the-language
-theme:
-  name: 'rtd-dropdown'
