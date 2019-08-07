@@ -29,6 +29,6 @@
        [(x 类型) (list "一个" 类型 x)]
        [(x) (list "一个" x)])
 
-@(定 TheLanguage "The Language")
+@(定 TheLanguage "TheLanguage")
 @(定 语言 "语言")
 @(定 集合 "集合")
