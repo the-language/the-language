@@ -8,6 +8,40 @@
 
 * 标识 `TheLanguage`
 
+## 文檔
+
+https://the-language.gitlab.io/the-language/
+
+## 編譯，運行，測試
+
+可以用`./builder-containers/docker/run.sh`以在Docker中编译。
+
+* 編譯 `./make.sh`
+* 測試 `./test.sh`
+
+### 依賴
+
+見[core/pure/README.md](core/pure/README.md)
+
+## .git/config
+
+```
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	precomposeunicode = true
+[remote "origin"]
+	url = git@gitlab.com:the-language/the-language.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	pushurl = git@gitlab.com:the-language/the-language.git
+	pushurl = git@github.com:the-language/the-language.git
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+```
+
 ## 實驗性特性
 
 * 使`能否實現一個總是停機的解釋器`成為未解決的數學問題
@@ -26,18 +60,3 @@
 #### 可以接受的後果
 
 * 一個`表達式`可能有多個合理的`值`。比如`(letrec ([x (car y)] [y (car x)]) x)`
-
-## 文檔
-
-https://the-language.gitlab.io/the-language/
-
-### 編譯，運行，測試
-
-可以用`./builder-containers/docker/run.sh`以在Docker中编译。
-
-* 編譯 `./make.sh`
-* 測試 `./test.sh`
-
-#### 依賴
-
-見[core/pure/README.md](core/pure/README.md)
