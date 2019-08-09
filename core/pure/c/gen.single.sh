@@ -34,7 +34,7 @@ for f in ./src.cpp/*.h ;do
   rm "$f.1"
 done
 f=lang.c.tmp
-npx codingame-merge -w src.cpp/ -o "$f"
+npx --no-install codingame-merge -w src.cpp/ -o "$f"
 rm -fr src.cpp
 sed -i 's|^#if defined(LUA_CORE)$|#if 1|g' "$f" # luai_num* macros
 sed -i 's|^#if defined(LUA_USE_READLINE)$|#if 0|g' "$f"
@@ -53,4 +53,3 @@ sed -i "s|^\([a-z][a-zA-Z0-9_]*[ \*][ \*]*[a-zA-Z_][\*a-zA-Z0-9_]* *([^;]*\)$|st
 echo '#include "lang.h"' > lang.c
 cat "$f" >> lang.c
 rm "$f"
-

@@ -4,7 +4,7 @@ cd typescript
 yarn
 proc_ts(){
     local tmpfile="$(mktemp)"
-    npx tsfmt "$1" | dos2unix > "$tmpfile"
+    npx --no-install tsfmt "$1" | dos2unix > "$tmpfile"
     mv "$tmpfile" "$1"
 }
 for f in lang.ts.d/*.ts; do

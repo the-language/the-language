@@ -141,7 +141,7 @@
      }})
      ("ecmascript/lang.min.js" ("ecmascript/node_modules" "typescript/lang.ts") {
         in-dir "ecmascript" {
-            npx tsickle --typed
+            npx --no-install tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
                           [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
             |> id raw &>! langraw.js
@@ -152,13 +152,13 @@
      }})
      ("ecmascript/lang.min.2.js" ("ecmascript/node_modules" "ecmascript/lang.min.js") { in-dir "ecmascript" {
          |> ++ "var exports={};\n(function(){\n" #{cat lang.min.js} "\n})();" &>! lang.min.2.js.tmp
-         (define raw (string->lines #{npx prepack --inlineExpressions lang.min.2.js.tmp}))
+         (define raw (string->lines #{npx --no-install prepack --inlineExpressions lang.min.2.js.tmp}))
          |> lines->string (match raw [(list "var exports;" "(function () {" body1 ... "  var _$0 = this;" body2 ... "  _$0.exports = {" body3 ... "}).call(this);") (append body1 body2 '("module.exports = {") body3)]) &>! lang.min.2.js.tmp
          java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js lang.min.2.js.tmp &>! lang.min.2.js
          rm lang.min.2.js.tmp
      }})
      ("ecmascript/lang.js" ("ecmascript/node_modules" "typescript/lang.ts") { in-dir "ecmascript" {
-         npx tsc --removeComments --outDir lang.js.tmp
+         npx --no-install tsc --removeComments --outDir lang.js.tmp
          mv lang.js.tmp/langraw.js lang.js
          rm -fr lang.js.tmp
      }})
@@ -175,7 +175,7 @@
              |> ++ "/** @noSelfInFile */\n" #{cat ../typescript/lang.ts} &>! lang.ts
              touch lang.lua
              rm lang.lua
-             npx tstl -p tsconfig.json
+             npx --no-install tstl -p tsconfig.json
              (define raw #{cat lang.lua})
              (define out (++
                  haskell-generatedby
@@ -202,7 +202,7 @@
          in-dir "ecmascript6" {
              touch lang.js
              rm lang.js
-             npx tsc --build tsconfig.json
+             npx --no-install tsc --build tsconfig.json
              (define raw #{cat lang.js})
              |> ++ c-generatedby c-copyright raw &>! lang.js
      }})
@@ -265,7 +265,7 @@
      ("php/lang.php" ("php/node_modules" "lua/lang.lua") {
          in-dir "php" {
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
-             |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
+             |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx --no-install lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
      }})
      ;; 以下爲停止支持的
      ("python3/lang.py" ("python2/lang.py") {
