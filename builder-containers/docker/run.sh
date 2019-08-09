@@ -10,7 +10,7 @@ cd ../../
 src="$(pwd)"
 cd "$bin"
 img_name=zaoqi/the-language-builder
-docker build --build-arg UID="$(id -u)" --build-arg GID="$(id -g)" -t "$img_name" .
+docker build --build-arg WORKDIR="$src" --build-arg UID="$(id -u)" --build-arg GID="$(id -g)" -t "$img_name" .
 mkdir -p ../containers_cache/.cache
 cd ../containers_cache
 cache="$(pwd)"
