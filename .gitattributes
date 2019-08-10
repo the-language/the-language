@@ -2,3 +2,4 @@
 *.ts linguist-vendored=false
 *.rkt linguist-vendored=false
 *.sh linguist-vendored=false
+*.md linguist-vendored=false
