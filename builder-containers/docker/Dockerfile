@@ -1,16 +1,14 @@
-FROM archlinux/base
-ARG MIRROR='https://mirror.rackspace.com/archlinux/$repo/os/$arch'
+FROM alpine:edge
 ARG UID=0
 ARG GID=0
 ARG WORKDIR=/
-RUN echo "Server = $MIRROR" > /etc/pacman.d/mirrorlist
-RUN pacman -Syu --noconfirm \
-  yarn nodejs npm \
-  racket-minimal jdk11-openjdk clang php python2 \
-  make curl git bash dos2unix busybox && \
-  pacman -Scc --noconfirm && \
-  busybox --install -s && \
-  archlinux-java set java-11-openjdk
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+  apk add --no-cache \
+    yarn nodejs npm \
+    racket openjdk11 clang php7 python2 \
+    make curl git bash && \
+  apk del alpine-keys apk-tools && \
+  rm -fr /etc/apk
 RUN raco pkg install --binary-lib --no-cache --batch --installation --deps force racket-doc || true
 RUN raco pkg install --binary-lib --no-cache --batch --installation --deps force scribble-doc || true
 RUN raco pkg install --binary-lib --no-cache --batch --installation --auto scribble-lib
