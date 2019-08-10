@@ -88,8 +88,7 @@ public class Lang$luaj$val2env extends org.luaj.vm2.lib.OneArgFunction {
                 if (!((org.luaj.vm2.LuaValue)a18).toboolean()) {
                     break;
                 }
-                this.u12.call((org.luaj.vm2.LuaValue)a8, a13);
-                this.u12.call((org.luaj.vm2.LuaValue)a8, a16);
+                this.u12.call((org.luaj.vm2.LuaValue)a8, a13, a16);
                 break;
             }
         }

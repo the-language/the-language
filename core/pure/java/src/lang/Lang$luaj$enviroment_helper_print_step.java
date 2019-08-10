@@ -1,15 +1,14 @@
 package lang;
-public class Lang$luaj$enviroment_helper_print extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$enviroment_helper_print_step extends org.luaj.vm2.lib.OneArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
-    org.luaj.vm2.LuaValue u2;
     final static org.luaj.vm2.LuaValue k0;
     
     static {
         k0 = org.luaj.vm2.LuaString.valueOf("ipairs");
     }
     
-    public Lang$luaj$enviroment_helper_print() {
+    public Lang$luaj$enviroment_helper_print_step() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
@@ -29,8 +28,7 @@ public class Lang$luaj$enviroment_helper_print extends org.luaj.vm2.lib.OneArgFu
                 ((org.luaj.vm2.LuaValue)a8).rawset(2, (org.luaj.vm2.LuaValue)a0);
                 return a8;
             }
-            org.luaj.vm2.LuaValue a9 = this.u1.call(a7, (org.luaj.vm2.LuaValue)a0);
-            this.u2.call((org.luaj.vm2.LuaValue)a1, a9);
+            this.u1.call(a7, (org.luaj.vm2.LuaValue)a0, (org.luaj.vm2.LuaValue)a1);
         }
     }
 }

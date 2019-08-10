@@ -28,15 +28,27 @@ type EnviromentTreeG<a extends { [key: string]: Enviroment }> = [true, a]
 interface EnviromentTreeI extends EnviromentTreeG<{ [key: string]: Enviroment }> { }
 type EnviromentTree = EnviromentTreeI & [true, any]
 const enviroment_null_v: EnviromentNull = [null]
-function enviroment_helper_print0(x: LangVal, ref: Array<LangVal>): string {
-    throw 'WIP'
+function enviroment_helper_print0(x: LangVal, ref: Array<LangVal>, ret: Array<string>): void {
+    x = force_uncomment_all(x)
+    if (atom_p(x)) {
+        ret.push("^", un_atom(x))
+    } else if (construction_p(x)) {
+        ret.push(".")
+        ref.push(construction_head(x), construction_tail(x))
+    } else if (null_p(x)) {
+        ret.push("_")
+    } else if (data_p(x)) {
+        ret.push("#")
+        ref.push(data_name(x), data_list(x))
+    } else {
+        return LANG_ERROR()
+    }
 }
-function enviroment_helper_print(xs: Array<LangVal>): [Array<string>, Array<LangVal>] {
+function enviroment_helper_print_step(xs: Array<LangVal>): [Array<string>, Array<LangVal>] {
     const rs: Array<LangVal> = []
     const ss: Array<string> = []
     for (const x of xs) {
-        const s = enviroment_helper_print0(x, rs)
-        ss.push(s)
+        enviroment_helper_print0(x, rs, ss)
     }
     return [ss, rs]
 }
@@ -150,8 +162,7 @@ function val2env(x: LangVal): OrFalse<Env> {
             }
         }
         if (not_breaked) {
-            ret.push(k)
-            ret.push(v)
+            ret.push(k, v)
         }
     }
     return ret

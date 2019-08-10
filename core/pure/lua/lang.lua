@@ -1394,15 +1394,39 @@ local function force_uncomment1(raw)
     end
 end
 local enviroment_null_v = {nil}
-local function enviroment_helper_print0(x, ref)
-    error("WIP")
+local function enviroment_helper_print0(x, ref, ret)
+    x = force_uncomment_all(x)
+    if atom_p(x) then
+        __TS__ArrayPush(
+            ret,
+            "^",
+            un_atom(x)
+        )
+    elseif construction_p(x) then
+        __TS__ArrayPush(ret, ".")
+        __TS__ArrayPush(
+            ref,
+            construction_head(x),
+            construction_tail(x)
+        )
+    elseif null_p(x) then
+        __TS__ArrayPush(ret, "_")
+    elseif data_p(x) then
+        __TS__ArrayPush(ret, "#")
+        __TS__ArrayPush(
+            ref,
+            data_name(x),
+            data_list(x)
+        )
+    else
+        return LANG_ERROR()
+    end
 end
-local function enviroment_helper_print(xs)
+local function enviroment_helper_print_step(xs)
     local rs = {}
     local ss = {}
     for ____, x in ipairs(xs) do
-        local s = enviroment_helper_print0(x, rs)
-        __TS__ArrayPush(ss, s)
+        enviroment_helper_print0(x, rs, ss)
     end
     return {ss, rs}
 end
@@ -1482,8 +1506,7 @@ local function val2env(x)
             end
         end
         if not_breaked then
-            __TS__ArrayPush(ret, k)
-            __TS__ArrayPush(ret, v)
+            __TS__ArrayPush(ret, k, v)
         end
     end
     return ret

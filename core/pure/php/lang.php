@@ -1326,10 +1326,24 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
 
 });
 $enviroment_null_v = ((object)["array" => [NULL]]);
-$enviroment_helper_print0 = (function ($x = NULL, $ref = NULL) {
-    throw new Exception("WIP");
+$enviroment_helper_print0 = (function ($x = NULL, $ref = NULL, $ret = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_uncomment_all, &$null_p, &$un_atom) {
+    $x = $force_uncomment_all($x);
+    if ($atom_p($x)) {
+        $__TS__ArrayPush($ret, "^", $un_atom($x));
+    } elseif ($construction_p($x)) {
+        $__TS__ArrayPush($ret, ".");
+        $__TS__ArrayPush($ref, $construction_head($x), $construction_tail($x));
+    } elseif ($null_p($x)) {
+        $__TS__ArrayPush($ret, "_");
+    } elseif ($data_p($x)) {
+        $__TS__ArrayPush($ret, "#");
+        $__TS__ArrayPush($ref, $data_name($x), $data_list($x));
+    } else {
+        return $LANG_ERROR();
+    }
+
 });
-$enviroment_helper_print = (function ($xs = NULL) use (&$__TS__ArrayPush, &$enviroment_helper_print0) {
+$enviroment_helper_print_step = (function ($xs = NULL) use (&$enviroment_helper_print0) {
     $rs = ((object)["array" => []]);
     $ss = ((object)["array" => []]);
     $lUaTmP_13_LuAtMp = $xs;
@@ -1338,8 +1352,7 @@ $enviroment_helper_print = (function ($xs = NULL) use (&$__TS__ArrayPush, &$envi
     for ($lUa_I_LuA = 1; $lUaTmP_15_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_14_LuAtMp : $lUa_I_LuA >= $lUaTmP_14_LuAtMp; $lUa_I_LuA += $lUaTmP_15_LuAtMp) {
         $____ = $lUa_I_LuA;
         $x = $lUaTmP_13_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
-        $s = $enviroment_helper_print0($x, $rs);
-        $__TS__ArrayPush($ss, $s);
+        $enviroment_helper_print0($x, $rs, $ss);
     }
     return ((object)["array" => [$ss, $rs]]);
 });
@@ -1401,8 +1414,7 @@ $val2env = (function ($x = NULL) use (&$__TS__ArrayPush, &$atom_equal_p, &$atom_
         }
 
         if ($not_breaked) {
-            $__TS__ArrayPush($ret, $k);
-            $__TS__ArrayPush($ret, $v);
+            $__TS__ArrayPush($ret, $k, $v);
         }
     }
     return $ret;

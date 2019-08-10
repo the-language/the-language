@@ -619,15 +619,31 @@ function name_unlazy1_p3(x) {
     return atom_equal_p(n, name_atom);
 }
 const enviroment_null_v = [null];
-function enviroment_helper_print0(x, ref) {
-    throw 'WIP';
+function enviroment_helper_print0(x, ref, ret) {
+    x = force_uncomment_all(x);
+    if (atom_p(x)) {
+        ret.push("^", un_atom(x));
+    }
+    else if (construction_p(x)) {
+        ret.push(".");
+        ref.push(construction_head(x), construction_tail(x));
+    }
+    else if (null_p(x)) {
+        ret.push("_");
+    }
+    else if (data_p(x)) {
+        ret.push("#");
+        ref.push(data_name(x), data_list(x));
+    }
+    else {
+        return LANG_ERROR();
+    }
 }
-function enviroment_helper_print(xs) {
+function enviroment_helper_print_step(xs) {
     const rs = [];
     const ss = [];
     for (const x of xs) {
-        const s = enviroment_helper_print0(x, rs);
-        ss.push(s);
+        enviroment_helper_print0(x, rs, ss);
     }
     return [ss, rs];
 }
@@ -732,8 +748,7 @@ function val2env(x) {
             }
         }
         if (not_breaked) {
-            ret.push(k);
-            ret.push(v);
+            ret.push(k, v);
         }
     }
     return ret;
