@@ -22,7 +22,7 @@ racket test.rkt
 
 支援 `alpinelinux/apk` `debian,ubuntu/apt` `archlinux/pacman` `windows/msys2/pacman`[注：需要加`mingw-w64-x86_64-`等前綴] `windows/scoop`[注：clang，racket-rash暫時無法正常工作。clang缺少`.h`。racket-rash對path處理不正確。]
 
-* GNU coreutils, BASH, GNU tar, dos2unix, ... `apk add bash` `pacman -S dos2unix gawk` `apt install dos2unix` `scoop install busybox`
+* GNU coreutils, BASH, GNU tar, dos2unix, ... `apk add bash binutils` `pacman -S dos2unix gawk` `apt install dos2unix` `scoop install busybox`
 * NodeJS NPM | `apt install nodejs npm` `scoop install nodejs` `pacman -S nodejs npm` `apk add nodejs npm` https://nodejs.org/ or https://github.com/oracle/graal
 * npx | `npm i -g npx`
 * yarn | `npm i -g yarn` `pacman -S yarn` `scoop install yarn`
