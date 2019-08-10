@@ -18,15 +18,13 @@ for f in ./src.cpp/* ;do
   sed -i 's|^#include <\(.*\)>$|^#include "\1"|' "$f"
 done
 mkdir ./src.cpp/readline
-for f in stddef.h stdio.h stdarg.h limits.h assert.h stdlib.h string.h setjmp.h
+notignore_h="stddef.h stdio.h stdarg.h limits.h assert.h stdlib.h string.h setjmp.h"
+ignore_h="io.h unistd.h readline/readline.h readline/history.h locale.h errno.h"
+for f in $notignore_h $ignore_h
 do
-  echo "#include <$f>" > "./src.cpp/$f"
+  echo '#pragma once' > "./src.cpp/$f"
 done
-for f in io.h unistd.h readline/readline.h readline/history.h locale.h errno.h
-do
-  > "./src.cpp/$f"
-done
-> "./src.cpp/lang.h"
+echo '#pragma once' > "./src.cpp/lang.h"
 for f in ./src.cpp/*.h ;do
   mv "$f" "$f.1"
   echo '#pragma once' > "$f"
@@ -51,5 +49,13 @@ sed -i "s|^static inline |static |g" "$f"
 sed -i "s|^static\(  *[a-zA-Z_][a-zA-Z0-9_]*[ \*][ \*]*[a-zA-Z_][\*a-zA-Z0-9_]* *(\)|static inline\1|g" "$f"
 sed -i "s|^\([a-z][a-zA-Z0-9_]*[ \*][ \*]*[a-zA-Z_][\*a-zA-Z0-9_]* *([^;]*\)$|static inline \1|g" "$f"
 echo '#include "lang.h"' > lang.c
-cat "$f" >> lang.c
+for h in $notignore_h
+do
+  echo "#include <$h>" >> lang.c
+done
+sed 's/^ *enum *{ *\([a-zA-Z_][a-zA-Z0-9_]*\) *= *\([0-9][0-9]*\) *}; *$/#define \1 \2/g' "$f" |
+  clang -xc -E - |
+  sed '/^#/d' |
+  sed '/^$/d' |
+  clang-format >> lang.c
 rm "$f"
