@@ -21,9 +21,9 @@ Docker Hub: https://hub.docker.com/r/zaoqi/the-language-builder
 * 編譯 `./make.sh`
 * 測試 `./test.sh`
 
-### 依賴
+### 編譯，運行，測試的依賴
 
-見[core/pure/README.md](core/pure/README.md)
+見[core/pure/README.md](core/pure/README.md)或[builder-containers/docker/Dockerfile](builder-containers/docker/Dockerfile)
 
 ## .git/config
 
