@@ -1,2 +1,4 @@
 * linguist-vendored
 *.ts linguist-vendored=false
+*.rkt linguist-vendored=false
+*.sh linguist-vendored=false
