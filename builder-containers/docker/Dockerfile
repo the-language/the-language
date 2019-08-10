@@ -6,7 +6,7 @@ RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositor
   apk add --no-cache \
     yarn nodejs npm \
     clang build-base \
-    racket openjdk11 php7 python2 \
+    racket openjdk11-jdk php7 python2 \
     make curl git bash && \
   apk del alpine-keys apk-tools && \
   rm -fr /etc/apk
