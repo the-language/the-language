@@ -5,7 +5,7 @@ ARG WORKDIR=/
 RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
   apk add --no-cache \
     yarn nodejs npm \
-    clang libc-dev binutils \
+    clang build-base \
     racket openjdk11 php7 python2 \
     make curl git bash && \
   apk del alpine-keys apk-tools && \
