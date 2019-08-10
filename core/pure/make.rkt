@@ -117,7 +117,7 @@
             echo &>> lang.ts
         })
     })))))
-    (("all" ("ecmascript/lang.min.js"
+    (("all" ("ecmascript/lang.min.0.js"
              "ecmascript/lang.js"
              "ecmascript/lang.min.2.js"
              "lua/lang.lua"
@@ -134,12 +134,12 @@
              "c/liblang.so"
              "c/liblang.a")
             (void))
-     ("ecmascript/exports.list" ("ecmascript/lang.min.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
+     ("ecmascript/exports.list" ("ecmascript/lang.min.0.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
      ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
          yarn
          touch node_modules/
      }})
-     ("ecmascript/lang.min.js" ("ecmascript/node_modules" "typescript/lang.ts") {
+     ("ecmascript/lang.min.0.js" ("ecmascript/node_modules" "typescript/lang.ts") {
         in-dir "ecmascript" {
             npx --no-install tsickle --typed
             (define raw (match (string->lines #{cat langraw.js})
@@ -147,11 +147,11 @@
             |> id raw &>! langraw.js
             (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
-            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.js
+            java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.0.js
             |> lines->string exports &>! exports.list
      }})
-     ("ecmascript/lang.min.2.js" ("ecmascript/node_modules" "ecmascript/lang.min.js") { in-dir "ecmascript" {
-         |> ++ "var exports={};\n(function(){\n" #{cat lang.min.js} "\n})();" &>! lang.min.2.js.tmp
+     ("ecmascript/lang.min.2.js" ("ecmascript/node_modules" "ecmascript/lang.min.0.js") { in-dir "ecmascript" {
+         |> ++ "var exports={};\n(function(){\n" #{cat lang.min.0.js} "\n})();" &>! lang.min.2.js.tmp
          (define raw (string->lines #{npx --no-install prepack --inlineExpressions lang.min.2.js.tmp}))
          |> lines->string (match raw [(list "var exports;" "(function () {" body1 ... "  var _$0 = this;" body2 ... "  _$0.exports = {" body3 ... "}).call(this);") (append body1 body2 '("module.exports = {") body3)]) &>! lang.min.2.js.tmp
          java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js lang.min.2.js.tmp &>! lang.min.2.js
