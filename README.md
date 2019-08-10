@@ -14,7 +14,9 @@ https://the-language.gitlab.io/the-language/
 
 ## 編譯，運行，測試
 
-可以用`./builder-containers/docker/run.sh`以在Docker中编译。
+可以用`./builder-containers/docker/run.sh`或者`zaoqi/the-language-builder`以在Docker中编译。
+
+Docker Hub: https://hub.docker.com/r/zaoqi/the-language-builder
 
 * 編譯 `./make.sh`
 * 測試 `./test.sh`
