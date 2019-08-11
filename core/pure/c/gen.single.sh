@@ -18,8 +18,8 @@ for f in ./src.cpp/* ;do
   sed -i 's|^#include <\(.*\)>$|^#include "\1"|' "$f"
 done
 mkdir ./src.cpp/readline
-notignore_h="stddef.h stdio.h stdarg.h limits.h assert.h stdlib.h string.h setjmp.h"
-ignore_h="io.h unistd.h readline/readline.h readline/history.h locale.h errno.h"
+notignore_h="stddef.h stdio.h stdarg.h limits.h stdlib.h string.h setjmp.h"
+ignore_h="assert.h io.h unistd.h readline/readline.h readline/history.h locale.h errno.h"
 for f in $notignore_h $ignore_h
 do
   echo '#pragma once' > "./src.cpp/$f"
@@ -57,5 +57,7 @@ sed 's/^ *enum *{ *\([a-zA-Z_][a-zA-Z0-9_]*\) *= *\([0-9][0-9]*\) *}; *$/#define
   clang -xc -E - |
   sed '/^#/d' |
   sed '/^$/d' |
-  clang-format >> lang.c
+  clang-format |
+  sed '/^ *assert(.*); *$/d' |
+  cat >> lang.c
 rm "$f"
