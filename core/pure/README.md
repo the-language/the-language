@@ -32,7 +32,7 @@ racket test.rkt
 * racket-rash | `raco pkg install --auto rash` https://github.com/willghatch/racket-rash/tree/3a7282a89dbf02528464ac9f17f4ff6b60700e10
 * racket-make | `raco pkg install --auto make` https://github.com/racket/make/tree/813941bbe3ba757291993d0f068888967af4ba9c
 * git | `apt install git` `pacman -S git` `apk add git` `scoop install git-with-openssh`
-* jdk9+ 或 graal | `pacman -S jdk11-openjdk` `apk add openjdk10` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
+* jdk9+ 或 graal | `pacman -S jdk11-openjdk` `apk add openjdk11` `scoop install openjdk12`[需要先`scoop bucket add java`] 或 https://github.com/oracle/graal [需要加入$PATH]
 * clang, clang-format | `apt install clang clang-format` `pacman -S clang` `apk add clang libc-dev` `scoop install llvm gcc`
 * GNU make | `apt install make` `pacman -S make` `apk add make` `scoop install make`
 * curl | `pacman -S curl` `apt install curl` `apk add curl` `scoop install curl`
