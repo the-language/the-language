@@ -18856,9 +18856,6 @@ static inline void Arith(lua_State *L, StkId ra, const TValue *rb,
     case TM_MOD: {
       TValue *i_o = (ra);
       i_o->value.n = (((nb) - ({
-                                assert(!"[錯誤]floor()未實現 : floor("
-                                        "(nb)/(nc)"
-                                        ")");
                                 *((volatile int *)0) = 0;
                                 (double)*((volatile double *)0);
                               }) * (nc)));
@@ -18867,11 +18864,6 @@ static inline void Arith(lua_State *L, StkId ra, const TValue *rb,
     case TM_POW: {
       TValue *i_o = (ra);
       i_o->value.n = ((({
-        assert(!"[錯誤]pow()未實現 : pow("
-                "nb"
-                ","
-                "nc"
-                ")");
         *((volatile int *)0) = 0;
         (double)*((volatile double *)0);
       })));
@@ -19331,9 +19323,6 @@ reentry:
           {
             TValue *i_o = (ra);
             i_o->value.n = (((nb) - ({
-                                      assert(!"[錯誤]floor()未實現 : floor("
-                                              "(nb)/(nc)"
-                                              ")");
                                       *((volatile int *)0) = 0;
                                       (double)*((volatile double *)0);
                                     }) * (nc)));
@@ -19375,11 +19364,6 @@ reentry:
           {
             TValue *i_o = (ra);
             i_o->value.n = ((({
-              assert(!"[錯誤]pow()未實現 : pow("
-                      "nb"
-                      ","
-                      "nc"
-                      ")");
               *((volatile int *)0) = 0;
               (double)*((volatile double *)0);
             })));
