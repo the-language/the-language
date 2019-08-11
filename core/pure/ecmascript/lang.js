@@ -7,6 +7,19 @@ function LANG_ASSERT(x) {
         return LANG_ERROR();
     }
 }
+function recordstring_null_p(x) {
+    for (var k in x) {
+        return false;
+    }
+    return true;
+}
+function recordstring_shadow_copy(x) {
+    var result = {};
+    for (var k in x) {
+        result[k] = x[k];
+    }
+    return result;
+}
 var atom_t = 0;
 var construction_t = 1;
 var null_t = 2;
@@ -635,7 +648,13 @@ function name_unlazy1_p3(x) {
     }
     return atom_equal_p(n, name_atom);
 }
-var enviroment_null_v = [null];
+var enviroment_null_v = [true, {}, null];
+function enviroment_null_p(x) {
+    if (x[0] === true) {
+        return recordstring_null_p(x[1]);
+    }
+    return false;
+}
 function enviroment_helper_print0(x, ref, ret) {
     x = force_uncomment_all(x);
     if (atom_p(x)) {
@@ -665,8 +684,67 @@ function enviroment_helper_print_step(xs) {
     }
     return [ss, rs];
 }
-function enviroment_set(env, key, val) {
-    throw 'WIP';
+function enviroment_helper_node_expand(env) {
+    var e = enviroment_helper_print_step(env[1]);
+    var es = e[0];
+    var ev = e[1];
+    var t = {};
+    t[es[es.length - 1]] = [false, ev, env[2]];
+    var result = [true, t, null];
+    for (var i = es.length - 2; i >= 0; i--) {
+        var t_1 = {};
+        t_1[es[i]] = result;
+        result = [true, t_1, null];
+    }
+    return result;
+}
+function enviroment_helper_tree_shadow_copy(x) {
+    return [true, recordstring_shadow_copy(x[1]), null];
+}
+function enviroment_set_helper(env, key, val, return_pointer, real_return) {
+    if (env[0]) {
+        var result = enviroment_helper_tree_shadow_copy(env);
+        var a = enviroment_helper_print_step(key);
+        var as = a[0];
+        var av = a[1];
+        var pointer = result;
+        for (var _i = 0, as_1 = as; _i < as_1.length; _i++) {
+            var k = as_1[_i];
+            var m = null;
+            if (k in pointer[1]) {
+                var t = pointer[1][k];
+                if (t[0]) {
+                    m = enviroment_helper_tree_shadow_copy(t);
+                }
+                else {
+                    m = enviroment_helper_node_expand(t);
+                }
+            }
+            else {
+                m = [true, {}, null];
+            }
+            LANG_ASSERT(m !== null);
+            pointer[1][k] = m;
+            pointer = m;
+        }
+        if (enviroment_null_p(pointer)) {
+            var p = pointer;
+            p[0] = false;
+            p[1] = av;
+            p[2] = val;
+            return_pointer[0] = result[0];
+            return_pointer[1] = result[1];
+            return_pointer[2] = result[2];
+            return real_return;
+        }
+        else {
+            return enviroment_set_helper(pointer, av, val, pointer, result);
+        }
+    }
+    else {
+        return enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return);
+    }
+    return LANG_ERROR();
 }
 var env_null_v = [];
 exports.env_null_v = env_null_v;

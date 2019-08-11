@@ -25,6 +25,19 @@ function LANG_ASSERT(x) {
         return LANG_ERROR();
     }
 }
+function recordstring_null_p(x) {
+    for (const k in x) {
+        return false;
+    }
+    return true;
+}
+function recordstring_shadow_copy(x) {
+    let result = {};
+    for (const k in x) {
+        result[k] = x[k];
+    }
+    return result;
+}
 const atom_t = 0;
 const construction_t = 1;
 const null_t = 2;
@@ -618,7 +631,13 @@ function name_unlazy1_p3(x) {
     }
     return atom_equal_p(n, name_atom);
 }
-const enviroment_null_v = [null];
+const enviroment_null_v = [true, {}, null];
+function enviroment_null_p(x) {
+    if (x[0] === true) {
+        return recordstring_null_p(x[1]);
+    }
+    return false;
+}
 function enviroment_helper_print0(x, ref, ret) {
     x = force_uncomment_all(x);
     if (atom_p(x)) {
@@ -647,8 +666,66 @@ function enviroment_helper_print_step(xs) {
     }
     return [ss, rs];
 }
-function enviroment_set(env, key, val) {
-    throw 'WIP';
+function enviroment_helper_node_expand(env) {
+    const e = enviroment_helper_print_step(env[1]);
+    const es = e[0];
+    const ev = e[1];
+    const t = {};
+    t[es[es.length - 1]] = [false, ev, env[2]];
+    let result = [true, t, null];
+    for (let i = es.length - 2; i >= 0; i--) {
+        const t = {};
+        t[es[i]] = result;
+        result = [true, t, null];
+    }
+    return result;
+}
+function enviroment_helper_tree_shadow_copy(x) {
+    return [true, recordstring_shadow_copy(x[1]), null];
+}
+function enviroment_set_helper(env, key, val, return_pointer, real_return) {
+    if (env[0]) {
+        let result = enviroment_helper_tree_shadow_copy(env);
+        const a = enviroment_helper_print_step(key);
+        const as = a[0];
+        const av = a[1];
+        let pointer = result;
+        for (const k of as) {
+            let m = null;
+            if (k in pointer[1]) {
+                let t = pointer[1][k];
+                if (t[0]) {
+                    m = enviroment_helper_tree_shadow_copy(t);
+                }
+                else {
+                    m = enviroment_helper_node_expand(t);
+                }
+            }
+            else {
+                m = [true, {}, null];
+            }
+            LANG_ASSERT(m !== null);
+            pointer[1][k] = m;
+            pointer = m;
+        }
+        if (enviroment_null_p(pointer)) {
+            let p = pointer;
+            p[0] = false;
+            p[1] = av;
+            p[2] = val;
+            return_pointer[0] = result[0];
+            return_pointer[1] = result[1];
+            return_pointer[2] = result[2];
+            return real_return;
+        }
+        else {
+            return enviroment_set_helper(pointer, av, val, pointer, result);
+        }
+    }
+    else {
+        return enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return);
+    }
+    return LANG_ERROR();
 }
 const env_null_v = [];
 function env_set(env, key, val) {

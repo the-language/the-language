@@ -1138,6 +1138,19 @@ function simple_print(x)
     end
     return LANG_ERROR()
 end
+local function recordstring_null_p(x)
+    for k in pairs(x) do
+        return false
+    end
+    return true
+end
+local function recordstring_shadow_copy(x)
+    local result = {}
+    for k in pairs(x) do
+        result[k] = x[k]
+    end
+    return result
+end
 atom_t = 0
 construction_t = 1
 null_t = 2
@@ -1393,7 +1406,13 @@ local function force_uncomment1(raw)
         return force1(raw)
     end
 end
-local enviroment_null_v = {nil}
+local enviroment_null_v = {true, {}, nil}
+local function enviroment_null_p(x)
+    if x[1] == true then
+        return recordstring_null_p(x[2])
+    end
+    return false
+end
 local function enviroment_helper_print0(x, ref, ret)
     x = force_uncomment_all(x)
     if atom_p(x) then
@@ -1430,8 +1449,76 @@ local function enviroment_helper_print_step(xs)
     end
     return {ss, rs}
 end
-local function enviroment_set(env, key, val)
-    error("WIP")
+local function enviroment_helper_node_expand(env)
+    local e = enviroment_helper_print_step(env[2])
+    local es = e[1]
+    local ev = e[2]
+    local t = {}
+    t[es[#es]] = {false, ev, env[3]}
+    local result = {true, t, nil}
+    do
+        local i = #es - 2
+        while i >= 0 do
+            local t = {}
+            t[es[i + 1]] = result
+            result = {true, t, nil}
+            i = i - 1
+        end
+    end
+    return result
+end
+local function enviroment_helper_tree_shadow_copy(x)
+    return {
+        true,
+        recordstring_shadow_copy(x[2]),
+        nil
+    }
+end
+local function enviroment_set_helper(env, key, val, return_pointer, real_return)
+    if env[1] then
+        local result = enviroment_helper_tree_shadow_copy(env)
+        local a = enviroment_helper_print_step(key)
+        local as = a[1]
+        local av = a[2]
+        local pointer = result
+        for ____, k in ipairs(as) do
+            local m = nil
+            if pointer[2][k] ~= nil then
+                local t = pointer[2][k]
+                if t[0] then
+                    m = enviroment_helper_tree_shadow_copy(t)
+                else
+                    m = enviroment_helper_node_expand(t)
+                end
+            else
+                m = {true, {}, nil}
+            end
+            LANG_ASSERT(m ~= nil)
+            pointer[2][k] = m
+            pointer = m
+        end
+        if enviroment_null_p(pointer) then
+            local p = pointer
+            p[1] = false
+            p[2] = av
+            p[3] = val
+            return_pointer[1] = result[1]
+            return_pointer[2] = result[2]
+            return_pointer[3] = result[3]
+            return real_return
+        else
+            return enviroment_set_helper(pointer, av, val, pointer, result)
+        end
+    else
+        return enviroment_set_helper(
+            enviroment_helper_node_expand(env),
+            key,
+            val,
+            return_pointer,
+            real_return
+        )
+    end
+    return LANG_ERROR()
 end
 env_null_v = {}
 local function val2env(x)
