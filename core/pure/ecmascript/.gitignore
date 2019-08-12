@@ -3,3 +3,5 @@
 /lang.min.0.js
 /lang.externs.js
 /README.md
+*.tmp.*
+*.tmp

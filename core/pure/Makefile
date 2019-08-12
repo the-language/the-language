@@ -4,16 +4,19 @@ all: ecmascript/lang.min.0.js ecmascript/lang.js ecmascript/lang.min.2.js lua/la
 ecmascript/exports.list: ecmascript/lang.js
 	racket Makefile.domake.rkt ecmascript/exports.list
 
+ecmascript/lang.externs.js: ecmascript/exports.list
+	racket Makefile.domake.rkt ecmascript/lang.externs.js
+
 ecmascript/node_modules: ecmascript/yarn.lock
 	racket Makefile.domake.rkt ecmascript/node_modules
 
 ecmascript/langraw.js: ecmascript/node_modules typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/langraw.js
 
-ecmascript/lang.min.0.js: ecmascript/node_modules ecmascript/langraw.js ecmascript/exports.list
+ecmascript/lang.min.0.js: ecmascript/node_modules ecmascript/lang.externs.js ecmascript/langraw.js ecmascript/exports.list
 	racket Makefile.domake.rkt ecmascript/lang.min.0.js
 
-ecmascript/lang.min.2.js: ecmascript/node_modules ecmascript/lang.min.0.js
+ecmascript/lang.min.2.js: ecmascript/node_modules ecmascript/lang.externs.js ecmascript/lang.min.0.js
 	racket Makefile.domake.rkt ecmascript/lang.min.2.js
 
 ecmascript/lang.js: ecmascript/node_modules typescript/lang.ts
