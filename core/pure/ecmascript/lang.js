@@ -742,8 +742,8 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
         var as = a[0];
         var av_1 = a[1];
         var pointer_1 = result;
-        for (var _i = 0, as_1 = as; _i < as_1.length; _i++) {
-            var k = as_1[_i];
+        for (var i = 0; i < as.length; i++) {
+            var k = as[i];
             var m = null;
             if (k in pointer_1[1]) {
                 var t = pointer_1[1][k];
@@ -751,6 +751,15 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
                     m = enviroment_helper_tree_shadow_copy(t);
                 }
                 else {
+                    if (t[1].length === 0) {
+                        LANG_ASSERT(i === as.length - 1);
+                        var p = make_enviroment_null_v();
+                        pointer_1[1][k] = p;
+                        p[0] = false;
+                        p[1] = av_1;
+                        p[2] = val;
+                        return trampoline_return(real_return);
+                    }
                     m = enviroment_helper_node_expand(t);
                 }
             }

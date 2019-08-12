@@ -143,6 +143,7 @@ $force_uncomment_all = NULL;
 $unlazy1 = NULL;
 $unlazy_list_1_keepcomment = NULL;
 $name_unlazy1_p3 = NULL;
+$make_enviroment_null_v = NULL;
 $enviroment_null_p = NULL;
 $enviroment_helper_print0 = NULL;
 $enviroment_helper_print_step = NULL;
@@ -659,6 +660,9 @@ $name_unlazy1_p3 = (function ($x = NULL) use (&$atom_equal_p, &$atom_p, &$data_n
     }
     return $atom_equal_p($n, $name_atom);
 });
+$make_enviroment_null_v = (function () {
+    return ((object)["array" => [true, ((object)["array" => []]), NULL]]);
+});
 $enviroment_null_p = (function ($x = NULL) use (&$recordstring_null_p) {
     if ($x->array[0]) {
         return $recordstring_null_p($x->array[1]);
@@ -727,7 +731,7 @@ $enviroment_set_helper = (function (
     $val = NULL,
     $return_pointer = NULL,
     $real_return = NULL
-) use (&$LANG_ASSERT, &$LANG_ERROR, &$enviroment_helper_node_expand, &$enviroment_helper_print_step, &$enviroment_helper_tree_shadow_copy, &$enviroment_null_p, &$enviroment_set_helper, &$trampoline_delay, &$trampoline_return) {
+) use (&$LANG_ASSERT, &$LANG_ERROR, &$enviroment_helper_node_expand, &$enviroment_helper_print_step, &$enviroment_helper_tree_shadow_copy, &$enviroment_null_p, &$enviroment_set_helper, &$make_enviroment_null_v, &$trampoline_delay, &$trampoline_return) {
     if (((is_string($key) ? strlen($key) : count($key->array)) === 0)) {
         $LANG_ASSERT(($enviroment_null_p($env) ||
             (($env->array[0] === false) && ($env->array[1]->array["length"] === 0))));
@@ -746,34 +750,45 @@ $enviroment_set_helper = (function (
         $as = $a->array[0];
         $av = $a->array[1];
         $pointer = $result;
-        $lUaTmP_15_LuAtMp = $as;
-        $lUaTmP_16_LuAtMp = (is_string($lUaTmP_15_LuAtMp) ? strlen($lUaTmP_15_LuAtMp) : count($lUaTmP_15_LuAtMp->array));
-        $lUaTmP_17_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_17_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_16_LuAtMp : $lUa_I_LuA >= $lUaTmP_16_LuAtMp; $lUa_I_LuA += $lUaTmP_17_LuAtMp) {
-            $____ = $lUa_I_LuA;
-            $k = $lUaTmP_15_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
-            $m = NULL;
-            if (($pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] !== NULL)) {
-                $t = $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)];
-                if ($t->array[-1]) {
-                    $m = $enviroment_helper_tree_shadow_copy($t);
+        
+        {
+            $i = 0;
+            while (($i < (is_string($as) ? strlen($as) : count($as->array)))) {
+                $k = $as->array[($i + 0)];
+                $m = NULL;
+                if (($pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] !== NULL)) {
+                    $t = $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)];
+                    if ($t->array[-1]) {
+                        $m = $enviroment_helper_tree_shadow_copy($t);
+                    } else {
+                        if (($t->array[0]->array["length"] === 0)) {
+                            $LANG_ASSERT(($i === ((is_string($as) ? strlen($as) : count($as->array)) - 1)));
+                            $p = $make_enviroment_null_v();
+                            $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] = $p;
+                            $p->array[0] = false;
+                            $p->array[1] = $av;
+                            $p->array[2] = $val;
+                            return $trampoline_return($real_return);
+                        }
+                        $m = $enviroment_helper_node_expand($t);
+                    }
+
                 } else {
-                    $m = $enviroment_helper_node_expand($t);
+                    $m = ((object)["array" => [true, ((object)["array" => []]), NULL]]);
                 }
 
-            } else {
-                $m = ((object)["array" => [true, ((object)["array" => []]), NULL]]);
+                $LANG_ASSERT(($m !== NULL));
+                $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] = $m;
+                $pointer = $m;
+                $i = ($i + 1);
             }
-
-            $LANG_ASSERT(($m !== NULL));
-            $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] = $m;
-            $pointer = $m;
         }
+
         if ($enviroment_null_p($pointer)) {
-            $p = $pointer;
-            $p->array[0] = false;
-            $p->array[1] = $av;
-            $p->array[2] = $val;
+            $p_1 = $pointer;
+            $p_1->array[0] = false;
+            $p_1->array[1] = $av;
+            $p_1->array[2] = $val;
             return $trampoline_return($real_return);
         } else {
             return $trampoline_delay(
@@ -1077,12 +1092,12 @@ $real_builtin_func_apply = (function ($f = NULL, $xs = NULL, $selfvalraw = NULL)
             $new_list($function_builtin_use_systemName, $new_list($f, $jsArray_to_list($xs)))
         );
     });
-    $lUaTmP_18_LuAtMp = $real_builtin_func_apply_s;
-    $lUaTmP_19_LuAtMp = (is_string($lUaTmP_18_LuAtMp) ? strlen($lUaTmP_18_LuAtMp) : count($lUaTmP_18_LuAtMp->array));
-    $lUaTmP_20_LuAtMp = 1;
-    for ($lUa_I_LuA = 1; $lUaTmP_20_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_19_LuAtMp : $lUa_I_LuA >= $lUaTmP_19_LuAtMp; $lUa_I_LuA += $lUaTmP_20_LuAtMp) {
+    $lUaTmP_15_LuAtMp = $real_builtin_func_apply_s;
+    $lUaTmP_16_LuAtMp = (is_string($lUaTmP_15_LuAtMp) ? strlen($lUaTmP_15_LuAtMp) : count($lUaTmP_15_LuAtMp->array));
+    $lUaTmP_17_LuAtMp = 1;
+    for ($lUa_I_LuA = 1; $lUaTmP_17_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_16_LuAtMp : $lUa_I_LuA >= $lUaTmP_16_LuAtMp; $lUa_I_LuA += $lUaTmP_17_LuAtMp) {
         $____ = $lUa_I_LuA;
-        $xx = $lUaTmP_18_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+        $xx = $lUaTmP_15_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
         if ($equal_p($f, $xx->array[0])) {
             if (((is_string($xs) ? strlen($xs) : count($xs->array)) !== $xx->array[1])) {
                 return $error_v();
@@ -1501,9 +1516,6 @@ $force_uncomment1 = (function ($raw = NULL) use (&$comment_p, &$comment_x, &$for
     }
 
 });
-$make_enviroment_null_v = (function () {
-    return ((object)["array" => [true, ((object)["array" => []]), NULL]]);
-});
 $enviroment_null_v = $make_enviroment_null_v();
 $enviroment_set = (function ($env = NULL, $key = NULL, $val = NULL) use (&$enviroment_set_helper, &$make_enviroment_null_v, &$run_trampoline) {
     $result = $make_enviroment_null_v();
@@ -1840,14 +1852,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
     });
     $get = (function () use (&$LANG_ASSERT, &$eof, &$state, &$state_const) {
         $LANG_ASSERT(!($eof()));
-        $lUaTmP_21_LuAtMp = ($state + 0);
-        $ret = substr($state_const, $lUaTmP_21_LuAtMp, ($state + 1) - $lUaTmP_21_LuAtMp);
+        $lUaTmP_18_LuAtMp = ($state + 0);
+        $ret = substr($state_const, $lUaTmP_18_LuAtMp, ($state + 1) - $lUaTmP_18_LuAtMp);
         $state = ($state + 1);
         return $ret;
     });
     $put = (function ($chr = NULL) use (&$LANG_ASSERT, &$state, &$state_const) {
-        $lUaTmP_22_LuAtMp = ($state - 1);
-        $LANG_ASSERT((substr($state_const, $lUaTmP_22_LuAtMp, $state - $lUaTmP_22_LuAtMp) === $chr));
+        $lUaTmP_19_LuAtMp = ($state - 1);
+        $LANG_ASSERT((substr($state_const, $lUaTmP_19_LuAtMp, $state - $lUaTmP_19_LuAtMp) === $chr));
         $state = ($state - 1);
     });
     $parse_error = (function ($x_1 = NULL) {
@@ -1965,14 +1977,14 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
         if ($a_space_p($chr)) {
             return false;
         }
-        $lUaTmP_23_LuAtMp = ((object)[
+        $lUaTmP_20_LuAtMp = ((object)[
             "array" => ["(", ")", "!", "#", ".", "\$", "%", "^", "@", "~", "/", "-", ">", "_", ":", "?", "[", "]", "&", ";"]
         ]);
-        $lUaTmP_24_LuAtMp = (is_string($lUaTmP_23_LuAtMp) ? strlen($lUaTmP_23_LuAtMp) : count($lUaTmP_23_LuAtMp->array));
-        $lUaTmP_25_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_25_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_24_LuAtMp : $lUa_I_LuA >= $lUaTmP_24_LuAtMp; $lUa_I_LuA += $lUaTmP_25_LuAtMp) {
+        $lUaTmP_21_LuAtMp = (is_string($lUaTmP_20_LuAtMp) ? strlen($lUaTmP_20_LuAtMp) : count($lUaTmP_20_LuAtMp->array));
+        $lUaTmP_22_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_22_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_21_LuAtMp : $lUa_I_LuA >= $lUaTmP_21_LuAtMp; $lUa_I_LuA += $lUaTmP_22_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $v = $lUaTmP_23_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+            $v = $lUaTmP_20_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             if (($v === $chr)) {
                 return false;
             }
@@ -1993,12 +2005,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
                 $readcomment
             ]
         ]);
-        $lUaTmP_26_LuAtMp = $fs;
-        $lUaTmP_27_LuAtMp = (is_string($lUaTmP_26_LuAtMp) ? strlen($lUaTmP_26_LuAtMp) : count($lUaTmP_26_LuAtMp->array));
-        $lUaTmP_28_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_28_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_27_LuAtMp : $lUa_I_LuA >= $lUaTmP_27_LuAtMp; $lUa_I_LuA += $lUaTmP_28_LuAtMp) {
+        $lUaTmP_23_LuAtMp = $fs;
+        $lUaTmP_24_LuAtMp = (is_string($lUaTmP_23_LuAtMp) ? strlen($lUaTmP_23_LuAtMp) : count($lUaTmP_23_LuAtMp->array));
+        $lUaTmP_25_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_25_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_24_LuAtMp : $lUa_I_LuA >= $lUaTmP_24_LuAtMp; $lUa_I_LuA += $lUaTmP_25_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $f = $lUaTmP_26_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+            $f = $lUaTmP_23_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $f();
             if (($x_1 !== false)) {
                 return $x_1;
@@ -2059,12 +2071,12 @@ $complex_parse = (function ($x = NULL) use (&$LANG_ASSERT, &$__TS__ArrayPush, &$
             ]);
         }
 
-        $lUaTmP_29_LuAtMp = $fs;
-        $lUaTmP_30_LuAtMp = (is_string($lUaTmP_29_LuAtMp) ? strlen($lUaTmP_29_LuAtMp) : count($lUaTmP_29_LuAtMp->array));
-        $lUaTmP_31_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_31_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_30_LuAtMp : $lUa_I_LuA >= $lUaTmP_30_LuAtMp; $lUa_I_LuA += $lUaTmP_31_LuAtMp) {
+        $lUaTmP_26_LuAtMp = $fs;
+        $lUaTmP_27_LuAtMp = (is_string($lUaTmP_26_LuAtMp) ? strlen($lUaTmP_26_LuAtMp) : count($lUaTmP_26_LuAtMp->array));
+        $lUaTmP_28_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_28_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_27_LuAtMp : $lUa_I_LuA >= $lUaTmP_27_LuAtMp; $lUa_I_LuA += $lUaTmP_28_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $f = $lUaTmP_29_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+            $f = $lUaTmP_26_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $f();
             if (($x_1 !== false)) {
                 return $x_1;
@@ -2498,8 +2510,8 @@ $machinetext_parse = (function ($rawstr = NULL) use (&$__TS__ArrayUnshift, &$eva
     $get_do = (function () use (&$is_not_eof, &$parse_assert, &$rawstr, &$state) {
         $parse_assert($is_not_eof());
         $state = ($state - 1);
-        $lUaTmP_32_LuAtMp = ($state + 0);
-        return substr($rawstr, $lUaTmP_32_LuAtMp, ($state + 1) - $lUaTmP_32_LuAtMp);
+        $lUaTmP_29_LuAtMp = ($state + 0);
+        return substr($rawstr, $lUaTmP_29_LuAtMp, ($state + 1) - $lUaTmP_29_LuAtMp);
     });
     $stack = ((object)["array" => []]);
     $conslike = (function ($c = NULL) use (&$__TS__ArrayUnshift, &$parse_error, &$stack) {
@@ -2556,12 +2568,12 @@ $machinetext_print = (function ($x = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush,
     $result = "";
     while (((is_string($stack) ? strlen($stack) : count($stack->array)) !== 0)) {
         $new_stack = ((object)["array" => []]);
-        $lUaTmP_33_LuAtMp = $stack;
-        $lUaTmP_34_LuAtMp = (is_string($lUaTmP_33_LuAtMp) ? strlen($lUaTmP_33_LuAtMp) : count($lUaTmP_33_LuAtMp->array));
-        $lUaTmP_35_LuAtMp = 1;
-        for ($lUa_I_LuA = 1; $lUaTmP_35_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_34_LuAtMp : $lUa_I_LuA >= $lUaTmP_34_LuAtMp; $lUa_I_LuA += $lUaTmP_35_LuAtMp) {
+        $lUaTmP_30_LuAtMp = $stack;
+        $lUaTmP_31_LuAtMp = (is_string($lUaTmP_30_LuAtMp) ? strlen($lUaTmP_30_LuAtMp) : count($lUaTmP_30_LuAtMp->array));
+        $lUaTmP_32_LuAtMp = 1;
+        for ($lUa_I_LuA = 1; $lUaTmP_32_LuAtMp >= 0 ? $lUa_I_LuA <= $lUaTmP_31_LuAtMp : $lUa_I_LuA >= $lUaTmP_31_LuAtMp; $lUa_I_LuA += $lUaTmP_32_LuAtMp) {
             $____ = $lUa_I_LuA;
-            $x_1 = $lUaTmP_33_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
+            $x_1 = $lUaTmP_30_LuAtMp->array[(is_int($____) ? $____ - 1 : $____)];
             $x_1 = $un_just_all($x_1);
             $conslike = (function ($xx = NULL, $s = NULL, $g1 = NULL, $g2 = NULL) use (&$__TS__ArrayPush, &$new_stack, &$result) {
                 $result = (((string)$result) . ((string)$s));

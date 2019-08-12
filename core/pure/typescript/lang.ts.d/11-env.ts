@@ -101,13 +101,23 @@ function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVa
         const as: Array<string> = a[0]
         const av: Array<LangVal> = a[1]
         let pointer: EnviromentTree = result // poiter表層為已複製，可修改的。
-        for (const k of as) {
+        for (let i = 0; i < as.length; i++) {
+            const k = as[i]
             let m: EnviromentTree = null as unknown as EnviromentTree
             if (k in pointer[1]) {
                 let t = pointer[1][k]
                 if (t[0]) {
                     m = enviroment_helper_tree_shadow_copy(t)
                 } else {
+                    if (t[1].length === 0) {
+                        LANG_ASSERT(i === as.length - 1)
+                        let p: [boolean, any, any] = make_enviroment_null_v()
+                        pointer[1][k] = p
+                        p[0] = false
+                        p[1] = av
+                        p[2] = val
+                        return trampoline_return(real_return)
+                    }
                     m = enviroment_helper_node_expand(t)
                 }
             } else {

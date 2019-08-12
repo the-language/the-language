@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, recordstring_null_p, recordstring_shadow_copy, trampoline_return, trampoline_delay, atom_t, construction_t, null_t, data_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, error_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, new_error, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, enviroment_null_p, enviroment_helper_print0, enviroment_helper_print_step, enviroment_helper_node_expand, enviroment_helper_tree_shadow_copy, enviroment_set_helper, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
+local LANG_ERROR, LANG_ASSERT, recordstring_null_p, recordstring_shadow_copy, trampoline_return, trampoline_delay, atom_t, construction_t, null_t, data_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, error_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, new_error, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, make_enviroment_null_v, enviroment_null_p, enviroment_helper_print0, enviroment_helper_print_step, enviroment_helper_node_expand, enviroment_helper_tree_shadow_copy, enviroment_set_helper, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -532,6 +532,9 @@ function name_unlazy1_p3(x)
     end
     return atom_equal_p(n, name_atom)
 end
+function make_enviroment_null_v()
+    return {true, {}, nil}
+end
 function enviroment_null_p(x)
     if x[1] then
         return recordstring_null_p(x[2])
@@ -620,21 +623,35 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return)
         local as = a[1]
         local av = a[2]
         local pointer = result
-        for ____, k in ipairs(as) do
-            local m = nil
-            if pointer[2][k] ~= nil then
-                local t = pointer[2][k]
-                if t[0] then
-                    m = enviroment_helper_tree_shadow_copy(t)
+        do
+            local i = 0
+            while i < #as do
+                local k = as[i + 1]
+                local m = nil
+                if pointer[2][k] ~= nil then
+                    local t = pointer[2][k]
+                    if t[0] then
+                        m = enviroment_helper_tree_shadow_copy(t)
+                    else
+                        if t[1].length == 0 then
+                            LANG_ASSERT(i == #as - 1)
+                            local p = make_enviroment_null_v()
+                            pointer[2][k] = p
+                            p[1] = false
+                            p[2] = av
+                            p[3] = val
+                            return trampoline_return(real_return)
+                        end
+                        m = enviroment_helper_node_expand(t)
+                    end
                 else
-                    m = enviroment_helper_node_expand(t)
+                    m = {true, {}, nil}
                 end
-            else
-                m = {true, {}, nil}
+                LANG_ASSERT(m ~= nil)
+                pointer[2][k] = m
+                pointer = m
+                i = i + 1
             end
-            LANG_ASSERT(m ~= nil)
-            pointer[2][k] = m
-            pointer = m
         end
         if enviroment_null_p(pointer) then
             local p = pointer
@@ -1549,9 +1566,6 @@ local function force_uncomment1(raw)
     else
         return force1(raw)
     end
-end
-local function make_enviroment_null_v()
-    return {true, {}, nil}
 end
 local enviroment_null_v = make_enviroment_null_v()
 local function enviroment_set(env, key, val)

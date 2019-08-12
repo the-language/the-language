@@ -723,7 +723,8 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
         const as = a[0];
         const av = a[1];
         let pointer = result;
-        for (const k of as) {
+        for (let i = 0; i < as.length; i++) {
+            const k = as[i];
             let m = null;
             if (k in pointer[1]) {
                 let t = pointer[1][k];
@@ -731,6 +732,15 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
                     m = enviroment_helper_tree_shadow_copy(t);
                 }
                 else {
+                    if (t[1].length === 0) {
+                        LANG_ASSERT(i === as.length - 1);
+                        let p = make_enviroment_null_v();
+                        pointer[1][k] = p;
+                        p[0] = false;
+                        p[1] = av;
+                        p[2] = val;
+                        return trampoline_return(real_return);
+                    }
                     m = enviroment_helper_node_expand(t);
                 }
             }
