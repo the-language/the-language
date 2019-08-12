@@ -1,15 +1,20 @@
 package lang;
-public class Lang$luaj$4 extends org.luaj.vm2.lib.TwoArgFunction {
-    org.luaj.vm2.LuaValue[] u0;
+public class Lang$luaj$4 extends org.luaj.vm2.lib.OneArgFunction {
+    org.luaj.vm2.LuaValue u0;
+    final static org.luaj.vm2.LuaValue k0;
+    
+    static {
+        k0 = org.luaj.vm2.LuaString.valueOf("pairs");
+    }
     
     public Lang$luaj$4() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        org.luaj.vm2.LuaTable a1 = org.luaj.vm2.LuaValue.tableOf(3, 0);
-        ((org.luaj.vm2.LuaValue)a1).rawset(1, this.u0[0]);
-        ((org.luaj.vm2.LuaValue)a1).rawset(2, a);
-        ((org.luaj.vm2.LuaValue)a1).rawset(3, a0);
-        return a1;
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.Varargs a0 = this.u0.get(k0).invoke((org.luaj.vm2.Varargs)a);
+        if (!a0.arg1().invoke(a0.arg(2), (org.luaj.vm2.Varargs)a0.arg(3)).arg1().isnil()) {
+            return org.luaj.vm2.LuaValue.FALSE;
+        }
+        return org.luaj.vm2.LuaValue.TRUE;
     }
 }

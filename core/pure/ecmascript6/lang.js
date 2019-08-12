@@ -631,9 +631,12 @@ function name_unlazy1_p3(x) {
     }
     return atom_equal_p(n, name_atom);
 }
-const enviroment_null_v = [true, {}, null];
+function make_enviroment_null_v() {
+    return [true, {}, null];
+}
+const enviroment_null_v = make_enviroment_null_v();
 function enviroment_null_p(x) {
-    if (x[0] === true) {
+    if (x[0]) {
         return recordstring_null_p(x[1]);
     }
     return false;
@@ -671,6 +674,7 @@ function enviroment_helper_node_expand(env) {
     const es = e[0];
     const ev = e[1];
     const t = {};
+    LANG_ASSERT(es.length !== 0);
     t[es[es.length - 1]] = [false, ev, env[2]];
     let result = [true, t, null];
     for (let i = es.length - 2; i >= 0; i--) {
@@ -683,9 +687,24 @@ function enviroment_helper_node_expand(env) {
 function enviroment_helper_tree_shadow_copy(x) {
     return [true, recordstring_shadow_copy(x[1]), null];
 }
+function enviroment_set(env, key, val) {
+    const result = make_enviroment_null_v();
+    return run_trampoline(enviroment_set_helper(env, [key], val, result, result));
+}
 function enviroment_set_helper(env, key, val, return_pointer, real_return) {
+    if (key.length === 0) {
+        LANG_ASSERT(enviroment_null_p(env) || (env[0] === false && env[1].length === 0));
+        return_pointer[0] = false;
+        return_pointer[1] = key;
+        return_pointer[2] = val;
+        return trampoline_return(real_return);
+    }
     if (env[0]) {
-        let result = enviroment_helper_tree_shadow_copy(env);
+        const result_tmp = enviroment_helper_tree_shadow_copy(env);
+        return_pointer[0] = result_tmp[0];
+        return_pointer[1] = result_tmp[1];
+        return_pointer[2] = result_tmp[2];
+        const result = return_pointer;
         const a = enviroment_helper_print_step(key);
         const as = a[0];
         const av = a[1];
@@ -713,17 +732,14 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
             p[0] = false;
             p[1] = av;
             p[2] = val;
-            return_pointer[0] = result[0];
-            return_pointer[1] = result[1];
-            return_pointer[2] = result[2];
-            return real_return;
+            return trampoline_return(real_return);
         }
         else {
-            return enviroment_set_helper(pointer, av, val, pointer, result);
+            return trampoline_delay(() => enviroment_set_helper(pointer, av, val, pointer, real_return));
         }
     }
     else {
-        return enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return);
+        return trampoline_delay(() => enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return));
     }
     return LANG_ERROR();
 }

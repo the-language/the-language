@@ -1,24 +1,34 @@
 package lang;
-public class Lang$luaj$64 extends org.luaj.vm2.lib.TwoArgFunction {
+public class Lang$luaj$64 extends org.luaj.vm2.lib.OneArgFunction {
+    org.luaj.vm2.LuaValue u0;
+    org.luaj.vm2.LuaValue u1;
     final static org.luaj.vm2.LuaValue k0;
-    final static org.luaj.vm2.LuaValue k1;
-    final static org.luaj.vm2.LuaValue k2;
     
     static {
-        k0 = org.luaj.vm2.LuaValue.valueOf(0);
-        k1 = org.luaj.vm2.LuaValue.valueOf(1);
-        k2 = org.luaj.vm2.LuaValue.valueOf(2);
+        k0 = org.luaj.vm2.LuaString.valueOf("ipairs");
     }
     
     public Lang$luaj$64() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        org.luaj.vm2.LuaValue a1 = k0;
-        while(a1.lt_b(a.len())) {
-            a0.call(a.get(a1.add(k0).add(k1)), a.get(a1.add(k1).add(k1)));
-            a1 = a1.add(k2);
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        org.luaj.vm2.LuaTable a0 = org.luaj.vm2.LuaValue.tableOf(0, 0);
+        org.luaj.vm2.LuaTable a1 = org.luaj.vm2.LuaValue.tableOf(0, 0);
+        org.luaj.vm2.Varargs a2 = this.u0.get(k0).invoke((org.luaj.vm2.Varargs)a);
+        org.luaj.vm2.LuaValue a3 = a2.arg1();
+        org.luaj.vm2.LuaValue a4 = a2.arg(2);
+        org.luaj.vm2.LuaValue a5 = a2.arg(3);
+        while(true) {
+            org.luaj.vm2.Varargs a6 = a3.invoke(a4, (org.luaj.vm2.Varargs)a5);
+            a5 = a6.arg1();
+            org.luaj.vm2.LuaValue a7 = a6.arg(2);
+            if (a5.isnil()) {
+                org.luaj.vm2.LuaTable a8 = org.luaj.vm2.LuaValue.tableOf(2, 0);
+                ((org.luaj.vm2.LuaValue)a8).rawset(1, (org.luaj.vm2.LuaValue)a1);
+                ((org.luaj.vm2.LuaValue)a8).rawset(2, (org.luaj.vm2.LuaValue)a0);
+                return a8;
+            }
+            this.u1.call(a7, (org.luaj.vm2.LuaValue)a0, (org.luaj.vm2.LuaValue)a1);
         }
-        return org.luaj.vm2.LuaValue.NONE;
     }
 }

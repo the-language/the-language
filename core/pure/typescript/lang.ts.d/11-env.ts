@@ -27,9 +27,12 @@ type EnviromentNull = EnviromentTreeG<RecordStringNull>
 type EnviromentTreeG<a extends RecordStringG<Enviroment>> = [true, a, null]
 interface EnviromentTreeI extends EnviromentTreeG<RecordStringG<Enviroment>> { }
 type EnviromentTree = EnviromentTreeI & [true, RecordStringG<any>, null]
-const enviroment_null_v: EnviromentNull = [true, {}, null]
+function make_enviroment_null_v(): EnviromentNull {
+    return [true, {}, null]
+}
+const enviroment_null_v: EnviromentNull = make_enviroment_null_v()
 function enviroment_null_p(x: Enviroment): x is EnviromentNull {
-    if (x[0] === true) {
+    if (x[0]) {
         return recordstring_null_p(x[1])
     }
     return false
@@ -62,11 +65,12 @@ function enviroment_helper_node_expand(env: EnviromentNode): EnviromentTree {
     const e = enviroment_helper_print_step(env[1])
     const es: Array<string> = e[0]
     const ev: Array<LangVal> = e[1]
-    const t :RecordStringG<Enviroment>= {}
+    const t: RecordStringG<Enviroment> = {}
+    LANG_ASSERT(es.length !== 0)
     t[es[es.length - 1]] = [false, ev, env[2]]
     let result: EnviromentTree = [true, t, null]
     for (let i = es.length - 2; i >= 0; i--) {
-        const t:RecordStringG<Enviroment> = {}
+        const t: RecordStringG<Enviroment> = {}
         t[es[i]] = result
         result = [true, t, null]
     }
@@ -75,10 +79,24 @@ function enviroment_helper_node_expand(env: EnviromentNode): EnviromentTree {
 function enviroment_helper_tree_shadow_copy(x: EnviromentTree): EnviromentTree {
     return [true, recordstring_shadow_copy(x[1]), null]
 }
-// 下面的function需要TCO，但是js不支持
-function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVal, return_pointer: Enviroment, real_return: Enviroment): Enviroment {
+function enviroment_set(env: Enviroment, key: LangVal, val: LangVal) {
+    const result: Enviroment = make_enviroment_null_v()
+    return run_trampoline(enviroment_set_helper(env, [key], val, result, result))
+}
+function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVal, return_pointer: Enviroment, real_return: Enviroment): Trampoline<Enviroment> {
+    if (key.length === 0) {
+        LANG_ASSERT(enviroment_null_p(env) || (env[0] === false && env[1].length === 0))
+        return_pointer[0] = false
+        return_pointer[1] = key
+        return_pointer[2] = val
+        return trampoline_return(real_return)
+    }
     if (env[0]) { // EnviromentTree
-        let result: EnviromentTree = enviroment_helper_tree_shadow_copy(env)
+        const result_tmp: EnviromentTree = enviroment_helper_tree_shadow_copy(env)
+        return_pointer[0] = result_tmp[0]
+        return_pointer[1] = result_tmp[1]
+        return_pointer[2] = result_tmp[2]
+        const result: EnviromentTree = return_pointer as EnviromentTree
         const a = enviroment_helper_print_step(key)
         const as: Array<string> = a[0]
         const av: Array<LangVal> = a[1]
@@ -100,19 +118,16 @@ function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVa
             pointer = m
         }
         if (enviroment_null_p(pointer)) {
-            let p: [boolean,any,any] = pointer
+            let p: [boolean, any, any] = pointer
             p[0] = false
             p[1] = av
             p[2] = val
-            return_pointer[0] = result[0]
-            return_pointer[1] = result[1]
-            return_pointer[2] = result[2]
-            return real_return
+            return trampoline_return(real_return)
         } else {
-            return enviroment_set_helper(pointer, av, val, pointer, result)
+            return trampoline_delay(() => enviroment_set_helper(pointer, av, val, pointer, real_return))
         }
     } else { // EnviromentNode
-        return enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return)
+        return trampoline_delay(() => enviroment_set_helper(enviroment_helper_node_expand(env), key, val, return_pointer, real_return))
     }
     return LANG_ERROR()
 }
