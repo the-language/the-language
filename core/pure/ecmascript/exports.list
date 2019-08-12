@@ -1,3 +1,7 @@
+Trampoline
+trampoline_return
+trampoline_delay
+run_trampoline
 new_comment
 comment_p
 comment_comment
@@ -50,10 +54,6 @@ complex_parse
 complex_print
 machinetext_parse
 machinetext_print
-Trampoline
-trampoline_return
-trampoline_delay
-run_trampoline
 return_effect_systemName
 bind_effect_systemName
 new_effect_bind

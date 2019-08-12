@@ -1,15 +1,14 @@
 package lang;
-public class Lang$luaj$73$error_v extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$77$error_v extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue[] u1;
     org.luaj.vm2.LuaValue u2;
     org.luaj.vm2.LuaValue[] u3;
-    org.luaj.vm2.LuaValue[] u4;
+    org.luaj.vm2.LuaValue u4;
     org.luaj.vm2.LuaValue u5;
     org.luaj.vm2.LuaValue u6;
-    org.luaj.vm2.LuaValue u7;
     
-    public Lang$luaj$73$error_v() {
+    public Lang$luaj$77$error_v() {
     }
     
     final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
@@ -19,8 +18,8 @@ public class Lang$luaj$73$error_v extends org.luaj.vm2.lib.VarArgFunction {
         org.luaj.vm2.LuaValue a2 = this.u2;
         org.luaj.vm2.LuaValue a3 = this.u3[0];
         org.luaj.vm2.LuaValue a4 = this.u2;
-        org.luaj.vm2.LuaValue a5 = this.u4[0];
-        org.luaj.vm2.Varargs a6 = this.u2.invoke(this.u5.call(this.u6), (org.luaj.vm2.Varargs)this.u7);
+        org.luaj.vm2.LuaValue a5 = this.u4;
+        org.luaj.vm2.Varargs a6 = this.u5.invoke((org.luaj.vm2.Varargs)this.u6);
         org.luaj.vm2.LuaValue[] a7 = new org.luaj.vm2.LuaValue[1];
         a7[0] = a5;
         org.luaj.vm2.Varargs a8 = a4.invoke(org.luaj.vm2.LuaValue.varargsOf(a7, a6));

@@ -1,26 +1,33 @@
 package lang;
-public class Lang$luaj$48 extends org.luaj.vm2.lib.VarArgFunction {
+public class Lang$luaj$48 extends org.luaj.vm2.lib.TwoArgFunction {
     org.luaj.vm2.LuaValue u0;
-    org.luaj.vm2.LuaValue[] u1;
-    org.luaj.vm2.LuaValue u2;
-    org.luaj.vm2.LuaValue[] u3;
+    org.luaj.vm2.LuaValue u1;
+    final static org.luaj.vm2.LuaValue k0;
+    final static org.luaj.vm2.LuaValue k1;
+    final static org.luaj.vm2.LuaValue k2;
+    final static org.luaj.vm2.LuaValue k3;
+    
+    static {
+        k0 = org.luaj.vm2.LuaValue.valueOf(1);
+        k1 = org.luaj.vm2.LuaValue.valueOf(2);
+        k2 = org.luaj.vm2.LuaValue.valueOf(3);
+        k3 = org.luaj.vm2.LuaValue.valueOf(4);
+    }
     
     public Lang$luaj$48() {
     }
     
-    final public org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs a) {
-        org.luaj.vm2.LuaValue a0 = a.arg(1);
-        org.luaj.vm2.LuaValue a1 = a.arg(2);
-        a.subargs(3);
-        org.luaj.vm2.LuaValue a2 = this.u0;
-        org.luaj.vm2.LuaValue a3 = this.u1[0];
-        org.luaj.vm2.LuaValue a4 = this.u2;
-        org.luaj.vm2.Varargs a5 = this.u2.invoke(a1, (org.luaj.vm2.Varargs)this.u3[0]);
-        org.luaj.vm2.LuaValue[] a6 = new org.luaj.vm2.LuaValue[1];
-        a6[0] = a0;
-        org.luaj.vm2.Varargs a7 = a4.invoke(org.luaj.vm2.LuaValue.varargsOf(a6, a5));
-        org.luaj.vm2.LuaValue[] a8 = new org.luaj.vm2.LuaValue[1];
-        a8[0] = a3;
-        return org.luaj.vm2.LuaValue.tailcallOf(a2, org.luaj.vm2.LuaValue.varargsOf(a8, a7));
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
+        this.u0.invoke(this.u1.invoke((org.luaj.vm2.Varargs)a).subargs(1));
+        this.u0.call(this.u1.call(a0).not());
+        org.luaj.vm2.LuaValue a1 = a0.get(k0);
+        a.set(k0, a1);
+        org.luaj.vm2.LuaValue a2 = a0.get(k1);
+        a.set(k1, a2);
+        org.luaj.vm2.LuaValue a3 = a0.get(k2);
+        a.set(k2, a3);
+        org.luaj.vm2.LuaValue a4 = a0.get(k3);
+        a.set(k3, a4);
+        return org.luaj.vm2.LuaValue.NONE;
     }
 }

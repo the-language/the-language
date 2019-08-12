@@ -3,7 +3,7 @@ public class Lang$luaj$run_monad_helper$6 extends org.luaj.vm2.lib.VarArgFunctio
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
     org.luaj.vm2.LuaValue u2;
-    org.luaj.vm2.LuaValue[] u3;
+    org.luaj.vm2.LuaValue u3;
     org.luaj.vm2.LuaValue u4;
     org.luaj.vm2.LuaValue u5;
     org.luaj.vm2.LuaValue u6;

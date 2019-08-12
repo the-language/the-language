@@ -11,7 +11,7 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
     org.luaj.vm2.LuaValue u8;
     org.luaj.vm2.LuaValue u9;
     org.luaj.vm2.LuaValue u10;
-    org.luaj.vm2.LuaValue[] u11;
+    org.luaj.vm2.LuaValue u11;
     org.luaj.vm2.LuaValue u12;
     org.luaj.vm2.LuaValue u13;
     org.luaj.vm2.LuaValue u14;
@@ -59,7 +59,7 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                             a13.u0 = a0;
                             a13.u1 = a11;
                             a13.u2 = a3;
-                            return org.luaj.vm2.LuaValue.tailcallOf(this.u11[0], (org.luaj.vm2.Varargs)a13);
+                            return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a13);
                         }
 
 
@@ -71,7 +71,7 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                         a14.u4 = a5;
                         a14.u5 = a11;
                         a14.u6 = a3;
-                        return org.luaj.vm2.LuaValue.tailcallOf(this.u11[0], (org.luaj.vm2.Varargs)a14);
+                        return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a14);
                     }
                 }
             } else if (this.u5[0].call(a8, this.u14).toboolean()) {
@@ -93,7 +93,7 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                                 a20.u3 = a16;
                                 a20.u4 = a3;
                                 a20.u5 = a18;
-                                return org.luaj.vm2.LuaValue.tailcallOf(this.u11[0], (org.luaj.vm2.Varargs)a20);
+                                return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a20);
                             }
 
 
@@ -113,14 +113,14 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
                             a23.u10 = this.u19;
                             a23.u11 = a18;
                             a23.u12 = a21;
-                            return org.luaj.vm2.LuaValue.tailcallOf(this.u11[0], (org.luaj.vm2.Varargs)a23);
+                            return org.luaj.vm2.LuaValue.tailcallOf(this.u11, (org.luaj.vm2.Varargs)a23);
                         }
                     }
                 }
             }
         }
         if (a5[0].eq_b((org.luaj.vm2.LuaValue)org.luaj.vm2.LuaValue.FALSE)) {
-            org.luaj.vm2.LuaValue a24 = this.u11[0];
+            org.luaj.vm2.LuaValue a24 = this.u11;
             Lang$luaj$run_monad_helper$5 a25 = new Lang$luaj$run_monad_helper$5();
             a25.u0 = a1;
             a25.u1 = a7;
@@ -128,7 +128,7 @@ public class Lang$luaj$run_monad_helper extends org.luaj.vm2.lib.VarArgFunction 
             a25.u3 = a0;
             return org.luaj.vm2.LuaValue.tailcallOf(a24, (org.luaj.vm2.Varargs)a25);
         }
-        org.luaj.vm2.LuaValue a26 = this.u11[0];
+        org.luaj.vm2.LuaValue a26 = this.u11;
         Lang$luaj$run_monad_helper$6 a27 = new Lang$luaj$run_monad_helper$6();
         a27.u0 = a1;
         a27.u1 = a7;

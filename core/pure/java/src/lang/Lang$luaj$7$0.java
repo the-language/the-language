@@ -1,8 +1,8 @@
 package lang;
-public class Lang$luaj$83$0 extends org.luaj.vm2.lib.ZeroArgFunction {
+public class Lang$luaj$7$0 extends org.luaj.vm2.lib.ZeroArgFunction {
     org.luaj.vm2.LuaValue u0;
     
-    public Lang$luaj$83$0() {
+    public Lang$luaj$7$0() {
     }
     
     final public org.luaj.vm2.LuaValue call() {

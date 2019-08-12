@@ -47,6 +47,8 @@ $LANG_ERROR = NULL;
 $LANG_ASSERT = NULL;
 $recordstring_null_p = NULL;
 $recordstring_shadow_copy = NULL;
+$trampoline_return = NULL;
+$trampoline_delay = NULL;
 $atom_t = NULL;
 $construction_t = NULL;
 $null_t = NULL;
@@ -163,9 +165,6 @@ $new_lambda = NULL;
 $jsbool_equal_p_inner = NULL;
 $equal_p = NULL;
 $simple_print = NULL;
-$trampoline_return = NULL;
-$trampoline_delay = NULL;
-$run_trampoline = NULL;
 $LANG_ERROR = (function () {
     throw new Exception("TheLanguage PANIC");
 });
@@ -188,6 +187,16 @@ $recordstring_shadow_copy = (function ($x = NULL) {
         $result->array[(is_int($k) ? $k - 1 : $k)] = $x->array[(is_int($k) ? $k - 1 : $k)];
     }
     return $result;
+});
+$trampoline_return = (function ($x = NULL) {
+    return (function () use (&$x) {
+        return ((object)["array" => [false, $x]]);
+    });
+});
+$trampoline_delay = (function ($x = NULL) {
+    return (function () use (&$x) {
+        return ((object)["array" => [true, $x()]]);
+    });
 });
 $new_comment = (function ($comment = NULL, $x = NULL) use (&$comment_t) {
     return ((object)["array" => [$comment_t, $comment, $x]]);
@@ -1304,16 +1313,6 @@ $simple_print = (function ($x = NULL) use (&$LANG_ERROR, &$atom_p, &$comment_com
             (" " . (((string)$simple_print($jsArray_to_list($delay_apply_xs($x)))) . ")"))));
     }
     return $LANG_ERROR();
-});
-$trampoline_return = (function ($x = NULL) {
-    return (function () use (&$x) {
-        return ((object)["array" => [false, $x]]);
-    });
-});
-$trampoline_delay = (function ($x = NULL) {
-    return (function () use (&$x) {
-        return ((object)["array" => [true, $x()]]);
-    });
 });
 $run_trampoline = (function ($x = NULL) {
     $i = $x();
@@ -2748,6 +2747,9 @@ $run_monad_stackoverflow = (function ($return_handler = NULL, $op_handler = NULL
     );
 });
 $____exports = ((object)["array" => []]);
+$____exports->array["trampoline_return"] = $trampoline_return;
+$____exports->array["trampoline_delay"] = $trampoline_delay;
+$____exports->array["run_trampoline"] = $run_trampoline;
 $____exports->array["new_comment"] = $new_comment;
 $____exports->array["comment_p"] = $comment_p;
 $____exports->array["comment_comment"] = $comment_comment;
@@ -2800,9 +2802,6 @@ $____exports->array["complex_parse"] = $complex_parse;
 $____exports->array["complex_print"] = $complex_print;
 $____exports->array["machinetext_parse"] = $machinetext_parse;
 $____exports->array["machinetext_print"] = $machinetext_print;
-$____exports->array["trampoline_return"] = $trampoline_return;
-$____exports->array["trampoline_delay"] = $trampoline_delay;
-$____exports->array["run_trampoline"] = $run_trampoline;
 $____exports->array["return_effect_systemName"] = $return_effect_systemName;
 $____exports->array["bind_effect_systemName"] = $bind_effect_systemName;
 $____exports->array["new_effect_bind"] = $new_effect_bind;

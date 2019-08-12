@@ -1,15 +1,11 @@
 package lang;
-public class Lang$luaj$6 extends org.luaj.vm2.lib.TwoArgFunction {
-    org.luaj.vm2.LuaValue[] u0;
-    
+public class Lang$luaj$6 extends org.luaj.vm2.lib.OneArgFunction {
     public Lang$luaj$6() {
     }
     
-    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a, org.luaj.vm2.LuaValue a0) {
-        org.luaj.vm2.LuaTable a1 = org.luaj.vm2.LuaValue.tableOf(3, 0);
-        ((org.luaj.vm2.LuaValue)a1).rawset(1, this.u0[0]);
-        ((org.luaj.vm2.LuaValue)a1).rawset(2, a);
-        ((org.luaj.vm2.LuaValue)a1).rawset(3, a0);
-        return a1;
+    final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {
+        Lang$luaj$6$0 a0 = new Lang$luaj$6$0();
+        a0.u0 = a;
+        return a0;
     }
 }

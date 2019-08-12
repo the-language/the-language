@@ -1,5 +1,5 @@
 package lang;
-public class Lang$luaj$84 extends org.luaj.vm2.lib.OneArgFunction {
+public class Lang$luaj$run_trampoline extends org.luaj.vm2.lib.OneArgFunction {
     final static org.luaj.vm2.LuaValue k0;
     final static org.luaj.vm2.LuaValue k1;
     
@@ -8,7 +8,7 @@ public class Lang$luaj$84 extends org.luaj.vm2.lib.OneArgFunction {
         k1 = org.luaj.vm2.LuaValue.valueOf(2);
     }
     
-    public Lang$luaj$84() {
+    public Lang$luaj$run_trampoline() {
     }
     
     final public org.luaj.vm2.LuaValue call(org.luaj.vm2.LuaValue a) {

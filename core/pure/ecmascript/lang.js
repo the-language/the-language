@@ -20,6 +20,22 @@ function recordstring_shadow_copy(x) {
     }
     return result;
 }
+function trampoline_return(x) {
+    return function () { return [false, x]; };
+}
+exports.trampoline_return = trampoline_return;
+function trampoline_delay(x) {
+    return function () { return [true, x()]; };
+}
+exports.trampoline_delay = trampoline_delay;
+function run_trampoline(x) {
+    var i = x();
+    while (i[0]) {
+        i = i[1]();
+    }
+    return i[1];
+}
+exports.run_trampoline = run_trampoline;
 var atom_t = 0;
 var construction_t = 1;
 var null_t = 2;
@@ -2069,22 +2085,6 @@ function machinetext_print(x) {
     return result;
 }
 exports.machinetext_print = machinetext_print;
-function trampoline_return(x) {
-    return function () { return [false, x]; };
-}
-exports.trampoline_return = trampoline_return;
-function trampoline_delay(x) {
-    return function () { return [true, x()]; };
-}
-exports.trampoline_delay = trampoline_delay;
-function run_trampoline(x) {
-    var i = x();
-    while (i[0]) {
-        i = i[1]();
-    }
-    return i[1];
-}
-exports.run_trampoline = run_trampoline;
 var return_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)));
 exports.return_effect_systemName = return_effect_systemName;
 var bind_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(construction_atom, null_v)), null_v)));

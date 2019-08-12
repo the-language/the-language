@@ -38,7 +38,7 @@ local function __TS__ArrayUnshift(arr, ...)
     return #arr
 end
 
-local LANG_ERROR, LANG_ASSERT, recordstring_null_p, recordstring_shadow_copy, atom_t, construction_t, null_t, data_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, error_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, new_error, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, enviroment_null_p, enviroment_helper_print0, enviroment_helper_print_step, enviroment_helper_node_expand, enviroment_helper_tree_shadow_copy, enviroment_set_helper, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print, trampoline_return, trampoline_delay, run_trampoline
+local LANG_ERROR, LANG_ASSERT, recordstring_null_p, recordstring_shadow_copy, trampoline_return, trampoline_delay, atom_t, construction_t, null_t, data_t, just_t, delay_evaluate_t, delay_builtin_func_t, delay_builtin_form_t, delay_apply_t, comment_t, hole_t, new_comment, comment_p, comment_comment, comment_x, un_comment_all, atom_p, un_atom, atom_equal_p, new_construction, construction_p, construction_head, construction_tail, null_v, null_p, new_data, data_p, data_name, data_list, just_p, un_just, evaluate, delay_evaluate_p, delay_evaluate_env, delay_evaluate_x, builtin_form_apply, delay_builtin_form_p, delay_builtin_form_env, delay_builtin_form_f, delay_builtin_form_xs, builtin_func_apply, delay_builtin_func_p, delay_builtin_func_f, delay_builtin_func_xs, apply, delay_apply_p, delay_apply_f, delay_apply_xs, force_all_rec, unlazy_all_rec, new_hole_do, hole_p, lang_assert_equal_set_do, hole_set_do, lang_copy_do, system_atom, name_atom, function_atom, form_atom, mapping_atom, error_atom, the_world_stopped_v, data_name_function_builtin_systemName, data_list_function_builtin_systemName, data_p_function_builtin_systemName, construction_p_function_builtin_systemName, construction_head_function_builtin_systemName, construction_tail_function_builtin_systemName, atom_p_function_builtin_systemName, null_p_function_builtin_systemName, equal_p_function_builtin_systemName, apply_function_builtin_systemName, evaluate_function_builtin_systemName, if_function_builtin_systemName, quote_form_builtin_systemName, lambda_form_builtin_systemName, function_builtin_use_systemName, form_builtin_use_systemName, form_use_systemName, comment_form_builtin_systemName, new_error, jsArray_to_list, new_list, un_just_all, delay_p, delay_just_p, lazy_p, force_all_inner, force1, force_all, force_uncomment_all, unlazy1, unlazy_list_1_keepcomment, name_unlazy1_p3, enviroment_null_p, enviroment_helper_print0, enviroment_helper_print_step, enviroment_helper_node_expand, enviroment_helper_tree_shadow_copy, enviroment_set_helper, env_null_v, env_set, env_get, must_env_get, env2val, env_foreach, real_evaluate, real_builtin_func_apply_s, real_apply, real_builtin_func_apply, real_builtin_form_apply, make_quote, new_lambda, jsbool_equal_p_inner, equal_p, simple_print
 function LANG_ERROR()
     error("TheLanguage PANIC")
 end
@@ -59,6 +59,15 @@ function recordstring_shadow_copy(x)
         result[k] = x[k]
     end
     return result
+end
+function trampoline_return(x)
+    return function() return {false, x} end
+end
+function trampoline_delay(x)
+    return function() return {
+        true,
+        x()
+    } end
 end
 function new_comment(comment, x)
     return {comment_t, comment, x}
@@ -1279,16 +1288,7 @@ function simple_print(x)
     end
     return LANG_ERROR()
 end
-function trampoline_return(x)
-    return function() return {false, x} end
-end
-function trampoline_delay(x)
-    return function() return {
-        true,
-        x()
-    } end
-end
-function run_trampoline(x)
+local function run_trampoline(x)
     local i = x()
     while i[1] do
         i = i[2]()
@@ -2889,6 +2889,9 @@ local function run_monad_stackoverflow(return_handler, op_handler, code, state)
 end
 
 local ____exports = {}
+____exports.trampoline_return = trampoline_return
+____exports.trampoline_delay = trampoline_delay
+____exports.run_trampoline = run_trampoline
 ____exports.new_comment = new_comment
 ____exports.comment_p = comment_p
 ____exports.comment_comment = comment_comment
@@ -2941,9 +2944,6 @@ ____exports.complex_parse = complex_parse
 ____exports.complex_print = complex_print
 ____exports.machinetext_parse = machinetext_parse
 ____exports.machinetext_print = machinetext_print
-____exports.trampoline_return = trampoline_return
-____exports.trampoline_delay = trampoline_delay
-____exports.run_trampoline = run_trampoline
 ____exports.return_effect_systemName = return_effect_systemName
 ____exports.bind_effect_systemName = bind_effect_systemName
 ____exports.new_effect_bind = new_effect_bind

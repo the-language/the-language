@@ -2,7 +2,7 @@ package lang;
 public class Lang$luaj$run_monad_stackoverflow extends org.luaj.vm2.lib.VarArgFunction {
     org.luaj.vm2.LuaValue u0;
     org.luaj.vm2.LuaValue u1;
-    org.luaj.vm2.LuaValue[] u2;
+    org.luaj.vm2.LuaValue u2;
     
     public Lang$luaj$run_monad_stackoverflow() {
     }

@@ -38,6 +38,20 @@ function recordstring_shadow_copy(x) {
     }
     return result;
 }
+function trampoline_return(x) {
+    return () => [false, x];
+}
+function trampoline_delay(x) {
+    return () => [true, x()];
+}
+function run_trampoline(x) {
+    let i = x();
+    while (i[0]) {
+        i = i[1]();
+    }
+    return i[1];
+}
+export { trampoline_return, trampoline_delay, run_trampoline };
 const atom_t = 0;
 const construction_t = 1;
 const null_t = 2;
@@ -2031,20 +2045,6 @@ function machinetext_print(x) {
     return result;
 }
 export { machinetext_parse, machinetext_print };
-function trampoline_return(x) {
-    return () => [false, x];
-}
-function trampoline_delay(x) {
-    return () => [true, x()];
-}
-function run_trampoline(x) {
-    let i = x();
-    while (i[0]) {
-        i = i[1]();
-    }
-    return i[1];
-}
-export { trampoline_return, trampoline_delay, run_trampoline };
 const return_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(new_construction(typeAnnotation_atom, new_construction(thing_atom, new_construction(something_atom, null_v))), null_v)), null_v)));
 const bind_effect_systemName = systemName_make(new_construction(sub_atom, new_construction(new_construction(effect_atom, new_construction(construction_atom, null_v)), null_v)));
 function new_effect_bind(monad, func) {
