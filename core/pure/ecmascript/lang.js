@@ -1,4 +1,3 @@
-exports.__esModule = true;
 function LANG_ERROR() {
     throw "TheLanguage PANIC";
 }

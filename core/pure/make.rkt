@@ -134,21 +134,25 @@
              "c/liblang.so"
              "c/liblang.a")
             (void))
-     ("ecmascript/exports.list" ("ecmascript/lang.min.0.js") (void)) ;; 生成代碼寫在"ecmascript/lang.js生成裡
+     ("ecmascript/exports.list" ("ecmascript/lang.js") { in-dir "ecmascript" {
+         (define exports (string->lines #{grep (id "^exports.*=") lang.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
+         |> lines->string exports &>! exports.list
+     }})
      ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
          yarn
          touch node_modules/
      }})
-     ("ecmascript/lang.min.0.js" ("ecmascript/node_modules" "typescript/lang.ts") {
+     ("ecmascript/langraw.js" ("ecmascript/node_modules" "typescript/lang.ts"){ in-dir "ecmascript" {
+         npx --no-install tsickle --typed
+         (define raw (match (string->lines #{cat langraw.js})
+                       [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
+         |> id raw &>! langraw.js
+     }})
+     ("ecmascript/lang.min.0.js" ("ecmascript/node_modules" "ecmascript/langraw.js" "ecmascript/exports.list") {
         in-dir "ecmascript" {
-            npx --no-install tsickle --typed
-            (define raw (match (string->lines #{cat langraw.js})
-                          [(list _ ... "goog.module('_..langraw');" "var module = module || { id: '' };" "exports.__esModule = true;" rest ...) (lines->string rest)]))
-            |> id raw &>! langraw.js
-            (define exports (string->lines #{grep (id "^exports.*=") langraw.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
+            (define exports (ecmascript/exports.list-parse))
             |> ++ "var exports = {};\n" (apply-++ (map (lambda (x) (++ "exports."x"='something';\n")) exports)) &>! lang.externs.js
             java -jar ./node_modules/google-closure-compiler-java/compiler.jar --assume_function_wrapper --language_out ECMASCRIPT3 --js langraw.js --externs lang.externs.js -O ADVANCED --use_types_for_optimization &>! lang.min.0.js
-            |> lines->string exports &>! exports.list
      }})
      ("ecmascript/lang.min.2.js" ("ecmascript/node_modules" "ecmascript/lang.min.0.js") { in-dir "ecmascript" {
          |> ++ "var exports={};\n(function(){\n" #{cat lang.min.0.js} "\n})();" &>! lang.min.2.js.tmp
@@ -159,8 +163,9 @@
      }})
      ("ecmascript/lang.js" ("ecmascript/node_modules" "typescript/lang.ts") { in-dir "ecmascript" {
          npx --no-install tsc --removeComments --outDir lang.js.tmp
-         mv lang.js.tmp/langraw.js lang.js
+         (define raw (string->lines #{cat lang.js.tmp/langraw.js}))
          rm -fr lang.js.tmp
+         |> lines->string (match raw [(list "exports.__esModule = true;" xs ...) xs]) &>! lang.js
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
      ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
