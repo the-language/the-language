@@ -37,6 +37,8 @@ racket test.rkt
 * GNU make | `apt install make` `pacman -S make` `apk add make` `scoop install make`
 * curl | `pacman -S curl` `apt install curl` `apk add curl` `scoop install curl`
 * [已不再依賴] golang 1.10+ | `apt install golang-1.10` `pacman -S go` `apk add go`
+* rust, cargo | `apk add rust cargo`
+* luajit 2.x | `apk add luajit`
 
 ### 運行依賴
 
