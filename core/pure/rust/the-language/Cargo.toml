@@ -6,6 +6,7 @@ edition = "2018"
 license = "AGPL-3.0-or-later"
 homepage = "https://the-language.ml/"
 repository = "https://gitlab.com/the-language/the-language"
+description = "TheLanguage"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
