@@ -1,9 +1,0 @@
-/lua-5.1.5/
-/lua2c/
-/lang.lua2c.out.c
-/node_modules/
-/src/
-
-/liblang.a
-/lang.o
-/liblang.so

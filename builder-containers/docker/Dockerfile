@@ -8,7 +8,7 @@ RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositor
   apk add --no-cache \
     yarn nodejs npm \
     clang binutils gcc libc-dev \
-    racket openjdk11 php7 python2 rust cargo luajit \
+    racket openjdk11 php7 python2 rust cargo luajit go \
     make curl git bash && \
   ln -s /usr/lib/jvm/java-11-openjdk/bin/* /usr/local/bin/
 RUN raco pkg install --binary-lib --no-cache --batch --installation --deps force racket-doc ; \

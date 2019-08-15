@@ -123,16 +123,9 @@
              "lua/lang.lua"
              "lua/lang_min.lua"
              "ecmascript6/lang.js"
-             ;;"python2/lang.py";;暫停。因爲性能太差。
-             ;;"python3/lang.py";;暫停。因爲性能太差。
-             ;;"go/src";;暫停。因爲Lua解釋器的BUG。
              "php/lang.php"
              "java/src"
-             "c/lang.h"
-             "c/lang.c"
-             "c/lang.o"
-             "c/liblang.so"
-             "c/liblang.a")
+             "rust/the-language/src/lang.rs")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") { in-dir "ecmascript" {
          (define exports (string->lines #{grep (id "^exports.*=") lang.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
@@ -143,6 +136,13 @@
      ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
          yarn
          touch node_modules/
+     }})
+     ("rust/node_modules" ("rust/yarn.lock") { in-dir "rust" { ;; 避免竞争状态
+         yarn
+         touch node_modules/
+     }})
+     ("rust/the-language/src/lang.rs" ("rust/node_modules" "lua/lang.lua") { in-dir "rust" {
+        npx --no-install lua2rust ../lua/lang.lua lang &>! the-language/src/lang.rs
      }})
      ("ecmascript/langraw.js" ("ecmascript/node_modules" "typescript/lang.ts"){ in-dir "ecmascript" {
          npx --no-install tsickle --typed
@@ -173,8 +173,8 @@
          |> lines->string (match raw [(list "exports.__esModule = true;" xs ...) xs]) &>! lang.js
      }})
      ("lua/luasrcdiet" () { git clone --depth 1 https://github.com/jirutka/luasrcdiet.git lua/luasrcdiet })
-     ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet" "c/lua-5.1.5/src/lua") { in-dir "lua" {
-         sh -c (id "LUA_PATH='./luasrcdiet/?.lua' ../c/lua-5.1.5/src/lua ./luasrcdiet/bin/luasrcdiet lang.lua -o lang_min.lua")
+     ("lua/lang_min.lua" ("lua/lang.lua" "lua/luasrcdiet") { in-dir "lua" {
+         sh -c (id "LUA_PATH='./luasrcdiet/?.lua' luajit ./luasrcdiet/bin/luasrcdiet lang.lua -o lang_min.lua")
      }})
      ("lua/node_modules" ("lua/yarn.lock") { in-dir "lua" { ;; 避免竞争状态
          yarn
@@ -221,53 +221,6 @@
          in-dir "java" {
              ./compile.sh
      }})
-     ("c/lua-5.1.5/src/lua" () {in-dir "c" {
-         |> id "curl http://www.lua.org/ftp/lua-5.1.5.tar.gz | tar -xzv && cd lua-5.1.5 && make generic CC=clang && cd .." | sh
-     }})
-     ("c/lua-5.1.5" ("c/lua-5.1.5/src/lua") { touch c/lua-5.1.5/ })
-     ("c/lua2c" ("c/lua2c-lib-lua2c-ast2cast.lua") {
-       in-dir "c" {
-           |> id "[ -d lua2c ] || (curl https://gitlab.com/the-language/lua2c/-/archive/c5b239dd5a9fad5718ffaa16e6a30cca8053ba92/lua2c-c5b239dd5a9fad5718ffaa16e6a30cca8053ba92.tar.gz | tar -xzv && mv lua2c-c5b239dd5a9fad5718ffaa16e6a30cca8053ba92 lua2c)" | sh
-           rm -fr ./lua2c/lib/lua2c/ast2cast.lua
-           cp ./lua2c-lib-lua2c-ast2cast.lua ./lua2c/lib/lua2c/ast2cast.lua
-           touch lua2c/
-     }})
-     ("c/lang.h" () (void))
-     ("c/lang.c" ("c/lua-5.1.5" "c/lua-5.1.5/src/lua" "c/lua2c" "lua/lang_min.lua" "c/patch/lang.tail.c" "c/lang.h") {
-       in-dir "c" {
-             (define raw #{|> id "LUA_PATH=./lua2c/lib/?.lua ./lua-5.1.5/src/lua ./lua2c/lua2c.lua ../lua/lang_min.lua" | sh | sed (id "s|static|static inline|g") | clang-format})
-
-             |> id raw &>! lang.lua2c.out.c
-
-             (define out #{cat ./lang.lua2c.out.c ./patch/lang.tail.c})
-
-             mkdir -p src
-             rm -fr src
-             mkdir src
-             cp ./lua-5.1.5/src/lapi.c ./lua-5.1.5/src/lcode.c ./lua-5.1.5/src/ldebug.c ./lua-5.1.5/src/ldo.c ./lua-5.1.5/src/ldump.c ./lua-5.1.5/src/lfunc.c ./lua-5.1.5/src/lgc.c ./lua-5.1.5/src/llex.c ./lua-5.1.5/src/lmem.c ./lua-5.1.5/src/lobject.c ./lua-5.1.5/src/lopcodes.c ./lua-5.1.5/src/lparser.c ./lua-5.1.5/src/lstate.c ./lua-5.1.5/src/lstring.c ./lua-5.1.5/src/ltable.c ./lua-5.1.5/src/ltm.c ./lua-5.1.5/src/lundump.c ./lua-5.1.5/src/lvm.c ./lua-5.1.5/src/lzio.c ./lua-5.1.5/src/lauxlib.c ./lua-5.1.5/src/lbaselib.c ./lua-5.1.5/src/ldblib.c ./lua-5.1.5/src/liolib.c ./lua-5.1.5/src/lmathlib.c ./lua-5.1.5/src/loslib.c ./lua-5.1.5/src/ltablib.c ./lua-5.1.5/src/lstrlib.c ./lua-5.1.5/src/loadlib.c ./lua-5.1.5/src/linit.c ./src
-             cp ./lua-5.1.5/src/*.h ./src
-             |> id out &>! ./src/lang.c
-             cp lang.h ./src
-
-             cp ./patch/tailor/* ./src
-             rm ./src/loslib.c ./src/lmathlib.c ./src/liolib.c ./src/ldblib.c ./src/loadlib.c
-
-             ./gen.single.sh
-             (define single (++
-                   c-generatedby
-                   c-copyright
-                   #{cat lang.c}))
-             |> id single &>! lang.c
-     }})
-     ("c/lang.o" ("c/lang.c" "c/lang.h") { in-dir "c" {
-         clang -I. -c -o lang.o lang.c -Ofast ;; -Oz -DNDEBUG
-     }})
-     ("c/liblang.so" ("c/lang.o") { in-dir "c" {
-         clang -Wl,-s -shared lang.o -o liblang.so
-     }})
-     ("c/liblang.a" ("c/lang.o") { in-dir "c" {
-         ar -r liblang.a lang.o
-     }})
      ("php/node_modules" ("php/yarn.lock") { in-dir "php" { ;; 避免竞争状态
          yarn
          touch node_modules/
@@ -276,97 +229,5 @@
          in-dir "php" {
              |> lines->string (match (string->lines #{cat ../lua/lang.lua}) [(list head ... "return ____exports") head]) &>! lang.lua
              |> id (++ "<?php\n" c-generatedby c-copyright (lines->string (match (string->lines #{npx --no-install lua2php lang.lua}) [(list "<?php" tail ...) tail]))) &>! lang.php
-     }})
-     ;; 以下爲停止支持的
-     ("python3/lang.py" ("python2/lang.py") {
-         in-dir "python3" {
-             rm -fr lang.py
-             cp ../python2/lang.py ./
-             2to3 -f all -f buffer -f idioms -f set_literal -f ws_comma --no-diffs --nobackups -w lang.py
-     }})
-     ("python2/lang.py" ("ecmascript/lang.js" "ecmascript/exports.list") {
-         in-dir "python2" {
-             (define raw-js (++
-                 "var exports={};"
-                 #{cat ../ecmascript/lang.js}))
-             |> id raw-js &>! lang.js
-             |> id "import js2py\njs2py.translate_file('lang.js','lang.py')\n" | python2
-             (define exports (ecmascript/exports.list-parse))
-             (define exports-py (++
-                 "exports = var.to_python().exports\n"
-                 (apply-++ (map (lambda (x) (++ x" = exports."x"\n")) exports))
-                 ))
-             (define all-py (++
-                 "__all__ = ["
-                 (apply-++ (add-between (map (lambda (x) (++ "'"x"'")) exports)", "))
-                 "]\n"
-                 ))
-             (define py-raw (string->lines #{cat lang.py}))
-             (match-define (list py-raw-head py-raw-body ... py-raw-tail) py-raw)
-             (define py (++
-                 bash-generatedby
-                 (match py-raw-head ["__all__ = ['lang']" all-py])
-                 (lines->string py-raw-body)
-                 "\n"
-                 (match py-raw-tail ["lang = var.to_python()" exports-py])))
-             |> id py &>! lang.py
-     }})
-     ("go/src" ("lua/lang.lua") {
-         in-dir "go" {
-           mkdir -p deps
-           bash -c "[ -d ./deps/src/github.com/yuin/gopher-lua/ ] || (mkdir -p ./deps/src/github.com/yuin && pushd ./deps/src/github.com/yuin && git clone --depth 1 https://github.com/yuin/gopher-lua.git && popd)"
-           bash -c (id "GOPATH=\"$PWD/deps\" go get github.com/yuin/gopher-lua")
-           (define lang.go
-               (++
-                   c-generatedby
-                   c-copyright
-                   "package lang\n"
-                   "import ( \"github.com/yuin/gopher-lua\" )\n"
-                   "type Value lua.LValue\n"
-                   "var exports *lua.LTable\n"
-                   "var ls *lua.LState\n"
-                   "func assertstateempty() {if ls.GetTop() != 0 {panic(\"ls.GetTop() != 0\")}}\n"
-                   "func init() {\n"
-                   "ls = lua.NewState()\n"
-                   "ls.OpenLibs()\n"
-                   "defer ls.Close()\n"
-                   "if err := ls.DoString(`"#{cat ../lua/lang.lua}"`); err != nil {panic(err)}\n"
-                   "exports = ls.Get(-1).(*lua.LTable)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "}\n"
-                   "func ComplexParse(x string) Value {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_parse`), NRet: 1, Protect: true}, lua.LString(x))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return ret.(Value)\n"
-                   "}\n"
-                   "func ComplexPrint(x Value) string {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`complex_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return string(ret.(lua.LString))\n"
-                   "}\n"
-                   "func SimplePrint(x Value) string {\n"
-                   "ls.CallByParam(lua.P{Fn: exports.RawGetString(`simple_print`), NRet: 1, Protect: true}, x.(lua.LValue))\n"
-                   "ret := ls.Get(-1)\n"
-                   "ls.Pop(1)\n"
-                   "assertstateempty()\n"
-                   "return string(ret.(lua.LString))\n"
-                   "}\n"
-               ))
-           rm -fr src
-           mkdir -p src/lang
-           |> id lang.go &>! src/lang/lang.go
-           (define package.go
-               (++
-                 "package lang\n"
-                 "const PackageName = `The Language`\n"
-                 "const PackageVersion = `0.1`\n"
-                 "const PackageAuthors = `Zaoqi`\n"
-                 "const PackageCopyRight = PackageName + ` ` + PackageVersion + ` Copyright (C) 2018-2019 ` + PackageAuthors\n"))
-           |> id package.go &>! src/lang/package.go
      }})
      ))

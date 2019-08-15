@@ -673,21 +673,21 @@ function enviroment_null_p(x) {
     }
     return false;
 }
-function enviroment_helper_print0(x, ref, ret) {
+function enviroment_helper_print0(x, refe, ret) {
     x = force_uncomment_all(x);
     if (atom_p(x)) {
         ret.push("^", un_atom(x));
     }
     else if (construction_p(x)) {
         ret.push(".");
-        ref.push(construction_head(x), construction_tail(x));
+        refe.push(construction_head(x), construction_tail(x));
     }
     else if (null_p(x)) {
         ret.push("_");
     }
     else if (data_p(x)) {
         ret.push("#");
-        ref.push(data_name(x), data_list(x));
+        refe.push(data_name(x), data_list(x));
     }
     else {
         return LANG_ERROR();
@@ -739,11 +739,11 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
         return_pointer[2] = result_tmp[2];
         var result = return_pointer;
         var a = enviroment_helper_print_step(key);
-        var as = a[0];
+        var astr = a[0];
         var av_1 = a[1];
         var pointer_1 = result;
-        for (var i = 0; i < as.length; i++) {
-            var k = as[i];
+        for (var i = 0; i < astr.length; i++) {
+            var k = astr[i];
             var m = null;
             if (k in pointer_1[1]) {
                 var t = pointer_1[1][k];
@@ -752,7 +752,7 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return) {
                 }
                 else {
                     if (t[1].length === 0) {
-                        LANG_ASSERT(i === as.length - 1);
+                        LANG_ASSERT(i === astr.length - 1);
                         var p = make_enviroment_null_v();
                         pointer_1[1][k] = p;
                         p[0] = false;

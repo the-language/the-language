@@ -541,7 +541,7 @@ function enviroment_null_p(x)
     end
     return false
 end
-function enviroment_helper_print0(x, ref, ret)
+function enviroment_helper_print0(x, refe, ret)
     x = force_uncomment_all(x)
     if atom_p(x) then
         __TS__ArrayPush(
@@ -552,7 +552,7 @@ function enviroment_helper_print0(x, ref, ret)
     elseif construction_p(x) then
         __TS__ArrayPush(ret, ".")
         __TS__ArrayPush(
-            ref,
+            refe,
             construction_head(x),
             construction_tail(x)
         )
@@ -561,7 +561,7 @@ function enviroment_helper_print0(x, ref, ret)
     elseif data_p(x) then
         __TS__ArrayPush(ret, "#")
         __TS__ArrayPush(
-            ref,
+            refe,
             data_name(x),
             data_list(x)
         )
@@ -620,13 +620,13 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return)
         return_pointer[3] = result_tmp[3]
         local result = return_pointer
         local a = enviroment_helper_print_step(key)
-        local as = a[1]
+        local astr = a[1]
         local av = a[2]
         local pointer = result
         do
             local i = 0
-            while i < #as do
-                local k = as[i + 1]
+            while i < #astr do
+                local k = astr[i + 1]
                 local m = nil
                 if pointer[2][k] ~= nil then
                     local t = pointer[2][k]
@@ -634,7 +634,7 @@ function enviroment_set_helper(env, key, val, return_pointer, real_return)
                         m = enviroment_helper_tree_shadow_copy(t)
                     else
                         if t[1].length == 0 then
-                            LANG_ASSERT(i == #as - 1)
+                            LANG_ASSERT(i == #astr - 1)
                             local p = make_enviroment_null_v()
                             pointer[2][k] = p
                             p[1] = false

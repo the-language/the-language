@@ -669,18 +669,18 @@ $enviroment_null_p = (function ($x = NULL) use (&$recordstring_null_p) {
     }
     return false;
 });
-$enviroment_helper_print0 = (function ($x = NULL, $ref = NULL, $ret = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_uncomment_all, &$null_p, &$un_atom) {
+$enviroment_helper_print0 = (function ($x = NULL, $refe = NULL, $ret = NULL) use (&$LANG_ERROR, &$__TS__ArrayPush, &$atom_p, &$construction_head, &$construction_p, &$construction_tail, &$data_list, &$data_name, &$data_p, &$force_uncomment_all, &$null_p, &$un_atom) {
     $x = $force_uncomment_all($x);
     if ($atom_p($x)) {
         $__TS__ArrayPush($ret, "^", $un_atom($x));
     } elseif ($construction_p($x)) {
         $__TS__ArrayPush($ret, ".");
-        $__TS__ArrayPush($ref, $construction_head($x), $construction_tail($x));
+        $__TS__ArrayPush($refe, $construction_head($x), $construction_tail($x));
     } elseif ($null_p($x)) {
         $__TS__ArrayPush($ret, "_");
     } elseif ($data_p($x)) {
         $__TS__ArrayPush($ret, "#");
-        $__TS__ArrayPush($ref, $data_name($x), $data_list($x));
+        $__TS__ArrayPush($refe, $data_name($x), $data_list($x));
     } else {
         return $LANG_ERROR();
     }
@@ -747,14 +747,14 @@ $enviroment_set_helper = (function (
         $return_pointer->array[2] = $result_tmp->array[2];
         $result = $return_pointer;
         $a = $enviroment_helper_print_step($key);
-        $as = $a->array[0];
+        $astr = $a->array[0];
         $av = $a->array[1];
         $pointer = $result;
         
         {
             $i = 0;
-            while (($i < (is_string($as) ? strlen($as) : count($as->array)))) {
-                $k = $as->array[($i + 0)];
+            while (($i < (is_string($astr) ? strlen($astr) : count($astr->array)))) {
+                $k = $astr->array[($i + 0)];
                 $m = NULL;
                 if (($pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] !== NULL)) {
                     $t = $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)];
@@ -762,7 +762,7 @@ $enviroment_set_helper = (function (
                         $m = $enviroment_helper_tree_shadow_copy($t);
                     } else {
                         if (($t->array[0]->array["length"] === 0)) {
-                            $LANG_ASSERT(($i === ((is_string($as) ? strlen($as) : count($as->array)) - 1)));
+                            $LANG_ASSERT(($i === ((is_string($astr) ? strlen($astr) : count($astr->array)) - 1)));
                             $p = $make_enviroment_null_v();
                             $pointer->array[1]->array[(is_int($k) ? $k - 1 : $k)] = $p;
                             $p->array[0] = false;

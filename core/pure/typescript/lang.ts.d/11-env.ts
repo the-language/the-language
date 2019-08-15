@@ -37,18 +37,18 @@ function enviroment_null_p(x: Enviroment): x is EnviromentNull {
     }
     return false
 }
-function enviroment_helper_print0(x: LangVal, ref: Array<LangVal>, ret: Array<string>): void {
+function enviroment_helper_print0(x: LangVal, refe: Array<LangVal>, ret: Array<string>): void {
     x = force_uncomment_all(x)
     if (atom_p(x)) {
         ret.push("^", un_atom(x))
     } else if (construction_p(x)) {
         ret.push(".")
-        ref.push(construction_head(x), construction_tail(x))
+        refe.push(construction_head(x), construction_tail(x))
     } else if (null_p(x)) {
         ret.push("_")
     } else if (data_p(x)) {
         ret.push("#")
-        ref.push(data_name(x), data_list(x))
+        refe.push(data_name(x), data_list(x))
     } else {
         return LANG_ERROR()
     }
@@ -98,11 +98,11 @@ function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVa
         return_pointer[2] = result_tmp[2]
         const result: EnviromentTree = return_pointer as EnviromentTree
         const a = enviroment_helper_print_step(key)
-        const as: Array<string> = a[0]
+        const astr: Array<string> = a[0]
         const av: Array<LangVal> = a[1]
         let pointer: EnviromentTree = result // poiter表層為已複製，可修改的。
-        for (let i = 0; i < as.length; i++) {
-            const k = as[i]
+        for (let i = 0; i < astr.length; i++) {
+            const k = astr[i]
             let m: EnviromentTree = null as unknown as EnviromentTree
             if (k in pointer[1]) {
                 let t = pointer[1][k]
@@ -110,7 +110,7 @@ function enviroment_set_helper(env: Enviroment, key: Array<LangVal>, val: LangVa
                     m = enviroment_helper_tree_shadow_copy(t)
                 } else {
                     if (t[1].length === 0) {
-                        LANG_ASSERT(i === as.length - 1)
+                        LANG_ASSERT(i === astr.length - 1)
                         let p: [boolean, any, any] = make_enviroment_null_v()
                         pointer[1][k] = p
                         p[0] = false
