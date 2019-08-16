@@ -125,7 +125,7 @@
              "ecmascript6/lang.js"
              "php/lang.php"
              "java/src"
-             "rust/the-language/src/lang.rs")
+             "rust/the_lang/src/lang.rs")
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") { in-dir "ecmascript" {
          (define exports (string->lines #{grep (id "^exports.*=") lang.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
@@ -141,8 +141,8 @@
          yarn
          touch node_modules/
      }})
-     ("rust/the-language/src/lang.rs" ("rust/node_modules" "lua/lang.lua") { in-dir "rust" {
-        npx --no-install lua2rust ../lua/lang.lua lang &>! the-language/src/lang.rs
+     ("rust/the_lang/src/lang.rs" ("rust/node_modules" "lua/lang.lua") { in-dir "rust" {
+        npx --no-install lua2rust ../lua/lang.lua lang &>! the_lang/src/lang.rs
      }})
      ("ecmascript/langraw.js" ("ecmascript/node_modules" "typescript/lang.ts"){ in-dir "ecmascript" {
          npx --no-install tsickle --typed

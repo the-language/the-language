@@ -1,4 +1,4 @@
-all: ecmascript/lang.min.0.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src rust/the-language/src/lang.rs
+all: ecmascript/lang.min.0.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src rust/the_lang/src/lang.rs
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.js
@@ -13,8 +13,8 @@ ecmascript/node_modules: ecmascript/yarn.lock
 rust/node_modules: rust/yarn.lock
 	racket Makefile.domake.rkt rust/node_modules
 
-rust/the-language/src/lang.rs: rust/node_modules lua/lang.lua
-	racket Makefile.domake.rkt rust/the-language/src/lang.rs
+rust/the_lang/src/lang.rs: rust/node_modules lua/lang.lua
+	racket Makefile.domake.rkt rust/the_lang/src/lang.rs
 
 ecmascript/langraw.js: ecmascript/node_modules typescript/lang.ts
 	racket Makefile.domake.rkt ecmascript/langraw.js

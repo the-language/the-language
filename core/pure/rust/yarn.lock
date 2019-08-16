@@ -75,10 +75,10 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lua2rust@^0.1.0-1:
-  version "0.1.0-1"
-  resolved "https://registry.yarnpkg.com/lua2rust/-/lua2rust-0.1.0-1.tgz#9b8bb6a714fae17c99e33bb43eba7ee9106adb98"
-  integrity sha512-LN2MJheXMQVeRtyP3QaufDuRyGmGaFOpOoD3GEbHZxx1lLZ1SAHUvNlXiN/MyM1WkV36BU+74P9DimkDBJdO7w==
+lua2rust@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/lua2rust/-/lua2rust-0.2.1.tgz#094d6f5d66e0e67853bd5a930acef1c4cd92be13"
+  integrity sha512-LaLIzw7jd910h5yeJoG6JcvJkl+OVu2cvLVAs5ObIITYViydGhI9NGEc/+mEj409rWg5FqRCYM/Q8Tj/pwL8Nw==
   dependencies:
     luaparse "^0.2.1"
     yargs "^13.3.0"
