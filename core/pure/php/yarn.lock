@@ -75,14 +75,14 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lua2php@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/lua2php/-/lua2php-0.4.2.tgz#0f43db52e1c2a35208dcdb9bb51e9cbbdc6c46ee"
-  integrity sha512-gNSdJTiPLgtAliSAXd0BGa5ejADK6u66Y03jiYp0kOCgW0QuBEG+NZMwzvnWAE6swSf8QQC1E4B4pSXRvpsISQ==
+lua2php@^0.4.2-1:
+  version "0.4.2-1"
+  resolved "https://registry.yarnpkg.com/lua2php/-/lua2php-0.4.2-1.tgz#b8b29371d4246b8d1a0ece624c4b9f0a256edad6"
+  integrity sha512-df699aRogP3CiyutUMMUMuWM5+FlB1Cy+pbm8A5Q+t06BGxBN9gY4uwCQGU6wzAJO0n2mF5GUmK7L72XkZyGmA==
   dependencies:
     luaparse "^0.2.1"
     php-unparse "^0.2.9-zaoqi-4-3ad1f406283c42fe89f4e1a1d97a4c40ff0108fe"
-    yargs "^13.2.2"
+    yargs "^13.3.0"
 
 luaparse@^0.2.1:
   version "0.2.1"
@@ -176,7 +176,7 @@ yargs-parser@^13.1.1:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs@^13.2.2:
+yargs@^13.3.0:
   version "13.3.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
   integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==

@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 racket gen.Makefile.rkt
-exec make -j8
+exec do-make.rkt # 或 make -j8
