@@ -11,3 +11,12 @@ description = "TheLanguage"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[profile.release]
+opt-level = 3
+
+[profile.test]
+opt-level = 3
+
+[profile.bench]
+opt-level = 3
