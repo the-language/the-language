@@ -32,26 +32,26 @@ pub struct _lua_debug_loc {
     pub end: (usize, usize),
 }
 impl std::fmt::Display for _lua_debug_loc {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "( start: ( line: {}, column: {} ), end: ( line: {}, column: {} ) )", self.start.0, self.start.1, self.end.0, self.end.1)
     }
 }
-pub type _lua_gc_t<X> = std::sync::Arc<X>;
-pub fn _lua_gc_t__new<X>(x: X) -> _lua_gc_t<X> {
-    std::sync::Arc::new(x)
-}
-pub type _lua_data = _lua_gc_t<_lua_data_unpack>;
+pub type _lua_data = std::sync::Arc<_lua_data_unpack>;
+#[inline]
 pub fn _lua_data__pack(data: _lua_data_unpack) -> _lua_data {
-    _lua_gc_t__new(data)
+    std::sync::Arc::new(data)
 }
 pub struct _lua_data_unpack_function (Box<Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data>);
 impl std::hash::Hash for _lua_data_unpack_function {
+    #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         let sel: *const (Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data) = &*self.0;
         sel.hash(state);
     }
 }
 impl PartialEq for _lua_data_unpack_function {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         let sel: *const (Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data) = &*self.0;
         let other: *const (Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data) = &*other.0;
@@ -60,45 +60,99 @@ impl PartialEq for _lua_data_unpack_function {
 }
 impl Eq for _lua_data_unpack_function {}
 impl std::fmt::Debug for _lua_data_unpack_function {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let sel: *const (Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data) = &*self.0;
         write!(f, "_lua_data_unpack_function({:p})", sel)
     }
 }
 #[derive(Debug)]
-pub struct _lua_data_unpack_table (std::sync::Mutex<std::collections::HashMap<_lua_data,_lua_data>>);
+pub enum _lua_data_unpack_table {
+    Map(std::collections::HashMap<_lua_data,_lua_data>),
+    Vec(Vec<_lua_data>),
+}
+impl _lua_data_unpack_table {
+    #[inline]
+    pub fn pairs(&self) -> std::collections::hash_map::IntoIter<_lua_data,_lua_data> {
+        match self {
+            _lua_data_unpack_table::Map(v) => v.clone().into_iter(),
+            _lua_data_unpack_table::Vec(v) => _lua_vec2table(v).into_iter(),
+        }
+    }
+    #[inline]
+    pub fn ipairs(&self) -> std::iter::Enumerate<std::slice::Iter<_lua_data>> {
+        match self {
+            _lua_data_unpack_table::Map(v) => panic!("WIP"),
+            _lua_data_unpack_table::Vec(v) => v.iter().enumerate(),
+        }
+    }
+}
 impl std::hash::Hash for _lua_data_unpack_table {
+    #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        let sel: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*self.0.lock().unwrap();
-        sel.hash(state);
+        match self {
+            _lua_data_unpack_table::Map(x) => {
+                let sel: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*x;
+                sel.hash(state);
+            },
+            _lua_data_unpack_table::Vec(x) => {
+                let sel: *const Vec<_lua_data> = &*x;
+                sel.hash(state);
+            },
+        }
     }
 }
 impl PartialEq for _lua_data_unpack_table {
     fn eq(&self, other: &Self) -> bool {
-        let sel: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*self.0.lock().unwrap();
-        let other: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*other.0.lock().unwrap();
-        sel == other
+        if let (_lua_data_unpack_table::Map(x), _lua_data_unpack_table::Map(y)) = (self, other) {
+            let x: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*x;
+            let y: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*y;
+            x == y
+        } else if let (_lua_data_unpack_table::Vec(x), _lua_data_unpack_table::Vec(y)) = (self, other) {
+            let x: *const Vec<_lua_data> = &*x;
+            let y: *const Vec<_lua_data> = &*y;
+            x == y
+        } else {
+            false
+        }
     }
 }
 impl Eq for _lua_data_unpack_table {}
 #[derive(Debug)]
 pub struct _lua_data_unpack_number (f64);
 impl std::hash::Hash for _lua_data_unpack_number {
+    #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.to_bits().hash(state);
     }
 }
 impl PartialEq for _lua_data_unpack_number {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0 // 此处可能和Lua实现不同。
     }
 }
 impl Eq for _lua_data_unpack_number {}
+#[derive(Debug)]
+pub struct _lua_data_unpack_table_pack (std::sync::RwLock<_lua_data_unpack_table>);
+impl std::hash::Hash for _lua_data_unpack_table_pack {
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.read().unwrap().hash(state)
+    }
+}
+impl PartialEq for _lua_data_unpack_table_pack {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        *self.0.read().unwrap() == *other.0.read().unwrap()
+    }
+}
+impl Eq for _lua_data_unpack_table_pack {}
 #[derive(Hash,PartialEq,Eq,Debug)]
 pub enum _lua_data_unpack {
     Number(_lua_data_unpack_number),
     String(String),
-    Table(_lua_data_unpack_table),
+    Table(_lua_data_unpack_table_pack),
     Function(_lua_data_unpack_function),
     True,
     False,
@@ -110,8 +164,16 @@ impl std::fmt::Display for _lua_data_unpack {
             _lua_data_unpack::Number(_lua_data_unpack_number(x)) => write!(f, "{}", x),
             _lua_data_unpack::String(x) => write!(f, "{}", x),
             _lua_data_unpack::Table(x) => {
-                let p: *const (std::collections::HashMap<_lua_data,_lua_data>) = &*x.0.lock().unwrap();
-                write!(f, "table: {:p}", p)},
+                match &*x.0.read().unwrap() {
+                    _lua_data_unpack_table::Map(v) => {
+                        let p: *const (std::collections::HashMap<_lua_data,_lua_data>) = v;
+                        write!(f, "table: {:p}", p)
+                    },
+                    _lua_data_unpack_table::Vec(v) => {
+                        let p: *const Vec<_lua_data> = v;
+                        write!(f, "table: {:p}", p)
+                    },
+                }},
             _lua_data_unpack::Function(x) => {
                 let p: *const (Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data) = &*x.0;
                 write!(f, "function: {:p}", p)},
@@ -122,6 +184,7 @@ impl std::fmt::Display for _lua_data_unpack {
     }
 }
 impl _lua_data_unpack {
+    #[inline]
     pub fn as_bool(&self, loc: _lua_debug_loc) -> bool {
         match self {
             _lua_data_unpack::False | _lua_data_unpack::Nil => false,
@@ -151,10 +214,19 @@ impl _lua_data_unpack {
             panic!("isn't string: {}\nat {}", self, loc)
         }
     }
+    #[inline]
     pub fn from_bool(x: bool) -> Self {
         if x { _lua_data_unpack::True } else { _lua_data_unpack::False }
     }
+    pub fn as_table(&self, loc: _lua_debug_loc) -> &std::sync::RwLock<_lua_data_unpack_table> {
+        if let _lua_data_unpack::Table(x) = self {
+            &x.0
+        } else {
+            panic!("isn't table: {}\nat {}", self, loc)
+        }
+    }
 }
+#[inline]
 pub fn _lua_str<'a>(x: &'a str) -> _lua_data {
     _lua_data__pack(_lua_data_unpack::String(String::from(x)))
 }
@@ -162,15 +234,20 @@ pub fn _lua_str<'a>(x: &'a str) -> _lua_data {
 macro_rules! _lua_num {
     ($x:expr) => (_lua_num($x as f64))
 }
+#[inline]
 pub fn _lua_num(x: f64) -> _lua_data {
     _lua_data__pack(_lua_data_unpack::Number(_lua_data_unpack_number(x)))
 }
+#[inline]
 pub fn _lua_table(xs: Vec<(_lua_data, _lua_data)>) -> _lua_data {
-    _lua_data__pack(_lua_data_unpack::Table(_lua_data_unpack_table(std::sync::Mutex::new(xs.iter().cloned().collect()))))
+    _lua_data__pack(_lua_data_unpack::Table(_lua_data_unpack_table_pack(std::sync::RwLock::new(_lua_data_unpack_table::Map(xs.iter().cloned().collect())))))
 }
 pub fn _lua_len(xs: _lua_data, loc: _lua_debug_loc) -> _lua_data {
     if let _lua_data_unpack::Table(t) = &*xs {
-        _lua_num!(t.0.lock().unwrap().len()) // FIX ME 此处与Lua不同
+        match &*t.0.read().unwrap() {
+            _lua_data_unpack_table::Map(v) => _lua_num!(v.len()), // FIX ME 此处与Lua不同
+            _lua_data_unpack_table::Vec(v) => _lua_num!(v.len()),
+        }
     } else if let _lua_data_unpack::String(x) = &*xs {
         _lua_num!(x.chars().count())
     } else {
@@ -179,10 +256,25 @@ pub fn _lua_len(xs: _lua_data, loc: _lua_debug_loc) -> _lua_data {
 }
 pub fn _lua_lookup(map: _lua_data, key: _lua_data, loc: _lua_debug_loc) -> _lua_data {
     if let _lua_data_unpack::Table(t) = &*map {
-        if let Some(x) = t.0.lock().unwrap().get(&key) {
-            x.clone()
-        } else {
-            _lua_data__pack(_lua_data_unpack::Nil)
+        match &*t.0.read().unwrap() {
+            _lua_data_unpack_table::Map(v) => {
+                if let Some(x) = v.get(&key) {
+                    x.clone()
+                } else {
+                    _lua_data__pack(_lua_data_unpack::Nil)
+                }},
+            _lua_data_unpack_table::Vec(xs) => {
+                if let _lua_data_unpack::Number(_lua_data_unpack_number(key)) = *key {
+                    let k = (key-1.0) as usize;
+                    if k as f64 == (key-1.0) && k < xs.len() {
+                        xs[k].clone()
+                    } else {
+                        _lua_data__pack(_lua_data_unpack::Nil)
+                    }
+                } else {
+                    _lua_data__pack(_lua_data_unpack::Nil)
+                }
+            },
         }
     } else {
         panic!("attempt to index a value that isn't a table: {}\nat: {}", map, loc)
@@ -190,18 +282,43 @@ pub fn _lua_lookup(map: _lua_data, key: _lua_data, loc: _lua_debug_loc) -> _lua_
 }
 pub fn _lua_set(map: _lua_data, key: _lua_data, val: _lua_data, loc: _lua_debug_loc) {
     if let _lua_data_unpack::Table(t) = &*map {
-        t.0.lock().unwrap().insert(key,val);
+        let t: &mut _lua_data_unpack_table = &mut t.0.write().unwrap();
+        match t {
+            _lua_data_unpack_table::Map(v) => {v.insert(key, val);},
+            _lua_data_unpack_table::Vec(xs) => match *key {
+                _lua_data_unpack::Number(_lua_data_unpack_number(k))
+                    if ((k-1.0) as usize) as f64 == (k-1.0) && ((k-1.0) as usize) <= xs.len() => {
+                        let key = (k-1.0) as usize;
+                        if (key == xs.len()) {
+                            xs.push(val)
+                        } else {
+                            xs[key] = val
+                        }
+                    },
+                _ => {
+                    let mut v = _lua_vec2table(&xs);
+                    v.insert(key, val);
+                    *t = _lua_data_unpack_table::Map(v);
+                }
+            },
+        }
     } else {
         panic!("attempt to index a value that isn't a table: {}\nat: {}", map, loc);
     }
 }
+#[inline]
 pub fn _lua_vec(xs: Vec<_lua_data>) -> _lua_data {
+    _lua_data__pack(_lua_data_unpack::Table(_lua_data_unpack_table_pack(std::sync::RwLock::new(_lua_data_unpack_table::Vec(xs)))))
+}
+#[inline]
+pub fn _lua_vec2table(xs: &Vec<_lua_data>) -> std::collections::HashMap<_lua_data, _lua_data> {
     let mut result = std::collections::HashMap::new();
     for i in 1..=xs.len() {
         result.insert(_lua_num(i as f64), xs[i-1].clone());
     }
-    _lua_data__pack(_lua_data_unpack::Table(_lua_data_unpack_table(std::sync::Mutex::new(result))))
+    result
 }
+#[inline]
 pub fn _lua_lambda(f: Box<Fn(Vec<_lua_data>, _lua_debug_loc) -> _lua_data>) -> _lua_data {
     _lua_data__pack(_lua_data_unpack::Function(_lua_data_unpack_function(f)))
 }
@@ -212,9 +329,11 @@ pub fn _lua_call(f: _lua_data, args: Vec<_lua_data>, loc: _lua_debug_loc) -> _lu
         panic!("attempt to call a value that isn't a function: {}\nat: {}", f, loc)
     }
 }
+#[inline]
 pub fn _lua_not(x: _lua_data, loc: _lua_debug_loc) -> _lua_data {
     _lua_bool(!x.as_bool(loc))
 }
+#[inline]
 pub fn _lua_bool(x: bool) -> _lua_data {
     _lua_data__pack(_lua_data_unpack::from_bool(x))
 }
@@ -236,15 +355,19 @@ macro_rules! _lua_op {
     (greater, $x: expr, $y: expr, $loc: expr) => (_lua_bool($x.as_f64($loc) > $y.as_f64($loc)));
     (concat, $x: expr, $y: expr, $loc: expr) => (_lua_data__pack(_lua_data_unpack::String($x.as_string($loc) + &$y.as_string($loc))));
 }
+#[inline]
 pub fn _lua_nil() -> _lua_data {
     _lua_data__pack(_lua_data_unpack::Nil)
 }
+#[inline]
 pub fn _lua_true() -> _lua_data {
     _lua_data__pack(_lua_data_unpack::True)
 }
+#[inline]
 pub fn _lua_false() -> _lua_data {
     _lua_data__pack(_lua_data_unpack::False)
 }
+#[inline]
 pub fn _lua_neg(x: _lua_data, loc: _lua_debug_loc) -> _lua_data {
     _lua_num(-x.as_f64(loc))
 }
@@ -306,10 +429,9 @@ let __TS__ArrayPush = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 let arr = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let mut _lua_tmp_vararg = _lua_vec(_lua_arg_tmp);
 let items = std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_vararg.clone()));
-let _lua_tmp_t={ let _lua_tmp = items.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (23, 29), end: (23, 34) }).as_f64(_lua_debug_loc { start: (23, 29), end: (23, 34) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let item=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (23, 29), end: (23, 34) })));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = items.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (23, 29), end: (23, 34) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let item=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 _lua_set({ let _lua_tmp = arr.borrow(); _lua_tmp.clone() },_lua_op!{add, _lua_len({ let _lua_tmp = arr.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (24, 12), end: (24, 16) }), _lua_num!(1), _lua_debug_loc { start: (24, 12), end: (24, 20) }},{ let _lua_tmp = item.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (24, 8), end: (24, 28) });
 }
 return _lua_len({ let _lua_tmp = arr.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (26, 11), end: (26, 15) });
@@ -473,7 +595,7 @@ _lua_nil()
 }}));
 *recordstring_null_p.borrow_mut() = _lua_lambda(Box::new({move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-for (_lua_tmp_k, _) in { let _lua_tmp: std::collections::HashMap<_lua_data,_lua_data> = if let _lua_data_unpack::Table(t) = &*({ let _lua_tmp = x.borrow(); _lua_tmp.clone() }) { t.0.lock().unwrap().clone() } else { panic!("not table\nat{}", _lua_debug_loc { start: (51, 19), end: (51, 20) }) }; _lua_tmp }.iter() {
+for (_lua_tmp_k, _) in { let _lua_tmp = x.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (51, 19), end: (51, 20) }).read().unwrap().pairs() {
 let k=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_k.clone()));
 return _lua_false();
 }
@@ -483,8 +605,8 @@ _lua_nil()
 }}));
 *recordstring_shadow_copy.borrow_mut() = _lua_lambda(Box::new({move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-for (_lua_tmp_k, _) in { let _lua_tmp: std::collections::HashMap<_lua_data,_lua_data> = if let _lua_data_unpack::Table(t) = &*({ let _lua_tmp = x.borrow(); _lua_tmp.clone() }) { t.0.lock().unwrap().clone() } else { panic!("not table\nat{}", _lua_debug_loc { start: (58, 19), end: (58, 20) }) }; _lua_tmp }.iter() {
+let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+for (_lua_tmp_k, _) in { let _lua_tmp = x.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (58, 19), end: (58, 20) }).read().unwrap().pairs() {
 let k=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_k.clone()));
 _lua_set({ let _lua_tmp = result.borrow(); _lua_tmp.clone() },{ let _lua_tmp = k.borrow(); _lua_tmp.clone() },_lua_lookup({ let _lua_tmp = x.borrow(); _lua_tmp.clone() },{ let _lua_tmp = k.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (59, 20), end: (59, 23) }), _lua_debug_loc { start: (59, 8), end: (59, 24) });
 }
@@ -496,7 +618,7 @@ _lua_nil()
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 return _lua_lambda(Box::new({let x = x.clone();
 move |mut _lua_arg_tmp, _| {
-return _lua_table(vec![(_lua_num!(1), _lua_false()), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![_lua_false(), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -507,7 +629,7 @@ _lua_nil()
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 return _lua_lambda(Box::new({let x = x.clone();
 move |mut _lua_arg_tmp, _| {
-return _lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), _lua_call({ let _lua_tmp = x.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (69, 8), end: (69, 11) }))]);
+return _lua_vec(vec![_lua_true(), _lua_call({ let _lua_tmp = x.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (69, 8), end: (69, 11) })]);
 
 _lua_nil()
 }}));
@@ -518,7 +640,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let comment = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = comment_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = comment.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = comment_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = comment.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -586,7 +708,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = construction_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = construction_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -620,7 +742,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = data_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = data_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -660,7 +782,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = delay_evaluate_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = delay_evaluate_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -688,7 +810,7 @@ move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let z = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = delay_builtin_form_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() }), (_lua_num!(4), { let _lua_tmp = z.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = delay_builtin_form_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }, { let _lua_tmp = z.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -721,7 +843,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = delay_builtin_func_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = delay_builtin_func_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -748,7 +870,7 @@ _lua_nil()
 move |mut _lua_arg_tmp, _| {
 let f = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = delay_apply_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = f.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = xs.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = delay_apply_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = f.borrow(); _lua_tmp.clone() }, { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -802,7 +924,7 @@ _lua_nil()
 }}));
 *new_hole_do.borrow_mut() = _lua_lambda(Box::new({let hole_t = hole_t.clone();
 move |mut _lua_arg_tmp, _| {
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = hole_t.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = hole_t.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -903,15 +1025,14 @@ if (_lua_not(_lua_call({ let _lua_tmp = just_p.borrow(); _lua_tmp.clone() }, vec
 return { let _lua_tmp = raw.borrow(); _lua_tmp.clone() };
 }
 let x = std::sync::Arc::new(std::cell::RefCell::new({ let _lua_tmp = raw.borrow(); _lua_tmp.clone() }));
-let xs = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let xs = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 while (_lua_call({ let _lua_tmp = just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (275, 10), end: (275, 19) })).as_bool(_lua_debug_loc { start: (275, 4), end: (278, 7) }) {
 _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (276, 8), end: (276, 30) });
 *x.borrow_mut() = _lua_call({ let _lua_tmp = un_just.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (277, 12), end: (277, 22) });
 }
-let _lua_tmp_t={ let _lua_tmp = xs.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (279, 26), end: (279, 28) }).as_f64(_lua_debug_loc { start: (279, 26), end: (279, 28) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let v=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (279, 26), end: (279, 28) })));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (279, 26), end: (279, 28) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let v=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 _lua_call({ let _lua_tmp = lang_assert_equal_set_do.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = v.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (280, 8), end: (280, 38) });
 }
 return { let _lua_tmp = x.borrow(); _lua_tmp.clone() };
@@ -979,13 +1100,13 @@ let parents_history = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tm
 let ref_novalue_replace = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 if (_lua_op!{eq, { let _lua_tmp = parents_history.borrow(); _lua_tmp.clone() }, _lua_nil(), _lua_debug_loc { start: (294, 7), end: (294, 29) }}).as_bool(_lua_debug_loc { start: (294, 7), end: (294, 29) }) {
-*parents_history.borrow_mut() = _lua_table(vec![]);
+*parents_history.borrow_mut() = _lua_vec(vec![]);
 }
 if (_lua_op!{eq, { let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() }, _lua_nil(), _lua_debug_loc { start: (297, 7), end: (297, 33) }}).as_bool(_lua_debug_loc { start: (297, 7), end: (297, 33) }) {
-*ref_novalue_replace.borrow_mut() = _lua_table(vec![(_lua_num!(1), _lua_false()), (_lua_num!(2), _lua_false())]);
+*ref_novalue_replace.borrow_mut() = _lua_vec(vec![_lua_false(), _lua_false()]);
 }
 if (_lua_op!{eq, { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_nil(), _lua_debug_loc { start: (300, 7), end: (300, 16) }}).as_bool(_lua_debug_loc { start: (300, 7), end: (300, 16) }) {
-*xs.borrow_mut() = _lua_table(vec![]);
+*xs.borrow_mut() = _lua_vec(vec![]);
 }
 let x = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 let do_rewrite = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
@@ -1019,13 +1140,13 @@ let newval = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empt
 _lua_call({ let _lua_tmp = do_rewrite.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = newval.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (316, 8), end: (316, 26) });
 if (_lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = newval.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (317, 11), end: (317, 31) })).as_bool(_lua_debug_loc { start: (317, 11), end: (317, 31) }) {
 _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (318, 12), end: (318, 34) });
-return _lua_call({ let _lua_tmp = force_all_inner.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = newval.borrow(); _lua_tmp.clone() }, { let _lua_tmp = parents_history.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), _lua_false()), (_lua_num!(2), _lua_false())]), { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (319, 19), end: (319, 79) });
+return _lua_call({ let _lua_tmp = force_all_inner.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = newval.borrow(); _lua_tmp.clone() }, { let _lua_tmp = parents_history.borrow(); _lua_tmp.clone() }, _lua_vec(vec![_lua_false(), _lua_false()]), { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (319, 19), end: (319, 79) });
 }
 return { let _lua_tmp = newval.borrow(); _lua_tmp.clone() };
 
 _lua_nil()
 }}));
-let history = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let history = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 *x.borrow_mut() = { let _lua_tmp = raw.borrow(); _lua_tmp.clone() };
 let replace_this_with_stopped = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *replace_this_with_stopped.borrow_mut() = _lua_lambda(Box::new({let ref_novalue_replace = ref_novalue_replace.clone();
@@ -1041,12 +1162,12 @@ let make_history = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *make_history.borrow_mut() = _lua_lambda(Box::new({let history = history.clone();
 let parents_history = parents_history.clone();
 move |mut _lua_arg_tmp, _| {
-let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-for (_lua_tmp_k, _) in { let _lua_tmp: std::collections::HashMap<_lua_data,_lua_data> = if let _lua_data_unpack::Table(t) = &*({ let _lua_tmp = history.borrow(); _lua_tmp.clone() }) { t.0.lock().unwrap().clone() } else { panic!("not table\nat{}", _lua_debug_loc { start: (331, 26), end: (331, 33) }) }; _lua_tmp }.iter() {
+let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+for (_lua_tmp_k, _) in { let _lua_tmp = history.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (331, 26), end: (331, 33) }).read().unwrap().pairs() {
 let x_id=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_k.clone()));
 _lua_set({ let _lua_tmp = ret.borrow(); _lua_tmp.clone() },{ let _lua_tmp = x_id.borrow(); _lua_tmp.clone() },_lua_true(), _lua_debug_loc { start: (332, 12), end: (332, 28) });
 }
-for (_lua_tmp_k, _) in { let _lua_tmp: std::collections::HashMap<_lua_data,_lua_data> = if let _lua_data_unpack::Table(t) = &*({ let _lua_tmp = parents_history.borrow(); _lua_tmp.clone() }) { t.0.lock().unwrap().clone() } else { panic!("not table\nat{}", _lua_debug_loc { start: (334, 26), end: (334, 41) }) }; _lua_tmp }.iter() {
+for (_lua_tmp_k, _) in { let _lua_tmp = parents_history.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (334, 26), end: (334, 41) }).read().unwrap().pairs() {
 let x_id=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_k.clone()));
 _lua_set({ let _lua_tmp = ret.borrow(); _lua_tmp.clone() },{ let _lua_tmp = x_id.borrow(); _lua_tmp.clone() },_lua_true(), _lua_debug_loc { start: (335, 12), end: (335, 28) });
 }
@@ -1074,12 +1195,11 @@ return _lua_call({ let _lua_tmp = replace_this_with_stopped.borrow(); _lua_tmp.c
 } else if (_lua_call({ let _lua_tmp = delay_builtin_func_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (356, 19), end: (356, 42) })).as_bool(_lua_debug_loc { start: (356, 19), end: (356, 42) }) {
 let f = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = delay_builtin_func_f.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (357, 26), end: (357, 49) })));
 let xs = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = delay_builtin_func_xs.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (358, 27), end: (358, 51) })));
-let elim_s = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), { let _lua_tmp = data_name_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = data_list_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = data_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(4), { let _lua_tmp = construction_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(5), { let _lua_tmp = construction_head_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(6), { let _lua_tmp = construction_tail_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(7), { let _lua_tmp = atom_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(8), { let _lua_tmp = null_p_function_builtin_systemName.borrow(); _lua_tmp.clone() })])));
+let elim_s = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![{ let _lua_tmp = data_name_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_list_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_head_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_tail_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = atom_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = null_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }])));
 let is_elim = std::sync::Arc::new(std::cell::RefCell::new(_lua_false()));
-let _lua_tmp_t={ let _lua_tmp = elim_s.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (361, 45), end: (361, 51) }).as_f64(_lua_debug_loc { start: (361, 45), end: (361, 51) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let elim_s_v=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (361, 45), end: (361, 51) })));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = elim_s.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (361, 45), end: (361, 51) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let elim_s_v=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 if (_lua_call({ let _lua_tmp = equal_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = elim_s_v.borrow(); _lua_tmp.clone() }, { let _lua_tmp = f.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (362, 23), end: (362, 43) })).as_bool(_lua_debug_loc { start: (362, 23), end: (362, 43) }) {
 *is_elim.borrow_mut() = _lua_true();
 break;
@@ -1090,7 +1210,7 @@ _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_o
 _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_op!{eq, _lua_lookup({ let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (369, 32), end: (369, 53) }), _lua_false(), _lua_debug_loc { start: (369, 32), end: (369, 63) }}], _lua_debug_loc { start: (369, 20), end: (369, 64) });
 let inner = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = force_all_inner.borrow(); _lua_tmp.clone() }, vec![_lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(1), _lua_debug_loc { start: (371, 24), end: (371, 28) }), _lua_call({ let _lua_tmp = make_history.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (372, 24), end: (372, 38) }), { let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (370, 34), end: (374, 21) })));
 if (_lua_lookup({ let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (375, 23), end: (375, 44) })).as_bool(_lua_debug_loc { start: (375, 23), end: (375, 44) }) {
-return _lua_call({ let _lua_tmp = do_rewrite_force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = inner.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (377, 28), end: (377, 58) })], _lua_debug_loc { start: (376, 31), end: (378, 25) });
+return _lua_call({ let _lua_tmp = do_rewrite_force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = inner.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (377, 28), end: (377, 58) })], _lua_debug_loc { start: (376, 31), end: (378, 25) });
 } else {
 return _lua_call({ let _lua_tmp = LANG_ERROR.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (380, 31), end: (380, 43) });
 }
@@ -1106,7 +1226,7 @@ _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_o
 _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_op!{eq, _lua_lookup({ let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (391, 32), end: (391, 53) }), _lua_false(), _lua_debug_loc { start: (391, 32), end: (391, 63) }}], _lua_debug_loc { start: (391, 20), end: (391, 64) });
 let tf = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = force_all_inner.borrow(); _lua_tmp.clone() }, vec![_lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(1), _lua_debug_loc { start: (393, 24), end: (393, 28) }), _lua_call({ let _lua_tmp = make_history.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (394, 24), end: (394, 38) }), { let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (392, 31), end: (396, 21) })));
 if (_lua_lookup({ let _lua_tmp = ref_novalue_replace.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (397, 23), end: (397, 44) })).as_bool(_lua_debug_loc { start: (397, 23), end: (397, 44) }) {
-return _lua_call({ let _lua_tmp = do_rewrite_force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = tf.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (399, 84), end: (399, 88) })), (_lua_num!(3), _lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(3), _lua_debug_loc { start: (399, 91), end: (399, 95) }))])], _lua_debug_loc { start: (399, 28), end: (399, 98) })], _lua_debug_loc { start: (398, 31), end: (400, 25) });
+return _lua_call({ let _lua_tmp = do_rewrite_force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = tf.borrow(); _lua_tmp.clone() }, _lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (399, 84), end: (399, 88) }), _lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(3), _lua_debug_loc { start: (399, 91), end: (399, 95) })])], _lua_debug_loc { start: (399, 28), end: (399, 98) })], _lua_debug_loc { start: (398, 31), end: (400, 25) });
 } else {
 return _lua_call({ let _lua_tmp = LANG_ERROR.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (402, 31), end: (402, 43) });
 }
@@ -1222,8 +1342,8 @@ let list = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty(
 let not_list_k = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let delay_just_k = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let k = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-let comments = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+let comments = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = un_just_all.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = list.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (481, 14), end: (481, 31) })));
 let not_forced = std::sync::Arc::new(std::cell::RefCell::new(_lua_true()));
 while (_lua_true()).as_bool(_lua_debug_loc { start: (483, 4), end: (508, 7) }) {
@@ -1285,7 +1405,7 @@ return _lua_call({ let _lua_tmp = atom_equal_p.borrow(); _lua_tmp.clone() }, vec
 _lua_nil()
 }}));
 *make_enviroment_null_v.borrow_mut() = _lua_lambda(Box::new({move |mut _lua_arg_tmp, _| {
-return _lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), _lua_table(vec![])), (_lua_num!(3), _lua_nil())]);
+return _lua_vec(vec![_lua_true(), _lua_vec(vec![]), _lua_nil()]);
 
 _lua_nil()
 }}));
@@ -1335,15 +1455,14 @@ _lua_nil()
 *enviroment_helper_print_step.borrow_mut() = _lua_lambda(Box::new({let enviroment_helper_print0 = enviroment_helper_print0.clone();
 move |mut _lua_arg_tmp, _| {
 let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let rs = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-let ss = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-let _lua_tmp_t={ let _lua_tmp = xs.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (575, 26), end: (575, 28) }).as_f64(_lua_debug_loc { start: (575, 26), end: (575, 28) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let x=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (575, 26), end: (575, 28) })));
+let rs = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+let ss = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = xs.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (575, 26), end: (575, 28) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let x=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 _lua_call({ let _lua_tmp = enviroment_helper_print0.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = rs.borrow(); _lua_tmp.clone() }, { let _lua_tmp = ss.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (576, 8), end: (576, 43) });
 }
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = ss.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = rs.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = ss.borrow(); _lua_tmp.clone() }, { let _lua_tmp = rs.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
@@ -1354,16 +1473,16 @@ let env = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty()
 let e = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = enviroment_helper_print_step.borrow(); _lua_tmp.clone() }, vec![_lua_lookup({ let _lua_tmp = env.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (581, 43), end: (581, 48) })], _lua_debug_loc { start: (581, 14), end: (581, 50) })));
 let es = std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup({ let _lua_tmp = e.borrow(); _lua_tmp.clone() },_lua_num!(1), _lua_debug_loc { start: (582, 15), end: (582, 18) })));
 let ev = std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup({ let _lua_tmp = e.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (583, 15), end: (583, 18) })));
-let t = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let t = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_op!{not_eq, _lua_len({ let _lua_tmp = es.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (585, 16), end: (585, 19) }), _lua_num!(0), _lua_debug_loc { start: (585, 16), end: (585, 24) }}], _lua_debug_loc { start: (585, 4), end: (585, 25) });
-_lua_set({ let _lua_tmp = t.borrow(); _lua_tmp.clone() },_lua_lookup({ let _lua_tmp = es.borrow(); _lua_tmp.clone() },_lua_len({ let _lua_tmp = es.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (586, 9), end: (586, 12) }), _lua_debug_loc { start: (586, 6), end: (586, 12) }),_lua_table(vec![(_lua_num!(1), _lua_false()), (_lua_num!(2), { let _lua_tmp = ev.borrow(); _lua_tmp.clone() }), (_lua_num!(3), _lua_lookup({ let _lua_tmp = env.borrow(); _lua_tmp.clone() },_lua_num!(3), _lua_debug_loc { start: (586, 29), end: (586, 34) }))]), _lua_debug_loc { start: (586, 4), end: (586, 36) });
-let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), { let _lua_tmp = t.borrow(); _lua_tmp.clone() }), (_lua_num!(3), _lua_nil())])));
+_lua_set({ let _lua_tmp = t.borrow(); _lua_tmp.clone() },_lua_lookup({ let _lua_tmp = es.borrow(); _lua_tmp.clone() },_lua_len({ let _lua_tmp = es.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (586, 9), end: (586, 12) }), _lua_debug_loc { start: (586, 6), end: (586, 12) }),_lua_vec(vec![_lua_false(), { let _lua_tmp = ev.borrow(); _lua_tmp.clone() }, _lua_lookup({ let _lua_tmp = env.borrow(); _lua_tmp.clone() },_lua_num!(3), _lua_debug_loc { start: (586, 29), end: (586, 34) })]), _lua_debug_loc { start: (586, 4), end: (586, 36) });
+let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![_lua_true(), { let _lua_tmp = t.borrow(); _lua_tmp.clone() }, _lua_nil()])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_op!{sub, _lua_len({ let _lua_tmp = es.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (589, 18), end: (589, 21) }), _lua_num!(2), _lua_debug_loc { start: (589, 18), end: (589, 25) }}));
 while (_lua_op!{greater_eq, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_num!(0), _lua_debug_loc { start: (590, 14), end: (590, 20) }}).as_bool(_lua_debug_loc { start: (590, 8), end: (595, 11) }) {
-let t = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let t = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 _lua_set({ let _lua_tmp = t.borrow(); _lua_tmp.clone() },_lua_lookup({ let _lua_tmp = es.borrow(); _lua_tmp.clone() },_lua_op!{add, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_num!(1), _lua_debug_loc { start: (592, 17), end: (592, 22) }}, _lua_debug_loc { start: (592, 14), end: (592, 22) }),{ let _lua_tmp = result.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (592, 12), end: (592, 33) });
-*result.borrow_mut() = _lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), { let _lua_tmp = t.borrow(); _lua_tmp.clone() }), (_lua_num!(3), _lua_nil())]);
+*result.borrow_mut() = _lua_vec(vec![_lua_true(), { let _lua_tmp = t.borrow(); _lua_tmp.clone() }, _lua_nil()]);
 *i.borrow_mut() = _lua_op!{sub, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_num!(1), _lua_debug_loc { start: (594, 16), end: (594, 21) }};
 }
 }
@@ -1374,7 +1493,7 @@ _lua_nil()
 *enviroment_helper_tree_shadow_copy.borrow_mut() = _lua_lambda(Box::new({let recordstring_shadow_copy = recordstring_shadow_copy.clone();
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), _lua_call({ let _lua_tmp = recordstring_shadow_copy.borrow(); _lua_tmp.clone() }, vec![_lua_lookup({ let _lua_tmp = x.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (602, 33), end: (602, 36) })], _lua_debug_loc { start: (602, 8), end: (602, 38) })), (_lua_num!(3), _lua_nil())]);
+return _lua_vec(vec![_lua_true(), _lua_call({ let _lua_tmp = recordstring_shadow_copy.borrow(); _lua_tmp.clone() }, vec![_lua_lookup({ let _lua_tmp = x.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (602, 33), end: (602, 36) })], _lua_debug_loc { start: (602, 8), end: (602, 38) }), _lua_nil()]);
 
 _lua_nil()
 }}));
@@ -1433,7 +1552,7 @@ return _lua_call({ let _lua_tmp = trampoline_return.borrow(); _lua_tmp.clone() }
 *m.borrow_mut() = _lua_call({ let _lua_tmp = enviroment_helper_node_expand.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = t.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (645, 28), end: (645, 60) });
 }
 } else {
-*m.borrow_mut() = _lua_table(vec![(_lua_num!(1), _lua_true()), (_lua_num!(2), _lua_table(vec![])), (_lua_num!(3), _lua_nil())]);
+*m.borrow_mut() = _lua_vec(vec![_lua_true(), _lua_vec(vec![]), _lua_nil()]);
 }
 _lua_call({ let _lua_tmp = LANG_ASSERT.borrow(); _lua_tmp.clone() }, vec![_lua_op!{not_eq, { let _lua_tmp = m.borrow(); _lua_tmp.clone() }, _lua_nil(), _lua_debug_loc { start: (650, 28), end: (650, 36) }}], _lua_debug_loc { start: (650, 16), end: (650, 37) });
 _lua_set(_lua_lookup({ let _lua_tmp = pointer.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (651, 16), end: (651, 28) }),{ let _lua_tmp = k.borrow(); _lua_tmp.clone() },{ let _lua_tmp = m.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (651, 16), end: (651, 33) });
@@ -1482,7 +1601,7 @@ move |mut _lua_arg_tmp, _| {
 let env = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let key = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let val = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(0)));
 while (_lua_op!{less, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_len({ let _lua_tmp = env.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (684, 18), end: (684, 22) }), _lua_debug_loc { start: (684, 14), end: (684, 22) }}).as_bool(_lua_debug_loc { start: (684, 8), end: (702, 11) }) {
@@ -1676,7 +1795,7 @@ if (_lua_op!{eq, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (787, 31), end: (787, 40) });
 }
 let f = std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (789, 30), end: (789, 34) })));
-let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(2)));
 while (_lua_op!{less, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (793, 34), end: (793, 37) }), _lua_debug_loc { start: (793, 30), end: (793, 37) }}).as_bool(_lua_debug_loc { start: (793, 24), end: (796, 27) }) {
@@ -1718,7 +1837,7 @@ return { let _lua_tmp = selfvalraw.borrow(); _lua_tmp.clone() };
 if (_lua_not(_lua_call({ let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f_list_cdr.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (837, 27), end: (837, 45) }), _lua_debug_loc { start: (837, 23), end: (837, 45) })).as_bool(_lua_debug_loc { start: (837, 23), end: (837, 45) }) {
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (838, 31), end: (838, 40) });
 }
-let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), _lua_call({ let _lua_tmp = env2val.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (841, 24), end: (841, 36) }))])));
+let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![_lua_call({ let _lua_tmp = env2val.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (841, 24), end: (841, 36) })])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(2)));
 while (_lua_op!{less, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (845, 34), end: (845, 37) }), _lua_debug_loc { start: (845, 30), end: (845, 37) }}).as_bool(_lua_debug_loc { start: (845, 24), end: (848, 27) }) {
@@ -1732,7 +1851,7 @@ if (_lua_op!{eq, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (853, 31), end: (853, 40) });
 }
 let f = std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (855, 30), end: (855, 34) })));
-let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(2)));
 while (_lua_op!{less, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (859, 34), end: (859, 37) }), _lua_debug_loc { start: (859, 30), end: (859, 37) }}).as_bool(_lua_debug_loc { start: (859, 24), end: (865, 27) }) {
@@ -1743,7 +1862,7 @@ _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ 
 return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, { let _lua_tmp = args.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (867, 27), end: (867, 54) });
 } else {
 let f = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = evaluate.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }, _lua_lookup({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() },_lua_num!(1), _lua_debug_loc { start: (869, 44), end: (869, 48) })], _lua_debug_loc { start: (869, 30), end: (869, 50) })));
-let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let args = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 {
 let i = std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(1)));
 while (_lua_op!{less, { let _lua_tmp = i.borrow(); _lua_tmp.clone() }, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (873, 34), end: (873, 37) }), _lua_debug_loc { start: (873, 30), end: (873, 37) }}).as_bool(_lua_debug_loc { start: (873, 24), end: (879, 27) }) {
@@ -1899,10 +2018,9 @@ return _lua_call({ let _lua_tmp = new_error.borrow(); _lua_tmp.clone() }, vec![{
 
 _lua_nil()
 }}));
-let _lua_tmp_t={ let _lua_tmp = real_builtin_func_apply_s.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (1000, 27), end: (1000, 52) }).as_f64(_lua_debug_loc { start: (1000, 27), end: (1000, 52) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let xx=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (1000, 27), end: (1000, 52) })));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = real_builtin_func_apply_s.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (1000, 27), end: (1000, 52) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let xx=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 if (_lua_call({ let _lua_tmp = equal_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, _lua_lookup({ let _lua_tmp = xx.borrow(); _lua_tmp.clone() },_lua_num!(1), _lua_debug_loc { start: (1001, 22), end: (1001, 26) })], _lua_debug_loc { start: (1001, 11), end: (1001, 28) })).as_bool(_lua_debug_loc { start: (1001, 11), end: (1001, 28) }) {
 if (_lua_op!{not_eq, _lua_len({ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (1002, 15), end: (1002, 18) }), _lua_lookup({ let _lua_tmp = xx.borrow(); _lua_tmp.clone() },_lua_num!(2), _lua_debug_loc { start: (1002, 22), end: (1002, 26) }), _lua_debug_loc { start: (1002, 15), end: (1002, 27) }}).as_bool(_lua_debug_loc { start: (1002, 15), end: (1002, 27) }) {
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1003, 23), end: (1003, 32) });
@@ -2007,7 +2125,7 @@ let args_pat = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_em
 let body = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let error_v = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 *args_pat.borrow_mut() = _lua_call({ let _lua_tmp = unlazy_all_rec.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = args_pat.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1054, 15), end: (1054, 39) });
-let args_pat_vars = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let args_pat_vars = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 let args_pat_is_dot = std::sync::Arc::new(std::cell::RefCell::new(_lua_false()));
 let args_pat_iter = std::sync::Arc::new(std::cell::RefCell::new({ let _lua_tmp = args_pat.borrow(); _lua_tmp.clone() }));
 while (_lua_not(_lua_call({ let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = args_pat_iter.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1058, 14), end: (1058, 35) }), _lua_debug_loc { start: (1058, 10), end: (1058, 35) })).as_bool(_lua_debug_loc { start: (1058, 4), end: (1074, 7) }) {
@@ -2030,7 +2148,7 @@ if ({ let _lua_tmp = args_pat_is_dot.borrow(); _lua_tmp.clone() }).as_bool(_lua_
 } else {
 *args_pat_vars_val.borrow_mut() = { let _lua_tmp = args_pat.borrow(); _lua_tmp.clone() };
 }
-let env_vars = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let env_vars = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 _lua_call({ let _lua_tmp = env_foreach.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }, _lua_lambda(Box::new({let args_pat_vars = args_pat_vars.clone();
 let equal_p = equal_p.clone();
 let __TS__ArrayPush = __TS__ArrayPush.clone();
@@ -2264,11 +2382,11 @@ let new_atom = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *new_atom.borrow_mut() = _lua_lambda(Box::new({let atom_t = atom_t.clone();
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = atom_t.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })]);
+return _lua_vec(vec![{ let _lua_tmp = atom_t.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }]);
 
 _lua_nil()
 }}));
-*null_v.borrow_mut() = _lua_table(vec![(_lua_num!(1), { let _lua_tmp = null_t.borrow(); _lua_tmp.clone() })]);
+*null_v.borrow_mut() = _lua_vec(vec![{ let _lua_tmp = null_t.borrow(); _lua_tmp.clone() }]);
 let force_uncomment_all_rec = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *force_uncomment_all_rec.borrow_mut() = _lua_lambda(Box::new({let force_uncomment_all = force_uncomment_all.clone();
 let force_all_rec = force_all_rec.clone();
@@ -2429,7 +2547,7 @@ move |mut _lua_arg_tmp, _| {
 let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let k_done = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let k_tail = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 while (_lua_call({ let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1514, 10), end: (1514, 28) })).as_bool(_lua_debug_loc { start: (1514, 4), end: (1520, 7) }) {
 _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = ret.borrow(); _lua_tmp.clone() }, _lua_call({ let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1517, 12), end: (1517, 33) })], _lua_debug_loc { start: (1515, 8), end: (1518, 9) });
 *xs.borrow_mut() = _lua_call({ let _lua_tmp = construction_tail.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1519, 13), end: (1519, 34) });
@@ -2538,11 +2656,11 @@ let env = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty()
 let key = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let val = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = make_enviroment_null_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1572, 19), end: (1572, 43) })));
-return _lua_call({ let _lua_tmp = run_trampoline.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = enviroment_set_helper.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = key.borrow(); _lua_tmp.clone() })]), { let _lua_tmp = val.borrow(); _lua_tmp.clone() }, { let _lua_tmp = result.borrow(); _lua_tmp.clone() }, { let _lua_tmp = result.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1574, 8), end: (1574, 62) })], _lua_debug_loc { start: (1573, 11), end: (1575, 5) });
+return _lua_call({ let _lua_tmp = run_trampoline.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = enviroment_set_helper.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = env.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = key.borrow(); _lua_tmp.clone() }]), { let _lua_tmp = val.borrow(); _lua_tmp.clone() }, { let _lua_tmp = result.borrow(); _lua_tmp.clone() }, { let _lua_tmp = result.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1574, 8), end: (1574, 62) })], _lua_debug_loc { start: (1573, 11), end: (1575, 5) });
 
 _lua_nil()
 }}));
-*env_null_v.borrow_mut() = _lua_table(vec![]);
+*env_null_v.borrow_mut() = _lua_vec(vec![]);
 let val2env = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *val2env.borrow_mut() = _lua_lambda(Box::new({let force_all = force_all.clone();
 let data_p = data_p.clone();
@@ -2577,7 +2695,7 @@ return _lua_false();
 if (_lua_not(_lua_call({ let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = construction_tail.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = s.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1600, 12), end: (1600, 32) })], _lua_debug_loc { start: (1599, 8), end: (1601, 9) })], _lua_debug_loc { start: (1598, 11), end: (1602, 5) }), _lua_debug_loc { start: (1598, 7), end: (1602, 5) })).as_bool(_lua_debug_loc { start: (1598, 7), end: (1602, 5) }) {
 return _lua_false();
 }
-let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let ret = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 let xs = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = force_all.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = s.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1607, 8), end: (1607, 28) })], _lua_debug_loc { start: (1606, 15), end: (1608, 5) })));
 while (_lua_not(_lua_call({ let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1609, 14), end: (1609, 24) }), _lua_debug_loc { start: (1609, 10), end: (1609, 24) })).as_bool(_lua_debug_loc { start: (1609, 4), end: (1652, 7) }) {
 if (_lua_not(_lua_call({ let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1610, 15), end: (1610, 33) }), _lua_debug_loc { start: (1610, 11), end: (1610, 33) })).as_bool(_lua_debug_loc { start: (1610, 11), end: (1610, 33) }) {
@@ -2626,7 +2744,7 @@ let false_v = false_v.clone();
 move |mut _lua_arg_tmp, _| {
 let p_sym = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let p_jsfunc = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = p_sym.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(1)), (_lua_num!(3), _lua_lambda(Box::new({let force1 = force1.clone();
+return _lua_vec(vec![{ let _lua_tmp = p_sym.borrow(); _lua_tmp.clone() }, _lua_num!(1), _lua_lambda(Box::new({let force1 = force1.clone();
 let delay_just_p = delay_just_p.clone();
 let builtin_func_apply = builtin_func_apply.clone();
 let p_sym = p_sym.clone();
@@ -2637,7 +2755,7 @@ move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 *x.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1660, 16), end: (1660, 25) });
 if (_lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1661, 15), end: (1661, 30) })).as_bool(_lua_debug_loc { start: (1661, 15), end: (1661, 30) }) {
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = p_sym.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1662, 23), end: (1662, 53) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = p_sym.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1662, 23), end: (1662, 53) });
 }
 if (_lua_call({ let _lua_tmp = p_jsfunc.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1664, 15), end: (1664, 26) })).as_bool(_lua_debug_loc { start: (1664, 15), end: (1664, 26) }) {
 return { let _lua_tmp = true_v.borrow(); _lua_tmp.clone() };
@@ -2645,7 +2763,7 @@ return { let _lua_tmp = true_v.borrow(); _lua_tmp.clone() };
 return { let _lua_tmp = false_v.borrow(); _lua_tmp.clone() };
 
 _lua_nil()
-}})))]);
+}}))]);
 
 _lua_nil()
 }}));
@@ -2657,7 +2775,7 @@ move |mut _lua_arg_tmp, _| {
 let f_sym = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let p_jsfunc = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let f_jsfunc = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_table(vec![(_lua_num!(1), { let _lua_tmp = f_sym.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(1)), (_lua_num!(3), _lua_lambda(Box::new({let force1 = force1.clone();
+return _lua_vec(vec![{ let _lua_tmp = f_sym.borrow(); _lua_tmp.clone() }, _lua_num!(1), _lua_lambda(Box::new({let force1 = force1.clone();
 let delay_just_p = delay_just_p.clone();
 let builtin_func_apply = builtin_func_apply.clone();
 let f_sym = f_sym.clone();
@@ -2668,7 +2786,7 @@ let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() {
 let error_v = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 *x.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1676, 16), end: (1676, 25) });
 if (_lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1677, 15), end: (1677, 30) })).as_bool(_lua_debug_loc { start: (1677, 15), end: (1677, 30) }) {
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f_sym.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1678, 23), end: (1678, 53) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f_sym.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1678, 23), end: (1678, 53) });
 }
 if (_lua_call({ let _lua_tmp = p_jsfunc.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1680, 15), end: (1680, 26) })).as_bool(_lua_debug_loc { start: (1680, 15), end: (1680, 26) }) {
 return _lua_call({ let _lua_tmp = f_jsfunc.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1681, 23), end: (1681, 34) });
@@ -2676,11 +2794,11 @@ return _lua_call({ let _lua_tmp = f_jsfunc.borrow(); _lua_tmp.clone() }, vec![{ 
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1683, 19), end: (1683, 28) });
 
 _lua_nil()
-}})))]);
+}}))]);
 
 _lua_nil()
 }}));
-*real_builtin_func_apply_s.borrow_mut() = _lua_table(vec![(_lua_num!(1), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1688, 4), end: (1688, 67) })), (_lua_num!(2), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = new_data_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), { let _lua_tmp = new_data.borrow(); _lua_tmp.clone() })])), (_lua_num!(3), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_name_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_name.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1690, 4), end: (1690, 83) })), (_lua_num!(4), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_list_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_list.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1691, 4), end: (1691, 83) })), (_lua_num!(5), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = null_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1692, 4), end: (1692, 67) })), (_lua_num!(6), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = new_construction_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), { let _lua_tmp = new_construction.borrow(); _lua_tmp.clone() })])), (_lua_num!(7), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1694, 4), end: (1694, 83) })), (_lua_num!(8), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_head_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1695, 4), end: (1695, 107) })), (_lua_num!(9), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_tail_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_tail.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1696, 4), end: (1696, 107) })), (_lua_num!(10), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), _lua_lambda(Box::new({let true_v = true_v.clone();
+*real_builtin_func_apply_s.borrow_mut() = _lua_vec(vec![_lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1688, 4), end: (1688, 67) }), _lua_vec(vec![{ let _lua_tmp = new_data_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), { let _lua_tmp = new_data.borrow(); _lua_tmp.clone() }]), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_name_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_name.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1690, 4), end: (1690, 83) }), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = data_list_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data_list.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1691, 4), end: (1691, 83) }), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = null_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = null_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1692, 4), end: (1692, 67) }), _lua_vec(vec![{ let _lua_tmp = new_construction_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), { let _lua_tmp = new_construction.borrow(); _lua_tmp.clone() }]), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1694, 4), end: (1694, 83) }), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_head_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1695, 4), end: (1695, 107) }), _lua_call({ let _lua_tmp = make_builtin_get_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = construction_tail_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, { let _lua_tmp = construction_tail.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1696, 4), end: (1696, 107) }), _lua_vec(vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), _lua_lambda(Box::new({let true_v = true_v.clone();
 let force1 = force1.clone();
 let delay_just_p = delay_just_p.clone();
 let builtin_func_apply = builtin_func_apply.clone();
@@ -2708,7 +2826,7 @@ return { let _lua_tmp = true_v.borrow(); _lua_tmp.clone() };
 *x.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1704, 16), end: (1704, 25) });
 *y.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = y.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1705, 16), end: (1705, 25) });
 if (_lua_op!{or, _lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1706, 15), end: (1706, 30) }), _lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = y.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1706, 34), end: (1706, 49) }), _lua_debug_loc { start: (1706, 15), end: (1706, 49) }}).as_bool(_lua_debug_loc { start: (1706, 15), end: (1706, 49) }) {
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1707, 23), end: (1707, 86) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1707, 23), end: (1707, 86) });
 }
 if (_lua_op!{eq, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (1709, 15), end: (1709, 21) }}).as_bool(_lua_debug_loc { start: (1709, 15), end: (1709, 21) }) {
 return { let _lua_tmp = true_v.borrow(); _lua_tmp.clone() };
@@ -2720,7 +2838,7 @@ move |mut _lua_arg_tmp, _| {
 let b = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let xx = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let yy = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = b.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = xx.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = yy.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1713, 23), end: (1713, 86) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = b.borrow(); _lua_tmp.clone() }, { let _lua_tmp = xx.borrow(); _lua_tmp.clone() }, { let _lua_tmp = yy.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1713, 23), end: (1713, 86) });
 
 _lua_nil()
 }}));
@@ -2744,7 +2862,7 @@ let xx = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() 
 let yy = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let f1 = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let f2 = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-return _lua_call({ let _lua_tmp = H_and.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), _lua_call({ let _lua_tmp = f1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xx.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1726, 28), end: (1726, 34) })), (_lua_num!(2), _lua_call({ let _lua_tmp = f1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = yy.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1727, 28), end: (1727, 34) }))])], _lua_debug_loc { start: (1723, 20), end: (1729, 21) }), _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), _lua_call({ let _lua_tmp = f2.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xx.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1733, 28), end: (1733, 34) })), (_lua_num!(2), _lua_call({ let _lua_tmp = f2.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = yy.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1734, 28), end: (1734, 34) }))])], _lua_debug_loc { start: (1730, 20), end: (1736, 21) })], _lua_debug_loc { start: (1722, 23), end: (1737, 17) });
+return _lua_call({ let _lua_tmp = H_and.borrow(); _lua_tmp.clone() }, vec![_lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![_lua_call({ let _lua_tmp = f1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xx.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1726, 28), end: (1726, 34) }), _lua_call({ let _lua_tmp = f1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = yy.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1727, 28), end: (1727, 34) })])], _lua_debug_loc { start: (1723, 20), end: (1729, 21) }), _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = equal_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![_lua_call({ let _lua_tmp = f2.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xx.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1733, 28), end: (1733, 34) }), _lua_call({ let _lua_tmp = f2.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = yy.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1734, 28), end: (1734, 34) })])], _lua_debug_loc { start: (1730, 20), end: (1736, 21) })], _lua_debug_loc { start: (1722, 23), end: (1737, 17) });
 
 _lua_nil()
 }}));
@@ -2776,7 +2894,7 @@ return _lua_call({ let _lua_tmp = end_2.borrow(); _lua_tmp.clone() }, vec![{ let
 return _lua_call({ let _lua_tmp = LANG_ERROR.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1764, 19), end: (1764, 31) });
 
 _lua_nil()
-}})))])), (_lua_num!(11), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = apply_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), _lua_lambda(Box::new({let force_all = force_all.clone();
+}}))]), _lua_vec(vec![{ let _lua_tmp = apply_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), _lua_lambda(Box::new({let force_all = force_all.clone();
 let construction_p = construction_p.clone();
 let __TS__ArrayPush = __TS__ArrayPush.clone();
 let construction_head = construction_head.clone();
@@ -2787,7 +2905,7 @@ move |mut _lua_arg_tmp, _| {
 let f = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 let error_v = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let jslist = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let jslist = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 let iter = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = force_all.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1772, 25), end: (1772, 38) })));
 while (_lua_call({ let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = iter.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1773, 18), end: (1773, 38) })).as_bool(_lua_debug_loc { start: (1773, 12), end: (1781, 15) }) {
 _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = jslist.borrow(); _lua_tmp.clone() }, _lua_call({ let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = iter.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1776, 20), end: (1776, 43) })], _lua_debug_loc { start: (1774, 16), end: (1777, 17) });
@@ -2799,7 +2917,7 @@ return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], 
 return _lua_call({ let _lua_tmp = apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, { let _lua_tmp = jslist.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1785, 19), end: (1785, 35) });
 
 _lua_nil()
-}})))])), (_lua_num!(12), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = evaluate_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), _lua_lambda(Box::new({let val2env = val2env.clone();
+}}))]), _lua_vec(vec![{ let _lua_tmp = evaluate_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), _lua_lambda(Box::new({let val2env = val2env.clone();
 let evaluate = evaluate.clone();
 move |mut _lua_arg_tmp, _| {
 let env = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
@@ -2812,7 +2930,7 @@ return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], 
 return _lua_call({ let _lua_tmp = evaluate.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = maybeenv.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1796, 19), end: (1796, 40) });
 
 _lua_nil()
-}})))])), (_lua_num!(13), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = atom_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = atom_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1799, 4), end: (1799, 67) })), (_lua_num!(14), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = list_chooseOne_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(1)), (_lua_num!(3), _lua_lambda(Box::new({let force1 = force1.clone();
+}}))]), _lua_call({ let _lua_tmp = make_builtin_p_func.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = atom_p_function_builtin_systemName.borrow(); _lua_tmp.clone() }, { let _lua_tmp = atom_p.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1799, 4), end: (1799, 67) }), _lua_vec(vec![{ let _lua_tmp = list_chooseOne_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(1), _lua_lambda(Box::new({let force1 = force1.clone();
 let delay_just_p = delay_just_p.clone();
 let builtin_func_apply = builtin_func_apply.clone();
 let list_chooseOne_function_builtin_systemName = list_chooseOne_function_builtin_systemName.clone();
@@ -2823,7 +2941,7 @@ let xs = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() 
 let error_v = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 *xs.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1804, 17), end: (1804, 27) });
 if (_lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1805, 15), end: (1805, 31) })).as_bool(_lua_debug_loc { start: (1805, 15), end: (1805, 31) }) {
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = list_chooseOne_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = xs.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1806, 23), end: (1806, 91) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = list_chooseOne_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1806, 23), end: (1806, 91) });
 }
 if (_lua_not(_lua_call({ let _lua_tmp = construction_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1808, 19), end: (1808, 37) }), _lua_debug_loc { start: (1808, 15), end: (1808, 37) })).as_bool(_lua_debug_loc { start: (1808, 15), end: (1808, 37) }) {
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1809, 23), end: (1809, 32) });
@@ -2831,7 +2949,7 @@ return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], 
 return _lua_call({ let _lua_tmp = construction_head.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = xs.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1811, 19), end: (1811, 40) });
 
 _lua_nil()
-}})))])), (_lua_num!(15), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(3)), (_lua_num!(3), _lua_lambda(Box::new({let force1 = force1.clone();
+}}))]), _lua_vec(vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(3), _lua_lambda(Box::new({let force1 = force1.clone();
 let delay_just_p = delay_just_p.clone();
 let builtin_func_apply = builtin_func_apply.clone();
 let if_function_builtin_systemName = if_function_builtin_systemName.clone();
@@ -2849,7 +2967,7 @@ let y = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() {
 let error_v = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
 *b.borrow_mut() = _lua_call({ let _lua_tmp = force1.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = b.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1818, 16), end: (1818, 25) });
 if (_lua_call({ let _lua_tmp = delay_just_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = b.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1819, 15), end: (1819, 30) })).as_bool(_lua_debug_loc { start: (1819, 15), end: (1819, 30) }) {
-return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = b.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = x.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = y.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (1820, 23), end: (1820, 84) });
+return _lua_call({ let _lua_tmp = builtin_func_apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = if_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = b.borrow(); _lua_tmp.clone() }, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (1820, 23), end: (1820, 84) });
 }
 if (_lua_not(_lua_call({ let _lua_tmp = data_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = b.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (1822, 19), end: (1822, 28) }), _lua_debug_loc { start: (1822, 15), end: (1822, 28) })).as_bool(_lua_debug_loc { start: (1822, 15), end: (1822, 28) }) {
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1823, 23), end: (1823, 32) });
@@ -2867,7 +2985,7 @@ return { let _lua_tmp = y.borrow(); _lua_tmp.clone() };
 return _lua_call({ let _lua_tmp = error_v.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (1837, 19), end: (1837, 28) });
 
 _lua_nil()
-}})))])), (_lua_num!(16), _lua_table(vec![(_lua_num!(1), { let _lua_tmp = comment_function_builtin_systemName.borrow(); _lua_tmp.clone() }), (_lua_num!(2), _lua_num!(2)), (_lua_num!(3), { let _lua_tmp = new_comment.borrow(); _lua_tmp.clone() })]))]);
+}}))]), _lua_vec(vec![{ let _lua_tmp = comment_function_builtin_systemName.borrow(); _lua_tmp.clone() }, _lua_num!(2), { let _lua_tmp = new_comment.borrow(); _lua_tmp.clone() }])]);
 let jsbool_no_force_isomorphism_p = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *jsbool_no_force_isomorphism_p.borrow_mut() = _lua_lambda(Box::new({let un_just_all = un_just_all.clone();
 let jsbool_no_force_isomorphism_p = jsbool_no_force_isomorphism_p.clone();
@@ -3203,10 +3321,9 @@ let chr = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty()
 if (_lua_call({ let _lua_tmp = a_space_p.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = chr.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2030, 11), end: (2030, 25) })).as_bool(_lua_debug_loc { start: (2030, 11), end: (2030, 25) }) {
 return _lua_false();
 }
-let _lua_tmp_t=_lua_table(vec![(_lua_num!(1), _lua_str("(")), (_lua_num!(2), _lua_str(")")), (_lua_num!(3), _lua_str("!")), (_lua_num!(4), _lua_str("#")), (_lua_num!(5), _lua_str(".")), (_lua_num!(6), _lua_str("$")), (_lua_num!(7), _lua_str("%")), (_lua_num!(8), _lua_str("^")), (_lua_num!(9), _lua_str("@")), (_lua_num!(10), _lua_str("~")), (_lua_num!(11), _lua_str("/")), (_lua_num!(12), _lua_str("-")), (_lua_num!(13), _lua_str(">")), (_lua_num!(14), _lua_str("_")), (_lua_num!(15), _lua_str(":")), (_lua_num!(16), _lua_str("?")), (_lua_num!(17), _lua_str("[")), (_lua_num!(18), _lua_str("]")), (_lua_num!(19), _lua_str("&")), (_lua_num!(20), _lua_str(";"))]);
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (2033, 30), end: (2033, 130) }).as_f64(_lua_debug_loc { start: (2033, 30), end: (2033, 130) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let v=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (2033, 30), end: (2033, 130) })));
+for (_lua_tmp_k, _lua_tmp_v) in _lua_vec(vec![_lua_str("("), _lua_str(")"), _lua_str("!"), _lua_str("#"), _lua_str("."), _lua_str("$"), _lua_str("%"), _lua_str("^"), _lua_str("@"), _lua_str("~"), _lua_str("/"), _lua_str("-"), _lua_str(">"), _lua_str("_"), _lua_str(":"), _lua_str("?"), _lua_str("["), _lua_str("]"), _lua_str("&"), _lua_str(";")]).as_table(_lua_debug_loc { start: (2033, 30), end: (2033, 130) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let v=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 if (_lua_op!{eq, { let _lua_tmp = v.borrow(); _lua_tmp.clone() }, { let _lua_tmp = chr.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (2034, 15), end: (2034, 23) }}).as_bool(_lua_debug_loc { start: (2034, 15), end: (2034, 23) }) {
 return _lua_false();
 }
@@ -3227,11 +3344,10 @@ let readcomment = readcomment.clone();
 let parse_error = parse_error.clone();
 move |mut _lua_arg_tmp, _| {
 _lua_call({ let _lua_tmp = space.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (2041, 8), end: (2041, 15) });
-let fs = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), { let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = readsysname.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = data.borrow(); _lua_tmp.clone() }), (_lua_num!(4), { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }), (_lua_num!(5), { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }), (_lua_num!(6), { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }), (_lua_num!(7), { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }), (_lua_num!(8), { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() })])));
-let _lua_tmp_t={ let _lua_tmp = fs.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (2043, 30), end: (2043, 32) }).as_f64(_lua_debug_loc { start: (2043, 30), end: (2043, 32) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let f=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (2043, 30), end: (2043, 32) })));
+let fs = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![{ let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readsysname.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() }])));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = fs.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (2043, 30), end: (2043, 32) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let f=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 let x = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (2044, 22), end: (2044, 25) })));
 if (_lua_op!{not_eq, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, _lua_false(), _lua_debug_loc { start: (2045, 15), end: (2045, 25) }}).as_bool(_lua_debug_loc { start: (2045, 15), end: (2045, 25) }) {
 return { let _lua_tmp = x.borrow(); _lua_tmp.clone() };
@@ -3297,14 +3413,13 @@ _lua_nil()
 }}));
 let fs = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 if ({ let _lua_tmp = strict.borrow(); _lua_tmp.clone() }).as_bool(_lua_debug_loc { start: (2079, 11), end: (2079, 17) }) {
-*fs.borrow_mut() = _lua_table(vec![(_lua_num!(1), { let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = atom.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = readsysname_no_pack_bracket.borrow(); _lua_tmp.clone() }), (_lua_num!(4), { let _lua_tmp = data.borrow(); _lua_tmp.clone() }), (_lua_num!(5), { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }), (_lua_num!(6), { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }), (_lua_num!(7), { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }), (_lua_num!(8), { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }), (_lua_num!(9), { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() })]);
+*fs.borrow_mut() = _lua_vec(vec![{ let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }, { let _lua_tmp = atom.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readsysname_no_pack_bracket.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() }]);
 } else {
-*fs.borrow_mut() = _lua_table(vec![(_lua_num!(1), { let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }), (_lua_num!(2), { let _lua_tmp = readsysname_no_pack.borrow(); _lua_tmp.clone() }), (_lua_num!(3), { let _lua_tmp = data.borrow(); _lua_tmp.clone() }), (_lua_num!(4), { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }), (_lua_num!(5), { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }), (_lua_num!(6), { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }), (_lua_num!(7), { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }), (_lua_num!(8), { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() })]);
+*fs.borrow_mut() = _lua_vec(vec![{ let _lua_tmp = readlist.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readsysname_no_pack.borrow(); _lua_tmp.clone() }, { let _lua_tmp = data.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readeval.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readfuncapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readformbuiltin.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readapply.borrow(); _lua_tmp.clone() }, { let _lua_tmp = readcomment.borrow(); _lua_tmp.clone() }]);
 }
-let _lua_tmp_t={ let _lua_tmp = fs.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (2084, 30), end: (2084, 32) }).as_f64(_lua_debug_loc { start: (2084, 30), end: (2084, 32) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let f=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (2084, 30), end: (2084, 32) })));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = fs.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (2084, 30), end: (2084, 32) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let f=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 let x = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = f.borrow(); _lua_tmp.clone() }, vec![], _lua_debug_loc { start: (2085, 22), end: (2085, 25) })));
 if (_lua_op!{not_eq, { let _lua_tmp = x.borrow(); _lua_tmp.clone() }, _lua_false(), _lua_debug_loc { start: (2086, 15), end: (2086, 25) }}).as_bool(_lua_debug_loc { start: (2086, 15), end: (2086, 25) }) {
 return { let _lua_tmp = x.borrow(); _lua_tmp.clone() };
@@ -3347,7 +3462,7 @@ return _lua_call({ let _lua_tmp = new_list.borrow(); _lua_tmp.clone() }, vec![{ 
 } else if (_lua_op!{eq, { let _lua_tmp = head.borrow(); _lua_tmp.clone() }, _lua_str("?"), _lua_debug_loc { start: (2124, 15), end: (2124, 26) }}).as_bool(_lua_debug_loc { start: (2124, 15), end: (2124, 26) }) {
 return _lua_call({ let _lua_tmp = new_list.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = typeAnnotation_atom.borrow(); _lua_tmp.clone() }, { let _lua_tmp = function_atom.borrow(); _lua_tmp.clone() }, _lua_call({ let _lua_tmp = new_list.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = isOrNot_atom.borrow(); _lua_tmp.clone() }, { let _lua_tmp = vl.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2128, 16), end: (2128, 42) })], _lua_debug_loc { start: (2125, 19), end: (2129, 13) });
 } else if (_lua_op!{eq, { let _lua_tmp = head.borrow(); _lua_tmp.clone() }, _lua_str("/"), _lua_debug_loc { start: (2130, 15), end: (2130, 26) }}).as_bool(_lua_debug_loc { start: (2130, 15), end: (2130, 26) }) {
-let ys = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), { let _lua_tmp = vl.borrow(); _lua_tmp.clone() })])));
+let ys = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![{ let _lua_tmp = vl.borrow(); _lua_tmp.clone() }])));
 while (_lua_true()).as_bool(_lua_debug_loc { start: (2132, 12), end: (2143, 15) }) {
 let y = std::sync::Arc::new(std::cell::RefCell::new(_lua_call({ let _lua_tmp = readsysname_no_pack_inner_must.borrow(); _lua_tmp.clone() }, vec![_lua_true()], _lua_debug_loc { start: (2133, 26), end: (2133, 62) })));
 _lua_call({ let _lua_tmp = __TS__ArrayPush.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = ys.borrow(); _lua_tmp.clone() }, { let _lua_tmp = y.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2134, 16), end: (2134, 38) });
@@ -3924,7 +4039,7 @@ return _lua_call(_lua_lookup({ let _lua_tmp = string.borrow(); _lua_tmp.clone() 
 
 _lua_nil()
 }}));
-let stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 let conslike = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *conslike.borrow_mut() = _lua_lambda(Box::new({let table = table.clone();
 let stack = stack.clone();
@@ -4007,14 +4122,13 @@ let delay_evaluate_x = delay_evaluate_x.clone();
 let LANG_ERROR = LANG_ERROR.clone();
 move |mut _lua_arg_tmp, _| {
 let x = std::sync::Arc::new(std::cell::RefCell::new(if _lua_arg_tmp.is_empty() { _lua_nil() } else { _lua_arg_tmp.remove(0) }));
-let stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![(_lua_num!(1), { let _lua_tmp = x.borrow(); _lua_tmp.clone() })])));
+let stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }])));
 let result = std::sync::Arc::new(std::cell::RefCell::new(_lua_str("")));
 while (_lua_op!{not_eq, _lua_len({ let _lua_tmp = stack.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (2676, 10), end: (2676, 16) }), _lua_num!(0), _lua_debug_loc { start: (2676, 10), end: (2676, 21) }}).as_bool(_lua_debug_loc { start: (2676, 4), end: (2715, 7) }) {
-let new_stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
-let _lua_tmp_t={ let _lua_tmp = stack.borrow(); _lua_tmp.clone() };
-for _lua_tmp_k in 1..=(_lua_len(_lua_tmp_t.clone(), _lua_debug_loc { start: (2678, 30), end: (2678, 35) }).as_f64(_lua_debug_loc { start: (2678, 30), end: (2678, 35) }) as usize) {
-let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k)));
-let x=std::sync::Arc::new(std::cell::RefCell::new(_lua_lookup(_lua_tmp_t.clone(),____.borrow().clone(), _lua_debug_loc { start: (2678, 30), end: (2678, 35) })));
+let new_stack = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
+for (_lua_tmp_k, _lua_tmp_v) in { let _lua_tmp = stack.borrow(); _lua_tmp.clone() }.as_table(_lua_debug_loc { start: (2678, 30), end: (2678, 35) }).read().unwrap().ipairs() {
+let ____=std::sync::Arc::new(std::cell::RefCell::new(_lua_num!(_lua_tmp_k+1)));
+let x=std::sync::Arc::new(std::cell::RefCell::new(_lua_tmp_v.clone()));
 *x.borrow_mut() = _lua_call({ let _lua_tmp = un_just_all.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = x.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2679, 16), end: (2679, 30) });
 let conslike = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
 *conslike.borrow_mut() = _lua_lambda(Box::new({let result = result.clone();
@@ -4270,7 +4384,7 @@ let next = next.clone();
 let val2 = val2.clone();
 let state2 = state2.clone();
 move |mut _lua_arg_tmp, _| {
-return _lua_call({ let _lua_tmp = run_monad_helper.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = return_handler.borrow(); _lua_tmp.clone() }, { let _lua_tmp = op_handler.borrow(); _lua_tmp.clone() }, _lua_call({ let _lua_tmp = apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = next.borrow(); _lua_tmp.clone() }, _lua_table(vec![(_lua_num!(1), { let _lua_tmp = val2.borrow(); _lua_tmp.clone() })])], _lua_debug_loc { start: (2873, 24), end: (2873, 43) }), { let _lua_tmp = state2.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2870, 38), end: (2875, 21) });
+return _lua_call({ let _lua_tmp = run_monad_helper.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = return_handler.borrow(); _lua_tmp.clone() }, { let _lua_tmp = op_handler.borrow(); _lua_tmp.clone() }, _lua_call({ let _lua_tmp = apply.borrow(); _lua_tmp.clone() }, vec![{ let _lua_tmp = next.borrow(); _lua_tmp.clone() }, _lua_vec(vec![{ let _lua_tmp = val2.borrow(); _lua_tmp.clone() }])], _lua_debug_loc { start: (2873, 24), end: (2873, 43) }), { let _lua_tmp = state2.borrow(); _lua_tmp.clone() }], _lua_debug_loc { start: (2870, 38), end: (2875, 21) });
 
 _lua_nil()
 }}))], _lua_debug_loc { start: (2869, 46), end: (2876, 17) });
@@ -4334,7 +4448,7 @@ _lua_nil()
 
 _lua_nil()
 }}));
-let ____exports = std::sync::Arc::new(std::cell::RefCell::new(_lua_table(vec![])));
+let ____exports = std::sync::Arc::new(std::cell::RefCell::new(_lua_vec(vec![])));
 _lua_set({ let _lua_tmp = ____exports.borrow(); _lua_tmp.clone() },_lua_str("trampoline_return"),{ let _lua_tmp = trampoline_return.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (2906, 0), end: (2906, 49) });
 _lua_set({ let _lua_tmp = ____exports.borrow(); _lua_tmp.clone() },_lua_str("trampoline_delay"),{ let _lua_tmp = trampoline_delay.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (2907, 0), end: (2907, 47) });
 _lua_set({ let _lua_tmp = ____exports.borrow(); _lua_tmp.clone() },_lua_str("run_trampoline"),{ let _lua_tmp = run_trampoline.borrow(); _lua_tmp.clone() }, _lua_debug_loc { start: (2908, 0), end: (2908, 43) });
