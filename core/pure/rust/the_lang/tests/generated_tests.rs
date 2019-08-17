@@ -153,8 +153,8 @@ fn generated_tests() {
     assert_eq!(l.simple_print(&l.complex_parse(&String::from("列序.[_:構物]"))), String::from("#(符名 太始初核 (一類何物 (化滅 (列序) 省略一物) (一類何物 構物 省略一物)))"));
     println!("(check-equal? (complex-print (complex-parse \"#(符名 太始初核 (一類何物 (化滅 (列序) 省略一物) (一類何物 構物 省略一物)))\")) \"列序.[_:構物]\")");
     assert_eq!(l.complex_print(&l.complex_parse(&String::from("#(符名 太始初核 (一類何物 (化滅 (列序) 省略一物) (一類何物 構物 省略一物)))"))), String::from("列序.[_:構物]"));
-    println!("(check-equal? (complex-print (machinetext-parse (machinetext-print (complex-parse \"符名\")))) \"符名\")");
-    assert_eq!(l.complex_print(&l.machinetext_parse(&l.machinetext_print(&l.complex_parse(&String::from("符名"))))), String::from("符名"));
+    println!("(check-equal? (complex-print (machinetext-parse (machinetext-print (complex-parse \"構物.符名\")))) \"構物.符名\")");
+    assert_eq!(l.complex_print(&l.machinetext_parse(&l.machinetext_print(&l.complex_parse(&String::from("構物.符名"))))), String::from("構物.符名"));
     println!("(check-equal? (complex-print (machinetext-parse (machinetext-print (complex-parse \"()\")))) \"()\")");
     assert_eq!(l.complex_print(&l.machinetext_parse(&l.machinetext_print(&l.complex_parse(&String::from("()"))))), String::from("()"));
     println!("(check-equal? (complex-print (machinetext-parse (machinetext-print (complex-parse \"(a b)\")))) \"(a b)\")");

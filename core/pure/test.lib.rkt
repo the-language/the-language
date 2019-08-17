@@ -153,7 +153,7 @@
           ("列序.[_:構物]" "#(符名 太始初核 (一類何物 (化滅 (列序) 省略一物) (一類何物 構物 省略一物)))")))
      ,@(map
         (λ (x) `(check-equal? (complex-print (machinetext-parse (machinetext-print (complex-parse ,x)))) ,x))
-        '("符名"
+        '("構物.符名"
           "()"
           "(a b)"
           "(a b . #(c d #(e)))"))
