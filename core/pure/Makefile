@@ -1,4 +1,4 @@
-all: ecmascript/lang.min.0.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src rust/the_lang/src/lang.rs rust/the_lang/tests/generated_tests.rs
+all: ecmascript/lang.min.0.js ecmascript/lang.js ecmascript/lang.min.2.js lua/lang.lua lua/lang_min.lua ecmascript6/lang.js php/lang.php java/src rust/the_lang/src/lang.rs rust/the_lang/tests/generated_tests.rs c/src c/liblang.so c/lang.o c/liblang.a
 	racket Makefile.domake.rkt all
 
 ecmascript/exports.list: ecmascript/lang.js
@@ -9,6 +9,33 @@ ecmascript/lang.externs.js: ecmascript/exports.list
 
 ecmascript/node_modules: ecmascript/yarn.lock
 	racket Makefile.domake.rkt ecmascript/node_modules
+
+c/dep-lua-5.3.5:
+	racket Makefile.domake.rkt c/dep-lua-5.3.5
+
+c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685:
+	racket Makefile.domake.rkt c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685
+
+c/dep-lua-5.3.5/src/lua: c/dep-lua-5.3.5
+	racket Makefile.domake.rkt c/dep-lua-5.3.5/src/lua
+
+c/src: c/dep-lua-5.3.5 c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685
+	racket Makefile.domake.rkt c/src
+
+c/lang.c: c/gen.single.sh
+	racket Makefile.domake.rkt c/lang.c
+
+c/lang.h: c/lang.c
+	racket Makefile.domake.rkt c/lang.h
+
+c/liblang.so: c/src
+	racket Makefile.domake.rkt c/liblang.so
+
+c/lang.o: c/src
+	racket Makefile.domake.rkt c/lang.o
+
+c/liblang.a: c/lang.o
+	racket Makefile.domake.rkt c/liblang.a
 
 rust/node_modules: rust/yarn.lock
 	racket Makefile.domake.rkt rust/node_modules

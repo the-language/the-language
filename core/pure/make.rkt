@@ -126,7 +126,12 @@
              "php/lang.php"
              "java/src"
              "rust/the_lang/src/lang.rs"
-             "rust/the_lang/tests/generated_tests.rs")
+             "rust/the_lang/tests/generated_tests.rs"
+             "c/src"
+             "c/liblang.so"
+             "c/lang.o"
+             "c/liblang.a"
+             )
             (void))
      ("ecmascript/exports.list" ("ecmascript/lang.js") { in-dir "ecmascript" {
          (define exports (string->lines #{grep (id "^exports.*=") lang.js | sed (id "s|^exports\\.\\([^ ]*\\).*$|\\1|")}))
@@ -137,6 +142,35 @@
      ("ecmascript/node_modules" ("ecmascript/yarn.lock") { in-dir "ecmascript" { ;; 避免竞争状态
          yarn
          touch node_modules/
+     }})
+     ("c/dep-lua-5.3.5" () {
+         rm -fr c/lua-5.3.5
+         curl https://www.lua.org/ftp/lua-5.3.5.tar.gz | tar -xzv -C ./c/
+         mv c/lua-5.3.5 c/dep-lua-5.3.5
+     })
+     ("c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685" () {
+         rm -fr c/lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685
+         curl https://gitlab.com/the-language/lua2c53/-/archive/87fe550108ca19f99a6d38e4575c6f7f3b91f685/lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685.tar.gz | tar -xzv -C ./c/
+         mv c/lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685 c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685
+     })
+     ("c/dep-lua-5.3.5/src/lua" ("c/dep-lua-5.3.5") { in-dir "c/dep-lua-5.3.5" {
+         make generic CC=clang
+     }})
+     ("c/src" ("c/dep-lua-5.3.5" "c/dep-lua2c53-87fe550108ca19f99a6d38e4575c6f7f3b91f685") { in-dir "c" {
+         ./gen.src.dir.sh
+     }})
+     ("c/lang.c" ("c/gen.single.sh") { in-dir "c" { ;; 是一个由#include组成的文件。
+         ./gen.single.sh
+     }})
+     ("c/lang.h" ("c/lang.c") (void)) ;; 代码在上面。
+     ("c/liblang.so" ("c/src") { in-dir "c" {
+         clang -Ofast -DNDEBUG -Wl,-s -shared -o liblang.so lang.c
+     }})
+     ("c/lang.o" ("c/src") { in-dir "c" {
+         clang -Ofast -DNDEBUG -c -o lang.o lang.c
+     }})
+     ("c/liblang.a" ("c/lang.o") { in-dir "c" {
+         ar -r liblang.a lang.o
      }})
      ("rust/node_modules" ("rust/yarn.lock") { in-dir "rust" { ;; 避免竞争状态
          yarn

@@ -5,3 +5,4 @@
 (require "test.lua.rkt")
 (require "test.java.rkt")
 (require "test.php.rkt")
+;;(require "test.c.rkt");; 有bug

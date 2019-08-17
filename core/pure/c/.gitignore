@@ -1,0 +1,6 @@
+/dep-*
+*.tmp
+*.tmp.*
+/liblang.so
+/lang.o
+/liblang.a
