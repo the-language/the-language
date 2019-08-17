@@ -151,7 +151,7 @@ impl Eq for _lua_data_unpack_table_pack {}
 #[derive(Hash,PartialEq,Eq,Debug)]
 pub enum _lua_data_unpack {
     Number(_lua_data_unpack_number),
-    String(String),
+    String(Vec<char>),
     Table(_lua_data_unpack_table_pack),
     Function(_lua_data_unpack_function),
     True,
@@ -162,7 +162,7 @@ impl std::fmt::Display for _lua_data_unpack {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             _lua_data_unpack::Number(_lua_data_unpack_number(x)) => write!(f, "{}", x),
-            _lua_data_unpack::String(x) => write!(f, "{}", x),
+            _lua_data_unpack::String(x) => write!(f, "{}", x.iter().collect::<String>()),
             _lua_data_unpack::Table(x) => {
                 match &*x.0.read().unwrap() {
                     _lua_data_unpack_table::Map(v) => {
@@ -195,23 +195,35 @@ impl _lua_data_unpack {
         if let _lua_data_unpack::Number(x) = self {
             x.0
         } else {
-            panic!("isn't number: {}\nat {}", self, loc)
+            panic!("isn't number: {:?}\nat {}", self, loc)
         }
     }
     pub fn lua_tonumber(&self) -> _lua_data {
         if let _lua_data_unpack::String(x) = self {
-            if let Ok(r) = x.parse::<f64>() { _lua_num(r) } else { _lua_nil() }
+            if let Ok(r) = x.iter().collect::<String>().parse::<f64>() {
+                _lua_num(r)
+            } else {
+                _lua_nil()
+            }
         } else if let _lua_data_unpack::Number(x) = self {
             _lua_data__pack(_lua_data_unpack::Number(_lua_data_unpack_number(x.0)))
         } else {
             _lua_nil()
         }
     }
+    #[inline]
     pub fn as_string(&self, loc: _lua_debug_loc) -> String {
         if let _lua_data_unpack::String(x) = self {
-            x.clone()
+            x.iter().collect()
         } else {
-            panic!("isn't string: {}\nat {}", self, loc)
+            panic!("isn't string: {:?}\nat {}", self, loc)
+        }
+    }
+    pub fn as_vecchar(&self, loc: _lua_debug_loc) -> &Vec<char> {
+        if let _lua_data_unpack::String(x) = self {
+            x
+        } else {
+            panic!("isn't string: {:?}\nat {}", self, loc)
         }
     }
     #[inline]
@@ -222,13 +234,13 @@ impl _lua_data_unpack {
         if let _lua_data_unpack::Table(x) = self {
             &x.0
         } else {
-            panic!("isn't table: {}\nat {}", self, loc)
+            panic!("isn't table: {:?}\nat {}", self, loc)
         }
     }
 }
 #[inline]
 pub fn _lua_str<'a>(x: &'a str) -> _lua_data {
-    _lua_data__pack(_lua_data_unpack::String(String::from(x)))
+    _lua_data__pack(_lua_data_unpack::String(x.chars().collect()))
 }
 #[macro_export]
 macro_rules! _lua_num {
@@ -249,9 +261,9 @@ pub fn _lua_len(xs: _lua_data, loc: _lua_debug_loc) -> _lua_data {
             _lua_data_unpack_table::Vec(v) => _lua_num!(v.len()),
         }
     } else if let _lua_data_unpack::String(x) = &*xs {
-        _lua_num!(x.chars().count())
+        _lua_num!(x.len())
     } else {
-        panic!("attempt to get length of a value that isn't a table: {}\nat: {}", xs, loc)
+        panic!("attempt to get length of a value that isn't a table: {:?}\nat: {}", xs, loc)
     }
 }
 pub fn _lua_lookup(map: _lua_data, key: _lua_data, loc: _lua_debug_loc) -> _lua_data {
@@ -277,7 +289,7 @@ pub fn _lua_lookup(map: _lua_data, key: _lua_data, loc: _lua_debug_loc) -> _lua_
             },
         }
     } else {
-        panic!("attempt to index a value that isn't a table: {}\nat: {}", map, loc)
+        panic!("attempt to index a value that isn't a table: {:?}\nat: {}", map, loc)
     }
 }
 pub fn _lua_set(map: _lua_data, key: _lua_data, val: _lua_data, loc: _lua_debug_loc) {
@@ -303,7 +315,7 @@ pub fn _lua_set(map: _lua_data, key: _lua_data, val: _lua_data, loc: _lua_debug_
             },
         }
     } else {
-        panic!("attempt to index a value that isn't a table: {}\nat: {}", map, loc);
+        panic!("attempt to index a value that isn't a table: {:?}\nat: {}", map, loc);
     }
 }
 #[inline]
@@ -326,7 +338,7 @@ pub fn _lua_call(f: _lua_data, args: Vec<_lua_data>, loc: _lua_debug_loc) -> _lu
     if let _lua_data_unpack::Function(v) = &*f {
         v.0(args, loc)
     } else {
-        panic!("attempt to call a value that isn't a function: {}\nat: {}", f, loc)
+        panic!("attempt to call a value that isn't a function: {:?}\nat: {}", f, loc)
     }
 }
 #[inline]
@@ -353,7 +365,8 @@ macro_rules! _lua_op {
     (greater_eq, $x: expr, $y: expr, $loc: expr) => (_lua_bool($x.as_f64($loc) >= $y.as_f64($loc)));
     (less, $x: expr, $y: expr, $loc: expr) => (_lua_bool($x.as_f64($loc) < $y.as_f64($loc)));
     (greater, $x: expr, $y: expr, $loc: expr) => (_lua_bool($x.as_f64($loc) > $y.as_f64($loc)));
-    (concat, $x: expr, $y: expr, $loc: expr) => (_lua_data__pack(_lua_data_unpack::String($x.as_string($loc) + &$y.as_string($loc))));
+    // https://stackoverflow.com/questions/40792801/best-way-to-concatenate-vectors-in-rust
+    (concat, $x: expr, $y: expr, $loc: expr) => (_lua_data__pack(_lua_data_unpack::String($x.as_vecchar($loc).iter().cloned().chain($y.as_vecchar($loc).iter().cloned()).collect())));
 }
 #[inline]
 pub fn _lua_nil() -> _lua_data {
@@ -380,7 +393,7 @@ pub fn lang() -> _lua_data {
     // https://www.lua.org/manual/5.3/manual.html#pdf-tostring
     let tostring = std::sync::Arc::new(std::cell::RefCell::new(_lua_lambda(Box::new(|mut xs, _| {
         let x = if xs.is_empty() { _lua_nil() } else { xs.remove(0) };
-        _lua_data__pack(_lua_data_unpack::String(format!("{}", x)))
+        _lua_str(&format!("{}", x))
     }))));
     // https://www.lua.org/manual/5.3/manual.html#pdf-tonumber
     // base未实现
@@ -400,16 +413,20 @@ pub fn lang() -> _lua_data {
             if xs.len() <= 2 {
                 let list = if xs.is_empty() { _lua_nil() } else { xs.remove(0) };
                 let value = if xs.is_empty() { _lua_nil() } else { xs.remove(0) };
-                _lua_set(list.clone(), _lua_op!(add, _lua_len(list.clone(), loc), _lua_num!(1), loc), value.clone(), loc);
+                if let _lua_data_unpack_table::Vec(v) = &mut *list.as_table(loc).write().unwrap() {
+                    v.push(value);
+                } else {
+                    panic!("WIP");
+                };
             } else {
                 let list = if xs.is_empty() { _lua_nil() } else { xs.remove(0) };
-                let pos = (if xs.is_empty() { _lua_nil() } else { xs.remove(0) }).as_f64(loc) as usize;
+                let pos = ((if xs.is_empty() { _lua_nil() } else { xs.remove(0) }).as_f64(loc) - 1.0) as usize;
                 let value = if xs.is_empty() { _lua_nil() } else { xs.remove(0) };
-                let len = _lua_len(list.clone(), loc).as_f64(loc) as usize;
-                for i in (pos..=len).rev() {
-                    _lua_set(list.clone(), _lua_op!(add, _lua_num!(i), _lua_num!(1), loc), _lua_lookup(list.clone(), _lua_num!(i), loc), loc);
-                }
-                _lua_set(list.clone(), _lua_num!(pos), value, loc);
+                if let _lua_data_unpack_table::Vec(v) = &mut *list.as_table(loc).write().unwrap() {
+                    v.insert(pos, value);
+                } else {
+                    panic!("WIP");
+                };
             }
             _lua_nil()
         }))),
@@ -418,10 +435,10 @@ pub fn lang() -> _lua_data {
         // https://www.lua.org/manual/5.3/manual.html#pdf-string.sub
         // 只支持正整数
         (_lua_str("sub"), _lua_lambda(Box::new(|mut xs, loc| {
-            let s: String = (if xs.is_empty() { _lua_nil() } else { xs.remove(0) }).as_string(loc).clone();
+            let s = (if xs.is_empty() { _lua_nil() } else { xs.remove(0) });
             let i = (if xs.is_empty() { _lua_nil() } else { xs.remove(0) }).as_f64(loc) as usize;
             let j = (if xs.is_empty() { _lua_nil() } else { xs.remove(0) }).as_f64(loc) as usize;
-            _lua_str(&s.chars().collect::<Vec<char>>()[i-1..j].iter().collect::<String>())
+            _lua_data__pack(_lua_data_unpack::String(s.as_vecchar(loc)[i-1..j].to_vec()))
         }))),
     ])));
 let __TS__ArrayPush = std::sync::Arc::new(std::cell::RefCell::new(_lua_nil()));
